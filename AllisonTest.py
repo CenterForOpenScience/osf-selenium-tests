@@ -29,7 +29,7 @@ class DuplicateButtonForkTest(unittest.TestCase):
         time.sleep(5)
         driver.get('https://staging.osf.io/dgtc6/')
         time.sleep(5)
-        # This element is giving BrowserStack Trouble
+        # This element is giving BrowserStack trouble but works locally w/ geckodriver:
         driver.find_element_by_class_name('fa.fa-code-fork').click()
         time.sleep(3)
         driver.find_element_by_xpath("//*[contains(text(), 'Fork this Project')]").click()
