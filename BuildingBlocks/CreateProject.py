@@ -5,7 +5,7 @@ Created on Jun 14, 2017
 '''
 import time#
 
-class CreateProject(object):
+class CreateProject:
 
     def __init__(self, driver):
         time.sleep(3)

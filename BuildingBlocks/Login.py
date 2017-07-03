@@ -21,9 +21,9 @@ class Login:
         time.sleep(3)
         driver.find_element_by_partial_link_text("Sign In").click()
         time.sleep(3)
-        driver.find_element_by_id("username").send_keys("sdubey@cos.io")
+        driver.find_element_by_id("username").send_keys("osframeworktesting+ghost@gmail.com")
         time.sleep(3)
-        driver.find_element_by_id('password').send_keys('Shikh@28892')
+        driver.find_element_by_id('password').send_keys('\"Repr0duce!\"')
         time.sleep(3)
         driver.implicitly_wait(10)
         if (driver.find_element_by_id("rememberMe").is_selected()):
