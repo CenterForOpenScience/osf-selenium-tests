@@ -17,7 +17,7 @@ class Login:
    
     def __init__(self, driver):
         
-        driver.get("https://staging.osf.io/")
+        driver.get("https://osf.io/")
         time.sleep(3)
         driver.find_element_by_partial_link_text("Sign In").click()
         time.sleep(3)
