@@ -1,12 +1,6 @@
 # qaproto
 
 
-Patrick Anderson updated this
-Amanda updated this
+Ghost Inspector: https://ghostinspector.com
 
-Shikha ++
-
-
-test
-
-Amanda +++++++
+Selenium Quickstart Guide: https://docs.google.com/document/d/1HHqoJxQRDtGbcuT6e_Ev0ofaGm6vVVDUPRSNoZgTM6k/
