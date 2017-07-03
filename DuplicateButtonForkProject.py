@@ -1,4 +1,4 @@
-driver.implicitly_wait(30)
+        driver.implicitly_wait(30)
         driver.find_element_by_css_selector('i.fa.fa-code-fork').click()
         # Clicks duplicate button
         time.sleep(3)
