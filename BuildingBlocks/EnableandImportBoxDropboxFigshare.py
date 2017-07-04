@@ -1,3 +1,11 @@
+''' This module:
+1. Login
+2. Create a new project
+3. Enables,imports and selects a folder for Box, DropBox, Figshare
+** Code to delete the project is not added, as this module is used to enable,import and select folders for another module called 'DisconnectAllAcounts'
+'''
+
+
 # -*- coding: utf-8 -*-
 from selenium.webdriver.firefox.webdriver import WebDriver
 from selenium.webdriver.common.action_chains import ActionChains
