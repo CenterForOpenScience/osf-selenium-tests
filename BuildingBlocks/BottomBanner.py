@@ -1,7 +1,9 @@
 '''
-Created on Jun 30, 2017
-
-@author: shikhadubey
+This module:
+1. Goes to the staging.osf.io
+2. Checks if the page contains: Copyright 2011
+3. The Center for Open Science link is present and opens 'cos.io' when clicked
+4. The Terms and Conditions link is present and opens to the terms and conditions link on github when it is clicked
 '''
 
 from selenium import webdriver
