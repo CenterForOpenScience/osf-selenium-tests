@@ -1,7 +1,8 @@
 '''
-Created on Jun 30, 2017
-
-@author: shikhadubey
+This module:
+1. Logs on to staging, creates a new project
+2. Enables,import, selects forlders for all the accounts (dropbox, figshare, google driver)
+3. Disconnects all the accounts
 '''
 from selenium import webdriver
 from EnableandImportBoxDropboxFigshare import EnableandImport
@@ -20,9 +21,9 @@ try:
     e= EnableandImport(wd)
     e2= EnableandImport2(wd)
     print("All addons enabled")
-    for x in range(0,9):
+    for x in range(0,9):  #Disconnecting all the accounts: Put a loop 
         wd.find_element_by_partial_link_text("Disconnect").click()
         wd.find_element_by_css_selector("body > div.bootbox.modal.fade.bootbox-confirm.in > div > div > div.modal-footer > button.btn.btn-danger").click()
         
 finally:
-    print("Done")
+    print("")
