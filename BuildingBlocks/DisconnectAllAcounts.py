@@ -26,4 +26,4 @@ try:
         wd.find_element_by_css_selector("body > div.bootbox.modal.fade.bootbox-confirm.in > div > div > div.modal-footer > button.btn.btn-danger").click()
         
 finally:
-    print("")
+    wd.quit()
