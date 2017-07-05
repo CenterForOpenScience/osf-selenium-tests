@@ -65,7 +65,7 @@ class DisableAddons:
           
             time.sleep(3)
         finally:
-            print("done")
+            wd.quit()
             if not success:
                 raise Exception("Test failed.")
     
