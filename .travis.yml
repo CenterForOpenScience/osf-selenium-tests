@@ -8,9 +8,5 @@ install:
 # command to run tests
 script: pytest
 
-addons:
-  browserstack:
-    username: "shikhadubey1"
-    access_key: "Mhtt1XkQq18k8nqQzsqn"
     
    
