@@ -13,14 +13,4 @@ addons:
     username: "shikhadubey1"
     access_key: "Mhtt1XkQq18k8nqQzsqn"
     
-    
-'''# Input capabilities
-caps = Selenium::WebDriver::Remote::Capabilities.new
-caps['browserstack.local'] = 'true'
-caps['browserstack.localIdentifier'] = ENV['BROWSERSTACK_LOCAL_IDENTIFIER']
-# Add other capabilities like browser name, version and os name, version
-...
-
-driver = Selenium::WebDriver.for(:remote,
-  :url => "http://USERNAME:ACCESS_KEY@hub-cloud.browserstack.com/wd/hub",
-  :desired_capabilities => caps)'''
+   
