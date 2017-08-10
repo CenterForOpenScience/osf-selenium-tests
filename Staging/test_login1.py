@@ -7,7 +7,7 @@ driver = webdriver.Remote(
 command_executor='http://patrickanderson2:Z39oMKMLFiyYJ88GWosk@hub.browserstack.com:80/wd/hub',
 desired_capabilities=desired_cap)
 
-def test_hi(self):
+def test_hi():
 
     l= Login()
     l.staging_login(driver)
