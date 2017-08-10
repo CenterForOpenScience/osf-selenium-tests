@@ -4,7 +4,7 @@ sudo: enabled
 # command to install dependencies
 install:
   - pip install selenium
-  - pip install BB
+  - install BB
   #- pip install -r requirements.txt
 # command to run tests
 script: pytest test_login1.py
