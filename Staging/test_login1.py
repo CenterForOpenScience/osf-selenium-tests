@@ -1,4 +1,4 @@
-from BB import Login
+from BB.Login import Login
 
 desired_cap = {'browser': 'Chrome', 'browser_version': '59.0', 'os': 'OS X', 'os_version': 'Sierra', 'resolution': '1920x1080'}
 driver = webdriver.Remote(
