@@ -10,8 +10,7 @@ install:
 script: pytest test_login1.py
 
 before_script: cd Staging
-- pip install BB
-
+ pip install BB
 
 
     
