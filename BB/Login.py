@@ -15,7 +15,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 class Login:
    
-    def staging_login(driver):
+    def staging_login(self, driver):
         driver.get("https://staging.osf.io/")
         time.sleep(3)
         driver.find_element_by_partial_link_text("Sign In").click()
