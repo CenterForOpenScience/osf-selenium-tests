@@ -39,3 +39,4 @@ env/
 mathenv
 cover/
 .konchrc
+*.pyc
