@@ -7,10 +7,10 @@ install:
   
   #- pip install -r requirements.txt
 # command to run tests
-script: pytest #test_login1.py
+script: pytest
 
 before_script: cd Staging
- pip install BB
+ pip install blocks
 
 
     
