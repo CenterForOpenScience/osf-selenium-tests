@@ -1,7 +1,7 @@
 '''
-Created on Aug 10, 2017
+Created on Jul 21, 2017
 
-@author: shikhadubey
+@author: patrickanderson
 '''
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
