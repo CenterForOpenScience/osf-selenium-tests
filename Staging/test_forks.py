@@ -20,6 +20,6 @@ def test_forks():
     p = CreateNodes()
     l.staging_login(driver)
     p.create_project(driver)
-    f.create_fork(driver)
-    assert "Fork of Testselenium" in driver.find_element_by_id("nodeTitleEditable")
+    f.create_fork_dashboard(driver)
+    assert driver.find_element_by_id("nodeTitleEditable")
     driver.quit()

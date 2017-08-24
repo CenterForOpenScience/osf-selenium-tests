@@ -25,3 +25,14 @@ class Forks:
         time.sleep(5)
         driver.find_element_by_xpath("//button[text()='Go to new fork']").click()
         time.sleep(3)
+
+    def create_fork_dashboard(self, driver):
+        time.sleep(3)
+        driver.find_element_by_xpath("//*[@id='overview']/div[1]/div[2]/div/div[2]/div/a/i").click()
+        time.sleep(3)
+        driver.find_element_by_xpath("//*[@id='overview']/div[1]/div[2]/div/div[2]/div/ul/li[1]/span").click()
+        time.sleep(3)
+        driver.find_element_by_xpath("/html/body/div[7]/div/div/div[2]/button[2]").click()
+        time.sleep(5)
+        driver.find_element_by_xpath("//button[text()='Go to new fork']").click()
+        time.sleep(3)

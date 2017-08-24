@@ -17,7 +17,7 @@ class CreateNodes:
 
     def create_project(self, driver):
         time.sleep(3)
-        driver.find_element_by_xpath("//*[@id='osfHome']/div[2]/div/div/div/div/div[1]/m-b-lg/div/span/button").click()
+        driver.find_element_by_xpath("//*[@id='osfHome']/div[3]/div/div/div/div/div/m-b-lg/div/span/button").click()
         time.sleep(3)
         driver.find_element_by_name("projectName").send_keys("Testselenium")
         driver.find_element_by_xpath("//*[@id='addProjectFromHome']/div/div/div[3]/button[2]").click()
