@@ -5,7 +5,7 @@ Created on Aug 22, 2017
 '''
 from blocks.login import Login
 from blocks.forks import Forks
-from blocks.create_nodes import CreateNodes
+from blocks.nodes import Nodes
 from selenium import webdriver
 
 desired_cap = {'browser': 'Chrome', 'browser_version': '59.0', 'os': 'OS X', 'os_version': 'Sierra', 'resolution': '1920x1080'}
@@ -17,9 +17,11 @@ desired_capabilities=desired_cap)
 def test_forks():
     l = Login()
     f = Forks()
-    p = CreateNodes()
+    p = Nodes()
     l.staging_login(driver)
-    p.create_project(driver)
-    f.create_fork_dashboard(driver)
+    project_id = p.create_project(driver)
+    fork_id = f.create_fork_dashboard(driver)
     assert driver.find_element_by_id("nodeTitleEditable")
+    p.delete_node(driver, fork_id + 'settings/')
+    p.delete_node(driver, project_id + 'settings/')
     driver.quit()
