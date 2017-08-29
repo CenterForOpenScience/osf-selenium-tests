@@ -37,5 +37,6 @@ class Contributors:
         driver.find_element_by_css_selector("#contributors > tr:nth-child(2) > td.permissions > div.td-content > span:nth-child(1) > select").click()
         element= driver.find_element_by_css_selector("#contributors > tr:nth-child(2) > td.permissions > div.td-content > span:nth-child(1) > select").send_keys("read", Keys.ENTER)
         #element.send_keys(Keys.ENTER)
+        time.sleep(3)
         driver.find_element_by_css_seelctor("#manageContributors > div.m-b-sm > a.btn.btn-success.contrib-button").click()
         #driver.find_element_by_css_selector("button[type=\"button\"].btn.btn-success").click()
