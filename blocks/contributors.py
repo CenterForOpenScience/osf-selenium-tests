@@ -6,6 +6,7 @@ from selenium.webdriver.support.select import Select
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 import time
+from selenium.webdriver.common.action_chains import ActionChains
 
 class Contributors:
     def search_add_contributor(self, driver):
@@ -40,3 +41,8 @@ class Contributors:
         time.sleep(3)
         driver.find_element_by_css_selector("#manageContributors > div.m-b-sm > a.btn.btn-success.contrib-button").click()
         #driver.find_element_by_css_selector("button[type=\"button\"].btn.btn-success").click()
+    
+    def reorder_contributor (self, driver):
+        ActionChains(wd).drag_and_drop(wd.find_element_by_css_selector("#contributors > tr.contrib:nth-of-type(2) > td:nth-of-type(1) > .fa.fa-bars.sortable-bars"), wd.{locator2By}({locator2})).perform()
+        driver.find_element_by_css_selector("a.btn.btn-success.contrib-button").click()
+        driver.find_element_by_css_selector("button[type=\"button\"].btn.btn-success").click()
