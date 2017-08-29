@@ -30,4 +30,4 @@ class Contributors:
         
         driver.find_element_by_css_selector("#addContributors > div > div > div.modal-body > div:nth-child(1) > div > div:nth-child(1) > table > tbody > tr:nth-child(1) > td.p-r-sm.osf-icon-td > a > i").click()
         driver.find_element_by_css_selector("#addContributors > div > div > div.modal-footer > span:nth-child(3) > a.btn.btn-success").click()
-        #test
+        time.sleep(3)
