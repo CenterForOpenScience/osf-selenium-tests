@@ -35,7 +35,7 @@ class Contributors:
     def changetoread_contributor(self, driver):
        
         driver.find_element_by_css_selector("#contributors > tr:nth-child(2) > td.permissions > div.td-content > span:nth-child(1) > select").click()
-        element= driver.find_element_by_css_selector("#contributors > tr.contrib:nth-of-type(1) > td.permissions > .td-content > span:nth-of-type(1) > select.form-control.input-sm")
+        element= driver.find_element_by_css_selector("#contributors > tr:nth-child(2) > td.permissions > div.td-content > span:nth-child(1) > select").click()
         element.send_keys("read")
         element.submit()
         driver.find_element_by_css_selector("button[type=\"button\"].btn.btn-success").click()
