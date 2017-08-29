@@ -43,6 +43,9 @@ class Contributors:
         #driver.find_element_by_css_selector("button[type=\"button\"].btn.btn-success").click()
     
     def reorder_contributor (self, driver):
-        ActionChains(driver).drag_and_drop(driver.find_element_by_css_selector("#contributors > tr.contrib:nth-of-type(2) > td:nth-of-type(1) > .fa.fa-bars.sortable-bars"), driver.{locator2By}({locator2})).perform()
-        driver.find_element_by_css_selector("a.btn.btn-success.contrib-button").click()
-        driver.find_element_by_css_selector("button[type=\"button\"].btn.btn-success").click()
+        source_element = driver.find_element_by_xpath('//*[@id="contributors"]/tr[2]/td[2]/span[2]/a')
+        dest_element = driver.find_element_by_xpath('//*[@id="contributors"]/tr[1]/td[2]/span[2]/a')
+        ActionChains(driver).drag_and_drop(source_element, dest_element).perform()
+        #ActionChains(driver).drag_and_drop(driver.find_element_by_css_selector("#contributors > tr.contrib:nth-of-type(2) > td:nth-of-type(1) > .fa.fa-bars.sortable-bars"), driver.{locator2By}({locator2})).perform()
+        #driver.find_element_by_css_selector("a.btn.btn-success.contrib-button").click()
+        #driver.find_element_by_css_selector("button[type=\"button\"].btn.btn-success").click()
