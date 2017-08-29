@@ -9,7 +9,7 @@ driver = webdriver.Remote(
 command_executor='http://osfselenium1:9asHrZGoyk7Tesx9agX5@hub.browserstack.com:80/wd/hub',
 desired_capabilities=desired_cap)
 
-def test_forks():
+def test_contributors():
     l = Login()
     #f = Forks()
     p = Nodes()
@@ -19,6 +19,7 @@ def test_forks():
     c.search_add_contributor(driver)
     #assert driver.find_element_by_id("nodeTitleEditable")
     #driver.find_element_by_css_selector("#projectSubnav > div > div.collapse.navbar-collapse.project-nav > ul > li.active > a").click()
+    c.changetoread_contributor(driver)
     
     p.delete_node(driver, project_id + 'settings/')
     driver.quit()
