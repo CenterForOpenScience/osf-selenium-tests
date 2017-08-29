@@ -16,7 +16,7 @@ def test_forks():
     c= Contributors()
     l.staging_login(driver)
     project_id = p.create_project(driver)
-    c.search_contributor(driver)
+    c.search_add_contributor(driver)
     #assert driver.find_element_by_id("nodeTitleEditable")
     #driver.find_element_by_css_selector("#projectSubnav > div > div.collapse.navbar-collapse.project-nav > ul > li.active > a").click()
     
