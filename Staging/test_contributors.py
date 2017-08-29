@@ -16,7 +16,7 @@ def test_forks():
     c= Contributors()
     l.staging_login(driver)
     project_id = p.create_project(driver)
-    c.search_contributors(driver)
+    c.search_contributor(driver)
     #assert driver.find_element_by_id("nodeTitleEditable")
     #p.delete_node(driver, fork_id + 'settings/')
     #p.delete_node(driver, project_id + 'settings/')
