@@ -42,7 +42,8 @@ class Contributors:
         driver.find_element_by_css_selector("#manageContributors > div.m-b-sm > a.btn.btn-success.contrib-button").click()
         driver.find_element_by_css_selector("button[type=\"button\"].btn.btn-success").click()
     
-    def reorder_contributor (self, driver):
+    def reorder_contributor(self, driver):
+        time.sleep(3)
         source_element = driver.find_element_by_xpath('//*[@id="contributors"]/tr[2]/td[2]/span[2]/a')
         dest_element = driver.find_element_by_xpath('//*[@id="contributors"]/tr[1]/td[2]/span[2]/a')
         ActionChains(driver).drag_and_drop(source_element, dest_element).perform()
