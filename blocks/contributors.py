@@ -40,7 +40,7 @@ class Contributors:
         #element.send_keys(Keys.ENTER)
         time.sleep(3)
         driver.find_element_by_css_selector("#manageContributors > div.m-b-sm > a.btn.btn-success.contrib-button").click()
-        #driver.find_element_by_css_selector("button[type=\"button\"].btn.btn-success").click()
+        driver.find_element_by_css_selector("button[type=\"button\"].btn.btn-success").click()
     
     def reorder_contributor (self, driver):
         source_element = driver.find_element_by_xpath('//*[@id="contributors"]/tr[2]/td[2]/span[2]/a')
