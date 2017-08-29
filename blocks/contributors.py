@@ -27,4 +27,7 @@ class Contributors:
         driver.find_element_by_css_selector("input[type=\"submit\"]").click()
         if not (len(driver.find_elements_by_css_selector("table.table-condensed")) != 0):
             raise Exception("assertElementPresent failed")
-        driver.find_element_by_css_selector("#addContributors > div > div > div.modal-footer > a").click()
+        #driver.find_element_by_css_selector("#addContributors > div > div > div.modal-footer > a").click()
+        driver.find_element_by_css_selector("a.btn.btn-success:contains(Add)").click()
+        if not (len(wd.find_elements_by_css_selector("#contributors > tr:nth-child(2)")) != 0):
+            raise Exception("assertElementPresent failed")
