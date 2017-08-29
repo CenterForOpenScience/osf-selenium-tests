@@ -41,6 +41,7 @@ class Contributors:
         time.sleep(3)
         driver.find_element_by_css_selector("#manageContributors > div.m-b-sm > a.btn.btn-success.contrib-button").click()
         driver.find_element_by_css_selector("button[type=\"button\"].btn.btn-success").click()
+        time.sleep(3)
     
     def reorder_contributor(self, driver):
         time.sleep(3)
@@ -51,3 +52,4 @@ class Contributors:
         driver.find_element_by_css_selector("#manageContributors > div.m-b-sm > a.btn.btn-success.contrib-button").click()
         time.sleep(2)
         driver.find_element_by_css_selector("button[type=\"button\"].btn.btn-success").click()
+        time.sleep(3)
