@@ -111,6 +111,7 @@ def test_landing_page():
     assert driver.find_element_by_xpath('//*[@id="front-password-info"]').text == "Great!"
 
     # Check that the various sign up links work correctly
+    driver.get("https://staging.osf.io/")
     driver.find_element_by_xpath('//*[@id="signUpScope"]/form/div[6]/small/a[1]').click()
     time.sleep(3)
     assert driver.current_url == 'https://github.com/CenterForOpenScience/cos.io/blob/master/TERMS_OF_USE.md'
@@ -125,7 +126,6 @@ def test_landing_page():
     driver.get("https://staging.osf.io/")
 
     # Check that the footer links work correctly
-    driver.find_element_by_xpath("/html/body/div[5]/div/div/p/text()[1]")
     driver.find_element_by_xpath("/html/body/div[5]/div/div/p/a[1]").click()
     time.sleep(3)
     assert driver.current_url == 'https://cos.io/'
