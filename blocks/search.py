@@ -10,6 +10,6 @@ import time
 
 class Search:
 
-    def nav_bar(self, driver):
+    def staging_nav_bar(self, driver):
         driver.get("https://staging.osf.io/").click()
         driver.find_element_by_xpath("//*[@id="navbarScope"]/div/div[1]/div[1]/a/span[2]/strong").click()
