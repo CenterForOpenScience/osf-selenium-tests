@@ -9,3 +9,4 @@ desired_capabilities=desired_cap)
 def test_search():
   s = Search()
   s.staging_nav_bar(driver)
+  driver.quit()
