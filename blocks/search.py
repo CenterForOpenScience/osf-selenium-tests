@@ -13,4 +13,11 @@ class Search:
     def staging_nav_bar(self, driver):
         time.sleep(3)
         driver.get("https://staging.osf.io/")
+        time.sleep(3)
+        driver.find_element_by_css_selector("#primary-navigation > span").click()
+        time.sleep(2)
+        driver.find_element_by_css_selector("#navbarScope > div > div.navbar-header > div.dropdown.primary-nav.open > ul > li:nth-child(1) > a > b").click()
+        assert driver.url("https://staging.osf.io/")
+        driver.back()
+        
         
