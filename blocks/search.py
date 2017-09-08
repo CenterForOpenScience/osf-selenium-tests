@@ -11,6 +11,6 @@ from time import sleep
 class Search:
 
     def staging_nav_bar(self, driver):
-        driver.sleep(3)
+        time.sleep(3)
         driver.get("https://staging.osf.io/")
         
