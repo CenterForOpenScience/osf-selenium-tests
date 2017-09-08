@@ -7,5 +7,5 @@ command_executor='http://osfselenium1:9asHrZGoyk7Tesx9agX5@hub.browserstack.com:
 desired_capabilities=desired_cap)
 
 def test_search():
-  s= Search()
+  s = Search()
   s.staging_nav_bar(driver)
