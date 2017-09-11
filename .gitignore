@@ -40,3 +40,7 @@ mathenv
 cover/
 .konchrc
 *.pyc
+
+
+# Private Info
+variables.py
