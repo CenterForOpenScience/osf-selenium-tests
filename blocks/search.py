@@ -16,7 +16,7 @@ class Search:
         driver.find_element_by_css_selector("#primary-navigation > span").click()
         time.sleep(2)
         driver.find_element_by_css_selector("#navbarScope > div > div.navbar-header > div.dropdown.primary-nav.open > ul > li:nth-child(1) > a > b").click()
-        #assert driver.current_url = "https://staging.osf.io/"
+        assert "https://staging.osf.io/" in driver.current_url
         time.sleep(3)
         driver.find_element_by_css_selector("#primary-navigation > span").click()
         time.sleep(1)
@@ -37,3 +37,5 @@ class Search:
         driver.find_element_by_css_selector("#navbarScope > div > div.navbar-header > div.dropdown.primary-nav.open > ul > li:nth-child(4) > a > b").click()
         time.sleep(2)
         driver.back()
+        driver.find_element_by_css_selector("#secondary-navigation > ul > li:nth-child(1) > a").click()
+        
