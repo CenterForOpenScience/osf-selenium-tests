@@ -39,6 +39,10 @@ class Search:
         driver.find_element_by_css_selector("#secondary-navigation > ul > li:nth-child(1) > a").click() #Search
        
         assert "https://staging.osf.io/search/" in driver.current_url
+        driver.find_element_by_css_selector("#searchControls > div.osf-search > div > div > div > form > span > button:nth-child(2) > i").click()
+        time.sleep(3)
+        modal1 = driver.find_element_by_css_selector("#search-help-modal > div > div > div.modal-header > h3").text()
+        assert modal1= "Search help"
         driver.back()
         time.sleep(2)
         driver.find_element_by_css_selector("#secondary-navigation > ul > li:nth-child(2) > a").click()
