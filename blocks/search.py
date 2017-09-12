@@ -21,7 +21,9 @@ class Search:
         driver.find_element_by_css_selector("#primary-navigation > span").click()
         time.sleep(1)
         driver.find_element_by_css_selector("#navbarScope > div > div.navbar-header > div.dropdown.primary-nav.open > ul > li:nth-child(2) > a > b").click()
-        assert "preprints" in driver.title
+        #p= driver.tittle
+
+        #If p = "https://staging.osf.io/preprints/"
         driver.back() 
         time.sleep(3)
         driver.find_element_by_css_selector("#primary-navigation > span").click()
