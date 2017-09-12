@@ -23,7 +23,7 @@ class Search:
         driver.find_element_by_css_selector("#navbarScope > div > div.navbar-header > div.dropdown.primary-nav.open > ul > li:nth-child(2) > a > b").click()
         time.sleep(2)
         driver.back()
-        assert driver.current_url("https://staging.osf.io/preprints/")
+        assert "https://staging.osf.io/preprints/" in driver.title #assert driver.current_url("https://staging.osf.io/preprints/")
         driver.back()
         driver.find_element_by_css_selector("#navbarScope > div > div.navbar-header > div.dropdown.primary-nav.open > ul > li:nth-child(3) > a > b").click()
         
