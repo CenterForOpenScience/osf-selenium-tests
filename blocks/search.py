@@ -10,8 +10,7 @@ import time
 
 class Search:
 
-    def staging_nav_bar(self, driver):
-        time.sleep(3)
+    def staging_navbar(self, driver):
         driver.get("https://staging.osf.io/")
         time.sleep(3)
         driver.find_element_by_css_selector("#primary-navigation > span").click()
