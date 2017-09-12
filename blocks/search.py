@@ -18,10 +18,11 @@ class Search:
         driver.find_element_by_css_selector("#navbarScope > div > div.navbar-header > div.dropdown.primary-nav.open > ul > li:nth-child(1) > a > b").click()
         #assert driver.current_url = "https://staging.osf.io/"
         time.sleep(3)
-        '''driver.back()
-        time.sleep(3)
-        driver.find_element_by_css_selector("#primary-navigation > span").click()
+        driver.find_element_by_css_selector("#navbarScope > div > div.navbar-header > div.dropdown.primary-nav.open > ul > li:nth-child(2) > a > b").click()
         time.sleep(2)
-        driver.find_element_by_css_selector("#navbarScope > div > div.navbar-header > div.dropdown.primary-nav.open > ul > li:nth-child(2) > a > b").click()'''
+        driver.back()
+        assert driver.current_url= "https://staging.osf.io/preprints/"
+        driver.back()
+        driver.find_element_by_css_selector("#navbarScope > div > div.navbar-header > div.dropdown.primary-nav.open > ul > li:nth-child(3) > a > b").click()
         
         
