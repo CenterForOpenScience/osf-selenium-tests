@@ -24,11 +24,13 @@ class Search:
         #p= driver.tittle
 
         #If p = "https://staging.osf.io/preprints/"
+        time.sleep(2)
         driver.back() 
         time.sleep(3)
         driver.find_element_by_css_selector("#primary-navigation > span").click()
         driver.find_element_by_css_selector("#navbarScope > div > div.navbar-header > div.dropdown.primary-nav.open > ul > li:nth-child(3) > a > b").click()
         #assert "https://staging.osf.io/registries/" in driver.title
+        time.sleep(2)
         driver.find_element_by_css_selector("#primary-navigation > span").click()
         driver.find_element_by_css_selector("#navbarScope > div > div.navbar-header > div.dropdown.primary-nav.open > ul > li:nth-child(4) > a > b").click()
         time.sleep(2)
