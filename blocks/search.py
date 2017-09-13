@@ -46,9 +46,9 @@ class Search:
         driver.back()
         
         
- def staging_search_navbar(self, driver):        
+    def staging_search_navbar(self, driver):        
         driver.find_element_by_css_selector("#secondary-navigation > ul > li:nth-child(1) > a").click() #Search
-       
+
         assert "https://staging.osf.io/search/" in driver.current_url
         driver.find_element_by_css_selector("#searchControls > div.osf-search > div > div > div > form > span > button:nth-child(2) > i").click()
         time.sleep(3)
