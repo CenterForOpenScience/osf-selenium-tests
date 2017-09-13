@@ -65,5 +65,6 @@ class Search:
         time.sleep(2)
         driver.find_element_by_css_selector("#searchPageFullBar").send_keys("*", Keys.RETURN)
         time.sleep(2)
+        driver.find_element_by_css_selector("#searchPageFullBar").clear()
         driver.find_element_by_css_selector("#searchPageFullBar").send_keys("staging.osf.io/52vej/", Keys.RETURN)
         time.sleep(2)
