@@ -47,10 +47,11 @@ class Search:
         driver.find_element_by_css_selector("#search-help-modal > div > div > div.modal-body > p > a").click()
         time.sleep(2)
         assert "http://extensions.xwiki.org/xwiki/bin/view/Extension/Search+Application+Query+Syntax" in driver.current_url
-        driver.back()
+        #driver.back()
         time.sleep(2)
         #driver.find_element_by_css_selector("#search-help-modal > div > div > div.modal-footer > button").click()
         driver.back()
+        time.sleep(2)
         driver.find_element_by_css_selector("#searchPageFullBar").send_keys("*", Keys.RETURN)
         time.sleep(2)
         driver.find_element_by_css_selector("#secondary-navigation > ul > li:nth-child(2) > a").click()
