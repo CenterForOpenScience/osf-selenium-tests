@@ -6,4 +6,5 @@ driver = Variables.driver
 def test_search():
 	s = Search()
 	s.staging_navbar(driver)
+	s.staging_search_navbar(driver)
 	driver.quit()
