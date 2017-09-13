@@ -36,6 +36,17 @@ class Search:
         assert "https://staging.osf.io/meetings" in driver.current_url
         time.sleep(2)
         driver.back()
+        driver.find_element_by_css_selector("#secondary-navigation > ul > li:nth-child(2) > a").click()
+        assert "https://staging.osf.io/support/" in driver.current_url
+        driver.back()
+        time.sleep(2)
+        driver.find_element_by_css_selector("#secondary-navigation > ul > li.navbar-donate-button > a").click()
+        assert "https://cos.io/donate-to-cos/" in driver.current_url
+        time.sleep(2)
+        driver.back()
+        
+        
+ def staging_search_navbar(self, driver):        
         driver.find_element_by_css_selector("#secondary-navigation > ul > li:nth-child(1) > a").click() #Search
        
         assert "https://staging.osf.io/search/" in driver.current_url
@@ -54,13 +65,5 @@ class Search:
         time.sleep(2)
         driver.find_element_by_css_selector("#searchPageFullBar").send_keys("*", Keys.RETURN)
         time.sleep(2)
-        driver.find_element_by_css_selector("#secondary-navigation > ul > li:nth-child(2) > a").click()
-        assert "https://staging.osf.io/support/" in driver.current_url
-        driver.back()
+        driver.find_element_by_css_selector("#searchPageFullBar").send_keys("staging.osf.io/52vej/", Keys.RETURN)
         time.sleep(2)
-        driver.find_element_by_css_selector("#secondary-navigation > ul > li.navbar-donate-button > a").click()
-        assert "https://cos.io/donate-to-cos/" in driver.current_url
-        time.sleep(2)
-        driver.back()
-        
-        
