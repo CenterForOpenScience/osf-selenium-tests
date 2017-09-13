@@ -66,3 +66,10 @@ class Search:
         driver.find_element_by_css_selector("#searchPageFullBar").clear()
         driver.find_element_by_css_selector("#searchPageFullBar").send_keys("staging.osf.io/52vej/", Keys.RETURN)
         time.sleep(2)
+        driver.find_element_by_partial_link_text("Shikha 66").click()
+        assert "staging.osf.io/52vej/" in driver.url
+        time.sleep(3)
+        driver.find_element_by_css_selector("#secondary-navigation > ul > li:nth-child(1) > a").click()
+        time.sleep(2)
+        
+        
