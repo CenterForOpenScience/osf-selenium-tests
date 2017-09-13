@@ -51,7 +51,7 @@ class Search:
         time.sleep(2)
         #driver.find_element_by_css_selector("#search-help-modal > div > div > div.modal-footer > button").click()
         driver.back()
-        driver.find_element_by_id("searchPageFullBar").send_keys("*", Keys.RETURN)
+        driver.find_element_by_css_selector("#searchPageFullBar").send_keys("*", Keys.RETURN)
         time.sleep(2)
         driver.find_element_by_css_selector("#secondary-navigation > ul > li:nth-child(2) > a").click()
         assert "https://staging.osf.io/support/" in driver.current_url
