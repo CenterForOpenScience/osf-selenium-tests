@@ -7,7 +7,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 import time
 
-
 class Search:
 
     def staging_navbar(self, driver):
@@ -44,7 +43,6 @@ class Search:
         assert "https://cos.io/donate-to-cos/" in driver.current_url
         time.sleep(2)
         driver.back()
-        
         
     def staging_search_navbar(self, driver):        
         driver.find_element_by_css_selector("#secondary-navigation > ul > li:nth-child(1) > a").click() #Search
