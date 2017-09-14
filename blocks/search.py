@@ -94,7 +94,7 @@ class Search:
         assert "https://github.com/CenterForOpenScience/cos.io/blob/master/TERMS_OF_USE.md" in driver.current_url
         time.sleep(3)
         driver.back()
-        driver.find_element_by_partial_link_text("Privacy Policy").click()
+        driver.find_element_by_css_selector("body > div.container.copyright > div > div > p > a:nth-child(3)").click()
         assert "https://github.com/CenterForOpenScience/cos.io/blob/master/PRIVACY_POLICY.md" in driver.current_url
         driver.back()
         
