@@ -63,7 +63,7 @@ class Search:
         time.sleep(2)
         driver.find_element_by_css_selector("#searchPageFullBar").send_keys("*", Keys.RETURN)
         time.sleep(2)
-        count_element = ("#searchControls > div.row > div > div > div.col-md-3 > div:nth-child(1) > div > ul > li.active > a > span.badge.pull-right")
+        count_element = driver.find_element_by_css_selector("#searchControls > div.row > div > div > div.col-md-3 > div:nth-child(1) > div > ul > li.active > a > span.badge.pull-right")
         count = count_element.text
         assert count > 74900
         driver.find_element_by_css_selector("#searchPageFullBar").clear()
