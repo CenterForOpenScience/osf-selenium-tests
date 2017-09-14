@@ -74,7 +74,7 @@ class Search:
         time.sleep(3)
         driver.find_element_by_css_selector("#secondary-navigation > ul > li:nth-child(1) > a").click()
         time.sleep(2)
-        driver.find_element_by_css_selector("#searchPageFullBar").send_keys("tags:("TEST")", Keys.RETURN)
+        driver.find_element_by_css_selector("#searchPageFullBar").send_keys("tags:(\"TEST\")", Keys.RETURN)
         time.sleep(2)
         driver.find_element_by_css_selector("#secondary-navigation > ul > li.dropdown.sign-in > div > a.btn.btn-success.btn-top-signup.m-r-xs").click()
         assert "https://staging.osf.io/register/" in driver.current_url
