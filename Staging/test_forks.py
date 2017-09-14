@@ -13,9 +13,11 @@ driver = Variables.driver
 
 def test_forks():
     l= Login()
+    n= Nodes()
+    f= Forks()
     l.staging_login(driver)
-    project_id = Nodes.create_project(driver)
-    fork_id = Forks.create_fork_dashboard(driver)
+    project_id = n.create_project(driver)
+    fork_id = f.create_fork_dashboard(driver)
     assert driver.find_element_by_id("nodeTitleEditable")
     Nodes.delete_node(driver, fork_id + 'settings/')
     Nodes.delete_node(driver, project_id + 'settings/')
