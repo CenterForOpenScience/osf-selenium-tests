@@ -63,6 +63,9 @@ class Search:
         time.sleep(2)
         driver.find_element_by_css_selector("#searchPageFullBar").send_keys("*", Keys.RETURN)
         time.sleep(2)
+        count_element = ("#searchControls > div.row > div > div > div.col-md-3 > div:nth-child(1) > div > ul > li.active > a > span.badge.pull-right")
+        count = count_element.text
+        assert count > 74900
         driver.find_element_by_css_selector("#searchPageFullBar").clear()
         driver.find_element_by_css_selector("#searchPageFullBar").send_keys("staging.osf.io/52vej/", Keys.RETURN)
         time.sleep(2)
@@ -71,5 +74,30 @@ class Search:
         time.sleep(3)
         driver.find_element_by_css_selector("#secondary-navigation > ul > li:nth-child(1) > a").click()
         time.sleep(2)
+        driver.find_element_by_css_selector("#searchPageFullBar").send_keys("tags:("TEST")", Keys.RETURN)
+        time.sleep(2)
+        driver.find_element_by_css_selector("#secondary-navigation > ul > li.dropdown.sign-in > div > a.btn.btn-success.btn-top-signup.m-r-xs").click()
+        assert "https://staging.osf.io/register/" in driver.current_url
+        time.sleep(2)
+        driver.find_element_by_css_selector("#secondary-navigation > ul > li.dropdown.sign-in > div > a.btn.btn-info.btn-top-login.p-sm").click()
+        assert "https://staging-accounts.osf.io/login?service=https://staging.osf.io/" in driver.current_url
+        time.sleep(2)
+        
+    def staging_bottom_bar(self, driver):
+        driver.get("https://staging.osf.io/")
+        time.sleep(3)
+        driver.find_element_by_css_selector("body > div.container.copyright > div > div > p > a:nth-child(1)").click()
+        assert "https://cos.io/" in driver.current_url
+        time.sleep(2)
+        driver.back()
+        driver.find_element_by_partial_link_text("Terms of Use").click()
+        assert "https://github.com/CenterForOpenScience/cos.io/blob/master/TERMS_OF_USE.md" in driver.current_url
+        time.sleep(3)
+        driver.back()
+        driver.find_element_by_partial_link_text("Privacy Policy").click()
+        assert "https://github.com/CenterForOpenScience/cos.io/blob/master/PRIVACY_POLICY.md" in driver.current_url
+        driver.back()
+        
+        
         
         
