@@ -19,6 +19,6 @@ def test_forks():
     project_id = n.create_project(driver)
     fork_id = f.create_fork_dashboard(driver)
     assert driver.find_element_by_id("nodeTitleEditable")
-    Nodes.delete_node(driver, fork_id + 'settings/')
-    Nodes.delete_node(driver, project_id + 'settings/')
+    n.delete_node(driver, fork_id + 'settings/')
+    n.delete_node(driver, project_id + 'settings/')
     driver.quit()
