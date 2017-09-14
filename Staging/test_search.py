@@ -7,4 +7,5 @@ def test_search():
 	s = Search()
 	s.staging_navbar(driver)
 	s.staging_search_navbar(driver)
+	s.staging_bottom_bar(driver)
 	driver.quit()
