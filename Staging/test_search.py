@@ -1,11 +1,11 @@
-from blocks.variables import Variables
-from blocks.search import Search
+import settings
+from blocks import search
 
-driver = Variables.driver
+driver = settings.DRIVER
 
 def test_search():
-	s = Search()
-	s.staging_navbar(driver)
-	s.staging_search_navbar(driver)
-	s.staging_bottom_bar(driver)
+	# s = Search()
+	search.staging_navbar(driver)
+	search.staging_search_navbar(driver)
+	search.staging_bottom_bar(driver)
 	driver.quit()

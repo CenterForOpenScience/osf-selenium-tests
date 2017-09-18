@@ -1,9 +1,9 @@
-from blocks.variables import Variables
+import settings
 import time
 
-driver = Variables.driver
+driver = settings.DRIVER
 
-def test_landing_page():
+def test_sign_in():
 
 	# basically clicks on every single button on the page.
 	driver.get("https://staging.osf.io/")
@@ -25,8 +25,8 @@ def test_landing_page():
 
 
 	# tries a primary email and a secondary email.
-	driver.find_element_by_xpath('//*[@id="username"]').send_keys('osframeworktesting+ghost@gmail.com')
-	driver.find_element_by_xpath('//*[@id="password"]').send_keys('"Repr0duce!"')
+	driver.find_element_by_xpath('//*[@id="username"]').send_keys(settings.USERNAME_ONE)
+	driver.find_element_by_xpath('//*[@id="password"]').send_keys(settings.PASSWORD)
 	driver.find_element_by_xpath('//*[@id="fm1"]/section[3]/input[4]').click()
 	time.sleep(5)
 	assert driver.find_element_by_xpath('//*[@id="osfHome"]/div[3]/div/div/div/div/div[1]/h2')
@@ -34,8 +34,8 @@ def test_landing_page():
 	driver.find_element_by_xpath('//*[@id="secondary-navigation"]/ul/li[5]/ul/li[4]/a').click()
 
 	driver.get('https://staging-accounts.osf.io/login?service=https://staging.osf.io/')
-	driver.find_element_by_xpath('//*[@id="username"]').send_keys('osframeworktesting+ghost2@gmail.com')
-	driver.find_element_by_xpath('//*[@id="password"]').send_keys('"Repr0duce!"')
+	driver.find_element_by_xpath('//*[@id="username"]').send_keys(settings.USERNAME_TWO)
+	driver.find_element_by_xpath('//*[@id="password"]').send_keys(settings.PASSWORD)
 	driver.find_element_by_xpath('//*[@id="fm1"]/section[3]/input[4]').click()
 	time.sleep(5)
 	assert driver.find_element_by_xpath('//*[@id="osfHome"]/div[3]/div/div/div/div/div[1]/h2')

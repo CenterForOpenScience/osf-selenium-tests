@@ -3,22 +3,22 @@ Created on Aug 22, 2017
 
 @author: patrickanderson
 '''
-from blocks.login import Login
-from blocks.forks import Forks
-from blocks.nodes import Nodes
-from blocks.variables import Variables
+import settings
+from blocks import login
+from blocks import forks
+from blocks import nodes
 
-driver = Variables.driver
+driver = settings.DRIVER
 
 
 def test_forks():
-    l= Login()
-    n= Nodes()
-    f= Forks()
-    l.staging_login(driver)
-    project_id = n.create_project(driver)
-    fork_id = f.create_fork_dashboard(driver)
+    #l= Login()
+    #n= Nodes()
+    #f= Forks()
+    login.login(driver)
+    project_id = nodes.create_project(driver)
+    fork_id = forks.create_fork_dashboard(driver)
     assert driver.find_element_by_id("nodeTitleEditable")
-    n.delete_node(driver, fork_id + 'settings/')
-    n.delete_node(driver, project_id + 'settings/')
+    nodes.delete_node(driver, fork_id + 'settings/')
+    nodes.delete_node(driver, project_id + 'settings/')
     driver.quit()

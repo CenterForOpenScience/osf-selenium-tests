@@ -1,8 +1,8 @@
-from blocks.login import Login
-from blocks.variables import Variables
+import settings
+from blocks import login
 import time
 
-driver = Variables.driver
+driver = settings.DRIVER
 
 def test_landing_page():
 

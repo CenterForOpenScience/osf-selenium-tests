@@ -1,7 +1,7 @@
-from blocks.variables import Variables
+import settings
 import time
 
-driver = Variables.driver
+driver = settings.DRIVER
 
 
 def test_preprint_filters():
