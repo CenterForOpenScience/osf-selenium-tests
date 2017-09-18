@@ -13,9 +13,9 @@ def test_edit_title():
     driver.find_element_by_link_text("Sign In").click()
     driver.implicitly_wait(30)
     driver.find_element_by_id("password").clear()
-    driver.find_element_by_id("password").send_keys("\"Repr0duce!\"")
+    driver.find_element_by_id("password").send_keys(settings.PASSWORD)
     driver.find_element_by_id("username").clear()
-    driver.find_element_by_id("username").send_keys("osframeworktesting+ghost@gmail.com")
+    driver.find_element_by_id("username").send_keys(settings.USERNAME_ONE)
     driver.find_element_by_name("submit").click()
 
     success = True
