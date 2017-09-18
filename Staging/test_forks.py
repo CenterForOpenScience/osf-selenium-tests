@@ -12,9 +12,6 @@ driver = settings.DRIVER
 
 
 def test_forks():
-    #l= Login()
-    #n= Nodes()
-    #f= Forks()
     login.login(driver)
     project_id = nodes.create_project(driver)
     fork_id = forks.create_fork_dashboard(driver)
