@@ -1,8 +1,8 @@
 import settings
-from blocks import login
-from blocks import forks
-from blocks import nodes
-from blocks import contributors
+from helpers import login
+from helpers import forks
+from helpers import nodes
+from helpers import contributors
 
 driver = settings.DRIVER
 

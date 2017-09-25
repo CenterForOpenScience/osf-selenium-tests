@@ -1,5 +1,5 @@
 import settings
-from blocks import search
+from helpers import search
 
 driver = settings.DRIVER
 

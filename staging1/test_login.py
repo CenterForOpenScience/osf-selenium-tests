@@ -1,6 +1,6 @@
 import settings
 import time
-from blocks import login
+from helpers import login
 
 driver = settings.DRIVER
 
