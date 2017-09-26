@@ -9,7 +9,7 @@ install:
 # command to run tests
 script: pytest test_contributors.py
 
-before_script: cd Staging
+before_script: cd staging
  pip install helpers
 
 
