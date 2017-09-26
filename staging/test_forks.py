@@ -4,9 +4,9 @@ Created on Aug 22, 2017
 @author: patrickanderson
 '''
 import settings
-from blocks import login
-from blocks import forks
-from blocks import nodes
+from helpers import login
+from helpers import forks
+from helpers import nodes
 
 driver = settings.DRIVER
 

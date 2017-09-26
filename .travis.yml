@@ -7,10 +7,10 @@ install:
   
  
 # command to run tests
-script: pytest test_forks.py
+script: pytest test_contributors.py
 
-before_script: cd Staging
- pip install blocks
+before_script: cd staging
+ pip install helpers
 
 
     
