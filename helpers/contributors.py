@@ -15,7 +15,7 @@ def search_add_contributor(driver):
     time.sleep(3)
     driver.find_element_by_partial_link_text("Testselenium").click()
     time.sleep(3)
-    driver.find_element_by_xpath("//*[@id=\"projectSubnav\"]/div/div[2]/ul/li[7]/a").click()
+    driver.find_element_by_css_selector("#projectSubnav > div > div.collapse.navbar-collapse.project-nav > ul > li:nth-child(7) > a").click()
     time.sleep(3)
     driver.find_element_by_css_selector("#manageContributors > h3 > a").click()
     time.sleep(3)
