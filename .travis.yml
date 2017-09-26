@@ -10,7 +10,7 @@ install:
 script: pytest test_contributors.py
 
 before_script: cd Staging
- pip install blocks
+ pip install helpers
 
 
     
