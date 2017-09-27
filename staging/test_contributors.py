@@ -1,4 +1,4 @@
-#import settings
+import settings
 from helpers import login
 from helpers import forks
 from helpers import nodes
