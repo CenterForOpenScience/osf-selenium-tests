@@ -14,13 +14,14 @@ travis encrypt DRIVER : webdriver.Remote( command_executor="http://osfselenium1:
 install:
   - pip install selenium
   - gem install travis
-  - pip install helpers
+ 
   #- cp settings/travis-local.py settings/local.py
   
  
 # command to run tests
 script: pytest test_contributors.py
 before_script: cd staging
+ - pip install helpers
 
 
 
