@@ -2,9 +2,11 @@ language: python
 
 sudo: enabled
 # command to install dependencies
+
 install:
   - pip install selenium
-  - cp settings/travis-local.py settings/local.py
+  - gem install travis
+  - cp settings/travis-local.yml settings/local.py
   
  
 # command to run tests
