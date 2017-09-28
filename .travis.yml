@@ -8,7 +8,7 @@ install:
   
  
 # command to run tests
-script: pytest test_forks.py
+script: pytest test_landing_page.py
 
 before_script: cd staging
  pip install helpers
