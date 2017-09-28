@@ -26,11 +26,11 @@ def search_add_contributor(driver):
     driver.find_element_by_css_selector("input[placeholder=\"Search by name\"]").send_keys("QA Ghost 2")
     time.sleep(3)
     driver.find_element_by_css_selector("input[type=\"submit\"]").click()
-    driver.find_element_by_css_selector("#addContributors > div > div > div.modal-body > div:nth-child(1) > div > div:nth-child(1) > table > tbody > tr:nth-child(1) > td.p-r-sm.osf-icon-td > a > i").click()
+    #driver.find_element_by_css_selector("#addContributors > div > div > div.modal-body > div:nth-child(1) > div > div:nth-child(1) > table > tbody > tr:nth-child(1) > td.p-r-sm.osf-icon-td > a > i").click()
     time.sleep(2)
     if not (len(driver.find_elements_by_css_selector("table.table-condensed")) != 0):
         raise Exception("assertElementPresent failed")
-    
+    time.sleep(2)
     driver.find_element_by_css_selector("#addContributors > div > div > div.modal-body > div:nth-child(1) > div > div:nth-child(1) > table > tbody > tr:nth-child(1) > td.p-r-sm.osf-icon-td > a > i").click()
     driver.find_element_by_css_selector("#addContributors > div > div > div.modal-footer > span:nth-child(3) > a.btn.btn-success").click()
     time.sleep(3)
