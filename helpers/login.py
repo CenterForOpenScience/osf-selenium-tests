@@ -3,7 +3,7 @@ Created on Aug 10, 2017
 
 @author: shikhadubey
 '''
-import settings
+#import settings
 from selenium import webdriver
 
 def login(driver):
