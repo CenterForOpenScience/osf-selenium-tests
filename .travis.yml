@@ -4,6 +4,7 @@ sudo: enabled
 # command to install dependencies
 install:
   - pip install selenium
+  - cp settings/local-travis.py settings/local.py
   
  
 # command to run tests
