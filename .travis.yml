@@ -6,7 +6,7 @@ sudo: enabled
 install:
   - pip install selenium
   - gem install travis
-  - cp settings/travis-local.yml settings/local.py
+  - cp settings/travis-local.py settings/local.py
   
  
 # command to run tests
