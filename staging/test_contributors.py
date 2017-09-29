@@ -4,7 +4,7 @@ from helpers import forks
 from helpers import nodes
 from helpers import contributors
 
-driver = DRIVER
+#driver = DRIVER
 
 def test_contributors():
     login.login(driver)
