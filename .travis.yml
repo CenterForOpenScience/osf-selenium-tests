@@ -3,13 +3,8 @@ language: python
 sudo: enabled
 # command to install dependencies
 
-#travis encrypt USERNAME_ONE : "osframeworktesting+selenium@gmail.com"
-
-#travis encrypt USERNAME_TWO : "osframeworktesting+ghost2@gmail.com"
-   
-#travis encrypt PASSWORD : '"Repr0duce!"'
-        
-#travis encrypt DRIVER : webdriver.Remote( command_executor="http://osfselenium1:9asHrZGoyk7Tesx9agX5@hub.browserstack.com:80/wd/hub",desired_capabilities:DESIRED_CAP)
+env:
+  - DESIRED_CAP = {'browser': 'Chrome', 'browser_version': '61.0', 'os': 'Windows', 'os_version': '10', 'resolution': '2048x1536'}
 
 install:
   - pip install selenium
