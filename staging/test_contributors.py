@@ -7,7 +7,7 @@ from helpers import contributors
 #driver = DRIVER
 
 def test_contributors():
-    login.login(driver)
+    login.login(DRIVER)
     project_id = nodes.create_project(driver)
     contributors.search_add_contributor(driver)
     contributors.changetoread_contributor(driver)
