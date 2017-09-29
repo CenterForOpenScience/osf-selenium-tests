@@ -1,22 +1,19 @@
+lanbefore_script: "cd staging - pip install helpers"
+env: 
+  - 
+    DESIRED_CAP: 
+      browser: Chrome
+      browser_version: "61.0"
+      os: Windows
+      os_version: "10"
+      resolution: 2048x1536
+install: 
+  - "pip install selenium"
+  - "gem install travis"
 language: python
-
+script: "pytest test_contributors.py"
 sudo: enabled
-# command to install dependencies
 
-env:
-  - DESIRED_CAP : {'browser': 'Chrome', 'browser_version': '61.0', 'os': 'Windows', 'os_version': '10', 'resolution': '2048x1536'}
-
-install:
-  - pip install selenium
-  - gem install travis
- 
-  #- cp settings/travis-local.py settings/local.py
-  
- 
-# command to run tests
-script: pytest test_contributors.py
-before_script: cd staging
- - pip install helpers
 
 
 
