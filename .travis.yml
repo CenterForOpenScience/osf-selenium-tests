@@ -3,8 +3,8 @@ language: python
 sudo: enabled
 # command to install dependencies
 
-#env:
-  #- DESIRED_CAP: 
+env:
+  - DRIVER: webdriver.Remote(command_executor, desired_capabilities=DESIRED_CAP) 
    #   browser: Chrome
     #  browser_version: "61.0"
      # os: Windows
