@@ -6,7 +6,7 @@ from helpers import nodes
 from helpers import contributors
 
 #driver = DRIVER
-DRIVER = os.environ['DRIVER']
+#DRIVER = os.environ['DRIVER']
 
 def test_contributors():
     login.login(DRIVER)
