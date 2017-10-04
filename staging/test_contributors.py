@@ -7,6 +7,7 @@ from helpers import contributors
 
 #driver = DRIVER
 #DRIVER = os.environ['DRIVER']
+DRIVER= webdriver.Remote(command_executor, desired_capabilities=DESIRED_CAP)
 
 def test_contributors():
     login.login(DRIVER)
