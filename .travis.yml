@@ -14,8 +14,8 @@ install:
   - pip install selenium
   - gem install travis
  
- env:
-  - DRIVER: webdriver.Remote(command_executor, desired_capabilities=DESIRED_CAP) 
+ #env:
+  #- DRIVER: webdriver.Remote(command_executor, desired_capabilities=DESIRED_CAP) 
   #- cp settings/travis-local.py settings/local.py
   
  
