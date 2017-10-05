@@ -7,7 +7,9 @@ install:
   - gem install travis
 # command to run tests
 # command to run tests
-script: pytest test_contributors.py
+script: 
+  - export shikha=$shikha
+  - pytest test_contributors.py
 before_script: cd staging
  - pip install helpers
 env:
