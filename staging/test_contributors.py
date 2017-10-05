@@ -10,7 +10,7 @@ DRIVER = os.environ['DRIVER']
 #DRIVER= webdriver.Remote(command_executor, desired_capabilities=DESIRED_CAP)
 
 def test_contributors():
-    print(shikha)
+    #print(shikha)
     login.login(DRIVER)
     project_id = nodes.create_project(driver)
     contributors.search_add_contributor(driver)
