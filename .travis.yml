@@ -10,7 +10,7 @@ install:
 script: 
   - export shikha=$shikha
   - export c1=$c1
-  - export DESIRED_CAP=\"{\'browser\': \'Chrome\', '\browser_version\': \'61.0\', \'os\': \'Windows\', \'os_version\': \'7\', \'resolution\': \'1024x768\'}\"
+  - export DESIRED_CAP=$\"{\'browser\': \'Chrome\', '\browser_version\': \'61.0\', \'os\': \'Windows\', \'os_version\': \'7\', \'resolution\': \'1024x768\'}\"
   - export DRIVER="webdriver.Remote(${c1}, desired_capabilities=${DESIRED_CAP})"
   - pytest test_contributors.py
 before_script: cd staging
