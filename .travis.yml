@@ -16,7 +16,7 @@ script:
   - export d='os':'Windows'
   - export shikha=$shikha
   - export c1=$c1
-  - export DRIVER=webdriver.Remote{${c1}, desired_capabilities=${DESIRED_CAP}}
+  - export DRIVER=webdriver.Remote{{c1}, desired_capabilities={DESIRED_CAP}}
   - pytest test_contributors.py
 before_script: cd staging
  - pip install helpers
