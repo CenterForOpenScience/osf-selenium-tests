@@ -6,7 +6,7 @@ from helpers import nodes
 from helpers import contributors
 
 #driver = DRIVER
-shikha = os.environ['shikha']
+#shikha = os.environ['shikha']
 #DRIVER= webdriver.Remote(command_executor, desired_capabilities=DESIRED_CAP)
 
 def test_contributors():
