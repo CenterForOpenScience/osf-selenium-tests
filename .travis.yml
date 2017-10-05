@@ -1,6 +1,6 @@
-language: python
+language:python
 
-sudo: enabled
+sudo:enabled
 # command to install dependencies
 
 
@@ -12,7 +12,6 @@ sudo: enabled
 
 install:
   - pip install selenium
-  - gem install travis
  
  export: 
  - DRIVER= webdriver.Remote(${command_executor}, desired_capabilities=${DESIRED_CAP})
