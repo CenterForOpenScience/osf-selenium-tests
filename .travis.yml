@@ -8,7 +8,7 @@ install:
 # command to run tests
 # command to run tests
 script: 
-  - export DESIRED_CAP="{ "browser": "Chrome", 'browser_version': '61.0', 'os': 'Windows', 'os_version': '7', 'resolution': '1024x768'}"
+  - export DESIRED_CAP=${ "browser": "Chrome", 'browser_version': '61.0', 'os': 'Windows', 'os_version': '7', 'resolution': '1024x768'}"
   #- export DESIRED_CAP=\"{\'browser\': \'Chrome\', '\browser_version\': \'61.0\', \'os\': \'Windows\', \'os_version\': \'7\', \'resolution\': \'1024x768\'}\"
   - export shikha=$shikha
   - export c1=$c1
