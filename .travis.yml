@@ -1,35 +1,25 @@
-language:python
-
-sudo:enabled
+language: python
+python:
+  - "2.6"
+  - "2.7"
+  - "3.2"
+  - "3.3"
+  - "3.4"
+  - "3.5"
+  - "3.5-dev" # 3.5 development branch
+  - "3.6"
+  - "3.6-dev" # 3.6 development branch
+  - "3.7-dev" # 3.7 development branch
+  - "nightly"
 # command to install dependencies
-
-
-   #   browser: Chrome
-    #  browser_version: "61.0"
-     # os: Windows
-      #os_version: "10"
-      #resolution: 2048x1536
-
 install:
   - pip install selenium
- 
- export: 
- - DRIVER= webdriver.Remote(${command_executor}, desired_capabilities=${DESIRED_CAP})
- 
- env:
-  - secure: "RzFfJA0NjkWnVqyfkW/Vnvwfn8ZqkH9XNvZOdXhkU1ZmIjuMYMDBkTJjaAknU++X2xX5RHOK3aW8DJmZ/hAXV9UUXT/ulYr7xErooMvPZ8pDCEpbDXKDqnr2XzVZAcicUdcK73IMzw0EDyTCJh/2KFphxXspI3VcclJOh7yxQNFHuK+khsLtEPxwJWeNz32ZsnxuKJOSfHTK0DQWwx3Xxfoz9gIfLm5nYbUL7DGjm2Tc6Jy0If2aPRZwnSpBxQ6arEw4kbFvbHXvv5q6Gd8nCzZM4dCqPNY9r/cKvwUapPXa700HLhs8gacmZw6hMgctxb8OAybd32ZTLTZfZMnAIOYweLsEqajz27Q9q/4yi71HvC0hbRQr+EUzuU60vmPv6UcWqAhP7O+4w4ze67UvKnaGjDA0aqWw/l5mLrbVkGuUVm3+JZamLZixkkU4ItkgHptsGn7YSw0CDdJb7GWXw4FqZ0uK2iLwe6wUGDkHs+qbt5HvsKlDfN9HzIKNedC8kCT+/+m4ywmDDdSjjQ9X6gP4d7f++Yx5LAY8kTmoLNNwWgABGWNP2EVnRtinmmYEWQINYv8H36vVPgI70oh0RDH4H8KyJu9EldvWA7GXwWdCReXfBPgq425KPCiNB3lVmxyII53aC8WEB/agbnnRJM7cCj/i4Tyakw8WiZPB6QQ="
-  #- cp settings/travis-local.py settings/local.py
-  
- 
+# command to run tests
 # command to run tests
 script: pytest test_contributors.py
 before_script: cd staging
  - pip install helpers
- 
-#Test to start travis
+env:
+  - secure: "RzFfJA0NjkWnVqyfkW/Vnvwfn8ZqkH9XNvZOdXhkU1ZmIjuMYMDBkTJjaAknU++X2xX5RHOK3aW8DJmZ/hAXV9UUXT/ulYr7xErooMvPZ8pDCEpbDXKDqnr2XzVZAcicUdcK73IMzw0EDyTCJh/2KFphxXspI3VcclJOh7yxQNFHuK+khsLtEPxwJWeNz32ZsnxuKJOSfHTK0DQWwx3Xxfoz9gIfLm5nYbUL7DGjm2Tc6Jy0If2aPRZwnSpBxQ6arEw4kbFvbHXvv5q6Gd8nCzZM4dCqPNY9r/cKvwUapPXa700HLhs8gacmZw6hMgctxb8OAybd32ZTLTZfZMnAIOYweLsEqajz27Q9q/4yi71HvC0hbRQr+EUzuU60vmPv6UcWqAhP7O+4w4ze67UvKnaGjDA0aqWw/l5mLrbVkGuUVm3+JZamLZixkkU4ItkgHptsGn7YSw0CDdJb7GWXw4FqZ0uK2iLwe6wUGDkHs+qbt5HvsKlDfN9HzIKNedC8kCT+/+m4ywmDDdSjjQ9X6gP4d7f++Yx5LAY8kTmoLNNwWgABGWNP2EVnRtinmmYEWQINYv8H36vVPgI70oh0RDH4H8KyJu9EldvWA7GXwWdCReXfBPgq425KPCiNB3lVmxyII53aC8WEB/agbnnRJM7cCj/i4Tyakw8WiZPB6QQ="
 
-
-
-
-    
    
