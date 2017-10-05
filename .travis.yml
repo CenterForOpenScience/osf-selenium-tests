@@ -8,15 +8,16 @@ install:
 # command to run tests
 # command to run tests
 script: 
+  #- export DESIRED_CAP=\"{\'browser\': \'Chrome\', '\browser_version\': \'61.0\', \'os\': \'Windows\', \'os_version\': \'7\', \'resolution\': \'1024x768\'}\"
   - export shikha=$shikha
   - export c1=$c1
-  $ export DESIRED_CAP=\"{\'browser\': \'Chrome\', '\browser_version\': \'61.0\', \'os\': \'Windows\', \'os_version\': \'7\', \'resolution\': \'1024x768\'}\"
   - export DRIVER= webdriver.Remote(${c1}, desired_capabilities=${DESIRED_CAP})
   - pytest test_contributors.py
 before_script: cd staging
  - pip install helpers
 env:
   global:
+    - DESIRED_CAP=\"{\'browser\': \'Chrome\', '\browser_version\': \'61.0\', \'os\': \'Windows\', \'os_version\': \'7\', \'resolution\': \'1024x768\'}\"
     - secure: RzFfJA0NjkWnVqyfkW/Vnvwfn8ZqkH9XNvZOdXhkU1ZmIjuMYMDBkTJjaAknU++X2xX5RHOK3aW8DJmZ/hAXV9UUXT/ulYr7xErooMvPZ8pDCEpbDXKDqnr2XzVZAcicUdcK73IMzw0EDyTCJh/2KFphxXspI3VcclJOh7yxQNFHuK+khsLtEPxwJWeNz32ZsnxuKJOSfHTK0DQWwx3Xxfoz9gIfLm5nYbUL7DGjm2Tc6Jy0If2aPRZwnSpBxQ6arEw4kbFvbHXvv5q6Gd8nCzZM4dCqPNY9r/cKvwUapPXa700HLhs8gacmZw6hMgctxb8OAybd32ZTLTZfZMnAIOYweLsEqajz27Q9q/4yi71HvC0hbRQr+EUzuU60vmPv6UcWqAhP7O+4w4ze67UvKnaGjDA0aqWw/l5mLrbVkGuUVm3+JZamLZixkkU4ItkgHptsGn7YSw0CDdJb7GWXw4FqZ0uK2iLwe6wUGDkHs+qbt5HvsKlDfN9HzIKNedC8kCT+/+m4ywmDDdSjjQ9X6gP4d7f++Yx5LAY8kTmoLNNwWgABGWNP2EVnRtinmmYEWQINYv8H36vVPgI70oh0RDH4H8KyJu9EldvWA7GXwWdCReXfBPgq425KPCiNB3lVmxyII53aC8WEB/agbnnRJM7cCj/i4Tyakw8WiZPB6QQ=
     - secure: M39PKbUwPpxIrA9XCww631yhRKhbd/6g1o7tlGZALJ1M/1fC8vtIO1b/Lu8KqgrtZnE4Lq3J12FBWuIValvsQFfQr87ckYq3mB7n503lL9G/XrL9009zSmZHtVlPpF06qyBDtuGoAzKeHdUERn1kwcZgwkgVS5e3M3OkMdltp62HaS3eg1RFRt13nZ4sbsgrLL4v1dMGJwkHpwc76Odpxu6lrIB6S90/INsZ0hNswmmbg2JGNGy+0/JT43pSnlkKdq8m5IZXQd6gTxhSE6gZ2wsknHv3UMBM54AP5cCiLnqe9QVHueBJvYDBGMB0fPNA6ik/GiRLsuhaTwHCUMH/ewKV51DxTNqvGnerpNjY2gQv9INwk6yBj86qHZDAsvsmoauS4Y1mFEstdtip442dh2Rf4wmsLLtpD4b+zVL/aIQ2nALMesOMktVthwiL4XBIHX+It4Zy/WKn6OPNR/MAQn8k6Tui6iQZ4CU+DHrsmeTkJOPz22Vo9FpFBNftIFpYFlx0wV5pBBM8cCPIVl8pqBVq/PUU58aK2FfNRJQeFvttZuajsWduPV69d+gZv5X3Q99IfMFqNWrN+oD8El5qYxXhJ13TcthMKGw8mSUnWx1HKzLxA6g7cgyg74taFH6CxdaM6XiIL1Pg3VMp0IqfvFZe4LGPQOl/8cwDfNw0108=
     - secure: Sqq+wJAeUhhVGh7kMEUDMRwaMn8o+Pbexxyj43S4HdwSa/m9dox05Vq7WmEK8zLgxxAjBn3J/Ou2xH/dh9pIghev7QbPxb4IVxr/iNwEz0DjIgmH2RkjXofndsXLA9y4IJb/yOuxw9/t1ItgdXtLrAsIjkpG79TSPqnPH/KcoYTE+Z1GoJKK+V0JbpT/CktZEdqwF7bQDwYDmORcc1jnYEDbWM4/HzxXtClh3ucFWBGsegV8Znc8UQaoUKTz4tGVehveetFRn4NGVy5WiZ1uB7GNb4oJdKP/PqtwXoCgyQe3CCu1ilW2A1cwfA3OiaXlZa/8BRx5hpCsHXlGCV5Y4a0mBkS+7C8TiZs56JMQcyJlNBgSMgNPAkvzhtkltuyZF/CCA1nSvOSPTgDnNOkBBxLcl1EyLVECzrI6oBRqVlt2Li6xi0quZxR0XSzRdLf9OGKLWILrhFe1KvUJdKz/C1rrX6mb8bEiS3iHbcl+GNw5CBYi9IEBKEsMMP1Umpk9R94CCHodM4UrXmboCFWtVmbP9JAm+wi3PjMbfmtssQFTQEymjzWq3ZRm1Ne5xjLzlJKYhvebuMZfVHo4JxGo4ZGMhwr33oyZecPbT6jMhkMXJ17KlJqqt4+xR+KbkM83cG127jpEg50nw5J/tY5mvMyb6Y179W7V7LOTJoHU+IQ=
