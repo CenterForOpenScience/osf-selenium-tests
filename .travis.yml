@@ -4,6 +4,7 @@ python:
 # command to install dependencies
 install:
   - pip install selenium
+  - gem install travis
 # command to run tests
 # command to run tests
 script: pytest test_contributors.py
