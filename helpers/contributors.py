@@ -7,6 +7,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 import time
 from selenium.webdriver.common.action_chains import ActionChains
+import os
 
 #command_executor = os.environ['command_executor']
 #DRIVER= webdriver.Remote(command_executor, desired_capabilities=DESIRED_CAP)
