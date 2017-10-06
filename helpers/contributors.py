@@ -11,7 +11,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 #command_executor = os.environ['command_executor']
 #DRIVER= webdriver.Remote(command_executor, desired_capabilities=DESIRED_CAP)
 #print(shikha)
-DRIVER=webdriver.Remote({CE},desired_capabilities={DESIRED_CAP})
+DRIVER=webdriver.Remote(${CE},desired_capabilities=${DESIRED_CAP})
 def search_add_contributor(driver):
    
     driver.find_element_by_css_selector("#secondary-navigation > ul > li:nth-child(1) > a").click()
