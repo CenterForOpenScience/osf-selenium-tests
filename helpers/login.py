@@ -6,8 +6,8 @@ Created on Aug 10, 2017
 #import settings
 from selenium import webdriver
 
-def login(DRIVER):
-    DRIVER.get("https://staging.osf.io/")
+def login(driver):
+    driver.get("https://staging.osf.io/")
     driver.find_element_by_partial_link_text("Sign In").click()
     driver.find_element_by_id("username").send_keys(settings.USERNAME_ONE)
     driver.find_element_by_id('password').send_keys(settings.PASSWORD)
