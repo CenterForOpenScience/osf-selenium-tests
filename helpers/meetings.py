@@ -15,3 +15,4 @@ import os
 #DRIVER=webdriver.Remote({CE},desired_capabilities=DC)
 
 def osf_meetings(driver):
+    print("sup")
