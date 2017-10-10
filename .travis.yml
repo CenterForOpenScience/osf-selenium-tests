@@ -10,9 +10,9 @@ install:
 script: 
   - export DESIRED_CAP={'browser':'Chrome','browser_version':'61.0','os':'Windows','os_version':'7','resolution':'1024x768'}
   
-  - export b='browser':'Chrome'
-  - export c='browser_version':'61.0'
-  - export d='os':'Windows'
+  #- export b='browser':'Chrome'
+  #- export c='browser_version':'61.0'
+  #- export d='os':'Windows'
   - export shikha=$shikha
   - export CE=$c1
   - pytest test_meetings.py
