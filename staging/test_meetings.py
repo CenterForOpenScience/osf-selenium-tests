@@ -9,5 +9,5 @@ driver = settings.DRIVER
 #DRIVER= webdriver.Remote(command_executor, desired_capabilities=DESIRED_CAP)
 
 def test_meetings():
-  login.login(driver)
+    login.login(driver)
 
