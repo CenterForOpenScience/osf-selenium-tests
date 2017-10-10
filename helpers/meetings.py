@@ -15,4 +15,4 @@ import os
 #DRIVER=webdriver.Remote({CE},desired_capabilities=DC)
 
 def osf_meetings(driver):
-    print("sup")
+    #driver.get("https://staging.osf.io/meetings/")
