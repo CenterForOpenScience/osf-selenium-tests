@@ -22,6 +22,7 @@ def osf_meetings(driver):
     driver.find_element_by_css_selector("#navbarScope > div > div.navbar-header > div.dropdown.primary-nav.open > ul > li:nth-child(1) > a > b").click()
     assert "https://staging.osf.io/" in driver.current_url
     time.sleep(3)
+    driver.back()
     driver.find_element_by_css_selector("#primary-navigation > span").click()
     time.sleep(1)
     driver.find_element_by_css_selector("#navbarScope > div > div.navbar-header > div.dropdown.primary-nav.open > ul > li:nth-child(2) > a > b").click()
