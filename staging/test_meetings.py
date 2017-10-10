@@ -2,7 +2,7 @@ import os
 from helpers import login
 from helpers import forks
 from helpers import nodes
-from helpers import contributors
+from helpers import meetings
 
 #driver = DRIVER
 driver = settings.DRIVER
