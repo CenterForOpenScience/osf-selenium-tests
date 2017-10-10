@@ -12,5 +12,6 @@ driver = settings.DRIVER
 
 def test_meetings():
     #login.login(driver)
+    driver.get("https://staging.osf.io/meetings/")
     search.staging_navbar(driver)
 
