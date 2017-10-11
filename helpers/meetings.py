@@ -71,7 +71,7 @@ def osf_meetings_sign_in(driver):
     assert e2.text == "Find the email address for your conference by clicking on its name in the list below"
     e3 = driver.find_element_by_css_selector("#osf-meeting-upload > div > ul > li:nth-child(2)")
     assert e3.text == "Send your materials to the OSF for Meetings email address for your conference"
-    e4 = driver.find_element_by_css_selector("#osf-meeting-upload > div > p:nth-child(3)")
+    #e4 = driver.find_element_by_css_selector("#osf-meeting-upload > div > p:nth-child(3)")
     #assert e4.text == "We’ll create an OSF project for you. You'll get a permanent link to your presentation, plus analytics about who has viewed and downloaded your work."
     
 def osf_meetings_search_meeting(driver):
