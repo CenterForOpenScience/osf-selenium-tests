@@ -13,4 +13,5 @@ driver = settings.DRIVER
 def test_meetings():
     meetings.osf_meetings_landing_page(driver)
     meetings.osf_meetings_sign_in(driver)
+    meetings.osf_meetings_search_meeting(driver)
     
