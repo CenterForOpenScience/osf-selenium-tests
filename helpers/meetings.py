@@ -64,3 +64,18 @@ def osf_meetings_sign_in(driver):
     assert "https://staging.osf.io/meetings" in driver.current_url
     element = driver.find_element_by_css_selector("#osf-meeting-register > div > p:nth-child(1)")
     assert element.text == "OSF for Meetings is a product that we offer to academic conferences at no cost. To request poster and talk hosting for a conference:"
+    driver.find_element_by_xpath("/html/body/div[3]/div[2]/div/div/div[3]/div[2]/div[2]/button").click()
+    e1 = driver.find_element_by_css_selector("#osf-meeting-upload > div > p:nth-child(1)")
+    assert e1.text == "The OSF can host posters and talks for scholarly meetings. Submitting a presentation is easy:"
+    e2 = driver.find_element_by_css_selector("#osf-meeting-upload > div > ul > li:nth-child(1)")
+    assert e2.text == "Find the email address for your conference by clicking on its name in the list below"
+    e3 = driver.find_element_by_css_selector("#osf-meeting-upload > div > ul > li:nth-child(2)")
+    assert e3.text == "Send your materials to the OSF for Meetings email address for your conference"
+    e4 = driver.find_element_by_css_selector("#osf-meeting-upload > div > p:nth-child(3)")
+    assert e4.text == ("We’ll create an OSF project for you. You'll get a permanent link to your presentation, plus analytics about who has viewed and downloaded your work.")
+    
+def osf_meetings_search_meeting(driver):
+    driver.find_element_by_css_selector("#meetings-grid > div > div > div.tb-head > div > input").send_keys("osf for meetings 2015", Keys.ENTER)
+    assert driver.find_element_by_link_text("OSF for Meetings 2015").is_displayed()
+    
+    
