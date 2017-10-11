@@ -41,7 +41,7 @@ def osf_meetings(driver):
     time.sleep(2)
   
     driver.find_element_by_css_selector("#secondary-navigation > ul > li:nth-child(2) > a").click()
-    assert "https://staging.osf.io/support/" in driver.current_url
+    #assert "https://staging.osf.io/support/" in driver.current_url
     driver.back()
     time.sleep(2)
     driver.find_element_by_css_selector("#secondary-navigation > ul > li.navbar-donate-button > a").click()
