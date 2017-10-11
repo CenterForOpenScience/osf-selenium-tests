@@ -8,6 +8,8 @@ from selenium.webdriver.support.ui import WebDriverWait
 import time
 from selenium.webdriver.common.action_chains import ActionChains
 import os
+import settings
+from selenium import webdriver
 
 #CE = os.environ['CE']
 #DESIRED_CAP= os.environ['DESIRED_CAP']
