@@ -14,7 +14,7 @@ import os
 #DC = {'browser': 'Chrome', 'browser_version': '61.0', 'os': 'Windows', 'os_version': '10', 'resolution': '2048x1536'}
 #DRIVER=webdriver.Remote({CE},desired_capabilities=DC)
 
-def osf_meetings(driver):
+def osf_meetings_landing_page(driver):
     driver.get("https://staging.osf.io/meetings/")
     time.sleep(3)
     driver.find_element_by_css_selector("#primary-navigation > span").click()
@@ -48,3 +48,17 @@ def osf_meetings(driver):
     assert "https://cos.io/donate-to-cos/" in driver.current_url
     time.sleep(2)
     driver.back()
+    
+def osf_meetings_sign_in(driver):
+    
+    driver.find_element_by_partial_link_text("Sign In").click()
+    driver.find_element_by_id("username").send_keys(settings.USERNAME_ONE)
+    driver.find_element_by_id('password').send_keys(settings.PASSWORD)
+    if (driver.find_element_by_id("rememberMe").is_selected()):
+        driver.find_element_by_id("rememberMe").click() 
+    driver.find_element_by_name("submit").click()
+    driver.find_element_by_css_selector("body > div.watermarked > div.osf-meeting-header-img > div > div > div.row > div:nth-child(1) > div.p-v-md > button").click()
+    time.sleep(2)
+    assert "https://staging.osf.io/meetings" in driver.current_url
+    element = driver.find_element_by_css_selector("#osf-meeting-register > div > p:nth-child(1)")
+    assert element.text = "OSF for Meetings is a product that we offer to academic conferences at no cost. To request poster and talk hosting for a conference:"
