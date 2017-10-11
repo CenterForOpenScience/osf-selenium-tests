@@ -61,4 +61,4 @@ def osf_meetings_sign_in(driver):
     time.sleep(2)
     assert "https://staging.osf.io/meetings" in driver.current_url
     element = driver.find_element_by_css_selector("#osf-meeting-register > div > p:nth-child(1)")
-    assert element.text = "OSF for Meetings is a product that we offer to academic conferences at no cost. To request poster and talk hosting for a conference:"
+    assert element.text == "OSF for Meetings is a product that we offer to academic conferences at no cost. To request poster and talk hosting for a conference:"
