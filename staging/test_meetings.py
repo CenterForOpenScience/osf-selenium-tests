@@ -11,4 +11,6 @@ driver = settings.DRIVER
 #DRIVER= webdriver.Remote(command_executor, desired_capabilities=DESIRED_CAP)
 
 def test_meetings():
-    meetings.osf_meetings(driver)
+    meetings.osf_meetings_landing_page(driver)
+    meetings.osf_meetings_sign_in(driver)
+    
