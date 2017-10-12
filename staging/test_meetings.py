@@ -6,7 +6,7 @@ from helpers import nodes
 from helpers import meetings
 from helpers import search
 from helpers import search
-from helpers import bottom bar
+from helpers import bottom_bar
 
 #driver = DRIVER
 driver = settings.DRIVER
@@ -17,5 +17,5 @@ def test_meetings():
     meetings.osf_meetings_sign_in(driver)
     meetings.osf_meetings_search_meeting(driver)
     driver.get("https://staging.osf.io/meetings/")
-    bottom bar.osf_bottom_bar(driver)
+    bottom_bar.osf_bottom_bar(driver)
     
