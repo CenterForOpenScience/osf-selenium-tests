@@ -49,7 +49,7 @@ def osf_bottom_bar(driver):
   driver.find_element_by_xpath("/html/body/footer/div/div/div[2]/ul/li[5]/a").click()
   assert "https://www.crowdrise.com/donate/charity/centerforopenscience" in driver.current_url
   driver.back()
-  Twitter
+  #Twitter
   driver.find_element_by_xpath("/html/body/footer/div/div/div[3]/a[1]/i").click()
   assert "https://twitter.com/OSFramework" in driver.current_url
   driver.back()
