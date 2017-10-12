@@ -75,7 +75,21 @@ def osf_meetings_sign_in(driver):
     
     
 def osf_meetings_search_meeting(driver):
-    driver.find_element_by_css_selector("#meetings-grid > div > div > div.tb-head > div > input").send_keys("osf for meetings 2015", Keys.ENTER)
+    driver.find_element_by_css_selector("#meetings-grid > div > div > div.tb-head > div > input").send_keys("OSF for Meetings 2015", Keys.ENTER)
     assert driver.find_element_by_link_text("OSF for Meetings 2015").is_displayed()
+    
+def osf_meeting_bottom_bar(driver):
+    driver.get("https://staging.osf.io/meetings/")
+    driver.find_element_by_css_selector("body > div.container.copyright > div > div > p > a:nth-child(1)").click()
+    assert "https://cos.io/" in driver.current_url
+    time.sleep(2)
+    driver.back()
+    driver.find_element_by_partial_link_text("Terms of Use").click()
+    assert "https://github.com/CenterForOpenScience/cos.io/blob/master/TERMS_OF_USE.md" in driver.current_url
+    time.sleep(3)
+    driver.back()
+    driver.find_element_by_css_selector("body > div.container.copyright > div > div > p > a:nth-child(3)").click()
+    assert "https://github.com/CenterForOpenScience/cos.io/blob/master/PRIVACY_POLICY.md" in driver.current_url
+    driver.back()
     
     
