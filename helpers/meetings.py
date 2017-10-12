@@ -94,4 +94,4 @@ def osf_meeting_bottom_bar(driver):
     assert "https://github.com/CenterForOpenScience/cos.io/blob/master/PRIVACY_POLICY.md" in driver.current_url
     driver.back()
     
-    
+
