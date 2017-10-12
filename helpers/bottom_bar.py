@@ -67,7 +67,7 @@ def osf_bottom_bar(driver):
   driver.back()
   #Google plus
   driver.find_element_by_xpath("/html/body/footer/div/div/div[3]/a[5]/i").click()
-  assert "https://plus.google.com/104751442909573665859" in driver.current_url
+  assert "https://plus.google.com/discover" in driver.current_url
   driver.back()
   
   
