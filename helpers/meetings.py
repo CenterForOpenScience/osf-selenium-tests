@@ -77,7 +77,7 @@ def osf_meetings_sign_in(driver):
 def osf_meetings_search_meeting(driver):
     #Selenium not sending numeric '2015' in send_keys...
     search_text="OSF for Meetings"
-    driver.find_element_by_css_selector("#meetings-grid > div > div > div.tb-head > div > input").send_keys(search_text, Keys.ENTER)
+    driver.find_element_by_css_selector("#meetings-grid > div > div > div.tb-head > div > input").send_keys("OSF for Meetings", Keys.ENTER)
     assert driver.find_element_by_link_text("OSF for Meetings 2015").is_displayed()
     
 def osf_meeting_bottom_bar(driver):
