@@ -8,16 +8,15 @@ from selenium.webdriver.support.ui import WebDriverWait
 import time
 from selenium.webdriver.common.action_chains import ActionChains
 import os
+import settings
 
 #command_executor = os.environ['command_executor']
 #DRIVER= webdriver.Remote(command_executor, desired_capabilities=DESIRED_CAP)
 #print(shikha)
-CE = os.environ['CE']
 #DESIRED_CAP= os.environ['DESIRED_CAP']
-DC = {'browser': 'Chrome', 'browser_version': '61.0', 'os': 'Windows', 'os_version': '10', 'resolution': '2048x1536'}
-DRIVER=webdriver.Remote({CE},desired_capabilities=DC)
+DRIVER = settings.DRIVER
 def search_add_contributor(driver):
-   
+
     driver.find_element_by_css_selector("#secondary-navigation > ul > li:nth-child(1) > a").click()
     time.sleep(3)
     driver.find_element_by_partial_link_text("Testselenium").click()
@@ -41,9 +40,9 @@ def search_add_contributor(driver):
     driver.find_element_by_css_selector("#addContributors > div > div > div.modal-body > div:nth-child(1) > div > div:nth-child(1) > table > tbody > tr:nth-child(1) > td.p-r-sm.osf-icon-td > a > i").click()
     driver.find_element_by_css_selector("#addContributors > div > div > div.modal-footer > span:nth-child(3) > a.btn.btn-success").click()
     time.sleep(3)
-    
+
 def changetoread_contributor(driver):
-   
+
     driver.find_element_by_css_selector("#contributors > tr:nth-child(2) > td.permissions > div.td-content > span:nth-child(1) > select").click()
     element= driver.find_element_by_css_selector("#contributors > tr:nth-child(2) > td.permissions > div.td-content > span:nth-child(1) > select").send_keys("read", Keys.ENTER)
     #element.send_keys(Keys.ENTER)
