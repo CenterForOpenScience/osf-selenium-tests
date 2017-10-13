@@ -7,7 +7,7 @@ os_env = os.environ
 
 USERNAME_ONE = os_env.get('USERNAME_ONE')
 USERNAME_TWO = os_env.get('USERNAME_TWO')
-PASSWORD = '"Repr0duce!"'
+PASSWORD = os_env.get('PASSWORD')
 
 DRIVER = webdriver.Remote(
     command_executor='http://{}:{}@hub.browserstack.com:80/wd/hub'.format(
