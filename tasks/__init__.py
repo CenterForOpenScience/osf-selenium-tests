@@ -70,7 +70,7 @@ def test_module(ctx, module=None, numprocesses=None, params=None):
     retcode = pytest.main(args)
     sys.exit(retcode)
 
-
+@task
 def test_travis(ctx, verbose=False):
     print('Testing modules "{}"'.format('staging/meetings'))
     params = '-v' if verbose else None
