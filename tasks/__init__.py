@@ -62,10 +62,10 @@ def test_module(ctx, module=None, numprocesses=None, params=None):
     args = ['-s']
     if numprocesses > 1:
         args += ['-n {}'.format(numprocesses), '--max-slave-restart=0']
-    modules = [module] if isinstance(module, basestring) else module
+    modules = [module] if isinstance(module, str) else module
     args.extend(modules)
     if params:
-        params = [params] if isinstance(params, basestring) else params
+        params = [params] if isinstance(params, str) else params
         args.extend(params)
     retcode = pytest.main(args)
     sys.exit(retcode)
