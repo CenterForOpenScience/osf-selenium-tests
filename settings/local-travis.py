@@ -12,5 +12,5 @@ PASSWORD = '"Repr0duce!"'
 DRIVER = webdriver.Remote(
     command_executor='http://{}:{}@hub.browserstack.com:80/wd/hub'.format(
         os_env.get('BSTACK_USER'),
-        os_env.get('BSTACK_PSSWD')),
+        os_env.get('BSTACK_KEY')),
     desired_capabilities=DESIRED_CAP)
