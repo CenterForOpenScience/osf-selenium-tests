@@ -72,6 +72,5 @@ def test_module(ctx, module=None, numprocesses=None, params=None):
 
 @task
 def test_travis(ctx, verbose=False):
-    print('Testing modules "{}"'.format('staging/meetings'))
-    params = '-v' if verbose else None
-    test_module(ctx, module='staging/meetings', numprocesses=4, params=params)
+    print('Testing modules in "{}"'.format('staging'))
+    test_module(ctx, module=['staging'], numprocesses=4)
