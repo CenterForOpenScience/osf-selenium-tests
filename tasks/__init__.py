@@ -73,4 +73,4 @@ def test_module(ctx, module=None, numprocesses=None, params=None):
 @task
 def test_travis(ctx, verbose=False):
     print('Testing modules in "{}"'.format('staging'))
-    test_module(ctx, module=['staging'], numprocesses=4)
+    test_module(ctx, module=['staging',], numprocesses=4)
