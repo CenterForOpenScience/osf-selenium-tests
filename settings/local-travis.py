@@ -9,8 +9,14 @@ USERNAME_ONE = os_env.get('USERNAME_ONE')
 USERNAME_TWO = os_env.get('USERNAME_TWO')
 PASSWORD = os_env.get('PASSWORD')
 
-DRIVER = webdriver.Remote(
-    command_executor='http://{}:{}@hub.browserstack.com:80/wd/hub'.format(
-        os_env.get('BSTACK_USER'),
-        os_env.get('BSTACK_KEY')),
-    desired_capabilities=DESIRED_CAP)
+DRIVER = 'Remote'
+DESIRED_CAP = {
+    'browser': 'Chrome',
+    'browser_version': '61.0',
+    'os': 'Windows',
+    'os_version': '10',
+    'resolution': '2048x1536'
+}
+
+OSF_HOME = 'https://staging.osf.io'
+API_DOMAIN = 'https://staging-api.osf.io'
