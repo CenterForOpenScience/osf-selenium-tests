@@ -35,8 +35,8 @@ def launch_driver(
         if desired_capabilities is None:
             desired_capabilities = settings.DESIRED_CAP
         command_executor = 'http://{}:{}@hub.browserstack.com:80/wd/hub'.format(
-            os_env.get('BSTACK_USER'),
-            os_env.get('BSTACK_KEY')
+            os.environ.get('BSTACK_USER'),
+            os.environ.get('BSTACK_KEY')
         )
         driver = driver_cls(
             command_executor=command_executor,
