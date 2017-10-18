@@ -54,12 +54,11 @@ class CreateProjectModal(BasePage):
     def click_remove_all_institutions(self):
         self.driver.find_element_by_link_text('Remove all').click()
 
-    # TODO: Make this work for multiple and variable elements
-    def institutions_selected(self):
-        cos_logo = self.driver.find_element_by_css_selector(
-            'div.form-group:nth-child(2) > table:nth-child(4) > tr:nth-child(1) > td:nth-child(1) > a:nth-child(1) > div:nth-child(1) > img:nth-child(1)')
+    def institutions_are_selected(self, institutions):
         try:
-            return not cos_logo.value_of_css_property('filter') == 'grayscale(100%)'
+            for institution in institutions:
+                logo = self.driver.find_element_by_name(institution)
+                return not logo.value_of_css_property('filter') == 'grayscale(100%)'
         except:
             return False
 

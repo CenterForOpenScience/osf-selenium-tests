@@ -25,6 +25,8 @@ class DashboardPageTests(unittest.TestCase):
         assert project_page.title_is(project_title), 'Project title incorrect.'
 
     def test_modal_buttons(self):
+        # TODO: Grab user's insitutions to test all of them
+        institutions = ['Center For Open Science [Test]']
         create_project_modal = self.dashboard_page.click_create_project()
 
         create_project_modal.click_more()
@@ -35,9 +37,9 @@ class DashboardPageTests(unittest.TestCase):
         assert not create_project_modal.get_template_dropdown(), 'Template dropdown present but not expected.'
 
         create_project_modal.click_remove_all_institutions()
-        assert not create_project_modal.institutions_selected()
+        assert not create_project_modal.institutions_are_selected(institutions), 'Unexpected institution is selected.'
         create_project_modal.click_select_all_institutions()
-        assert create_project_modal.institutions_selected()
+        assert create_project_modal.institutions_are_selected(institutions), 'Unexpected institution is unselected.'
 
         create_project_modal.click_cancel()
         assert not create_project_modal.is_present(), 'Create project modal did not exit.'
