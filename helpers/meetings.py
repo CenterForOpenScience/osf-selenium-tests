@@ -44,8 +44,8 @@ def osf_meetings_landing_page(driver):
 def osf_meetings_sign_in(driver):
 
     driver.find_element_by_partial_link_text("Sign In").click()
-    driver.find_element_by_id("username").send_keys(settings.USERNAME_ONE)
-    driver.find_element_by_id('password').send_keys(settings.PASSWORD)
+    driver.find_element_by_id("username").send_keys(settings.USER_ONE)
+    driver.find_element_by_id('password').send_keys(settings.USER_ONE_PASSWORD)
     if (driver.find_element_by_id("rememberMe").is_selected()):
         driver.find_element_by_id("rememberMe").click()
     driver.find_element_by_name("submit").click()

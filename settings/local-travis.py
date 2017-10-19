@@ -5,9 +5,14 @@ import os
 
 os_env = os.environ
 
-USERNAME_ONE = os_env.get('USERNAME_ONE')
-USERNAME_TWO = os_env.get('USERNAME_TWO')
-PASSWORD = os_env.get('PASSWORD')
+USER = os_env.get('USER_ONE')
+USER_PASSWORD = os_env.get('USER_PASSWORD')
+
+USER_ONE = os_env.get('USER_ONE')
+USER_ONE_PASSWORD = os_env.get('USER_ONE_PASSWORD')
+
+USER_TWO = os_env.get('USER_TWO')
+USER_TWO_PASSWORD = os_env.get('USER_TWO_PASSWORD')
 
 SEL_WAIT = 15
 

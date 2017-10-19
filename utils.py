@@ -1,28 +1,15 @@
 import os
-import re
-import time
-import uuid
 
-# Selenium imports
 from selenium import webdriver
-from selenium.webdriver.common.by import By
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support import expected_conditions as ec
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.common.exceptions import NoSuchElementException
-
 import settings
 
 
-def launch_driver(
-        driver_name=settings.DRIVER,
-        desired_capabilities=None,
-        wait_time=settings.SEL_WAIT):
+def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
     """Create and configure a WebDriver.
 
     Args:
         driver_name : Name of WebDriver to use
-        wait_time : Time to implicitly wait for element load
+        desired_capabilities : Desired browser specs
 
     """
 
@@ -53,9 +40,6 @@ def launch_driver(
         driver = driver_cls()
         # Maximize window to prevent visibility issues due to responsive design
         driver.maximize_window()
-
-    # Wait for elements to load
-    driver.implicitly_wait(wait_time)
 
     # Return driver
     return driver
