@@ -7,9 +7,11 @@ from helpers import search
 from helpers import search
 from helpers import bottom_bar
 from utils import launch_driver
+import settings
 
 
 driver = launch_driver()
+driver.implicitly_wait(settings.SEL_WAIT)
 
 def test_meetings():
     meetings.osf_meetings_landing_page(driver)

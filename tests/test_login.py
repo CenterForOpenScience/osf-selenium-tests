@@ -1,9 +1,11 @@
 import time
 from helpers import login
 from utils import launch_driver
+import settings
 
 
 driver = launch_driver()
+driver.implicitly_wait(settings.SEL_WAIT)
 
 def test_login():
     login.login(driver)
