@@ -1,20 +1,18 @@
 import unittest
 
 import settings
-from helpers import login
-from pages import page
+from pages.dashboard import DashboardPage
 
-# TODO: Create a logout helper
 class DashboardPageTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
         cls.driver = settings.DRIVER
-        login.login(cls.driver)
 
     def setUp(self):
-        self.dashboard_page = page.DashboardPage(self.driver)
+        self.dashboard_page = DashboardPage()
         self.dashboard_page.navigate()
+        self.dashboard_page.navbar.login()
 
     def test_create_project(self):
         project_title = 'Totally Unique Project'
@@ -22,7 +20,7 @@ class DashboardPageTests(unittest.TestCase):
         create_project_modal.set_title(project_title)
         project_created_modal = create_project_modal.click_create_project()
         project_page = project_created_modal.click_go_to_project()
-        assert project_page.title_is(project_title), 'Project title incorrect.'
+        assert project_page.get_title() == project_title, 'Project title incorrect.'
 
     def test_modal_buttons(self):
         # TODO: Grab user's insitutions to test all of them
