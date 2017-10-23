@@ -11,5 +11,5 @@ DRIVER = 'Chrome'
 SEL_WAIT = 5
 
 OSF_HOME = 'http://localhost:5000'
-API_DOMAIN = 'http://localhost:8000'
+API_DOMAIN = 'http://localhost:8000/v2'
 HEADLESS = False
