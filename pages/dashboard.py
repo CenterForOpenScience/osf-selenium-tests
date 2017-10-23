@@ -38,6 +38,6 @@ class DashboardPage(OSFBasePage):
 
     class ProjectCreatedModal(BaseElement):
         locator_dictionary = {
-            'go_to_project_button': (By.CSS_SELECTOR, '#addProjectFromHome > div > div > div > div.modal-footer > a'),
+            'go_to_project_button': (By.CSS_SELECTOR, '#addProjectFromHome > div > div > div > div.modal-footer > a', long_timeout),
             'keep_working_here_button': (By.CSS_SELECTOR, '#addProjectFromHome > div > div > div > div.modal-footer > button'),
         }

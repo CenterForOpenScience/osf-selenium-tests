@@ -51,7 +51,7 @@ class BasePage(BaseElement):
         self.driver.get(self.url)
 
 class OSFBasePage(BasePage):
-    url = settings.DOMAIN
+    url = settings.OSF_HOME
 
     def __init__(self, driver):
         super(OSFBasePage, self).__init__(driver)
@@ -88,11 +88,11 @@ class OSFBasePage(BasePage):
         def login(self):
             if not self.logged_in():
                 self.sign_in_button.click()
-                self.username_input.send_keys(settings.USERNAME_ONE)
-                if ("localhost:5000" in settings.DOMAIN):
+                self.username_input.send_keys(settings.USER_ONE)
+                if ("localhost:5000" in settings.OSF_HOME):
                     self.local_submit_button.click()
                 else:
-                    self.password_input.send_keys(settings.PASSWORD)
+                    self.password_input.send_keys(settings.USER_ONE_PASSWORD)
                     if self.remember_me_checkbox.is_selected():
                         self.remember_me_checkbox.click()
                     self.submit_button.click()

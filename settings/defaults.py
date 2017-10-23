@@ -10,6 +10,8 @@ DRIVER = 'Chrome'
 # Default time for WebDriver.implicitly_wait
 SEL_WAIT = 5
 
+TIMEOUT = 10
+
 OSF_HOME = 'http://localhost:5000'
 API_DOMAIN = 'http://localhost:8000'
 HEADLESS = False
