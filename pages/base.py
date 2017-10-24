@@ -57,10 +57,6 @@ class OSFBasePage(BasePage):
         super(OSFBasePage, self).__init__(driver)
         self.navbar = self.Navbar(driver)
 
-    locator_dictionary = {
-        'sign_in_button': (By.LINK_TEXT, 'Sign In')
-    }
-
     def logged_in(self):
         return self.navbar.logged_in()
 
