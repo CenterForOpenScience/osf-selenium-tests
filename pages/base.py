@@ -61,7 +61,7 @@ class OSFBasePage(BasePage):
         'sign_in_button': (By.LINK_TEXT, 'Sign In')
     }
 
-    def is_logged_in(self):
+    def logged_in(self):
         return self.navbar.logged_in()
 
 
@@ -69,11 +69,6 @@ class OSFBasePage(BasePage):
 
         locator_dictionary = {
             'sign_in_button': (By.LINK_TEXT, 'Sign In'),
-            'username_input': (By.ID, 'username'),
-            'password_input': (By.ID, 'password'),
-            'submit_button': (By.NAME, 'submit'),
-            'local_submit_button': (By.ID, 'submit'),
-            'remember_me_checkbox': (By.ID, 'rememberMe'),
             'user_dropdown': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-child(5) > button'),
             'logout_link': (By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(4) > a')
         }
@@ -84,20 +79,3 @@ class OSFBasePage(BasePage):
                     return False
             except:
                 return True
-
-        def login(self):
-            if not self.logged_in():
-                self.sign_in_button.click()
-                self.username_input.send_keys(settings.USER_ONE)
-                if ("localhost:5000" in settings.OSF_HOME):
-                    self.local_submit_button.click()
-                else:
-                    self.password_input.send_keys(settings.USER_ONE_PASSWORD)
-                    if self.remember_me_checkbox.is_selected():
-                        self.remember_me_checkbox.click()
-                    self.submit_button.click()
-
-        def logout(self):
-            if self.logged_in():
-                self.user_dropdown.click()
-                self.logout_link.click()

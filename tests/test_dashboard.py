@@ -1,18 +1,18 @@
 import unittest
 
-import utils
+from utils import launch_driver, login
 from pages.dashboard import DashboardPage
 
 class DashboardPageTests(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
-        cls.driver = utils.launch_driver()
+        cls.driver = launch_driver()
 
     def setUp(self):
         self.dashboard_page = DashboardPage(self.driver)
         self.dashboard_page.open()
-        self.dashboard_page.navbar.login()
+        login(self.dashboard_page)
 
     def test_create_project(self):
         project_title = 'Totally Unique Project'
