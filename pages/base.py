@@ -50,6 +50,17 @@ class BasePage(BaseElement):
     def open(self):
         self.driver.get(self.url)
 
+    def verify_page(self):
+        """
+        Use an element from the locator_dictionary to wait for the page to load,
+        then checks if browser is at expected URL.
+        """
+        # self.__getattr__(list(self.locator_dictionary.keys())[0])
+        return self.url.rstrip('/') == self.driver.current_url.rstrip('/')
+
+    def reload(self):
+        self.driver.refresh()
+
 class OSFBasePage(BasePage):
     url = settings.OSF_HOME
 
