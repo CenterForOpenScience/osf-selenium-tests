@@ -1,18 +1,17 @@
-import unittest
 import pytest
 
 from utils import launch_driver, login
 from pages.project import ProjectPage
 from pages.dashboard import DashboardPage
 
-#TODO: Change to pytest?
-class DashboardPageTests(unittest.TestCase):
+
+class TestDashboardPage:
 
     @classmethod
-    def setUpClass(cls):
+    def setup_class(cls):
         cls.driver = launch_driver()
 
-    def setUp(self):
+    def setup_method(self, method):
         self.dashboard_page = DashboardPage(self.driver)
         self.dashboard_page.goto()
         login(self.dashboard_page)
@@ -52,10 +51,7 @@ class DashboardPageTests(unittest.TestCase):
         with pytest.raises(ValueError):
             create_project_modal.modal
 
-
     @classmethod
-    def tearDownClass(cls):
+    def teardown_class(cls):
         cls.driver.quit()
 
-if __name__ == '__main__':
-    unittest.main()
