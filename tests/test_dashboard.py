@@ -28,7 +28,7 @@ class TestDashboardPage:
         assert project_page.project_title.text == project_title, "Project title incorrect."
 
     def test_modal_buttons(self):
-        institutions = ['Center For Open Science [Test]'] #TODO: Get user institutions dynamically
+        institutions = ['Center For Open Science [Stage]'] #TODO: Get user institutions dynamically
         self.dashboard_page.create_project_button.click()
 
         create_project_modal = self.dashboard_page.CreateProjectModal(self.driver)
