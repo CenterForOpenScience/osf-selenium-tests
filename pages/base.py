@@ -68,8 +68,8 @@ class OSFBasePage(BasePage):
         super(OSFBasePage, self).__init__(driver)
         self.navbar = self.Navbar(driver)
 
-    def logged_in(self):
-        return self.navbar.logged_in()
+    def is_logged_in(self):
+        return self.navbar.is_logged_in()
 
 
     class Navbar(BaseElement):
@@ -80,7 +80,7 @@ class OSFBasePage(BasePage):
             'logout_link': (By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(4) > a')
         }
 
-        def logged_in(self):
+        def is_logged_in(self):
             try:
                 if self.sign_in_button:
                     return False

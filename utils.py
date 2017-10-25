@@ -47,12 +47,12 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
 
 
 def login(osf_page, user=settings.USER_ONE, password=settings.USER_ONE_PASSWORD):
-    if not osf_page.logged_in():
+    if not osf_page.is_logged_in():
         osf_page.navbar.sign_in_button.click()
         login_page = LoginPage(osf_page.driver)
         login_page.login(user, password)
 
 def logout(osf_page):
-    if osf_page.logged_in():
+    if osf_page.is_logged_in():
         osf_page.navbar.user_dropdown.click()
         osf_page.navbar.logout_link.click()

@@ -10,7 +10,7 @@ class DashboardPage(OSFBasePage):
 
     def __init__(self, driver):
         super(DashboardPage, self).__init__(driver)
-        if not self.logged_in:
+        if not self.is_logged_in:
             raise ValueError
 
 
