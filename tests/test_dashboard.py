@@ -11,8 +11,9 @@ class DashboardPageTests(unittest.TestCase):
 
     def setUp(self):
         self.dashboard_page = DashboardPage(self.driver)
-        self.dashboard_page.open()
+        self.dashboard_page.goto()
         login(self.dashboard_page)
+        self.dashboard_page.verify_page()
 
     def test_create_project(self):
         project_title = 'Totally Unique Project'

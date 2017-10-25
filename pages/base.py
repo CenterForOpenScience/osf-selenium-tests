@@ -47,7 +47,7 @@ class BaseElement(object):
 class BasePage(BaseElement):
     url = None
 
-    def open(self):
+    def goto(self):
         self.driver.get(self.url)
 
     def verify_page(self):
