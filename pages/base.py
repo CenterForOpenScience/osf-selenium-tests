@@ -52,11 +52,13 @@ class BasePage(BaseElement):
 
     def verify_page(self):
         """
-        Use an element from the locator_dictionary to wait for the page to load,
-        then checks if browser is at expected URL.
+        Use an element from the locator_dictionary to check if we're on expected page
         """
-        # self.__getattr__(list(self.locator_dictionary.keys())[0])
-        return self.url.rstrip('/') == self.driver.current_url.rstrip('/')
+        try:
+            self.__getattr__(list(self.locator_dictionary.keys())[0])
+            return True
+        except (TimeoutException,StaleElementReferenceException):
+            return False
 
     def reload(self):
         self.driver.refresh()
