@@ -15,34 +15,42 @@ class BaseElement(object):
     def find_element(self, *loc):
         return self.driver.find_element(*loc)
 
-    def __getattr__(self, what):
+    def __getattr__(self, element):
         """
         This method is adapted from code provided on seleniumframework.com
         """
         timeout = self.default_timeout
 
-        if what in self.locators:
-            if len(self.locators[what]) == 3:
-                timeout = self.locators[what][2]
-            location = (self.locators[what][0], self.locators[what][1])
+        if element in self.locators:
+            if len(self.locators[element]) == 3:
+                timeout = self.locators[element][2]
+            location = (self.locators[element][0], self.locators[element][1])
 
             try:
-                element = WebDriverWait(self.driver, timeout).until(
+                WebDriverWait(self.driver, timeout).until(
                     EC.presence_of_element_located(location)
                 )
-            except(TimeoutException,StaleElementReferenceException):
-                raise ValueError('Element {} not present on page'.format(what))
+            except(TimeoutException, StaleElementReferenceException):
+                raise ValueError('Element {} not present on page'.format(element))
 
             try:
-                element = WebDriverWait(self.driver, timeout).until(
+                WebDriverWait(self.driver, timeout).until(
                     EC.visibility_of_element_located(location)
                 )
-            except(TimeoutException,StaleElementReferenceException):
-                raise ValueError('Element {} not visible before timeout'.format(what))
-            # I could have returned element, however because of lazy loading, I am seeking the element before return
+            except(TimeoutException, StaleElementReferenceException):
+                raise ValueError('Element {} not visible before timeout'.format(element))
+
+            if 'link' in element:
+                try:
+                    WebDriverWait(self.driver, timeout).until(
+                        EC.element_to_be_clickable(location)
+                    )
+                except(TimeoutException, StaleElementReferenceException):
+                    raise ValueError('Element {} on page but not clickable'.format(element))
+
             return self.find_element(*location)
         else:
-            raise ValueError('Cannot find element {}'.format(what))
+            raise ValueError('Cannot find element {}'.format(element))
 
 class BasePage(BaseElement):
     url = None
@@ -86,5 +94,5 @@ class OSFBasePage(BasePage):
             try:
                 if self.sign_in_button:
                     return False
-            except:
+            except ValueError:
                 return True
