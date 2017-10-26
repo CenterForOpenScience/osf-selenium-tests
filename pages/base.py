@@ -59,14 +59,7 @@ class BasePage(BaseElement):
         self.driver.get(self.url)
 
     def verify_page(self):
-        """
-        Use an element from the locators to check if we're on expected page
-        """
-        try:
-            self.__getattr__(list(self.locators.keys())[0])
-            return True
-        except (TimeoutException,StaleElementReferenceException):
-            return False
+        raise NotImplementedError
 
     def reload(self):
         self.driver.refresh()
