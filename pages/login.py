@@ -14,7 +14,7 @@ class LoginPage(OSFBasePage):
 
     def login(self, user, password):
         self.username_input.send_keys(user)
-        if ("localhost:5000" in settings.OSF_HOME):
+        if ('localhost:5000' in settings.OSF_HOME):
             self.local_submit_button.click()
         else:
             self.password_input.send_keys(password)
