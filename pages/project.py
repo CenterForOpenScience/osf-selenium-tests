@@ -6,7 +6,7 @@ from selenium.webdriver.common.by import By
 
 class ProjectPage(OSFBasePage):
 
-    locator_dictionary = {
+    locators = {
         'project_title':(By.ID, 'nodeTitleEditable'),
     }
 
