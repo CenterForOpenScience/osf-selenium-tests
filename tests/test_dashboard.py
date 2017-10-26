@@ -28,7 +28,7 @@ class TestDashboardPage:
         assert project_page.project_title.text == project_title, "Project title incorrect."
 
     def test_modal_buttons(self):
-        institutions = ['Center For Open Science [Stage]'] #TODO: Get user institutions dynamically
+        #TODO: Get user institutions from user object
         self.dashboard_page.create_project_button.click()
 
         create_project_modal = self.dashboard_page.CreateProjectModal(self.driver)
@@ -42,10 +42,11 @@ class TestDashboardPage:
         with pytest.raises(ValueError):
             create_project_modal.template_dropdown
 
-        create_project_modal.remove_all_link.click()
-        assert not create_project_modal.institutions_are_selected(institutions)
-        create_project_modal.select_all_link.click()
-        assert create_project_modal.institutions_are_selected(institutions)
+        #TODO: Add back when institutions can be grabbed from user
+        # create_project_modal.remove_all_link.click()
+        # assert not create_project_modal.institutions_are_selected(institutions)
+        # create_project_modal.select_all_link.click()
+        # assert create_project_modal.institutions_are_selected(institutions)
 
         create_project_modal.cancel_button.click()
         with pytest.raises(ValueError):
