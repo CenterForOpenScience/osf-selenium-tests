@@ -1,11 +1,11 @@
+import settings
 from pages.base import OSFBasePage, BaseElement
 from selenium.webdriver.common.by import By
 
-long_timeout = 30
 class DashboardPage(OSFBasePage):
 
     locators = {
-        'create_project_button':(By.CSS_SELECTOR, 'button.btn-success:nth-child(1)', long_timeout),
+        'create_project_button':(By.CSS_SELECTOR, 'button.btn-success:nth-child(1)', settings.LONG_TIMEOUT),
     }
 
     def __init__(self, driver):
@@ -38,6 +38,6 @@ class DashboardPage(OSFBasePage):
 
     class ProjectCreatedModal(BaseElement):
         locators = {
-            'go_to_project_button': (By.CSS_SELECTOR, '#addProjectFromHome > div > div > div > div.modal-footer > a', long_timeout),
+            'go_to_project_button': (By.CSS_SELECTOR, '#addProjectFromHome > div > div > div > div.modal-footer > a', settings.LONG_TIMEOUT),
             'keep_working_here_button': (By.CSS_SELECTOR, '#addProjectFromHome > div > div > div > div.modal-footer > button'),
         }
