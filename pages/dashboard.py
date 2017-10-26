@@ -4,7 +4,7 @@ from selenium.webdriver.common.by import By
 long_timeout = 30
 class DashboardPage(OSFBasePage):
 
-    locator_dictionary = {
+    locators = {
         'create_project_button':(By.CSS_SELECTOR, 'button.btn-success:nth-child(1)', long_timeout),
     }
 
@@ -15,7 +15,7 @@ class DashboardPage(OSFBasePage):
 
 
     class CreateProjectModal(BaseElement):
-        locator_dictionary = {
+        locators = {
             'modal': (By.ID, 'addProjectFromHome'),
             'create_project_button': (By.CSS_SELECTOR, '#addProjectFromHome > div > div > div.modal-footer > button.btn.btn-success'),
             'cancel_button': (By.CSS_SELECTOR, '#addProjectFromHome > div > div > div.modal-footer > button.btn.btn-default'),
@@ -37,7 +37,7 @@ class DashboardPage(OSFBasePage):
 
 
     class ProjectCreatedModal(BaseElement):
-        locator_dictionary = {
+        locators = {
             'go_to_project_button': (By.CSS_SELECTOR, '#addProjectFromHome > div > div > div > div.modal-footer > a', long_timeout),
             'keep_working_here_button': (By.CSS_SELECTOR, '#addProjectFromHome > div > div > div > div.modal-footer > button'),
         }

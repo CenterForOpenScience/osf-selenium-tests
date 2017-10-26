@@ -4,7 +4,7 @@ from pages.base import OSFBasePage
 from selenium.webdriver.common.by import By
 
 class LoginPage(OSFBasePage):
-    locator_dictionary = {
+    locators = {
         'username_input': (By.ID, 'username'),
         'password_input': (By.ID, 'password'),
         'submit_button': (By.NAME, 'submit'),

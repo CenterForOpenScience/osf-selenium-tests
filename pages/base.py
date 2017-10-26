@@ -21,10 +21,10 @@ class BaseElement(object):
         """
         timeout = self.default_timeout
 
-        if what in self.locator_dictionary.keys():
-            if len(self.locator_dictionary[what]) == 3:
-                timeout = self.locator_dictionary[what][2]
-            location = (self.locator_dictionary[what][0], self.locator_dictionary[what][1])
+        if what in self.locators:
+            if len(self.locators[what]) == 3:
+                timeout = self.locators[what][2]
+            location = (self.locators[what][0], self.locators[what][1])
 
             try:
                 element = WebDriverWait(self.driver, timeout).until(
@@ -52,10 +52,10 @@ class BasePage(BaseElement):
 
     def verify_page(self):
         """
-        Use an element from the locator_dictionary to check if we're on expected page
+        Use an element from the locators to check if we're on expected page
         """
         try:
-            self.__getattr__(list(self.locator_dictionary.keys())[0])
+            self.__getattr__(list(self.locators.keys())[0])
             return True
         except (TimeoutException,StaleElementReferenceException):
             return False
@@ -76,7 +76,7 @@ class OSFBasePage(BasePage):
 
     class Navbar(BaseElement):
 
-        locator_dictionary = {
+        locators = {
             'sign_in_button': (By.LINK_TEXT, 'Sign In'),
             'user_dropdown': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-child(5) > button'),
             'logout_link': (By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(4) > a')
