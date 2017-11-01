@@ -8,7 +8,7 @@ from pages.meeting import MeetingPage
 from pages.registries import RegistriesPage
 
 
-class BasePageNavBarTests:
+class TestBasePageNavBar:
 
     @classmethod
     def setup_class(cls):
@@ -123,7 +123,7 @@ class BasePageNavBarTests:
         cls.driver.quit()
 
 
-class PreprintsPageNavBarTests:
+class TestPreprintsPageNavBar:
 
     @classmethod
     def setup_class(cls):
@@ -237,7 +237,7 @@ class PreprintsPageNavBarTests:
         cls.driver.quit()
 
 
-class MeetingPageNavBarTests:
+class TestMeetingPageNavBar:
 
     @classmethod
     def setup_class(cls):
@@ -342,7 +342,7 @@ class MeetingPageNavBarTests:
         cls.driver.quit()
 
 
-class RegistriesPageNavBarTests:
+class TestRegistriesPageNavBar:
 
     @classmethod
     def setup_class(cls):
