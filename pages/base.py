@@ -107,7 +107,8 @@ class OSFBasePage(BasePage):
     url = settings.OSF_HOME
 
     locators = {
-        'error_heading': (By.CSS_SELECTOR, 'h2#error')
+        'error_heading': (By.CSS_SELECTOR, 'h2#error'),
+        'identity': (By.LINK_TEXT, 'Center for Open Science')
     }
 
     def __init__(self, driver, goto=True):

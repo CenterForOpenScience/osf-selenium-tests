@@ -13,7 +13,7 @@ class LoginPage(OSFBasePage):
         local_submit_button=(By.ID, 'submit'),
         remember_me_checkbox=(By.ID, 'rememberMe'),
         identity=(By.LINK_TEXT, 'Forgot Your Password?'),
-        ** OSFBasePage.locators
+        **OSFBasePage.locators
     )
     
     def login(self, user, password):
