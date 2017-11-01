@@ -33,7 +33,7 @@ class DashboardPage(OSFBasePage):
                     logo = self.find_element(By.NAME, institution)
                     return not logo.value_of_css_property('filter') == 'grayscale(100%)'
             except:
-                return False
+                raise ValueError('Institution logo for {} not present in modal'.format(institution))
 
 
     class ProjectCreatedModal(BaseElement):
