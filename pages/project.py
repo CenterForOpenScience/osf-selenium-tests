@@ -8,7 +8,7 @@ class ProjectPage(OSFBasePage):
 
     locators = dict(
         project_title=(By.ID, 'nodeTitleEditable'),
-        identity=(By.CSS_SELECTOR, '#overview > nav#projectSubnav')
+        identity=(By.CSS_SELECTOR, '#overview > nav#projectSubnav'),
         **OSFBasePage.locators
     )
 

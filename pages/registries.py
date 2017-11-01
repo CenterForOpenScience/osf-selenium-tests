@@ -7,7 +7,7 @@ class RegistriesPage(OSFBasePage):
     url = settings.OSF_HOME + '/registries'
 
     locators = dict(
-        identity=(By.CSS_SELECTOR, '#ember671 > div.preprints-page > div.search-header > div.container > div.row > div > div.registries-brand', settings.LONG_TIMEOUT)
+        identity=(By.CSS_SELECTOR, '#ember671 > div.preprints-page > div.search-header > div.container > div.row > div > div.registries-brand', settings.LONG_TIMEOUT),
         **OSFBasePage.locators
     )
 
