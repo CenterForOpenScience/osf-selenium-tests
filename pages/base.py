@@ -106,7 +106,7 @@ class OSFBasePage(BasePage):
     url = settings.OSF_HOME
 
     locators = {
-        'error_heading':(By.CSS_SELECTOR, 'h2#error')
+        'error_heading': (By.CSS_SELECTOR, 'h2#error')
     }
 
     def __init__(self, driver, goto=True):
@@ -125,7 +125,7 @@ class OSFBasePage(BasePage):
                         driver=self.driver,
                         code=self.error_heading.get_attribute('data-http-status-code'),
                     )
-            except(TimeoutException, StaleElementReferenceException):
+            except ValueError:
                 pass
 
             raise PageException('Unexpected page structure: `{}`'.format(

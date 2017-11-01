@@ -7,7 +7,6 @@ from pages.preprint import PreprintPage
 from pages.meeting import MeetingPage
 from pages.registries import RegistriesPage
 
-from selenium.common.exceptions import StaleElementReferenceException, TimeoutException
 
 class TestBasePageNavBar:
 
@@ -38,7 +37,7 @@ class TestBasePageNavBar:
         assert self.driver.current_url is meetings_url
 
     def test_nagivation_bar_link_my_projects_link_not_there_if_not_login(self):
-        with pytest.raises(TimeoutException, StaleElementReferenceException):
+        with pytest.raises(ValueError):
             self.base_page.navbar.my_project_link
 
     def test_nagivation_bar_link_my_projects_link_present_if_login(self):
@@ -62,7 +61,7 @@ class TestBasePageNavBar:
         assert 'cos.io/donate-to-cos' in self.driver.current_url
 
     def test_user_profile_menu_profile_not_there_if_not_login(self):
-        with pytest.raises(TimeoutException, StaleElementReferenceException):
+        with pytest.raises(ValueError):
             self.base_page.navbar.user_dropdown_profile
 
     def test_user_profile_menu_profile_present_if_login(self):
@@ -72,7 +71,7 @@ class TestBasePageNavBar:
         assert self.driver.current_url is profile_url
 
     def test_user_profile_menu_support_not_there_if_not_login(self):
-        with pytest.raises(TimeoutException, StaleElementReferenceException):
+        with pytest.raises(ValueError):
             self.base_page.navbar.user_dropdown_support
 
     def test_user_profile_menu_support_present_if_login(self):
@@ -82,7 +81,7 @@ class TestBasePageNavBar:
         assert self.driver.current_url is support_url
 
     def test_user_profile_menu_settings_not_there_if_not_login(self):
-        with pytest.raises(TimeoutException, StaleElementReferenceException):
+        with pytest.raises(ValueError):
             self.base_page.navbar.user_dropdown_settings
 
     def test_user_profile_menu_settings_present_if_login(self):
@@ -92,7 +91,7 @@ class TestBasePageNavBar:
         assert self.driver.current_url is settings_url
 
     def test_logout_link_not_there_if_not_login(self):
-        with pytest.raises(TimeoutException, StaleElementReferenceException):
+        with pytest.raises(ValueError):
             self.base_page.navbar.logout_link
 
     def test_logout_link_present_if_login(self):
@@ -106,7 +105,7 @@ class TestBasePageNavBar:
 
     def test_sign_in_button_not_present_if_login_in(self):
         login(self.base_page)
-        with pytest.raises(TimeoutException, StaleElementReferenceException):
+        with pytest.raises(ValueError):
             self.base_page.navbar.sign_in_button
 
     def test_sign_up_button(self):
@@ -115,7 +114,7 @@ class TestBasePageNavBar:
 
     def test_sign_up_button_not_present_if_login_in(self):
         login(self.base_page)
-        with pytest.raises(TimeoutException, StaleElementReferenceException):
+        with pytest.raises(ValueError):
             self.base_page.navbar.sign_up_button
 
     @classmethod
@@ -175,7 +174,7 @@ class TestPreprintsPageNavBar:
         assert 'cos.io/donate-to-cos' in self.driver.current_url
 
     def test_user_profile_menu_profile_not_there_if_not_login(self):
-        with pytest.raises(TimeoutException, StaleElementReferenceException):
+        with pytest.raises(ValueError):
             self.preprint_page.navbar.user_dropdown_profile
 
     def test_user_profile_menu_profile_present_if_login(self):
@@ -185,7 +184,7 @@ class TestPreprintsPageNavBar:
         assert self.driver.current_url is profile_url
 
     def test_user_profile_menu_support_not_there_if_not_login(self):
-        with pytest.raises(TimeoutException, StaleElementReferenceException):
+        with pytest.raises(ValueError):
             self.preprint_page.navbar.user_dropdown_support
 
     def test_user_profile_menu_support_present_if_login(self):
@@ -195,7 +194,7 @@ class TestPreprintsPageNavBar:
         assert self.driver.current_url is support_url
 
     def test_user_profile_menu_settings_not_there_if_not_login(self):
-        with pytest.raises(TimeoutException, StaleElementReferenceException):
+        with pytest.raises(ValueError):
             self.preprint_page.navbar.user_dropdown_settings
 
     def test_user_profile_menu_settings_present_if_login(self):
@@ -205,7 +204,7 @@ class TestPreprintsPageNavBar:
         assert self.driver.current_url is settings_url
 
     def test_logout_link_not_there_if_not_login(self):
-        with pytest.raises(TimeoutException, StaleElementReferenceException):
+        with pytest.raises(ValueError):
             self.preprint_page.navbar.logout_link
 
     def test_logout_link_present_if_login(self):
@@ -219,7 +218,7 @@ class TestPreprintsPageNavBar:
 
     def test_sign_in_button_not_present_if_login_in(self):
         login(self.preprint_page)
-        with pytest.raises(TimeoutException, StaleElementReferenceException):
+        with pytest.raises(ValueError):
             self.preprint_page.navbar.sign_in_button
 
     def test_sign_up_button(self):
@@ -228,7 +227,7 @@ class TestPreprintsPageNavBar:
 
     def test_sign_up_button_not_present_if_login_in(self):
         login(self.preprint_page)
-        with pytest.raises(TimeoutException, StaleElementReferenceException):
+        with pytest.raises(ValueError):
             self.preprint_page.navbar.sign_up_button
 
     @classmethod
@@ -266,7 +265,7 @@ class TestMeetingPageNavBar:
         assert self.driver.current_url is meetings_url
 
     def test_nagivation_bar_link_search_link_not_present(self):
-        with pytest.raises(TimeoutException, StaleElementReferenceException):
+        with pytest.raises(ValueError):
             self.meeting_page.search_link
 
     def test_nagivation_bar_link_support_link(self):
@@ -279,7 +278,7 @@ class TestMeetingPageNavBar:
         assert 'cos.io/donate-to-cos' in self.driver.current_url
 
     def test_user_profile_menu_profile_not_there_if_not_login(self):
-        with pytest.raises(TimeoutException, StaleElementReferenceException):
+        with pytest.raises(ValueError):
             self.meeting_page.navbar.user_dropdown_profile
 
     def test_user_profile_menu_profile_present_if_login(self):
@@ -289,7 +288,7 @@ class TestMeetingPageNavBar:
         assert self.driver.current_url is profile_url
 
     def test_user_profile_menu_support_not_there_if_not_login(self):
-        with pytest.raises(TimeoutException, StaleElementReferenceException):
+        with pytest.raises(ValueError):
             self.meeting_page.navbar.user_dropdown_support
 
     def test_user_profile_menu_support_present_if_login(self):
@@ -299,7 +298,7 @@ class TestMeetingPageNavBar:
         assert self.driver.current_url is support_url
 
     def test_user_profile_menu_settings_not_there_if_not_login(self):
-        with pytest.raises(TimeoutException, StaleElementReferenceException):
+        with pytest.raises(ValueError):
             self.meeting_page.navbar.user_dropdown_settings
 
     def test_user_profile_menu_settings_present_if_login(self):
@@ -309,7 +308,7 @@ class TestMeetingPageNavBar:
         assert self.driver.current_url is settings_url
 
     def test_logout_link_not_there_if_not_login(self):
-        with pytest.raises(TimeoutException, StaleElementReferenceException):
+        with pytest.raises(ValueError):
             self.meeting_page.navbar.logout_link
 
     def test_logout_link_present_if_login(self):
@@ -323,7 +322,7 @@ class TestMeetingPageNavBar:
 
     def test_sign_in_button_not_present_if_login_in(self):
         login(self.meeting_page)
-        with pytest.raises(TimeoutException, StaleElementReferenceException):
+        with pytest.raises(ValueError):
             self.meeting_page.navbar.sign_in_button
 
     def test_sign_up_button(self):
@@ -332,7 +331,7 @@ class TestMeetingPageNavBar:
 
     def test_sign_up_button_not_present_if_login_in(self):
         login(self.meeting_page)
-        with pytest.raises(TimeoutException, StaleElementReferenceException):
+        with pytest.raises(ValueError):
             self.meeting_page.navbar.sign_up_button
 
     @classmethod
@@ -383,7 +382,7 @@ class TestRegistriesPageNavBar:
         assert 'cos.io/donate-to-cos' in self.driver.current_url
 
     def test_user_profile_menu_profile_not_there_if_not_login(self):
-        with pytest.raises(TimeoutException, StaleElementReferenceException):
+        with pytest.raises(ValueError):
             self.registries_page.navbar.user_dropdown_profile
 
     def test_user_profile_menu_profile_present_if_login(self):
@@ -393,7 +392,7 @@ class TestRegistriesPageNavBar:
         assert self.driver.current_url is profile_url
 
     def test_user_profile_menu_support_not_there_if_not_login(self):
-        with pytest.raises(TimeoutException, StaleElementReferenceException):
+        with pytest.raises(ValueError):
             self.registries_page.navbar.user_dropdown_support
 
     def test_user_profile_menu_support_present_if_login(self):
@@ -403,7 +402,7 @@ class TestRegistriesPageNavBar:
         assert self.driver.current_url is support_url
 
     def test_user_profile_menu_settings_not_there_if_not_login(self):
-        with pytest.raises(TimeoutException, StaleElementReferenceException):
+        with pytest.raises(ValueError):
             self.registries_page.navbar.user_dropdown_settings
 
     def test_user_profile_menu_settings_present_if_login(self):
@@ -413,7 +412,7 @@ class TestRegistriesPageNavBar:
         assert self.driver.current_url is settings_url
 
     def test_logout_link_not_there_if_not_login(self):
-        with pytest.raises(TimeoutException, StaleElementReferenceException):
+        with pytest.raises(ValueError):
             self.registries_page.navbar.logout_link
 
     def test_logout_link_present_if_login(self):
@@ -427,7 +426,7 @@ class TestRegistriesPageNavBar:
 
     def test_sign_in_button_not_present_if_login_in(self):
         login(self.registries_page)
-        with pytest.raises(TimeoutException, StaleElementReferenceException):
+        with pytest.raises(ValueError):
             self.registries_page.navbar.sign_in_button
 
     def test_sign_up_button(self):
@@ -436,7 +435,7 @@ class TestRegistriesPageNavBar:
 
     def test_sign_up_button_not_present_if_login_in(self):
         login(self.registries_page)
-        with pytest.raises(TimeoutException, StaleElementReferenceException):
+        with pytest.raises(ValueError):
             self.registries_page.navbar.sign_up_button
 
     @classmethod
