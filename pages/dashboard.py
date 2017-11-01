@@ -2,6 +2,7 @@ import settings
 from pages.base import OSFBasePage, BaseElement
 from selenium.webdriver.common.by import By
 
+
 class DashboardPage(OSFBasePage):
 
     locators = {
@@ -13,6 +14,8 @@ class DashboardPage(OSFBasePage):
         if not self.is_logged_in:
             raise ValueError
 
+    def _verify_page(self):
+        return len(self.driver.find_element(By.ID, 'osfHome')) == 1
 
     class CreateProjectModal(BaseElement):
         locators = {
@@ -34,7 +37,6 @@ class DashboardPage(OSFBasePage):
                     return not logo.value_of_css_property('filter') == 'grayscale(100%)'
             except:
                 return False
-
 
     class ProjectCreatedModal(BaseElement):
         locators = {

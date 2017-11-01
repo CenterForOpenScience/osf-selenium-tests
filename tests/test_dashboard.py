@@ -3,6 +3,7 @@ import unittest
 from utils import launch_driver, login
 from pages.dashboard import DashboardPage
 
+
 class DashboardPageTests(unittest.TestCase):
 
     @classmethod
