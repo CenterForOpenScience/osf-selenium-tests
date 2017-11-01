@@ -89,11 +89,8 @@ class Navbar(BaseElement):
         'current_service': (By.CSS_SELECTOR, '#navbarScope > div > div > div.service-home > a > span.current-service > strong')
     }
 
-    def __init__(self, driver):
-        super(Navbar, self).__init__(driver)
-
     def verify(self):
-        return len(self.find_elements(By.XPATH, '//nav[@id="navbarScope"]')) == 1
+        return len(self.find_elements(By.ID, 'navbarScope')) == 1
 
     def is_logged_in(self):
         try:
@@ -106,6 +103,7 @@ class Navbar(BaseElement):
 class OSFBasePage(BasePage):
     url = settings.OSF_HOME
 
+    # all page must have unique identity
     locators = {
         'identity': (By.LINK_TEXT, 'Center for Open Science'),
         'error_heading': (By.CSS_SELECTOR, 'h2#error'),
@@ -114,9 +112,9 @@ class OSFBasePage(BasePage):
     def __init__(self, driver, goto=True):
         super(OSFBasePage, self).__init__(driver)
         if goto:
-            # Verify the page is what you expect it to be.
             driver.get(self.url)
 
+        # Verify the page is what you expect it to be.
         if not self.verify():
             url = driver.current_url
 
