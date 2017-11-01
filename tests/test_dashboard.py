@@ -5,7 +5,6 @@ from pages.project import ProjectPage
 from pages.dashboard import DashboardPage
 
 
-
 class TestDashboardPage:
 
     @classmethod
