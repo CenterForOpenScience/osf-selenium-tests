@@ -41,7 +41,7 @@ cover/
 .konchrc
 *.pyc
 
-
+.cache/
 # Private Info
 variables.py
 local.py

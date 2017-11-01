@@ -1,20 +1,18 @@
 from .defaults import *
-from selenium import webdriver
 import os
 
 
 os_env = os.environ
 
-USER = os_env.get('USER_ONE')
-USER_PASSWORD = os_env.get('USER_PASSWORD')
-
 USER_ONE = os_env.get('USER_ONE')
 USER_ONE_PASSWORD = os_env.get('USER_ONE_PASSWORD')
+USER_ONE_TOKEN = os_env.get('USER_ONE_TOKEN')
 
 USER_TWO = os_env.get('USER_TWO')
 USER_TWO_PASSWORD = os_env.get('USER_TWO_PASSWORD')
+USER_TWO_TOKEN = os_env.get('USER_TWO_TOKEN')
 
-SEL_WAIT = 15
+BSTACK_CE = os_env.get('BSTACK_CE')
 
 DRIVER = 'Remote'
 DESIRED_CAP = {

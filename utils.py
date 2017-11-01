@@ -22,10 +22,7 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
     if driver_name == 'Remote':
         if desired_capabilities is None:
             desired_capabilities = settings.DESIRED_CAP
-        command_executor = 'http://{}:{}@hub.browserstack.com:80/wd/hub'.format(
-            os.environ.get('BSTACK_USER'),
-            os.environ.get('BSTACK_KEY')
-        )
+        command_executor = settings.BSTACK_CE
         driver = driver_cls(
             command_executor=command_executor,
             desired_capabilities=desired_capabilities
