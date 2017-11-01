@@ -6,11 +6,13 @@ from selenium.webdriver.common.by import By
 
 class ProjectPage(OSFBasePage):
 
-    locators = dict(
-        project_title=(By.ID, 'nodeTitleEditable'),
-        identity=(By.CSS_SELECTOR, '#overview > nav#projectSubnav'),
-        **OSFBasePage.locators
-    )
+    locators = {
+        **OSFBasePage.locators,
+        **{
+            'identity': (By.CSS_SELECTOR, '#overview > nav#projectSubnav'),
+            'project_title': (By.ID, 'nodeTitleEditable'),
+        }
+    }
 
     def __init__(self, driver, goto=True, guid=''):
         super(self.__class__, self).__init__(driver, goto)

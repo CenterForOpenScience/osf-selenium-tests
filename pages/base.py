@@ -107,7 +107,8 @@ class OSFBasePage(BasePage):
     url = settings.OSF_HOME
 
     locators = {
-        'error_heading': (By.CSS_SELECTOR, 'h2#error')
+        'identity': (By.LINK_TEXT, 'Center for Open Science'),
+        'error_heading': (By.CSS_SELECTOR, 'h2#error'),
     }
 
     def __init__(self, driver, goto=True):
@@ -148,10 +149,12 @@ class OSFBasePage(BasePage):
 
     class BasePageNavbar(Navbar):
 
-        locators = dict(
-            my_project_link=(By.LINK_TEXT, 'My Projects'),
-            **Navbar.locators
-        )
+        locators = {
+            **Navbar.locators,
+            **{
+                'my_project_link': (By.LINK_TEXT, 'My Projects'),
+            }
+        }
 
         def verify(self):
             return self.current_service.text == 'HOME'

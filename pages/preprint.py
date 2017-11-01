@@ -6,11 +6,13 @@ from selenium.webdriver.common.by import By
 class PreprintPage(OSFBasePage):
     url = settings.OSF_HOME + '/preprints'
 
-    locators = dict(
-        add_preprint=(By.CSS_SELECTOR, 'div.preprint-page div.preprint-header div.container div div a[href="/preprints/submit"]', settings.LONG_TIMEOUT),
-        identity=(By.CSS_SELECTOR, '#ember680 > div.preprint-page > div.preprint-header', settings.LONG_TIMEOUT),
-        **OSFBasePage.locators
-    )
+    locators = {
+        **OSFBasePage.locators,
+        **{
+            'identity': (By.CSS_SELECTOR, '#ember680 > div.preprint-page > div.preprint-header', settings.LONG_TIMEOUT),
+            'add_preprint': (By.CSS_SELECTOR, 'div.preprint-page div.preprint-header div.container div div a[href="/preprints/submit"]', settings.LONG_TIMEOUT),
+        }
+    }
 
     def __init__(self, driver, goto=True):
         super(PreprintPage, self).__init__(driver, goto)

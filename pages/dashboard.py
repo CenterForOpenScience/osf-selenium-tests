@@ -5,11 +5,13 @@ from selenium.webdriver.common.by import By
 
 class DashboardPage(OSFBasePage):
 
-    locators = dict(
-        create_project_button=(By.CSS_SELECTOR, 'button.btn-success:nth-child(1)', settings.LONG_TIMEOUT),
-        identity=(By.CSS_SELECTOR, '#osfHome > div.quickSearch > div.container > div.row > div > div.row > div > h2'),
-        **OSFBasePage.locators
-    )
+    locators = {
+        **OSFBasePage.locators,
+        **{
+            'identity': (By.CSS_SELECTOR, '#osfHome > div.quickSearch > div.container > div.row > div > div.row > div > h2'),
+            'create_project_button': (By.CSS_SELECTOR, 'button.btn-success:nth-child(1)', settings.LONG_TIMEOUT),
+        }
+    }
 
     def __init__(self, driver, goto=True):
         super(DashboardPage, self).__init__(driver, goto)
