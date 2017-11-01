@@ -12,6 +12,9 @@ class LoginPage(OSFBasePage):
         'remember_me_checkbox': (By.ID, 'rememberMe'),
     }
 
+    def _verify_page(self):
+        return len(self.driver.find_element(By.ID, 'cas')) == 1
+    
     def login(self, user, password):
         self.username_input.send_keys(user)
         if ('localhost:5000' in settings.OSF_HOME):
