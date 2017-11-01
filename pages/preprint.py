@@ -34,8 +34,12 @@ class PreprintPage(OSFBasePage):
             'user_dropdown_settings': (By.XPATH, '//div[@id="secondary-navigation"]/ul/li[@class="dropdown"]/ul/li/a[@href="/settings/"]'),
             'sign_up_button': (By.LINK_TEXT, 'Sign Up'),
             'sign_in_button': (By.LINK_TEXT, 'Sign In'),
-            'logout_link': (By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(4) > a')
+            'logout_link': (By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(4) > a'),
+            'current_service': (By.CSS_SELECTOR, '#navbarScope > div > div > div.service-home > a > span.current-service > strong')
         }
+
+        def verify_element(self):
+            return self.current_service.text == 'PREPRINTS'
 
         def is_logged_in(self):
             try:
@@ -43,9 +47,3 @@ class PreprintPage(OSFBasePage):
                     return False
             except ValueError:
                 return True
-
-        def verify_element(self):
-            return self.driver.find_element(
-                By.CSS_SELECTOR,
-                '#navbarScope > div > div > div.service-home > a > span.current-service > strong'
-            ).text == 'PREPRINTS'
