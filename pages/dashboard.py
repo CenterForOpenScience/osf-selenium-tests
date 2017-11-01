@@ -9,15 +9,16 @@ class DashboardPage(OSFBasePage):
         'create_project_button':(By.CSS_SELECTOR, 'button.btn-success:nth-child(1)', settings.LONG_TIMEOUT),
     }
 
-    def __init__(self, driver):
-        super(DashboardPage, self).__init__(driver)
+    def __init__(self, driver, goto=True):
+        super(DashboardPage, self).__init__(driver, goto)
         if not self.is_logged_in:
             raise ValueError
 
-    def _verify_page(self):
-        return len(self.driver.find_element(By.ID, 'osfHome')) == 1
+    def verify_page(self):
+        return len(self.driver.find_elements(By.ID, 'osfHome')) == 1
 
     class CreateProjectModal(BaseElement):
+
         locators = {
             'modal': (By.ID, 'addProjectFromHome'),
             'create_project_button': (By.CSS_SELECTOR, '#addProjectFromHome > div > div > div.modal-footer > button.btn.btn-success'),
@@ -39,6 +40,7 @@ class DashboardPage(OSFBasePage):
                 raise ValueError('Institution logo for {} not present in modal'.format(institution))
 
     class ProjectCreatedModal(BaseElement):
+
         locators = {
             'go_to_project_button': (By.CSS_SELECTOR, '#addProjectFromHome > div > div > div > div.modal-footer > a', settings.LONG_TIMEOUT),
             'keep_working_here_button': (By.CSS_SELECTOR, '#addProjectFromHome > div > div > div > div.modal-footer > button'),

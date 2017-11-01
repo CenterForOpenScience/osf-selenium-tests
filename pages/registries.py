@@ -1,5 +1,5 @@
 import settings
-from pages.base import OSFBasePage, BaseElement
+from pages.base import OSFBasePage, Navbar
 from selenium.webdriver.common.by import By
 
 
@@ -8,39 +8,14 @@ class RegistriesPage(OSFBasePage):
 
     locators = {}
 
-    def __init__(self, driver):
-        super(RegistriesPage, self).__init__(driver)
-        self.navbar = self.Navbar(driver)
+    def __init__(self, driver, goto=True):
+        super(RegistriesPage, self).__init__(driver, goto)
+        self.navbar = self.RegistriesPageNavbar(driver)
 
-    def _verify_page(self):
-        return len(self.driver.find_element(By.CSS_SELECTOR, 'div.registries-brand')) == 1
+    def verify_page(self):
+        return len(self.driver.find_elements(By.CSS_SELECTOR, 'div.registries-brand')) == 1
 
-    class Navbar(BaseElement):
+    class RegistriesPageNavbar(Navbar):
 
-        locators = {
-            'home': (By.XPATH, '//nav[@id="navbarScope"]/div/div[@class="navbar-header"]/div[@class="dropdown"]/ul[@role="menu"]/li/a[@href="' + settings.OSF_HOME + '"]'),
-            'preprint': (By.XPATH, '//nav[@id="navbarScope"]/div/div[@class="navbar-header"]/div[@class="dropdown"]/ul[@role="menu"]/li/a[@href="' + settings.OSF_HOME + '/preprints/"]'),
-            'registries': (By.XPATH, '//nav[@id="navbarScope"]/div/div[@class="navbar-header"]/div[@class="dropdown"]/ul[@role="menu"]/li/a[@href="' + settings.OSF_HOME + '/registries/"]'),
-            'meetings': (By.XPATH, '//nav[@id="navbarScope"]/div/div[@class="navbar-header"]/div[@class="dropdown"]/ul[@role="menu"]/li/a[@href="' + settings.OSF_HOME + '/meetings/"]'),
-            'search': (By.XPATH, '//div[@id="secondary-navigation"]/ul/li/a[@href="' + settings.OSF_HOME + '/search/"]'),
-            'support': (By.XPATH, '//div[@id="secondary-navigation"]/ul/li/a[@href="/support/"]'),
-            'donate': (By.XPATH, '//div[@id="secondary-navigation"]/ul/li/a[@href="https://cos.io/donate"]'),
-            'user_dropdown': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-child(5) > button'),
-            'user_dropdown_profile': (By.XPATH, '//div[@id="secondary-navigation"]/ul/li[@class="dropdown"]/ul/li/a[@href="/logout/"]'),
-            'user_dropdown_support': (By.XPATH, '//div[@id="secondary-navigation"]/ul/li[@class="dropdown"]/ul/li/a[@href="' + settings.OSF_HOME + '/support/"]'),
-            'user_dropdown_settings': (By.XPATH, '//div[@id="secondary-navigation"]/ul/li[@class="dropdown"]/ul/li/a[@href="/settings/"]'),
-            'sign_up_button': (By.LINK_TEXT, 'Sign Up'),
-            'sign_in_button': (By.LINK_TEXT, 'Sign In'),
-            'logout_link': (By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(4) > a'),
-            'current_service': (By.CSS_SELECTOR, '#navbarScope > div > div > div.service-home > a > span.current-service > strong')
-        }
-
-        def verify_element(self):
+        def verify(self):
             return self.current_service.text == 'REGISTRIES'
-
-        def is_logged_in(self):
-            try:
-                if self.sign_in_button:
-                    return False
-            except ValueError:
-                return True

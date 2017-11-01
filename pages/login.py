@@ -12,8 +12,8 @@ class LoginPage(OSFBasePage):
         'remember_me_checkbox': (By.ID, 'rememberMe'),
     }
 
-    def _verify_page(self):
-        return len(self.driver.find_element(By.ID, 'cas')) == 1
+    def verify_page(self):
+        return len(self.driver.find_elements(By.ID, 'cas')) == 1
     
     def login(self, user, password):
         self.username_input.send_keys(user)
