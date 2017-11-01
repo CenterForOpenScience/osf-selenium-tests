@@ -5,16 +5,17 @@ from selenium.webdriver.common.by import By
 
 class DashboardPage(OSFBasePage):
 
-    locators = {
-        'create_project_button':(By.CSS_SELECTOR, 'button.btn-success:nth-child(1)', settings.LONG_TIMEOUT),
-    }
+    locators = dict(
+        create_project_button=(By.CSS_SELECTOR, 'button.btn-success:nth-child(1)', settings.LONG_TIMEOUT),
+        **OSFBasePage.locators
+    )
 
     def __init__(self, driver, goto=True):
         super(DashboardPage, self).__init__(driver, goto)
         if not self.is_logged_in:
             raise ValueError
 
-    def verify_page(self):
+    def verify(self):
         return len(self.driver.find_elements(By.ID, 'osfHome')) == 1
 
     class CreateProjectModal(BaseElement):

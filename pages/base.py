@@ -115,7 +115,7 @@ class OSFBasePage(BasePage):
             # Verify the page is what you expect it to be.
             driver.get(self.url)
 
-        if not self.verify_page():
+        if not self.verify():
             url = driver.current_url
 
             # If we've got an error message here, grab it
@@ -134,7 +134,7 @@ class OSFBasePage(BasePage):
 
         self.navbar = self.BasePageNavbar(driver)
 
-    def verify_page(self):
+    def verify(self):
         return True
 
     def is_logged_in(self):

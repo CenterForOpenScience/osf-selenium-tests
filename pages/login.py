@@ -4,6 +4,7 @@ from pages.base import OSFBasePage
 from selenium.webdriver.common.by import By
 
 class LoginPage(OSFBasePage):
+
     locators = {
         'username_input': (By.ID, 'username'),
         'password_input': (By.ID, 'password'),
@@ -12,7 +13,7 @@ class LoginPage(OSFBasePage):
         'remember_me_checkbox': (By.ID, 'rememberMe'),
     }
 
-    def verify_page(self):
+    def verify(self):
         return len(self.driver.find_elements(By.ID, 'cas')) == 1
     
     def login(self, user, password):
