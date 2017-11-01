@@ -3,18 +3,18 @@ import settings
 from pages.base import OSFBasePage
 from selenium.webdriver.common.by import By
 
+
 class LoginPage(OSFBasePage):
 
-    locators = {
-        'username_input': (By.ID, 'username'),
-        'password_input': (By.ID, 'password'),
-        'submit_button': (By.NAME, 'submit'),
-        'local_submit_button': (By.ID, 'submit'),
-        'remember_me_checkbox': (By.ID, 'rememberMe'),
-    }
-
-    def verify(self):
-        return len(self.driver.find_elements(By.ID, 'cas')) == 1
+    locators = dict(
+        username_input=(By.ID, 'username'),
+        password_input=(By.ID, 'password'),
+        submit_button=(By.NAME, 'submit'),
+        local_submit_button=(By.ID, 'submit'),
+        remember_me_checkbox=(By.ID, 'rememberMe'),
+        identity=(By.LINK_TEXT, 'Forgot Your Password?'),
+        ** OSFBasePage.locators
+    )
     
     def login(self, user, password):
         self.username_input.send_keys(user)

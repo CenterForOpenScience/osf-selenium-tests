@@ -52,6 +52,7 @@ def login(osf_page, user=settings.USER_ONE, password=settings.USER_ONE_PASSWORD)
         login_page = LoginPage(osf_page.driver)
         login_page.login(user, password)
 
+
 def logout(osf_page):
     if osf_page.is_logged_in():
         osf_page.navbar.user_dropdown.click()

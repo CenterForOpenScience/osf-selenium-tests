@@ -71,17 +71,18 @@ class BasePage(BaseElement):
 class Navbar(BaseElement):
 
     locators = {
-        'home_link': (By.XPATH, '//nav[@id="navbarScope"]/div/div[@class="navbar-header"]/div[@class="dropdown"]/ul[@role="menu"]/li/a[@href="' + settings.OSF_HOME + '"]'),
-        'preprint_link': (By.XPATH, '//nav[@id="navbarScope"]/div/div[@class="navbar-header"]/div[@class="dropdown"]/ul[@role="menu"]/li/a[@href="' + settings.OSF_HOME + '/preprints/"]'),
-        'registries_link': (By.XPATH, '//nav[@id="navbarScope"]/div/div[@class="navbar-header"]/div[@class="dropdown"]/ul[@role="menu"]/li/a[@href="' + settings.OSF_HOME + '/registries/"]'),
-        'meetings_link': (By.XPATH, '//nav[@id="navbarScope"]/div/div[@class="navbar-header"]/div[@class="dropdown"]/ul[@role="menu"]/li/a[@href="' + settings.OSF_HOME + '/meetings/"]'),
-        'search_link': (By.XPATH, '//div[@id="secondary-navigation"]/ul/li/a[@href="' + settings.OSF_HOME + '/search/"]'),
-        'support_link': (By.XPATH, '//div[@id="secondary-navigation"]/ul/li/a[@href="/support/"]'),
-        'donate_link': (By.XPATH, '//div[@id="secondary-navigation"]/ul/li/a[@href="https://cos.io/donate"]'),
+        'service_dropdown': (By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > button'),
+        'home_link': (By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(1) > a'),
+        'preprint_link': (By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(2) > a'),
+        'registries_link': (By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(3) > a'),
+        'meetings_link': (By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(4) > a'),
+        'search_link': (By.LINK_TEXT, 'Search'),
+        'support_link': (By.LINK_TEXT, 'Support'),
+        'donate_link': (By.LINK_TEXT, 'Donate'),
         'user_dropdown': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-child(5) > button'),
-        'user_dropdown_profile': (By.XPATH, '//div[@id="secondary-navigation"]/ul/li[@class="dropdown"]/ul/li/a[@href="/logout/"]'),
-        'user_dropdown_support': (By.XPATH, '//div[@id="secondary-navigation"]/ul/li[@class="dropdown"]/ul/li/a[@href="' + settings.OSF_HOME + '/support/"]'),
-        'user_dropdown_settings': (By.XPATH, '//div[@id="secondary-navigation"]/ul/li[@class="dropdown"]/ul/li/a[@href="/settings/"]'),
+        'user_dropdown_profile': (By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(1) > a'),
+        'user_dropdown_support': (By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(2) > a'),
+        'user_dropdown_settings': (By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(3) > a'),
         'sign_up_button': (By.LINK_TEXT, 'Sign Up'),
         'sign_in_button': (By.LINK_TEXT, 'Sign In'),
         'logout_link': (By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(4) > a'),
@@ -106,7 +107,8 @@ class OSFBasePage(BasePage):
     url = settings.OSF_HOME
 
     locators = {
-        'error_heading': (By.CSS_SELECTOR, 'h2#error')
+        'error_heading': (By.CSS_SELECTOR, 'h2#error'),
+        'identity': (By.LINK_TEXT, 'Center for Open Science')
     }
 
     def __init__(self, driver, goto=True):
@@ -135,7 +137,12 @@ class OSFBasePage(BasePage):
         self.navbar = self.BasePageNavbar(driver)
 
     def verify(self):
-        return True
+        try:
+            self.identity
+        except ValueError:
+            return False
+        else:
+            return True
 
     def is_logged_in(self):
         return self.navbar.is_logged_in()
@@ -143,7 +150,7 @@ class OSFBasePage(BasePage):
     class BasePageNavbar(Navbar):
 
         locators = dict(
-            my_project_link=(By.XPATH, '//div[@id="secondary-navigation"]/ul/li/a[@href="' + settings.OSF_HOME + '/myprojects/"]'),
+            my_project_link=(By.LINK_TEXT, 'My Projects'),
             **Navbar.locators
         )
 

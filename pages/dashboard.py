@@ -7,6 +7,7 @@ class DashboardPage(OSFBasePage):
 
     locators = dict(
         create_project_button=(By.CSS_SELECTOR, 'button.btn-success:nth-child(1)', settings.LONG_TIMEOUT),
+        identity=(By.CSS_SELECTOR, '#osfHome > div.quickSearch > div.container > div.row > div > div.row > div > h2')
         **OSFBasePage.locators
     )
 
@@ -14,9 +15,6 @@ class DashboardPage(OSFBasePage):
         super(DashboardPage, self).__init__(driver, goto)
         if not self.is_logged_in:
             raise ValueError
-
-    def verify(self):
-        return len(self.driver.find_elements(By.ID, 'osfHome')) == 1
 
     class CreateProjectModal(BaseElement):
 

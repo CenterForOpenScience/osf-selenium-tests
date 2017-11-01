@@ -18,20 +18,24 @@ class TestBasePageNavBar:
         self.base_page = OSFBasePage(self.driver)
 
     def test_osf_home_drop_down_home_link(self):
+        self.base_page.service_dropdown.home_link.click()
         self.base_page.navbar.home_link.click()
         assert self.driver.current_url is settings.OSF_HOME
 
     def test_osf_home_drop_down_preprints_link(self):
+        self.base_page.service_dropdown.home_link.click()
         self.base_page.navbar.preprints_link.click()
         preprints_url = settings.OSF_HOME + '/preprints/'
         assert self.driver.current_url is preprints_url
 
     def test_osf_home_drop_down_registries_link(self):
+        self.base_page.service_dropdown.home_link.click()
         self.base_page.navbar.registries_link.click()
         registries_url = settings.OSF_HOME + '/registries/'
         assert self.driver.current_url is registries_url
 
     def test_osf_home_drop_down_meetings_link(self):
+        self.base_page.service_dropdown.home_link.click()
         self.base_page.navbar.meetings_link.click()
         meetings_url = settings.OSF_HOME + '/meetings/'
         assert self.driver.current_url is meetings_url
@@ -60,42 +64,34 @@ class TestBasePageNavBar:
         self.base_page.donate_link.click()
         assert 'cos.io/donate-to-cos' in self.driver.current_url
 
-    def test_user_profile_menu_profile_not_there_if_not_login(self):
+    def test_user_dropdown_menu_not_there_if_not_login(self):
         with pytest.raises(ValueError):
-            self.base_page.navbar.user_dropdown_profile
+            self.base_page.navbar.user_dropdown
 
     def test_user_profile_menu_profile_present_if_login(self):
         login(self.base_page)
+        self.base_page.navbar.user_dropdown.click()
         self.base_page.navbar.user_dropdown_profile.click()
         profile_url = settings.OSF_HOME + '/profile/'
         assert self.driver.current_url is profile_url
 
-    def test_user_profile_menu_support_not_there_if_not_login(self):
-        with pytest.raises(ValueError):
-            self.base_page.navbar.user_dropdown_support
-
     def test_user_profile_menu_support_present_if_login(self):
         login(self.base_page)
+        self.base_page.navbar.user_dropdown.click()
         self.base_page.navbar.user_dropdown_support.click()
         support_url = settings.OSF_HOME + '/support/'
         assert self.driver.current_url is support_url
 
-    def test_user_profile_menu_settings_not_there_if_not_login(self):
-        with pytest.raises(ValueError):
-            self.base_page.navbar.user_dropdown_settings
-
     def test_user_profile_menu_settings_present_if_login(self):
         login(self.base_page)
+        self.base_page.navbar.user_dropdown.click()
         self.base_page.navbar.user_dropdown_settings.click()
         settings_url = settings.OSF_HOME + '/settings/'
         assert self.driver.current_url is settings_url
 
-    def test_logout_link_not_there_if_not_login(self):
-        with pytest.raises(ValueError):
-            self.base_page.navbar.logout_link
-
     def test_logout_link_present_if_login(self):
         login(self.base_page)
+        self.base_page.navbar.user_dropdown.click()
         self.base_page.navbar.logout_link.click()
         assert 'goodbye' in self.driver.current_url
 
@@ -132,20 +128,24 @@ class TestPreprintsPageNavBar:
         self.preprint_page = PreprintPage(self.driver)
 
     def test_preprint_home_drop_down_home_link(self):
+        self.preprint_page.service_dropdown.home_link.click()
         self.preprint_page.navbar.home_link.click()
         assert self.driver.current_url is settings.OSF_HOME
 
     def test_preprint_home_drop_down_preprints_link(self):
+        self.preprint_page.service_dropdown.home_link.click()
         self.preprint_page.navbar.preprints_link.click()
         preprints_url = settings.OSF_HOME + '/preprints/'
         assert self.driver.current_url is preprints_url
 
     def test_preprint_home_drop_down_registries_link(self):
+        self.preprint_page.service_dropdown.home_link.click()
         self.preprint_page.navbar.registries_link.click()
         registries_url = settings.OSF_HOME + '/registries/'
         assert self.driver.current_url is registries_url
 
     def test_preprint_home_drop_down_meetings_link(self):
+        self.preprint_page.service_dropdown.home_link.click()
         self.preprint_page.navbar.meetings_link.click()
         meetings_url = settings.OSF_HOME + '/meetings/'
         assert self.driver.current_url is meetings_url
@@ -173,42 +173,34 @@ class TestPreprintsPageNavBar:
         self.preprint_page.donate_link.click()
         assert 'cos.io/donate-to-cos' in self.driver.current_url
 
-    def test_user_profile_menu_profile_not_there_if_not_login(self):
+    def test_user_dropdown_menu_not_there_if_not_login(self):
         with pytest.raises(ValueError):
-            self.preprint_page.navbar.user_dropdown_profile
+            self.preprint_page.navbar.user_dropdown
 
     def test_user_profile_menu_profile_present_if_login(self):
         login(self.preprint_page)
+        self.preprint_page.navbar.user_dropdown.click()
         self.preprint_page.navbar.user_dropdown_profile.click()
         profile_url = settings.OSF_HOME + '/profile/'
         assert self.driver.current_url is profile_url
 
-    def test_user_profile_menu_support_not_there_if_not_login(self):
-        with pytest.raises(ValueError):
-            self.preprint_page.navbar.user_dropdown_support
-
     def test_user_profile_menu_support_present_if_login(self):
         login(self.preprint_page)
+        self.preprint_page.navbar.user_dropdown.click()
         self.preprint_page.navbar.user_dropdown_support.click()
         support_url = settings.OSF_HOME + '/support/'
         assert self.driver.current_url is support_url
 
-    def test_user_profile_menu_settings_not_there_if_not_login(self):
-        with pytest.raises(ValueError):
-            self.preprint_page.navbar.user_dropdown_settings
-
     def test_user_profile_menu_settings_present_if_login(self):
         login(self.preprint_page)
+        self.preprint_page.navbar.user_dropdown.click()
         self.preprint_page.navbar.user_dropdown_settings.click()
         settings_url = settings.OSF_HOME + '/settings/'
         assert self.driver.current_url is settings_url
 
-    def test_logout_link_not_there_if_not_login(self):
-        with pytest.raises(ValueError):
-            self.preprint_page.navbar.logout_link
-
     def test_logout_link_present_if_login(self):
         login(self.preprint_page)
+        self.preprint_page.navbar.user_dropdown.click()
         self.preprint_page.navbar.logout_link.click()
         assert 'goodbye' in self.driver.current_url
 
@@ -246,20 +238,24 @@ class TestMeetingPageNavBar:
         self.meeting_page.goto()
 
     def test_meeting_home_drop_down_home_link(self):
+        self.meeting_page.service_dropdown.home_link.click()
         self.meeting_page.navbar.home_link.click()
         assert self.driver.current_url is settings.OSF_HOME
 
     def test_meeting_home_drop_down_preprints_link(self):
+        self.meeting_page.service_dropdown.home_link.click()
         self.meeting_page.navbar.preprints_link.click()
         preprints_url = settings.OSF_HOME + '/preprints/'
         assert self.driver.current_url is preprints_url
 
     def test_meeting_home_drop_down_registries_link(self):
+        self.meeting_page.service_dropdown.home_link.click()
         self.meeting_page.navbar.registries_link.click()
         registries_url = settings.OSF_HOME + '/registries/'
         assert self.driver.current_url is registries_url
 
     def test_meeting_home_drop_down_meetings_link(self):
+        self.meeting_page.service_dropdown.home_link.click()
         self.meeting_page.navbar.meetings_link.click()
         meetings_url = settings.OSF_HOME + '/meetings/'
         assert self.driver.current_url is meetings_url
@@ -277,42 +273,34 @@ class TestMeetingPageNavBar:
         self.meeting_page.donate_link.click()
         assert 'cos.io/donate-to-cos' in self.driver.current_url
 
-    def test_user_profile_menu_profile_not_there_if_not_login(self):
+    def test_user_dropdown_menu_not_there_if_not_login(self):
         with pytest.raises(ValueError):
-            self.meeting_page.navbar.user_dropdown_profile
+            self.meeting_page.navbar.user_dropdown
 
     def test_user_profile_menu_profile_present_if_login(self):
         login(self.meeting_page)
+        self.meeting_page.navbar.user_dropdown.click()
         self.meeting_page.navbar.user_dropdown_profile.click()
         profile_url = settings.OSF_HOME + '/profile/'
         assert self.driver.current_url is profile_url
 
-    def test_user_profile_menu_support_not_there_if_not_login(self):
-        with pytest.raises(ValueError):
-            self.meeting_page.navbar.user_dropdown_support
-
     def test_user_profile_menu_support_present_if_login(self):
         login(self.meeting_page)
+        self.meeting_page.navbar.user_dropdown.click()
         self.meeting_page.navbar.user_dropdown_support.click()
         support_url = settings.OSF_HOME + '/support/'
         assert self.driver.current_url is support_url
 
-    def test_user_profile_menu_settings_not_there_if_not_login(self):
-        with pytest.raises(ValueError):
-            self.meeting_page.navbar.user_dropdown_settings
-
     def test_user_profile_menu_settings_present_if_login(self):
         login(self.meeting_page)
+        self.meeting_page.navbar.user_dropdown.click()
         self.meeting_page.navbar.user_dropdown_settings.click()
         settings_url = settings.OSF_HOME + '/settings/'
         assert self.driver.current_url is settings_url
 
-    def test_logout_link_not_there_if_not_login(self):
-        with pytest.raises(ValueError):
-            self.meeting_page.navbar.logout_link
-
     def test_logout_link_present_if_login(self):
         login(self.meeting_page)
+        self.meeting_page.navbar.user_dropdown.click()
         self.meeting_page.navbar.logout_link.click()
         assert 'goodbye' in self.driver.current_url
 
@@ -348,21 +336,25 @@ class TestRegistriesPageNavBar:
     def setup_method(self, method):
         self.registries_page = RegistriesPage(self.driver)
 
-    def test_osf_home_drop_down_home_link(self):
+    def test_registries_home_drop_down_home_link(self):
+        self.registries_page.service_dropdown.home_link.click()
         self.registries_page.navbar.home_link.click()
         assert self.driver.current_url is settings.OSF_HOME
 
-    def test_osf_home_drop_down_preprints_link(self):
+    def test_registries_home_drop_down_preprints_link(self):
+        self.registries_page.service_dropdown.home_link.click()
         self.registries_page.navbar.preprints_link.click()
         preprints_url = settings.OSF_HOME + '/preprints/'
         assert self.driver.current_url is preprints_url
 
-    def test_osf_home_drop_down_registries_link(self):
+    def test_registries_home_drop_down_registries_link(self):
+        self.registries_page.service_dropdown.home_link.click()
         self.registries_page.navbar.registries_link.click()
         registries_url = settings.OSF_HOME + '/registries/'
         assert self.driver.current_url is registries_url
 
-    def test_osf_home_drop_down_meetings_link(self):
+    def test_registries_home_drop_down_meetings_link(self):
+        self.registries_page.service_dropdown.home_link.click()
         self.registries_page.navbar.meetings_link.click()
         meetings_url = settings.OSF_HOME + '/meetings/'
         assert self.driver.current_url is meetings_url
@@ -381,42 +373,34 @@ class TestRegistriesPageNavBar:
         self.registries_page.donate_link.click()
         assert 'cos.io/donate-to-cos' in self.driver.current_url
 
-    def test_user_profile_menu_profile_not_there_if_not_login(self):
+    def test_user_dropdown_menu_not_there_if_not_login(self):
         with pytest.raises(ValueError):
-            self.registries_page.navbar.user_dropdown_profile
+            self.registries_page.navbar.user_dropdown
 
     def test_user_profile_menu_profile_present_if_login(self):
         login(self.registries_page)
+        self.registries_page.navbar.user_dropdown.click()
         self.registries_page.navbar.user_dropdown_profile.click()
         profile_url = settings.OSF_HOME + '/profile/'
         assert self.driver.current_url is profile_url
 
-    def test_user_profile_menu_support_not_there_if_not_login(self):
-        with pytest.raises(ValueError):
-            self.registries_page.navbar.user_dropdown_support
-
     def test_user_profile_menu_support_present_if_login(self):
         login(self.registries_page)
+        self.registries_page.navbar.user_dropdown.click()
         self.registries_page.navbar.user_dropdown_support.click()
         support_url = settings.OSF_HOME + '/support/'
         assert self.driver.current_url is support_url
 
-    def test_user_profile_menu_settings_not_there_if_not_login(self):
-        with pytest.raises(ValueError):
-            self.registries_page.navbar.user_dropdown_settings
-
     def test_user_profile_menu_settings_present_if_login(self):
         login(self.registries_page)
+        self.registries_page.navbar.user_dropdown.click()
         self.registries_page.navbar.user_dropdown_settings.click()
         settings_url = settings.OSF_HOME + '/settings/'
         assert self.driver.current_url is settings_url
 
-    def test_logout_link_not_there_if_not_login(self):
-        with pytest.raises(ValueError):
-            self.registries_page.navbar.logout_link
-
     def test_logout_link_present_if_login(self):
         login(self.registries_page)
+        self.registries_page.navbar.user_dropdown.click()
         self.registries_page.navbar.logout_link.click()
         assert 'goodbye' in self.driver.current_url
 

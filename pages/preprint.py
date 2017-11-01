@@ -8,6 +8,7 @@ class PreprintPage(OSFBasePage):
 
     locators = dict(
         add_preprint=(By.CSS_SELECTOR, 'div.preprint-page div.preprint-header div.container div div a[href="/preprints/submit"]', settings.LONG_TIMEOUT),
+        identity=(By.CSS_SELECTOR, '#ember680 > div.preprint-page > div.preprint-header', settings.LONG_TIMEOUT),
         **OSFBasePage.locators
     )
 
@@ -15,13 +16,10 @@ class PreprintPage(OSFBasePage):
         super(PreprintPage, self).__init__(driver, goto)
         self.navbar = self.PreprintPageNavbar(driver)
 
-    def verify(self):
-        return len(self.driver.find_elements(By.CSS_SELECTOR, 'div.preprints-page div.preprint-header')) == 1
-
     class PreprintPageNavbar(Navbar):
 
         locators = dict(
-            add_a_preprint_link=(By.XPATH, '//nav[@id="navbarScope"]/div/div[@class="navbar-header"]/div[@class="dropdown"]/ul[@role="menu"]/li/a[@href="' + settings.OSF_HOME + '/meetings/"]'),
+            add_a_preprint_link=(By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-child(1) > a'),
             **Navbar.locators
         )
 
