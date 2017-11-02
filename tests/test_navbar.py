@@ -20,25 +20,25 @@ class TestBasePageNavBar:
     def test_osf_home_drop_down_home_link(self):
         self.base_page.navbar.service_dropdown.click()
         self.base_page.navbar.home_link.click()
-        assert self.driver.current_url is settings.OSF_HOME
+        assert settings.OSF_HOME in self.driver.current_url
 
     def test_osf_home_drop_down_preprints_link(self):
         self.base_page.navbar.service_dropdown.click()
         self.base_page.navbar.preprints_link.click()
         preprints_url = settings.OSF_HOME + '/preprints/'
-        assert self.driver.current_url is preprints_url
+        assert self.driver.current_url == preprints_url
 
     def test_osf_home_drop_down_registries_link(self):
         self.base_page.navbar.service_dropdown.click()
         self.base_page.navbar.registries_link.click()
         registries_url = settings.OSF_HOME + '/registries/'
-        assert self.driver.current_url is registries_url
+        assert self.driver.current_url == registries_url
 
     def test_osf_home_drop_down_meetings_link(self):
         self.base_page.navbar.service_dropdown.click()
         self.base_page.navbar.meetings_link.click()
         meetings_url = settings.OSF_HOME + '/meetings/'
-        assert self.driver.current_url is meetings_url
+        assert self.driver.current_url == meetings_url
 
     def test_nagivation_bar_link_my_projects_link_not_there_if_not_login(self):
         with pytest.raises(ValueError):
@@ -130,25 +130,25 @@ class TestPreprintsPageNavBar:
     def test_preprint_home_drop_down_home_link(self):
         self.preprint_page.navbar.service_dropdown.click()
         self.preprint_page.navbar.home_link.click()
-        assert self.driver.current_url is settings.OSF_HOME
+        assert settings.OSF_HOME in self.driver.current_url
 
     def test_preprint_home_drop_down_preprints_link(self):
         self.preprint_page.navbar.service_dropdown.click()
         self.preprint_page.navbar.preprints_link.click()
         preprints_url = settings.OSF_HOME + '/preprints/'
-        assert self.driver.current_url is preprints_url
+        assert self.driver.current_url == preprints_url
 
     def test_preprint_home_drop_down_registries_link(self):
         self.preprint_page.navbar.service_dropdown.click()
         self.preprint_page.navbar.registries_link.click()
         registries_url = settings.OSF_HOME + '/registries/'
-        assert self.driver.current_url is registries_url
+        assert self.driver.current_url == registries_url
 
     def test_preprint_home_drop_down_meetings_link(self):
         self.preprint_page.navbar.service_dropdown.click()
         self.preprint_page.navbar.meetings_link.click()
         meetings_url = settings.OSF_HOME + '/meetings/'
-        assert self.driver.current_url is meetings_url
+        assert self.driver.current_url == meetings_url
 
     def test_add_a_preprint_link_not_login(self):
         self.preprint_page.navbar.add_a_preprint_link.click()
@@ -240,25 +240,25 @@ class TestMeetingPageNavBar:
     def test_meeting_home_drop_down_home_link(self):
         self.meeting_page.navbar.service_dropdown.click()
         self.meeting_page.navbar.home_link.click()
-        assert self.driver.current_url is settings.OSF_HOME
+        assert settings.OSF_HOME in self.driver.current_url
 
     def test_meeting_home_drop_down_preprints_link(self):
         self.meeting_page.navbar.service_dropdown.click()
         self.meeting_page.navbar.preprints_link.click()
         preprints_url = settings.OSF_HOME + '/preprints/'
-        assert self.driver.current_url is preprints_url
+        assert self.driver.current_url == preprints_url
 
     def test_meeting_home_drop_down_registries_link(self):
         self.meeting_page.navbar.service_dropdown.click()
         self.meeting_page.navbar.registries_link.click()
         registries_url = settings.OSF_HOME + '/registries/'
-        assert self.driver.current_url is registries_url
+        assert self.driver.current_url == registries_url
 
     def test_meeting_home_drop_down_meetings_link(self):
         self.meeting_page.navbar.service_dropdown.click()
         self.meeting_page.navbar.meetings_link.click()
         meetings_url = settings.OSF_HOME + '/meetings/'
-        assert self.driver.current_url is meetings_url
+        assert self.driver.current_url == meetings_url
 
     def test_nagivation_bar_link_search_link_not_present(self):
         with pytest.raises(ValueError):
@@ -339,30 +339,30 @@ class TestRegistriesPageNavBar:
     def test_registries_home_drop_down_home_link(self):
         self.registries_page.navbar.service_dropdown.click()
         self.registries_page.navbar.home_link.click()
-        assert self.driver.current_url is settings.OSF_HOME
+        assert settings.OSF_HOME in self.driver.current_url
 
     def test_registries_home_drop_down_preprints_link(self):
         self.registries_page.navbar.service_dropdown.click()
         self.registries_page.navbar.preprints_link.click()
         preprints_url = settings.OSF_HOME + '/preprints/'
-        assert self.driver.current_url is preprints_url
+        assert self.driver.current_url == preprints_url
 
     def test_registries_home_drop_down_registries_link(self):
         self.registries_page.navbar.service_dropdown.click()
         self.registries_page.navbar.registries_link.click()
         registries_url = settings.OSF_HOME + '/registries/'
-        assert self.driver.current_url is registries_url
+        assert self.driver.current_url == registries_url
 
     def test_registries_home_drop_down_meetings_link(self):
         self.registries_page.navbar.service_dropdown.click()
         self.registries_page.navbar.meetings_link.click()
         meetings_url = settings.OSF_HOME + '/meetings/'
-        assert self.driver.current_url is meetings_url
+        assert self.driver.current_url == meetings_url
 
     def test_nagivation_bar_link_search_link(self):
         self.registries_page.search_link.click()
         search_url = settings.OSF_HOME + '/search/'
-        assert self.driver.current_url is search_url
+        assert self.driver.current_url == search_url
 
     def test_nagivation_bar_link_support_link(self):
         self.registries_page.support_link.click()

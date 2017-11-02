@@ -9,7 +9,7 @@ class PreprintPage(OSFBasePage):
     locators = {
         **OSFBasePage.locators,
         **{
-            'identity': (By.CSS_SELECTOR, 'body.ember-application > div.ember-view > div.preprint-page > div.preprint-header', settings.LONG_TIMEOUT),
+            'identity': (By.CSS_SELECTOR, 'body.ember-application > div.ember-view > div.preprints-page > div.preprint-header', settings.LONG_TIMEOUT),
             'add_preprint': (By.CSS_SELECTOR, 'div.preprint-page div.preprint-header div.container div div a[href="/preprints/submit"]', settings.LONG_TIMEOUT),
         }
     }
@@ -21,7 +21,7 @@ class PreprintPage(OSFBasePage):
     class PreprintPageNavbar(Navbar):
 
         locators = dict(
-            add_a_preprint_link=(By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-child(1) > a'),
+            add_a_preprint_link=(By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-of-type(5) > a'),
             **Navbar.locators
         )
 

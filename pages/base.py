@@ -73,13 +73,13 @@ class Navbar(BaseElement):
     locators = {
         'service_dropdown': (By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > button'),
         'home_link': (By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(1) > a'),
-        'preprint_link': (By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(2) > a'),
+        'preprints_link': (By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(2) > a'),
         'registries_link': (By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(3) > a'),
         'meetings_link': (By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(4) > a'),
-        'search_link': (By.LINK_TEXT, 'Search'),
-        'support_link': (By.LINK_TEXT, 'Support'),
-        'donate_link': (By.LINK_TEXT, 'Donate'),
-        'user_dropdown': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-child(5) > button'),
+        'search_link': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-of-type(4) > a'),
+        'support_link': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-of-type(3) > a'),
+        'donate_link': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-of-type(2) > a'),
+        'user_dropdown': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-of-type(1) > button'),
         'user_dropdown_profile': (By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(1) > a'),
         'user_dropdown_support': (By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(2) > a'),
         'user_dropdown_settings': (By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(3) > a'),
@@ -150,7 +150,7 @@ class OSFBasePage(BasePage):
         locators = {
             **Navbar.locators,
             **{
-                'my_project_link': (By.LINK_TEXT, 'My Projects'),
+                'my_project_link': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-of-type(5) > a'),
             }
         }
 
