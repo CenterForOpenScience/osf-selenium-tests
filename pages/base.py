@@ -127,7 +127,7 @@ class LoginPage(BasePage):
             raise PageException('Unexpected page structure: `{}`'.format(
                 url
             ))
-        
+
     def verify(self):
         try:
             self.identity
@@ -150,7 +150,7 @@ class LoginPage(BasePage):
 def login(osf_page, user=settings.USER_ONE, password=settings.USER_ONE_PASSWORD):
     try:
         login_page = LoginPage(osf_page.driver)
-    except HttpError:
+    except LoginError:
         pass
     else:
         login_page.login(user, password)
