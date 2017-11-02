@@ -114,13 +114,14 @@ class LoginPage(BasePage):
 
     def __init__(self, driver):
         super(LoginPage, self).__init__(driver)
+        old_url = driver.current_url
         driver.get(self.url)
 
         try:
             self.identity
         except ValueError:
             url = driver.current_url
-            if url == (settings.OSF_HOME + '/'):
+            if url == old_url:
                 raise HttpError(
                     driver=driver,
                     error_info='Already logged in'
