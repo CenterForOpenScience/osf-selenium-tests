@@ -10,6 +10,7 @@ class RegistriesPage(OSFBasePage):
         **OSFBasePage.locators,
         **{
             'identity': (By.CSS_SELECTOR, 'body.ember-application > div.ember-view > div.preprints-page > div.search-header > div.container > div.row > div > div.registries-brand', settings.LONG_TIMEOUT),
+            'user_dropdown': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-of-type(1) > a'),
         }
     }
 

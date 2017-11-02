@@ -24,6 +24,7 @@ class PreprintPage(OSFBasePage):
             **Navbar.locators,
             **{
                 'add_a_preprint_link': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-child(5) > a'),
+                'user_dropdown': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-of-type(1) > a'),
             }
         }
 
