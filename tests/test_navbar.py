@@ -166,12 +166,7 @@ class TestPreprintsPageNavBar:
         meetings_url = settings.OSF_HOME + '/meetings/'
         assert self.driver.current_url == meetings_url
 
-    def test_add_a_preprint_link_not_login(self):
-        logout(self.preprint_page)
-        self.preprint_page.navbar.add_a_preprint_link.click()
-        assert 'login' in self.driver.current_url
-
-    def test_add_a_preprint_link_login(self):
+    def test_add_a_preprint_link(self):
         self.preprint_page.navbar.add_a_preprint_link.click()
         add_preprint_url = settings.OSF_HOME + '/preprints/submit/'
         assert self.driver.current_url == add_preprint_url
@@ -225,7 +220,6 @@ class TestPreprintsPageNavBar:
         assert 'goodbye' in self.driver.current_url
 
     def test_sign_in_button(self):
-        logout(self.preprint_page)
         self.preprint_page.navbar.sign_in_button.click()
         assert 'login' in self.driver.current_url
 
@@ -441,7 +435,6 @@ class TestRegistriesPageNavBar:
         assert 'goodbye' in self.driver.current_url
 
     def test_sign_in_button(self):
-        logout(self.registries_page)
         self.registries_page.navbar.sign_in_button.click()
         assert 'login' in self.driver.current_url
 
