@@ -18,24 +18,24 @@ class TestBasePageNavBar:
         self.base_page = OSFBasePage(self.driver)
 
     def test_osf_home_drop_down_home_link(self):
-        self.base_page.service_dropdown.home_link.click()
+        self.base_page.navbar.service_dropdown.click()
         self.base_page.navbar.home_link.click()
         assert self.driver.current_url is settings.OSF_HOME
 
     def test_osf_home_drop_down_preprints_link(self):
-        self.base_page.service_dropdown.home_link.click()
+        self.base_page.navbar.service_dropdown.click()
         self.base_page.navbar.preprints_link.click()
         preprints_url = settings.OSF_HOME + '/preprints/'
         assert self.driver.current_url is preprints_url
 
     def test_osf_home_drop_down_registries_link(self):
-        self.base_page.service_dropdown.home_link.click()
+        self.base_page.navbar.service_dropdown.click()
         self.base_page.navbar.registries_link.click()
         registries_url = settings.OSF_HOME + '/registries/'
         assert self.driver.current_url is registries_url
 
     def test_osf_home_drop_down_meetings_link(self):
-        self.base_page.service_dropdown.home_link.click()
+        self.base_page.navbar.service_dropdown.click()
         self.base_page.navbar.meetings_link.click()
         meetings_url = settings.OSF_HOME + '/meetings/'
         assert self.driver.current_url is meetings_url
@@ -105,7 +105,7 @@ class TestBasePageNavBar:
             self.base_page.navbar.sign_in_button
 
     def test_sign_up_button(self):
-        self.base_page.navbar.sign_in_button.click()
+        self.base_page.navbar.sign_up_button.click()
         assert 'register' in self.driver.current_url
 
     def test_sign_up_button_not_present_if_login_in(self):
@@ -128,24 +128,24 @@ class TestPreprintsPageNavBar:
         self.preprint_page = PreprintPage(self.driver)
 
     def test_preprint_home_drop_down_home_link(self):
-        self.preprint_page.service_dropdown.home_link.click()
+        self.preprint_page.navbar.service_dropdown.click()
         self.preprint_page.navbar.home_link.click()
         assert self.driver.current_url is settings.OSF_HOME
 
     def test_preprint_home_drop_down_preprints_link(self):
-        self.preprint_page.service_dropdown.home_link.click()
+        self.preprint_page.navbar.service_dropdown.click()
         self.preprint_page.navbar.preprints_link.click()
         preprints_url = settings.OSF_HOME + '/preprints/'
         assert self.driver.current_url is preprints_url
 
     def test_preprint_home_drop_down_registries_link(self):
-        self.preprint_page.service_dropdown.home_link.click()
+        self.preprint_page.navbar.service_dropdown.click()
         self.preprint_page.navbar.registries_link.click()
         registries_url = settings.OSF_HOME + '/registries/'
         assert self.driver.current_url is registries_url
 
     def test_preprint_home_drop_down_meetings_link(self):
-        self.preprint_page.service_dropdown.home_link.click()
+        self.preprint_page.navbar.service_dropdown.click()
         self.preprint_page.navbar.meetings_link.click()
         meetings_url = settings.OSF_HOME + '/meetings/'
         assert self.driver.current_url is meetings_url
@@ -214,7 +214,7 @@ class TestPreprintsPageNavBar:
             self.preprint_page.navbar.sign_in_button
 
     def test_sign_up_button(self):
-        self.preprint_page.navbar.sign_in_button.click()
+        self.preprint_page.navbar.sign_up_button.click()
         assert 'register' in self.driver.current_url
 
     def test_sign_up_button_not_present_if_login_in(self):
@@ -238,24 +238,24 @@ class TestMeetingPageNavBar:
         self.meeting_page.goto()
 
     def test_meeting_home_drop_down_home_link(self):
-        self.meeting_page.service_dropdown.home_link.click()
+        self.meeting_page.navbar.service_dropdown.click()
         self.meeting_page.navbar.home_link.click()
         assert self.driver.current_url is settings.OSF_HOME
 
     def test_meeting_home_drop_down_preprints_link(self):
-        self.meeting_page.service_dropdown.home_link.click()
+        self.meeting_page.navbar.service_dropdown.click()
         self.meeting_page.navbar.preprints_link.click()
         preprints_url = settings.OSF_HOME + '/preprints/'
         assert self.driver.current_url is preprints_url
 
     def test_meeting_home_drop_down_registries_link(self):
-        self.meeting_page.service_dropdown.home_link.click()
+        self.meeting_page.navbar.service_dropdown.click()
         self.meeting_page.navbar.registries_link.click()
         registries_url = settings.OSF_HOME + '/registries/'
         assert self.driver.current_url is registries_url
 
     def test_meeting_home_drop_down_meetings_link(self):
-        self.meeting_page.service_dropdown.home_link.click()
+        self.meeting_page.navbar.service_dropdown.click()
         self.meeting_page.navbar.meetings_link.click()
         meetings_url = settings.OSF_HOME + '/meetings/'
         assert self.driver.current_url is meetings_url
@@ -314,7 +314,7 @@ class TestMeetingPageNavBar:
             self.meeting_page.navbar.sign_in_button
 
     def test_sign_up_button(self):
-        self.meeting_page.navbar.sign_in_button.click()
+        self.meeting_page.navbar.sign_up_button.click()
         assert 'register' in self.driver.current_url
 
     def test_sign_up_button_not_present_if_login_in(self):
@@ -337,24 +337,24 @@ class TestRegistriesPageNavBar:
         self.registries_page = RegistriesPage(self.driver)
 
     def test_registries_home_drop_down_home_link(self):
-        self.registries_page.service_dropdown.home_link.click()
+        self.registries_page.navbar.service_dropdown.click()
         self.registries_page.navbar.home_link.click()
         assert self.driver.current_url is settings.OSF_HOME
 
     def test_registries_home_drop_down_preprints_link(self):
-        self.registries_page.service_dropdown.home_link.click()
+        self.registries_page.navbar.service_dropdown.click()
         self.registries_page.navbar.preprints_link.click()
         preprints_url = settings.OSF_HOME + '/preprints/'
         assert self.driver.current_url is preprints_url
 
     def test_registries_home_drop_down_registries_link(self):
-        self.registries_page.service_dropdown.home_link.click()
+        self.registries_page.navbar.service_dropdown.click()
         self.registries_page.navbar.registries_link.click()
         registries_url = settings.OSF_HOME + '/registries/'
         assert self.driver.current_url is registries_url
 
     def test_registries_home_drop_down_meetings_link(self):
-        self.registries_page.service_dropdown.home_link.click()
+        self.registries_page.navbar.service_dropdown.click()
         self.registries_page.navbar.meetings_link.click()
         meetings_url = settings.OSF_HOME + '/meetings/'
         assert self.driver.current_url is meetings_url
@@ -414,7 +414,7 @@ class TestRegistriesPageNavBar:
             self.registries_page.navbar.sign_in_button
 
     def test_sign_up_button(self):
-        self.registries_page.navbar.sign_in_button.click()
+        self.registries_page.navbar.sign_up_button.click()
         assert 'register' in self.driver.current_url
 
     def test_sign_up_button_not_present_if_login_in(self):

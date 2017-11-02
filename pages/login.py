@@ -9,7 +9,7 @@ class LoginPage(OSFBasePage):
     locators = {
         **OSFBasePage.locators,
         **{
-            'identity': (By.LINK_TEXT, 'Forgot Your Password?'),
+            'identity': (By.CSS_SELECTOR, 'body#cas'),
             'username_input': (By.ID, 'username'),
             'password_input': (By.ID, 'password'),
             'submit_button': (By.NAME, 'submit'),

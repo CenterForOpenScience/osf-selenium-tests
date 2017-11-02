@@ -9,7 +9,7 @@ class RegistriesPage(OSFBasePage):
     locators = {
         **OSFBasePage.locators,
         **{
-            'identity': (By.CSS_SELECTOR, '#ember671 > div.preprints-page > div.search-header > div.container > div.row > div > div.registries-brand', settings.LONG_TIMEOUT),
+            'identity': (By.CSS_SELECTOR, 'body.ember-application > div.ember-view > div.preprints-page > div.search-header > div.container > div.row > div > div.registries-brand', settings.LONG_TIMEOUT),
         }
     }
 

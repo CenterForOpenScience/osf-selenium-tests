@@ -9,7 +9,7 @@ class PreprintPage(OSFBasePage):
     locators = {
         **OSFBasePage.locators,
         **{
-            'identity': (By.CSS_SELECTOR, '#ember680 > div.preprint-page > div.preprint-header', settings.LONG_TIMEOUT),
+            'identity': (By.CSS_SELECTOR, 'body.ember-application > div.ember-view > div.preprint-page > div.preprint-header', settings.LONG_TIMEOUT),
             'add_preprint': (By.CSS_SELECTOR, 'div.preprint-page div.preprint-header div.container div div a[href="/preprints/submit"]', settings.LONG_TIMEOUT),
         }
     }
