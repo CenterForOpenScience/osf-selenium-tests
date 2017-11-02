@@ -24,8 +24,11 @@ class PreprintPage(OSFBasePage):
             **Navbar.locators,
             **{
                 'add_a_preprint_link': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-child(5) > a'),
+                'search_link': (By.XPATH, '/html/body/div[@class="ember-view]/div[1]/nav[@id="navbarScope"]/div[@class="container"]/div[@id="secondary-navigation"]/ul/li[2]/a'),
+                'support_link': (By.XPATH, '/html/body/div[@class="ember-view]/div[1]/nav[@id="navbarScope"]/div[@class="container"]/div[@id="secondary-navigation"]/ul/li[3]/a'),
+                'donate_link': (By.XPATH, '/html/body/div[@class="ember-view]/div[1]/nav[@id="navbarScope"]/div[@class="container"]/div[@id="secondary-navigation"]/ul/li[4]/a'),
                 'user_dropdown': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-of-type(1) > a'),
-                'sign_in_button': (By.CSS_SELECTOR, '#secondary-navigation > ul > li.ember-view.dropdown.sign-in > a:nth-child(2)'),
+                'sign_in_button': (By.LINK_TEXT, 'Sign in'),
             }
         }
 

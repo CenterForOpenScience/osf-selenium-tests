@@ -5,7 +5,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import StaleElementReferenceException, TimeoutException
 
-from pages.exceptions import HttpError, PageException
+from pages.exceptions import HttpError, PageException, LoginError
 
 
 class BaseElement(object):
@@ -76,9 +76,9 @@ class Navbar(BaseElement):
         'preprints_link': (By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(2) > a'),
         'registries_link': (By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(3) > a'),
         'meetings_link': (By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(4) > a'),
-        'search_link': (By.XPATH, '//div[@id="secondary-navigation"]/ul/li[2]/a'),
-        'support_link': (By.XPATH, '//div[@id="secondary-navigation"]/ul/li[3]/a'),
-        'donate_link': (By.XPATH, '//div[@id="secondary-navigation"]/ul/li[4]/a'),
+        'search_link': (By.XPATH, '/html/body/div[@class="osf-nav-wrapper]/nav[@id="navbarScope"]/div[@class="container"]/div[@id="secondary-navigation"]/ul/li[2]/a'),
+        'support_link': (By.XPATH, '/html/body/div[@class="osf-nav-wrapper]/nav[@id="navbarScope"]/div[@class="container"]/div[@id="secondary-navigation"]/ul/li[3]/a'),
+        'donate_link': (By.XPATH, '/html/body/div[@class="osf-nav-wrapper]/nav[@id="navbarScope"]/div[@class="container"]/div[@id="secondary-navigation"]/ul/li[4]/a'),
         'user_dropdown': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-of-type(1) > button'),
         'user_dropdown_profile': (By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(1) > a'),
         'user_dropdown_support': (By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(2) > a'),
@@ -104,7 +104,7 @@ class LoginPage(BasePage):
     url = settings.OSF_HOME + '/login'
 
     locators = {
-        'identity': (By.XPATH, '/html/body[@id="cas"]', settings.LONG_TIMEOUT),
+        'identity': (By.XPATH, '/html/body[@id="cas"]/div[@id="container"]', settings.LONG_TIMEOUT),
         'username_input': (By.ID, 'username'),
         'password_input': (By.ID, 'password'),
         'submit_button': (By.NAME, 'submit'),
@@ -122,9 +122,8 @@ class LoginPage(BasePage):
         except ValueError:
             url = driver.current_url
             if url == old_url:
-                raise HttpError(
+                raise LoginError(
                     driver=driver,
-                    code=self.error_heading.get_attribute('data-http-status-code'),
                     error_info='Already logged in'
                 )
             raise PageException('Unexpected page structure: `{}`'.format(
