@@ -2,8 +2,6 @@ import os
 
 import settings
 from selenium import webdriver
-from pages.login import LoginPage
-from pages.exceptions import HttpError
 
 
 def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
@@ -45,16 +43,6 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
 
     # Return driver
     return driver
-
-
-def login(osf_page, user=settings.USER_ONE, password=settings.USER_ONE_PASSWORD):
-    try:
-        login_page = LoginPage(osf_page.driver)
-    except HttpError:
-        pass
-    else:
-        login_page.login(user, password)
-        osf_page.driver.get(osf_page.url)
 
 
 def logout(osf_page):
