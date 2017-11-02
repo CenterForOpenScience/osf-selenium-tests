@@ -36,14 +36,14 @@ class BaseElement(object):
                     EC.presence_of_element_located(location)
                 )
             except(TimeoutException, StaleElementReferenceException):
-                raise ValueError('Element {} not present on page'.format(element))
+                raise ValueError('Element {} not present on page. {}'.format(element, self.driver.current_url))
 
             try:
                 WebDriverWait(self.driver, timeout).until(
                     EC.visibility_of_element_located(location)
                 )
             except(TimeoutException, StaleElementReferenceException):
-                raise ValueError('Element {} not visible before timeout'.format(element))
+                raise ValueError('Element {} not visible before timeout. {}'.format(element, self.driver.current_url))
 
             if 'link' in element:
                 try:
@@ -51,11 +51,11 @@ class BaseElement(object):
                         EC.element_to_be_clickable(location)
                     )
                 except(TimeoutException, StaleElementReferenceException):
-                    raise ValueError('Element {} on page but not clickable'.format(element))
+                    raise ValueError('Element {} on page but not clickable. {}'.format(element, self.driver.current_url))
 
             return self.find_element(*location)
         else:
-            raise ValueError('Cannot find element {}'.format(element))
+            raise ValueError('Cannot find element {}. {}'.format(element, self.driver.current_url))
 
 
 class BasePage(BaseElement):

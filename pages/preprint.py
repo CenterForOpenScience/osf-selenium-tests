@@ -28,7 +28,7 @@ class PreprintPage(OSFBasePage):
                 'support_link': (By.XPATH, '/html/body/div[@class="ember-view]/div[1]/nav[@id="navbarScope"]/div[@class="container"]/div[@id="secondary-navigation"]/ul/li[3]/a'),
                 'donate_link': (By.XPATH, '/html/body/div[@class="ember-view]/div[1]/nav[@id="navbarScope"]/div[@class="container"]/div[@id="secondary-navigation"]/ul/li[4]/a'),
                 'user_dropdown': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-of-type(1) > a'),
-                'sign_in_button': (By.LINK_TEXT, 'Sign in'),
+                'sign_in_button': (By.CSS_SELECTOR, '#secondary-navigation > ul.nav > li.ember-view.dropdown.sign-in > a.btn.btn-info.btn-top-login'),
             }
         }
 

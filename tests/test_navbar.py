@@ -201,21 +201,24 @@ class TestPreprintsPageNavBar:
         assert self.driver.current_url == profile_url
 
     def test_user_profile_menu_support_present_if_login(self):
-        login(self.preprint_page)
+        if not self.preprint_page.is_logged_in():
+            login(self.preprint_page)
         self.preprint_page.navbar.user_dropdown.click()
         self.preprint_page.navbar.user_dropdown_support.click()
         support_url = settings.OSF_HOME + '/support/'
         assert self.driver.current_url == support_url
 
     def test_user_profile_menu_settings_present_if_login(self):
-        login(self.preprint_page)
+        if not self.preprint_page.is_logged_in():
+            login(self.preprint_page)
         self.preprint_page.navbar.user_dropdown.click()
         self.preprint_page.navbar.user_dropdown_settings.click()
         settings_url = settings.OSF_HOME + '/settings/'
         assert self.driver.current_url == settings_url
 
     def test_logout_link_present_if_login(self):
-        login(self.preprint_page)
+        if not self.preprint_page.is_logged_in():
+            login(self.preprint_page)
         self.preprint_page.navbar.user_dropdown.click()
         self.preprint_page.navbar.logout_link.click()
         assert 'goodbye' in self.driver.current_url
@@ -413,21 +416,24 @@ class TestRegistriesPageNavBar:
         assert self.driver.current_url == profile_url
 
     def test_user_profile_menu_support_present_if_login(self):
-        login(self.registries_page)
+        if not self.registries_page.is_logged_in():
+            login(self.registries_page)
         self.registries_page.navbar.user_dropdown.click()
         self.registries_page.navbar.user_dropdown_support.click()
         support_url = settings.OSF_HOME + '/support/'
         assert self.driver.current_url == support_url
 
     def test_user_profile_menu_settings_present_if_login(self):
-        login(self.registries_page)
+        if not self.registries_page.is_logged_in:
+            login(self.registries_page)
         self.registries_page.navbar.user_dropdown.click()
         self.registries_page.navbar.user_dropdown_settings.click()
         settings_url = settings.OSF_HOME + '/settings/'
         assert self.driver.current_url == settings_url
 
     def test_logout_link_present_if_login(self):
-        login(self.registries_page)
+        if not self.registries_page.is_logged_in:
+            login(self.registries_page)
         self.registries_page.navbar.user_dropdown.click()
         self.registries_page.navbar.logout_link.click()
         assert 'goodbye' in self.driver.current_url
