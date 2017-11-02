@@ -22,27 +22,26 @@ BIN_PATH = os.path.dirname(sys.executable)
 
 bin_prefix = lambda cmd: os.path.join(BIN_PATH, cmd)
 
+os_env = os.environ
+
 @task(aliases=['flake8'])
 def flake(ctx):
     ctx.run('flake8 .', echo=True)
-
 
 @task(aliases=['autopep8'])
 def autopep(ctx):
     ctx.run('autopep8 .', echo=True)
 
-
 @task
 def clean(ctx, verbose=False):
     ctx.run('find . -name "*.pyc" -delete', echo=True)
-
 
 @task(aliases=['req'])
 def requirements(ctx, dev=False):
     """Install python dependencies.
 
     Examples:
-        inv requirements
+        invoke requirements
     """
 
     req_file = os.path.join(HERE, 'requirements.txt')
@@ -71,6 +70,61 @@ def test_module(ctx, module=None, numprocesses=None, params=None):
     sys.exit(retcode)
 
 @task
-def test_travis(ctx, verbose=False):
-    print('Testing modules in "{}"'.format('tests'))
-    test_module(ctx, module=['tests'], numprocesses=1)
+def test_travis_chrome(ctx, numprocesses=None):
+    """
+    Run tests on the latest Chrome
+    """
+    flake(ctx)
+    os_env['DESIRED_CAP'] = {'browser': 'Chrome', 'os': 'Windows', 'os_version': '10', 'resolution': '1024x768'}
+    print('Testing modules in "{}" in Chrome'.format('tests'))
+    test_module(ctx, module=['tests'], numprocesses=numprocesses)
+
+@task
+def test_travis_edge(ctx, numprocesses=None):
+    """
+    Run tests on the latest Edge
+    """
+    flake(ctx)
+    os_env['DESIRED_CAP'] = {'browser': 'Edge', 'os': 'Windows', 'os_version': '10', 'resolution': '1024x768'}
+    print('Testing modules in "{}" in Edge'.format('tests'))
+    test_module(ctx, module=['tests'], numprocesses=numprocesses)
+
+@task
+def test_travis_firefox(ctx, numprocesses=None):
+    """
+    Run tests on the latest Firefox
+    """
+    flake(ctx)
+    os_env['DESIRED_CAP'] = {'browser': 'Firefox', 'os': 'Windows', 'os_version': '10', 'resolution': '1024x768'}
+    print('Testing modules in "{}" in Firefox'.format('tests'))
+    test_module(ctx, module=['tests'], numprocesses=numprocesses)
+
+@task
+def test_travis_msie(ctx, numprocesses=None):
+    """
+    Run tests on the latest Microsoft Internet Explorer
+    """
+    flake(ctx)
+    os_env['DESIRED_CAP'] = {'browser': 'IE', 'os': 'Windows', 'os_version': '7', 'resolution': '1024x768'}
+    print('Testing modules in "{}" in MSIE'.format('tests'))
+    test_module(ctx, module=['tests'], numprocesses=numprocesses)
+
+@task
+def test_travis_android(ctx, numprocesses=None):
+    """
+    Run tests on Android 7.0, Samsung Galaxy S8
+    """
+    flake(ctx)
+    os_env['DESIRED_CAP'] = {'device': 'Samsung Galaxy S8', 'realMobile': 'true', 'os_version': '7.0'}
+    print('Testing modules in "{}" in android'.format('tests'))
+    test_module(ctx, module=['tests'], numprocesses=numprocesses)
+
+@task
+def test_travis_ios(ctx, numprocesses=None):
+    """
+    Run tests on ios 10.0, iPhone 7
+    """
+    flake(ctx)
+    os_env['DESIRED_CAP'] = {'device': 'iPhone 7', 'realMobile': 'true', 'os_version': '10.0'}
+    print('Testing modules in "{}" on ios'.format('tests'))
+    test_module(ctx, module=['tests'], numprocesses=numprocesses)
