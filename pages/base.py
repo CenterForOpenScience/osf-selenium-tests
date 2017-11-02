@@ -113,7 +113,7 @@ class OSFBasePage(BasePage):
     def __init__(self, driver, goto=True, require_login=False):
         super(OSFBasePage, self).__init__(driver)
         if require_login:
-            login(driver)
+            login(self)
 
         if goto:
             driver.get(self.url)

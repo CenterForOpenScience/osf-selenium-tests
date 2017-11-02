@@ -47,13 +47,14 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
     return driver
 
 
-def login(driver, user=settings.USER_ONE, password=settings.USER_ONE_PASSWORD):
+def login(osf_page, user=settings.USER_ONE, password=settings.USER_ONE_PASSWORD):
     try:
-        login_page = LoginPage(driver)
+        login_page = LoginPage(osf_page.driver)
     except HttpError:
         pass
     else:
         login_page.login(user, password)
+        osf_page.driver.get(osf_page.url)
 
 
 def logout(osf_page):
