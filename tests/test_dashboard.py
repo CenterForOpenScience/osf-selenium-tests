@@ -1,6 +1,6 @@
 import pytest
 
-from utils import launch_driver, login
+from utils import launch_driver
 from pages.project import ProjectPage
 from pages.dashboard import DashboardPage
 

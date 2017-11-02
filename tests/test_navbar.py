@@ -1,8 +1,8 @@
 import pytest
 import settings
 
-from utils import launch_driver, login
-from pages.base import OSFBasePage
+from utils import launch_driver
+from pages.base import OSFBasePage, login
 from pages.preprint import PreprintPage
 from pages.meeting import MeetingPage
 from pages.registries import RegistriesPage
