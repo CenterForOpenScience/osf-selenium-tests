@@ -1,4 +1,5 @@
 import settings
+from utils import login
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -76,10 +77,10 @@ class Navbar(BaseElement):
         'preprints_link': (By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(2) > a'),
         'registries_link': (By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(3) > a'),
         'meetings_link': (By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(4) > a'),
-        'search_link': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-of-type(4) > a'),
-        'support_link': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-of-type(3) > a'),
-        'donate_link': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-of-type(2) > a'),
-        'user_dropdown': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-of-type(1) > button'),
+        'search_link': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-child(4) > a'),
+        'support_link': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-child(3) > a'),
+        'donate_link': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-child(2) > a'),
+        'user_dropdown': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-child(1) > button'),
         'user_dropdown_profile': (By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(1) > a'),
         'user_dropdown_support': (By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(2) > a'),
         'user_dropdown_settings': (By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(3) > a'),
@@ -109,8 +110,11 @@ class OSFBasePage(BasePage):
         'error_heading': (By.CSS_SELECTOR, 'h2#error'),
     }
 
-    def __init__(self, driver, goto=True):
+    def __init__(self, driver, goto=True, require_login=False):
         super(OSFBasePage, self).__init__(driver)
+        if require_login:
+            login(driver)
+
         if goto:
             driver.get(self.url)
 
@@ -150,7 +154,7 @@ class OSFBasePage(BasePage):
         locators = {
             **Navbar.locators,
             **{
-                'my_project_link': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-of-type(5) > a'),
+                'my_project_link': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-child(5) > a'),
             }
         }
 

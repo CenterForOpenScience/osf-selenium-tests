@@ -19,11 +19,11 @@ class PreprintPage(OSFBasePage):
         self.navbar = self.PreprintPageNavbar(driver)
 
     class PreprintPageNavbar(Navbar):
-        
+
         locators = {
             **Navbar.locators,
             **{
-                'add_a_preprint_link': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-of-type(5) > a'),
+                'add_a_preprint_link': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-child(5) > a'),
             }
         }
 

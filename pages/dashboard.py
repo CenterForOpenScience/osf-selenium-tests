@@ -8,14 +8,14 @@ class DashboardPage(OSFBasePage):
     locators = {
         **OSFBasePage.locators,
         **{
-            'identity': (By.CSS_SELECTOR, 'body > div#osfHome > div.prereg-banner', settings.LONG_TIMEOUT),
+            'identity': (By.CSS_SELECTOR, 'body > div#osfHome > div.prereg-banner > div.container', settings.LONG_TIMEOUT),
             'create_project_button': (By.CSS_SELECTOR, 'button.btn-success:nth-child(1)', settings.LONG_TIMEOUT),
         }
     }
 
-    def __init__(self, driver, goto=True):
-        super(DashboardPage, self).__init__(driver, goto)
-        if not self.is_logged_in:
+    def __init__(self, driver, goto=True, require_login=True):
+        super(DashboardPage, self).__init__(driver, goto, require_login)
+        if not self.is_logged_in():
             raise ValueError
 
     class CreateProjectModal(BaseElement):
