@@ -78,7 +78,7 @@ class Navbar(BaseElement):
         'meetings_link': (By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(4) > a'),
         'search_link': (By.LINK_TEXT, 'Search', settings.LONG_TIMEOUT),
         'support_link': (By.LINK_TEXT, 'Support', settings.LONG_TIMEOUT),
-        'donate_link': (By.LINK_TEXT, 'donate', settings.LONG_TIMEOUT),
+        'donate_link': (By.LINK_TEXT, 'Donate', settings.LONG_TIMEOUT),
         'user_dropdown': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-of-type(1) > button'),
         'user_dropdown_profile': (By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(1) > a'),
         'user_dropdown_support': (By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(2) > a'),
