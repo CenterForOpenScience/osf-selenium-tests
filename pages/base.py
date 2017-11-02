@@ -76,9 +76,9 @@ class Navbar(BaseElement):
         'preprints_link': (By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(2) > a'),
         'registries_link': (By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(3) > a'),
         'meetings_link': (By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(4) > a'),
-        'search_link': (By.LINK_TEXT, 'Search', settings.LONG_TIMEOUT),
-        'support_link': (By.LINK_TEXT, 'Support', settings.LONG_TIMEOUT),
-        'donate_link': (By.LINK_TEXT, 'Donate', settings.LONG_TIMEOUT),
+        'search_link': (By.XPATH, '//div[@id="secondary-navigation"]/ul/li[2]/a'),
+        'support_link': (By.XPATH, '//div[@id="secondary-navigation"]/ul/li[3]/a'),
+        'donate_link': (By.XPATH, '//div[@id="secondary-navigation"]/ul/li[4]/a'),
         'user_dropdown': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-of-type(1) > button'),
         'user_dropdown_profile': (By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(1) > a'),
         'user_dropdown_support': (By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(2) > a'),
@@ -104,7 +104,7 @@ class LoginPage(BasePage):
     url = settings.OSF_HOME + '/login'
 
     locators = {
-        'identity': (By.ID, 'login-page', settings.LONG_TIMEOUT),
+        'identity': (By.XPATH, '/html/body[@id="cas"]', settings.LONG_TIMEOUT),
         'username_input': (By.ID, 'username'),
         'password_input': (By.ID, 'password'),
         'submit_button': (By.NAME, 'submit'),

@@ -10,8 +10,6 @@ class RegistriesPage(OSFBasePage):
         **OSFBasePage.locators,
         **{
             'identity': (By.CSS_SELECTOR, 'body.ember-application > div.ember-view > div.preprints-page > div.search-header > div.container > div.row > div > div.registries-brand', settings.LONG_TIMEOUT),
-            'user_dropdown': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-of-type(1) > a'),
-            'sign_in_button': (By.LINK_TEXT, 'Sign in'),
         }
     }
 
@@ -20,6 +18,17 @@ class RegistriesPage(OSFBasePage):
         self.navbar = self.RegistriesPageNavbar(driver)
 
     class RegistriesPageNavbar(Navbar):
+
+        locators = {
+            **Navbar.locators,
+            **{
+                'search_link': (By.XPATH, '//div[@id="secondary-navigation"]/ul/li[1]/a'),
+                'support_link': (By.XPATH, '//div[@id="secondary-navigation"]/ul/li[2]/a'),
+                'donate_link': (By.XPATH, '//div[@id="secondary-navigation"]/ul/li[3]/a'),
+                'user_dropdown': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-of-type(1) > a'),
+                'sign_in_button': (By.CSS_SELECTOR, '#secondary-navigation > ul > li.ember-view.dropdown.sign-in > a:nth-child(2)'),
+            }
+        }
 
         def verify(self):
             return self.current_service.text == 'REGISTRIES'

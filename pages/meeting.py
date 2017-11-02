@@ -21,5 +21,13 @@ class MeetingPage(OSFBasePage):
 
     class MeetingPageNavbar(Navbar):
 
+        locators = {
+            **Navbar.locators,
+            **{
+                'support_link': (By.XPATH, '//div[@id="secondary-navigation"]/ul/li[1]/a'),
+                'donate_link': (By.XPATH, '//div[@id="secondary-navigation"]/ul/li[2]/a'),
+            }
+        }
+
         def verify(self):
             return self.current_service.text == 'MEETINGS'
