@@ -94,7 +94,7 @@ class Navbar(BaseElement):
 
     def is_logged_in(self):
         try:
-            if self.sign_in_button:
+            if self.sign_up_button:
                 return False
         except ValueError:
             return True
@@ -117,9 +117,7 @@ class LoginPage(BasePage):
         old_url = driver.current_url
         driver.get(self.url)
 
-        try:
-            self.identity
-        except ValueError:
+        if not self.verify():
             url = driver.current_url
             if url == old_url:
                 raise LoginError(
@@ -129,6 +127,14 @@ class LoginPage(BasePage):
             raise PageException('Unexpected page structure: `{}`'.format(
                 url
             ))
+        
+    def verify(self):
+        try:
+            self.identity
+        except ValueError:
+            return False
+        else:
+            return True
 
     def login(self, user, password):
         self.username_input.send_keys(user)
