@@ -76,10 +76,10 @@ class Navbar(BaseElement):
         'preprints_link': (By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(2) > a'),
         'registries_link': (By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(3) > a'),
         'meetings_link': (By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(4) > a'),
-        'search_link': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-child(4) > a'),
-        'support_link': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-child(3) > a'),
-        'donate_link': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-child(2) > a'),
-        'user_dropdown': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-child(1) > button'),
+        'search_link': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-of-type(4) > a'),
+        'support_link': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-of-type(3) > a'),
+        'donate_link': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-of-type(2) > a'),
+        'user_dropdown': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-of-type(1) > button'),
         'user_dropdown_profile': (By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(1) > a'),
         'user_dropdown_support': (By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(2) > a'),
         'user_dropdown_settings': (By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(3) > a'),
@@ -124,6 +124,7 @@ class LoginPage(BasePage):
             if url == old_url:
                 raise HttpError(
                     driver=driver,
+                    code=self.error_heading.get_attribute('data-http-status-code'),
                     error_info='Already logged in'
                 )
             raise PageException('Unexpected page structure: `{}`'.format(
