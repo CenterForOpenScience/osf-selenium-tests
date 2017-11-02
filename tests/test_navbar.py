@@ -22,7 +22,10 @@ class TestBasePageNavBar:
         self.base_page = OSFBasePage(self.driver)
 
     def teardown_method(self, method):
-        logout(self.base_page)
+        try:
+            logout(self.base_page)
+        except ValueError:
+            pass
 
     def test_osf_home_drop_down_home_link(self):
         self.base_page.navbar.service_dropdown.click()
@@ -135,7 +138,10 @@ class TestPreprintsPageNavBar:
         self.preprint_page = PreprintPage(self.driver)
 
     def teardown_method(self, method):
-        logout(self.preprint_page)
+        try:
+            logout(self.preprint_page)
+        except ValueError:
+            pass
 
     def test_preprint_home_drop_down_home_link(self):
         self.preprint_page.navbar.service_dropdown.click()
@@ -248,7 +254,10 @@ class TestMeetingPageNavBar:
         self.meeting_page.goto()
 
     def teardown_method(self, method):
-        logout(self.meeting_page)
+        try:
+            logout(self.meeting_page)
+        except ValueError:
+            pass
 
     def test_meeting_home_drop_down_home_link(self):
         self.meeting_page.navbar.service_dropdown.click()
@@ -350,7 +359,10 @@ class TestRegistriesPageNavBar:
         self.registries_page = RegistriesPage(self.driver)
 
     def teardown_method(self, method):
-        logout(self.registries_page)
+        try:
+            logout(self.registries_page)
+        except ValueError:
+            pass
 
     def test_registries_home_drop_down_home_link(self):
         self.registries_page.navbar.service_dropdown.click()
