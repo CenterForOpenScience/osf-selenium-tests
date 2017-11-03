@@ -1,7 +1,5 @@
 from .defaults import *
-from selenium import webdriver
 import os
-
 
 os_env = os.environ
 

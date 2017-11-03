@@ -74,7 +74,6 @@ class OSFBasePage(BasePage):
     def is_logged_in(self):
         return self.navbar.is_logged_in()
 
-
     class Navbar(BaseElement):
 
         locators = {

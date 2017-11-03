@@ -5,14 +5,13 @@ from selenium.webdriver.common.by import By
 class DashboardPage(OSFBasePage):
 
     locators = {
-        'create_project_button':(By.CSS_SELECTOR, 'button.btn-success:nth-child(1)', settings.LONG_TIMEOUT),
+        'create_project_button': (By.CSS_SELECTOR, 'button.btn-success:nth-child(1)', settings.LONG_TIMEOUT),
     }
 
     def __init__(self, driver):
         super(DashboardPage, self).__init__(driver)
         if not self.is_logged_in:
             raise ValueError
-
 
     class CreateProjectModal(BaseElement):
         locators = {
@@ -34,7 +33,6 @@ class DashboardPage(OSFBasePage):
                     return not logo.value_of_css_property('filter') == 'grayscale(100%)'
             except:
                 raise ValueError('Institution logo for {} not present in modal'.format(institution))
-
 
     class ProjectCreatedModal(BaseElement):
         locators = {
