@@ -7,11 +7,7 @@ commands, run ``$ invoke --list``.
 
 import os
 import sys
-import json
-import platform
-import subprocess
 import logging
-from time import sleep
 from invoke import task
 
 
@@ -70,12 +66,20 @@ def test_module(ctx, module=None, numprocesses=None, params=None):
     sys.exit(retcode)
 
 @task
+def test_travis_safari(ctx, numprocesses=None):
+    """
+    Run tests on the latest Safari
+    """
+    flake(ctx)
+    print('Testing modules in "{}" in Safari'.format('tests'))
+    test_module(ctx, module=['tests'], numprocesses=numprocesses)
+
+@task
 def test_travis_chrome(ctx, numprocesses=None):
     """
     Run tests on the latest Chrome
     """
     flake(ctx)
-    os_env['DESIRED_CAP'] = {'browser': 'Chrome', 'os': 'Windows', 'os_version': '10', 'resolution': '1024x768'}
     print('Testing modules in "{}" in Chrome'.format('tests'))
     test_module(ctx, module=['tests'], numprocesses=numprocesses)
 
@@ -85,7 +89,6 @@ def test_travis_edge(ctx, numprocesses=None):
     Run tests on the latest Edge
     """
     flake(ctx)
-    os_env['DESIRED_CAP'] = {'browser': 'Edge', 'os': 'Windows', 'os_version': '10', 'resolution': '1024x768'}
     print('Testing modules in "{}" in Edge'.format('tests'))
     test_module(ctx, module=['tests'], numprocesses=numprocesses)
 
@@ -95,7 +98,6 @@ def test_travis_firefox(ctx, numprocesses=None):
     Run tests on the latest Firefox
     """
     flake(ctx)
-    os_env['DESIRED_CAP'] = {'browser': 'Firefox', 'os': 'Windows', 'os_version': '10', 'resolution': '1024x768'}
     print('Testing modules in "{}" in Firefox'.format('tests'))
     test_module(ctx, module=['tests'], numprocesses=numprocesses)
 
@@ -105,7 +107,6 @@ def test_travis_msie(ctx, numprocesses=None):
     Run tests on the latest Microsoft Internet Explorer
     """
     flake(ctx)
-    os_env['DESIRED_CAP'] = {'browser': 'IE', 'os': 'Windows', 'os_version': '7', 'resolution': '1024x768'}
     print('Testing modules in "{}" in MSIE'.format('tests'))
     test_module(ctx, module=['tests'], numprocesses=numprocesses)
 
@@ -115,7 +116,6 @@ def test_travis_android(ctx, numprocesses=None):
     Run tests on Android 7.0, Samsung Galaxy S8
     """
     flake(ctx)
-    os_env['DESIRED_CAP'] = {'device': 'Samsung Galaxy S8', 'realMobile': 'true', 'os_version': '7.0'}
     print('Testing modules in "{}" in android'.format('tests'))
     test_module(ctx, module=['tests'], numprocesses=numprocesses)
 
@@ -125,6 +125,5 @@ def test_travis_ios(ctx, numprocesses=None):
     Run tests on ios 10.0, iPhone 7
     """
     flake(ctx)
-    os_env['DESIRED_CAP'] = {'device': 'iPhone 7', 'realMobile': 'true', 'os_version': '10.0'}
     print('Testing modules in "{}" on ios'.format('tests'))
     test_module(ctx, module=['tests'], numprocesses=numprocesses)
