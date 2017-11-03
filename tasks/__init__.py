@@ -72,7 +72,7 @@ def test_travis_safari(ctx, numprocesses=None):
     """
     flake(ctx)
     print('Testing modules in "{}" in Safari'.format('tests'))
-    test_module(ctx, module=['tests'], numprocesses=numprocesses)
+    test_module(ctx, module=['tests'])
 
 @task
 def test_travis_chrome(ctx, numprocesses=None):
@@ -81,7 +81,7 @@ def test_travis_chrome(ctx, numprocesses=None):
     """
     flake(ctx)
     print('Testing modules in "{}" in Chrome'.format('tests'))
-    test_module(ctx, module=['tests'], numprocesses=numprocesses)
+    test_module(ctx, module=['tests'])
 
 @task
 def test_travis_edge(ctx, numprocesses=None):
@@ -90,7 +90,7 @@ def test_travis_edge(ctx, numprocesses=None):
     """
     flake(ctx)
     print('Testing modules in "{}" in Edge'.format('tests'))
-    test_module(ctx, module=['tests'], numprocesses=numprocesses)
+    test_module(ctx, module=['tests'])
 
 @task
 def test_travis_firefox(ctx, numprocesses=None):
@@ -99,7 +99,7 @@ def test_travis_firefox(ctx, numprocesses=None):
     """
     flake(ctx)
     print('Testing modules in "{}" in Firefox'.format('tests'))
-    test_module(ctx, module=['tests'], numprocesses=numprocesses)
+    test_module(ctx, module=['tests'])
 
 @task
 def test_travis_msie(ctx, numprocesses=None):
@@ -108,7 +108,7 @@ def test_travis_msie(ctx, numprocesses=None):
     """
     flake(ctx)
     print('Testing modules in "{}" in MSIE'.format('tests'))
-    test_module(ctx, module=['tests'], numprocesses=numprocesses)
+    test_module(ctx, module=['tests'])
 
 @task
 def test_travis_android(ctx, numprocesses=None):
@@ -117,7 +117,7 @@ def test_travis_android(ctx, numprocesses=None):
     """
     flake(ctx)
     print('Testing modules in "{}" in android'.format('tests'))
-    test_module(ctx, module=['tests'], numprocesses=numprocesses)
+    test_module(ctx, module=['tests'])
 
 @task
 def test_travis_ios(ctx, numprocesses=None):
@@ -126,4 +126,4 @@ def test_travis_ios(ctx, numprocesses=None):
     """
     flake(ctx)
     print('Testing modules in "{}" on ios'.format('tests'))
-    test_module(ctx, module=['tests'], numprocesses=numprocesses)
+    test_module(ctx, module=['tests'])

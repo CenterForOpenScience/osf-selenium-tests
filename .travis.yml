@@ -29,4 +29,4 @@ install:
   - travis_retry invoke requirements
 
 script:
-  - invoke test_travis_$TEST_BUILD -n 4
+  - invoke test_travis_$TEST_BUILD
