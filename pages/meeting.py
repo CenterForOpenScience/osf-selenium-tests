@@ -24,8 +24,8 @@ class MeetingPage(OSFBasePage):
         locators = {
             **Navbar.locators,
             **{
-                'support_link': (By.XPATH, '/html/body/div[@class="osf-nav-wrapper]/nav[@id="navbarScope"]/div[@class="container"]/div[@id="secondary-navigation"]/ul/li[1]/a'),
-                'donate_link': (By.XPATH, '/html/body/div[@class="osf-nav-wrapper]/nav[@id="navbarScope"]/div[@class="container"]/div[@id="secondary-navigation"]/ul/li[2]/a'),
+                'support_link': (By.XPATH, '/html/body/div[@class="osf-nav-wrapper]/nav[@id="navbarScope"]/div[@class="container"]/div[@id="secondary-navigation"]/ul/li[1]/a', settings.LONG_TIMEOUT),
+                'donate_link': (By.XPATH, '/html/body/div[@class="osf-nav-wrapper]/nav[@id="navbarScope"]/div[@class="container"]/div[@id="secondary-navigation"]/ul/li[2]/a', settings.LONG_TIMEOUT),
             }
         }
 

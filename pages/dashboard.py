@@ -13,10 +13,9 @@ class DashboardPage(OSFBasePage):
         }
     }
 
-    def __init__(self, driver, goto=True, require_login=True):
-        super(DashboardPage, self).__init__(driver, goto, require_login)
-        if not self.is_logged_in():
-            raise ValueError
+    def __init__(self, driver, goto=True):
+        super(DashboardPage, self).__init__(driver, goto, require_login=True)
+
 
     class CreateProjectModal(BaseElement):
 
