@@ -39,8 +39,9 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
         driver = driver_cls(chrome_options=chrome_options)
     else:
         driver = driver_cls()
-        # Maximize window to prevent visibility issues due to responsive design
-        driver.maximize_window()
+
+    # Maximize window to prevent visibility issues due to responsive design
+    driver.set_window_size(1920, 1080)
 
     # Return driver
     return driver
