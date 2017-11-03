@@ -1,13 +1,16 @@
 import settings
 import urllib.parse
+
 from pages.base import OSFBasePage
 from selenium.webdriver.common.by import By
+
+from utils import purifyId
 
 
 class ProjectPage(OSFBasePage):
 
     locators = {
-        **OSFBasePage.locators,
+        **purifyId(OSFBasePage.locators),
         **{
             'identity': (By.CSS_SELECTOR, '#overview > nav#projectSubnav'),
             'project_title': (By.ID, 'nodeTitleEditable'),

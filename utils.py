@@ -49,3 +49,12 @@ def logout(osf_page):
     if osf_page.is_logged_in():
         osf_page.navbar.user_dropdown.click()
         osf_page.navbar.logout_link.click()
+
+
+def purifyId(locators):
+    r = dict(locators)
+    try:
+        del r['identity']
+    except KeyError:
+        pass
+    return r

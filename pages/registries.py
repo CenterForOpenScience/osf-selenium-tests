@@ -1,13 +1,16 @@
 import settings
+
 from pages.base import OSFBasePage, Navbar
 from selenium.webdriver.common.by import By
+
+from utils import purifyId
 
 
 class RegistriesPage(OSFBasePage):
     url = settings.OSF_HOME + '/registries'
 
     locators = {
-        **OSFBasePage.locators,
+        **purifyId(OSFBasePage.locators),
         **{
             'identity': (By.CSS_SELECTOR, 'body.ember-application > div.ember-view > div.preprints-page > div.search-header > div.container > div.row > div > div.registries-brand', settings.LONG_TIMEOUT),
         }
@@ -20,7 +23,7 @@ class RegistriesPage(OSFBasePage):
     class RegistriesPageNavbar(Navbar):
 
         locators = {
-            **Navbar.locators,
+            **purifyId(Navbar.locators),
             **{
                 'search_link': (By.XPATH, '/html/body/div[@class="ember-view]/div[1]/nav[@id="navbarScope"]/div[@class="container"]/div[@id="secondary-navigation"]/ul/li[1]/a', settings.LONG_TIMEOUT),
                 'support_link': (By.XPATH, '/html/body/div[@class="ember-view]/div[1]/nav[@id="navbarScope"]/div[@class="container"]/div[@id="secondary-navigation"]/ul/li[2]/a', settings.LONG_TIMEOUT),

@@ -6,7 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import StaleElementReferenceException, TimeoutException
 
 from pages.exceptions import HttpError, PageException, LoginError
-
+from utils import purifyId
 
 class BaseElement(object):
     default_timeout = settings.TIMEOUT
@@ -208,7 +208,7 @@ class OSFBasePage(BasePage):
     class BasePageNavbar(Navbar):
 
         locators = {
-            **Navbar.locators,
+            **purifyId(Navbar.locators),
             **{
                 'my_project_link': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-child(5) > a'),
             }
