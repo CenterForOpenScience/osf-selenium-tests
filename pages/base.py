@@ -67,6 +67,14 @@ class BasePage(BaseElement):
     def reload(self):
         self.driver.refresh()
 
+    def verify(self):
+        try:
+            self.identity
+        except ValueError:
+            return False
+        else:
+            return True
+
 
 class Navbar(BaseElement):
 
@@ -128,14 +136,6 @@ class LoginPage(BasePage):
                 url
             ))
 
-    def verify(self):
-        try:
-            self.identity
-        except ValueError:
-            return False
-        else:
-            return True
-
     def login(self, user, password):
         self.username_input.send_keys(user)
         if ('localhost:5000' in settings.OSF_HOME):
@@ -193,14 +193,6 @@ class OSFBasePage(BasePage):
             ))
 
         self.navbar = self.BasePageNavbar(driver)
-
-    def verify(self):
-        try:
-            self.identity
-        except ValueError:
-            return False
-        else:
-            return True
 
     def is_logged_in(self):
         return self.navbar.is_logged_in()
