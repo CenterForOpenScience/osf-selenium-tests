@@ -13,16 +13,17 @@ env:
     - secure: wiFFkSlnwLMDUYOPlVlKqQMnvDuIM2m6ZMCKhIuJiS8ItdcvShu7z2h98XSYy7zSrb75XSBFU9qX/I25LMkynZMi+miPWVf2izRVVST2BlwX/ikzw73oFkoJ4cvrfqih17A8IVtl2P9zCASzx96kIG+kHJ4LxsWfSV9zxxxNi57UbMeTUr18tMJu0nhYfg9HH4s+OVzAknpb64pYauKKsb6PsniW8qPLQ/c1ky8xhyYPNqSL1gtYrqzWu7suQOh6MRs1lljScr2lQdUEEu/HS4aUvwvOyvsexZCZTxaDb375iva40N/E1bGNmW9qf/btM8VQWmkGPZpNNoO6N9FUApyYoVI453DTiFpZg8c1tMp0PnPnhPZJBAo6awg88VYPEGSusSpDGRNdetjVFHJkSc0cSCvcSm81x9IedfIzErOMVzC3C9sUBDyRyLSlEgxwh4VnsRYCsKqISn/z5rrAZtxtipC7bUZlzB3KNYcRVK2NVmtosf+LpYc9+sRHmNH2U3JJk3nHC+aPtVF9uYiZus2ry8UyG8qYyAm0C+p0YDD4q2KVexgC0tSnhjl7EL2cXXDjT4CPBMUe4V7M3STEVJ85RtghTnQrnd5ZSCdK6TQ8RtnRCfT+JbDcfMk5W5zUNIGjQ0QkQ/3dxMSM6vJrDIchCdvzhvjU/k3B8hnEwqk=
 
   matrix:
-    fast_finish: true
     - TEST_BUILD="msie"
     - TEST_BUILD="safari"
     - TEST_BUILD="edge"
     - TEST_BUILD="firefox"
     - TEST_BUILD="chrome"
-    # - TEST_BUILD="ios"
-    # - TEST_BUILD="android"
-    allow_failures:
-    - TEST_BUILD="safari"
+
+matrix:
+  fast_finish: true
+  allow_failures:
+    - env: TEST_BUILD="safari"
+
 
 install:
   - cd $PROJECT_DIR
