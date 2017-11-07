@@ -45,7 +45,7 @@ def requirements(ctx, dev=False):
     ctx.run(cmd, echo=True)
 
 @task
-def test_module(ctx, module=None, numprocesses=4, params=None):
+def test_module(ctx, module=None, numprocesses=1, params=None):
     """Helper for running tests.
     """
     import pytest

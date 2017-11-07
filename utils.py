@@ -41,7 +41,10 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
         driver = driver_cls()
 
     # Maximize window to prevent visibility issues due to responsive design
-    driver.set_window_size(1200, 720)
+    width, height = 1200, 720
+    if desired_capabilities.get('browser') == 'Safari':
+        width, height = 1020, 720
+    driver.set_window_size(width, height)
 
     # Return driver
     return driver
