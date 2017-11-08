@@ -3,7 +3,6 @@ import os
 import settings
 from selenium import webdriver
 from pages.login import LoginPage
-from selenium.common.exceptions import NoSuchWindowException
 
 
 def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
