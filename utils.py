@@ -3,6 +3,7 @@ import os
 import settings
 from selenium import webdriver
 from pages.login import LoginPage
+from selenium.common.exceptions import NoSuchWindowException
 
 
 def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
@@ -44,7 +45,11 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
     width, height = 1200, 720
     if desired_capabilities.get('browser') == 'Safari':
         width, height = 1020, 720
-    driver.set_window_size(width, height)
+
+    try:
+        driver.set_window_size(width, height)
+    except NoSuchWindowException:
+        driver.maximize_window()
 
     # Return driver
     return driver
