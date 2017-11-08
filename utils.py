@@ -42,7 +42,7 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
 
     # Maximize window to prevent visibility issues due to responsive design
     if desired_capabilities.get('browser') == 'Safari':
-        driver.maximize_window()
+        os.system('osascript max_window.scpt')
     else:
         driver.set_window_size(1200, 720)
 
