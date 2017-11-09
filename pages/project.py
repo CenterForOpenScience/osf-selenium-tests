@@ -10,13 +10,10 @@ from utils import purifyId
 class ProjectPage(OSFBasePage):
 
     locators = {
-        **purifyId(OSFBasePage.locators),
-        **{
-            'identity': (By.CSS_SELECTOR, '#overview > nav#projectSubnav'),
-            'project_title': (By.ID, 'nodeTitleEditable'),
-        }
+        'identity': (By.CSS_SELECTOR, '#overview > nav#projectSubnav'),
+        'project_title': (By.ID, 'nodeTitleEditable'),
     }
 
-    def __init__(self, driver, goto=True, guid=''):
-        super(self.__class__, self).__init__(driver, goto)
+    def __init__(self, driver, verify=False, guid=''):
+        super(self.__class__, self).__init__(driver, verify)
         self.url = urllib.parse.urljoin(settings.OSF_HOME, guid)

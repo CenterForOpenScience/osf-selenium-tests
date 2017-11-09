@@ -13,6 +13,7 @@ class TestDashboardPage:
 
     def setup_method(self, method):
         self.dashboard_page = DashboardPage(self.driver)
+        self.dashboard_page.goto()
 
     def test_create_project(self):
         project_title = 'Totally Unique Project'
@@ -22,7 +23,7 @@ class TestDashboardPage:
         create_project_modal.create_project_button.click()
         project_created_modal = self.dashboard_page.ProjectCreatedModal(self.driver)
         project_created_modal.go_to_project_button.click()
-        project_page = ProjectPage(self.driver)
+        project_page = ProjectPage(self.driver, verify=True)
         assert project_page.project_title.text == project_title, "Project title incorrect."
 
     def test_modal_buttons(self):

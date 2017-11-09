@@ -6,7 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import StaleElementReferenceException, TimeoutException
 
 from pages.exceptions import HttpError, PageException, LoginError
-from utils import purifyId
+
 
 class BaseElement(object):
     default_timeout = settings.TIMEOUT
@@ -63,9 +63,16 @@ class BasePage(BaseElement):
 
     def goto(self):
         self.driver.get(self.url)
+        self.check_page()
 
-    def reload(self):
-        self.driver.refresh()
+    def check_page(self):
+        if not self.verify():
+            # handle any specific kind of error before go to page exception
+            self.error_handling()
+
+            raise PageException('Unexpected page structure: `{}`'.format(
+                self.driver.current_url
+            ))
 
     def verify(self):
         try:
@@ -74,6 +81,12 @@ class BasePage(BaseElement):
             return False
         else:
             return True
+
+    def error_handling(self):
+        pass
+
+    def reload(self):
+        self.driver.refresh()
 
 
 class Navbar(BaseElement):
@@ -84,9 +97,9 @@ class Navbar(BaseElement):
         'preprints_link': (By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(2) > a'),
         'registries_link': (By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(3) > a'),
         'meetings_link': (By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(4) > a'),
-        'search_link': (By.XPATH, '/html/body/div[@class="osf-nav-wrapper]/nav[@id="navbarScope"]/div[@class="container"]/div[@id="secondary-navigation"]/ul/li[2]/a', settings.LONG_TIMEOUT),
-        'support_link': (By.XPATH, '/html/body/div[@class="osf-nav-wrapper]/nav[@id="navbarScope"]/div[@class="container"]/div[@id="secondary-navigation"]/ul/li[3]/a', settings.LONG_TIMEOUT),
-        'donate_link': (By.XPATH, '/html/body/div[@class="osf-nav-wrapper]/nav[@id="navbarScope"]/div[@class="container"]/div[@id="secondary-navigation"]/ul/li[4]/a', settings.LONG_TIMEOUT),
+        'search_link': (By.ID, 'nav-bar-search'),
+        'support_link': (By.ID, 'nav-bar-support'),
+        'donate_link': (By.ID, 'nav-bar-donate'),
         'user_dropdown': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-of-type(1) > button'),
         'user_dropdown_profile': (By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(1) > a'),
         'user_dropdown_support': (By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(2) > a'),
@@ -120,21 +133,31 @@ class LoginPage(BasePage):
         'remember_me_checkbox': (By.ID, 'rememberMe'),
     }
 
-    def __init__(self, driver):
+    def __init__(self, driver, verify=False):
         super(LoginPage, self).__init__(driver)
-        old_url = driver.current_url
-        driver.get(self.url)
+        if verify:
+            self.check_page(old_url=self.driver.current_url)
 
+    def goto(self):
+        old_url = self.driver.current_url
+        self.driver.get(self.url)
+        self.check_page(old_url)
+
+    def check_page(self, old_url=None):
         if not self.verify():
-            url = driver.current_url
-            if url == old_url:
-                raise LoginError(
-                    driver=driver,
-                    error_info='Already logged in'
-                )
+
+            self.error_handling(old_url)
+
             raise PageException('Unexpected page structure: `{}`'.format(
-                url
+                self.driver.current_url
             ))
+
+    def error_handling(self, old_url=None):
+        if self.driver.current_url == old_url:
+            raise LoginError(
+                driver=self.driver,
+                error_info='Already logged in'
+            )
 
     def login(self, user, password):
         self.username_input.send_keys(user)
@@ -150,6 +173,7 @@ class LoginPage(BasePage):
 def login(osf_page, user=settings.USER_ONE, password=settings.USER_ONE_PASSWORD):
     try:
         login_page = LoginPage(osf_page.driver)
+        login_page.goto()
     except LoginError:
         pass
     else:
@@ -161,38 +185,32 @@ class OSFBasePage(BasePage):
     url = settings.OSF_HOME
 
     # all page must have unique identity
-    locators = {
-        'identity': (By.LINK_TEXT, 'Center for Open Science'),
-        'error_heading': (By.CSS_SELECTOR, 'h2#error'),
-    }
+    locators = {}
 
-    def __init__(self, driver, goto=True, require_login=False):
+    def __init__(self, driver, verify=False, require_login=False):
         super(OSFBasePage, self).__init__(driver)
         if require_login:
             login(self)
 
-        if goto:
-            driver.get(self.url)
-
-        # Verify the page is what you expect it to be.
-        if not self.verify():
-            url = driver.current_url
-
-            # If we've got an error message here, grab it
-            try:
-                if self.error_heading:
-                    raise HttpError(
-                        driver=self.driver,
-                        code=self.error_heading.get_attribute('data-http-status-code'),
-                    )
-            except ValueError:
-                pass
-
-            raise PageException('Unexpected page structure: `{}`'.format(
-                url
-            ))
+        if verify:
+            self.check_page()
 
         self.navbar = self.BasePageNavbar(driver)
+
+    @property
+    def error_heading(self):
+        return self.find_element(By.CSS_SELECTOR, 'h2#error')
+
+    def error_handling(self):
+        # If we've got an error message here, grab it
+        try:
+            if self.error_heading:
+                raise HttpError(
+                    driver=self.driver,
+                    code=self.error_heading.get_attribute('data-http-status-code'),
+                )
+        except ValueError:
+            pass
 
     def is_logged_in(self):
         return self.navbar.is_logged_in()
@@ -200,7 +218,7 @@ class OSFBasePage(BasePage):
     class BasePageNavbar(Navbar):
 
         locators = {
-            **purifyId(Navbar.locators),
+            **Navbar.locators,
             **{
                 'my_project_link': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-child(5) > a'),
             }
