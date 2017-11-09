@@ -1,9 +1,11 @@
 import os
+import shutil
 
 import settings
 from selenium import webdriver
 from pages.login import LoginPage
 
+HERE = os.path.abspath(os.path.dirname(os.path.abspath(__file__)))
 
 def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
     """Create and configure a WebDriver.
@@ -42,7 +44,12 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
 
     # Maximize window to prevent visibility issues due to responsive design
     if desired_capabilities.get('browser') == 'Safari':
-        os.system('osascript max_window.scpt')
+        path = shutil.which('osascript')
+        if path is not None:
+            cmd = '{} {}'.format(path, os.path.join(HERE, 'max_window.scpt'))
+            os.system(cmd)
+        else:
+            driver.maximize_window()
     else:
         driver.set_window_size(1200, 720)
 
