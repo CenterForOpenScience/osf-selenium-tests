@@ -4,8 +4,6 @@ import urllib.parse
 from pages.base import OSFBasePage
 from selenium.webdriver.common.by import By
 
-from utils import purifyId
-
 
 class ProjectPage(OSFBasePage):
 
