@@ -3,7 +3,7 @@ import settings
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.common.exceptions import StaleElementReferenceException, TimeoutException
+from selenium.common.exceptions import StaleElementReferenceException, TimeoutException, NoSuchElementException
 
 from pages.exceptions import HttpError, PageException, LoginError
 
@@ -201,7 +201,7 @@ class OSFBasePage(BasePage):
     def error_heading(self):
         try:
             error_head = self.find_element(By.CSS_SELECTOR, 'h2#error')
-        except ValueError:
+        except NoSuchElementException:
             pass
         else:
             return error_head.text
