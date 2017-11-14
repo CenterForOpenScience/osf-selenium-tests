@@ -7,5 +7,5 @@ from selenium.webdriver.common.by import By
 class LandingPage(OSFBasePage):
 
     locators = {
-        'identity': (By.CSS_SELECTOR, 'body > div.watermarked > div#home-hero > div.container.text-center > h1.hero-brand', settings.LONG_TIMEOUT),
+        'identity': (By.ID, 'home-hero', settings.LONG_TIMEOUT),
     }
