@@ -199,7 +199,12 @@ class OSFBasePage(BasePage):
 
     @property
     def error_heading(self):
-        return self.find_element(By.CSS_SELECTOR, 'h2#error')
+        try:
+            error_head = self.find_element(By.CSS_SELECTOR, 'h2#error')
+        except ValueError:
+            pass
+        else:
+            return error_head.text
 
     def error_handling(self):
         # If we've got an error message here, grab it
