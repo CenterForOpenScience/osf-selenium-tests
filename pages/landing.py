@@ -1,6 +1,6 @@
 import settings
 
-from pages.base import OSFBasePage, BaseElement
+from pages.base import OSFBasePage
 from selenium.webdriver.common.by import By
 
 
