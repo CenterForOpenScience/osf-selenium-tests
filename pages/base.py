@@ -69,9 +69,8 @@ class BasePage(BaseElement):
         if not self.verify():
             # handle any specific kind of error before go to page exception
             self.error_handling()
-
-            raise PageException('Unexpected page structure: `{}`'.format(
-                self.driver.current_url
+            raise PageException('Unexpected page structure: `{}` with identity {}'.format(
+                self.driver.current_url, self.locators['identity']
             ))
 
     def verify(self):
@@ -126,34 +125,25 @@ class LoginPage(BasePage):
 
     locators = {
         'identity': (By.XPATH, '/html/body[@id="cas"]/div[@id="container"]', settings.LONG_TIMEOUT),
-        'username_input': (By.ID, 'username'),
+        'username_'
+        'input': (By.ID, 'username'),
         'password_input': (By.ID, 'password'),
         'submit_button': (By.NAME, 'submit'),
-        'local_submit_button': (By.ID, 'submit'),
         'remember_me_checkbox': (By.ID, 'rememberMe'),
     }
+
+    if ('localhost:5000' in settings.OSF_HOME):
+        locators['submit_button'] = (By.ID, 'submit')
+        locators['identity'] = (By.ID, 'login')
+
 
     def __init__(self, driver, verify=False):
         super(LoginPage, self).__init__(driver)
         if verify:
-            self.check_page(old_url=self.driver.current_url)
+            self.check_page()
 
-    def goto(self):
-        old_url = self.driver.current_url
-        self.driver.get(self.url)
-        self.check_page(old_url)
-
-    def check_page(self, old_url=None):
-        if not self.verify():
-
-            self.error_handling(old_url)
-
-            raise PageException('Unexpected page structure: `{}`'.format(
-                self.driver.current_url
-            ))
-
-    def error_handling(self, old_url=None):
-        if self.driver.current_url == old_url:
+    def error_handling(self):
+        if self.url not in self.driver.current_url:
             raise LoginError(
                 driver=self.driver,
                 error_info='Already logged in'
@@ -161,24 +151,18 @@ class LoginPage(BasePage):
 
     def login(self, user, password):
         self.username_input.send_keys(user)
-        if ('localhost:5000' in settings.OSF_HOME):
-            self.local_submit_button.click()
-        else:
+        if ('localhost:5000'  not in settings.OSF_HOME):
             self.password_input.send_keys(password)
             if self.remember_me_checkbox.is_selected():
                 self.remember_me_checkbox.click()
-            self.submit_button.click()
+        self.submit_button.click()
 
 
 def login(osf_page, user=settings.USER_ONE, password=settings.USER_ONE_PASSWORD):
-    try:
-        login_page = LoginPage(osf_page.driver)
-        login_page.goto()
-    except LoginError:
-        pass
-    else:
-        login_page.login(user, password)
-        osf_page.driver.get(osf_page.url)
+    login_page = LoginPage(osf_page.driver)
+    login_page.goto()
+    login_page.login(user, password)
+    osf_page.driver.get(osf_page.url)
 
 
 class OSFBasePage(BasePage):
@@ -189,13 +173,16 @@ class OSFBasePage(BasePage):
 
     def __init__(self, driver, verify=False, require_login=False):
         super(OSFBasePage, self).__init__(driver)
+
+        self.navbar = self.BasePageNavbar(driver)
+
         if require_login:
-            login(self)
+            self.driver.get(self.url)
+            if not self.is_logged_in():
+                login(self)
 
         if verify:
             self.check_page()
-
-        self.navbar = self.BasePageNavbar(driver)
 
     @property
     def error_heading(self):

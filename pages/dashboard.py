@@ -7,7 +7,7 @@ from selenium.webdriver.common.by import By
 class DashboardPage(OSFBasePage):
 
     locators = {
-        'identity': (By.CSS_SELECTOR, 'body > div#osfHome > div.prereg-banner > div.container', settings.LONG_TIMEOUT),
+        'identity': (By.CSS_SELECTOR, '#osfHome > div.prereg-banner', settings.LONG_TIMEOUT),
         'create_project_button': (By.CSS_SELECTOR, 'button.btn-success:nth-child(1)', settings.LONG_TIMEOUT),
     }
 

@@ -1,6 +1,6 @@
 import pytest
 
-from utils import launch_driver
+from utils import launch_driver, logout
 from pages.project import ProjectPage
 from pages.dashboard import DashboardPage
 
@@ -10,6 +10,9 @@ class TestDashboardPage:
     @classmethod
     def setup_class(cls):
         cls.driver = launch_driver()
+
+    def teardown_method(self, method):
+        logout(self.dashboard_page)
 
     def setup_method(self, method):
         self.dashboard_page = DashboardPage(self.driver)
