@@ -5,6 +5,7 @@ from selenium.webdriver.common.by import By
 
 
 class DashboardPage(OSFBasePage):
+    url = settings.OSF_HOME
 
     locators = {
         'identity': (By.CSS_SELECTOR, 'body > div#osfHome > div.prereg-banner > div.container', settings.LONG_TIMEOUT),
