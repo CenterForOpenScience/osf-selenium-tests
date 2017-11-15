@@ -1,9 +1,11 @@
 import os
-import shutil
 
 import settings
 from selenium import webdriver
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.common.action_chains import ActionChains
 from pages.login import LoginPage
+
 
 HERE = os.path.abspath(os.path.dirname(os.path.abspath(__file__)))
 
@@ -44,12 +46,9 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
 
     # Maximize window to prevent visibility issues due to responsive design
     if desired_capabilities.get('browser') == 'Safari':
-        path = shutil.which('osascript')
-        if path is not None:
-            cmd = '{} {}'.format(path, os.path.join(HERE, 'max_window.scpt'))
-            os.system(cmd)
-        else:
-            driver.maximize_window()
+        actions = ActionChains(driver)
+        actions.key_down(Keys.COMMAND).send_keys(Keys.SUBTRACT * 5)
+        actions.perform()
     else:
         driver.set_window_size(1200, 720)
 
