@@ -46,9 +46,7 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
 
     # Maximize window to prevent visibility issues due to responsive design
     if desired_capabilities.get('browser') == 'Safari':
-        actions = ActionChains(driver)
-        actions.key_down(Keys.COMMAND).send_keys(Keys.SUBTRACT * 5)
-        actions.perform()
+        driver.maximize_window()
     else:
         driver.set_window_size(1200, 720)
 
