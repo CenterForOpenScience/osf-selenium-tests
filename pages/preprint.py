@@ -23,9 +23,15 @@ class PreprintPage(OSFBasePage):
             **{
                 'add_a_preprint_link': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-child(5) > a'),
                 'user_dropdown': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-of-type(1) > a'),
-                'sign_in_button': (By.CSS_SELECTOR, '#secondary-navigation > ul.nav > li.ember-view.dropdown.sign-in > a.btn.btn-info.btn-top-login', settings.LONG_TIMEOUT),
             }
         }
 
         def verify(self):
             return self.current_service.text == 'PREPRINTS'
+
+        @property
+        def sign_in_button(self):
+            return self.second_navigation.find_element(
+                By.CSS_SELECTOR,
+                'ul.nav > li.ember-view.dropdown.sign-in > a.btn.btn-info.btn-top-login'
+            )

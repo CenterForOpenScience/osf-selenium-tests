@@ -8,8 +8,6 @@ from pages.meeting import MeetingPage
 from pages.registries import RegistriesPage
 from pages.landing import LandingPage
 
-from selenium.webdriver.common.by import By
-
 
 class TestBasePageNavBar:
 
@@ -65,9 +63,7 @@ class TestBasePageNavBar:
         assert self.driver.current_url == my_projects_url
 
     def test_nagivation_bar_link_search_link(self):
-        right_navbar = self.driver.find_element(By.ID, 'secondary-navigation')
-        search_link = right_navbar.find_element(By.ID, 'navbar-search')
-        search_link.click()
+        self.base_page.search_link.click()
         search_url = settings.OSF_HOME + '/search/'
         assert self.driver.current_url == search_url
 
@@ -228,9 +224,9 @@ class TestPreprintsPageNavBar:
         assert 'goodbye' in self.driver.current_url
 
     # todo: add id to those html tags in ember osf to make the find_element possible
-    # def test_sign_in_button(self):
-    #     self.preprint_page.navbar.sign_in_button.click()
-    #     assert 'login' in self.driver.current_url
+    def test_sign_in_button(self):
+        self.preprint_page.navbar.sign_in_button.click()
+        assert 'login' in self.driver.current_url
 
     def test_sign_in_button_not_present_if_login_in(self):
         login(self.preprint_page)
@@ -445,10 +441,10 @@ class TestRegistriesPageNavBar:
         self.registries_page.navbar.logout_link.click()
         assert 'goodbye' in self.driver.current_url
 
-    # todo: add id to those html tags in ember osf to make the find_element possible
-    # def test_sign_in_button(self):
-    #     self.registries_page.navbar.sign_in_button.click()
-    #     assert 'login' in self.driver.current_url
+    #todo: add id to those html tags in ember osf to make the find_element possible
+    def test_sign_in_button(self):
+        self.registries_page.navbar.sign_in_button.click()
+        assert 'login' in self.driver.current_url
 
     def test_sign_in_button_not_present_if_login_in(self):
         login(self.registries_page)

@@ -96,9 +96,6 @@ class Navbar(BaseElement):
         'preprints_link': (By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(2) > a'),
         'registries_link': (By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(3) > a'),
         'meetings_link': (By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(4) > a'),
-        'search_link': (By.ID, 'navbar-search'),
-        'support_link': (By.ID, 'navbar-support'),
-        'donate_link': (By.ID, 'navbar-donate'),
         'user_dropdown': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-of-type(1) > button'),
         'user_dropdown_profile': (By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(1) > a'),
         'user_dropdown_support': (By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(2) > a'),
@@ -108,6 +105,10 @@ class Navbar(BaseElement):
         'logout_link': (By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(4) > a'),
         'current_service': (By.CSS_SELECTOR, '#navbarScope > div > div > div.service-home > a > span.current-service > strong')
     }
+
+    def __init__(self, driver):
+        super(Navbar, self).__init__(driver)
+        self.second_navigation = self.SecondNavbar(driver)
 
     def verify(self):
         return len(self.find_elements(By.ID, 'navbarScope')) == 1
@@ -119,14 +120,25 @@ class Navbar(BaseElement):
         except ValueError:
             return True
 
+    @property
+    def search_link(self):
+        return self.right_navbar.find_element(By.ID, 'navbar-search')
+
+    @property
+    def support_link(self):
+        return self.right_navbar.find_element(By.ID, 'navbar-support')
+
+    @property
+    def donate_link(self):
+        return self.right_navbar.find_element(By.ID, 'navbar-donate')
+
 
 class LoginPage(BasePage):
     url = settings.OSF_HOME + '/login'
 
     locators = {
         'identity': (By.XPATH, '/html/body[@id="cas"]/div[@id="container"]', settings.LONG_TIMEOUT),
-        'username_'
-        'input': (By.ID, 'username'),
+        'username_input': (By.ID, 'username'),
         'password_input': (By.ID, 'password'),
         'submit_button': (By.NAME, 'submit'),
         'remember_me_checkbox': (By.ID, 'rememberMe'),
