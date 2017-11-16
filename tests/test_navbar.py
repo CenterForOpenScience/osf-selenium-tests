@@ -63,6 +63,7 @@ class TestBasePageNavBar:
         assert self.driver.current_url == my_projects_url
 
     def test_nagivation_bar_link_search_link(self):
+        login(self.base_page)
         self.base_page.search_link.click()
         search_url = settings.OSF_HOME + '/search/'
         assert self.driver.current_url == search_url

@@ -4,6 +4,8 @@ from utils import launch_driver, logout
 from pages.project import ProjectPage
 from pages.dashboard import DashboardPage
 
+from selenium.webdriver.common.action_chains import ActionChains
+
 
 class TestDashboardPage:
 
@@ -19,11 +21,15 @@ class TestDashboardPage:
         self.dashboard_page.goto()
 
     def test_create_project(self):
-        project_title = 'Totally Unique Project'
+        project_title = 'New Project'
         self.dashboard_page.create_project_button.click()
         create_project_modal = self.dashboard_page.CreateProjectModal(self.driver)
-        create_project_modal.title_input.send_keys(project_title)
-        create_project_modal.create_project_button.click()
+
+        actionChains = ActionChains(self.driver)
+        actionChains.send_keys_to_element(create_project_modal.title_input, project_title)
+        actionChains.click(create_project_modal.create_project_button)
+        create_project_modal.perform()
+
         project_created_modal = self.dashboard_page.ProjectCreatedModal(self.driver)
         project_created_modal.go_to_project_button.click()
         project_page = ProjectPage(self.driver, verify=True)
