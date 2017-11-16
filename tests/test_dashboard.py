@@ -28,7 +28,7 @@ class TestDashboardPage:
         actionChains = ActionChains(self.driver)
         actionChains.send_keys_to_element(create_project_modal.title_input, project_title)
         actionChains.click(create_project_modal.create_project_button)
-        create_project_modal.perform()
+        actionChains.perform()
 
         project_created_modal = self.dashboard_page.ProjectCreatedModal(self.driver)
         project_created_modal.go_to_project_button.click()
