@@ -28,7 +28,7 @@ class TestDashboardPage:
         project_created_modal = self.dashboard_page.ProjectCreatedModal(self.driver)
         project_created_modal.go_to_project_button.click()
         project_page = ProjectPage(self.driver, verify=True)
-        assert project_page.project_title.text == project_title, "Project title incorrect."
+        assert project_page.project_title.text == project_title, 'Project title incorrect.'
 
     def test_modal_buttons(self):
         #TODO: Get user institutions from user object

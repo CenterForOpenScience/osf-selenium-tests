@@ -96,7 +96,7 @@ class Navbar(BaseElement):
         'preprints_link': (By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(2) > a'),
         'registries_link': (By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(3) > a'),
         'meetings_link': (By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(4) > a'),
-        'search_link':(By.ID, 'navbar-search'),
+        'search_link': (By.ID, 'navbar-search'),
         'support_link': (By.ID, 'navbar-support'),
         'donate_link': (By.ID, 'navbar-donate'),
         'user_dropdown': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-of-type(1) > button'),
@@ -149,7 +149,7 @@ class LoginPage(BasePage):
 
     def login(self, user, password):
         self.username_input.send_keys(user)
-        if ('localhost:5000'  not in settings.OSF_HOME):
+        if ('localhost:5000' not in settings.OSF_HOME):
             self.password_input.send_keys(password)
             if self.remember_me_checkbox.is_selected():
                 self.remember_me_checkbox.click()
@@ -198,7 +198,6 @@ class OSFBasePage(BasePage):
                 driver=self.driver,
                 code=self.error_heading.get_attribute('data-http-status-code'),
             )
-
 
     def is_logged_in(self):
         return self.navbar.is_logged_in()
