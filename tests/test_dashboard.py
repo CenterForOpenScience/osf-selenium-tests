@@ -28,7 +28,7 @@ class TestDashboardPage:
         project_created_modal = self.dashboard_page.ProjectCreatedModal(self.driver)
         project_created_modal.go_to_project_button.click()
         project_page = ProjectPage(self.driver, verify=True)
-        assert project_page.project_title.text == project_title, "Project title incorrect."
+        assert project_page.project_title.text == project_title, 'Project title incorrect.'
 
     def test_modal_buttons(self):
         #TODO: Get user institutions from user object
@@ -37,8 +37,8 @@ class TestDashboardPage:
         create_project_modal = self.dashboard_page.CreateProjectModal(self.driver)
 
         create_project_modal.more_arrow.click()
-        assert create_project_modal.description_input, "Description input missing."
-        assert create_project_modal.template_dropdown, "Template dropdown missing."
+        assert create_project_modal.description_input, 'Description input missing.'
+        assert create_project_modal.template_dropdown, 'Template dropdown missing.'
         create_project_modal.more_arrow.click()
         with pytest.raises(ValueError):
             create_project_modal.description_input
@@ -58,4 +58,3 @@ class TestDashboardPage:
     @classmethod
     def teardown_class(cls):
         cls.driver.quit()
-

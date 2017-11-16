@@ -4,6 +4,8 @@ import settings
 from selenium import webdriver
 
 
+HERE = os.path.abspath(os.path.dirname(os.path.abspath(__file__)))
+
 def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
     """Create and configure a WebDriver.
 
@@ -38,8 +40,12 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
         driver = driver_cls(chrome_options=chrome_options)
     else:
         driver = driver_cls()
-        # Maximize window to prevent visibility issues due to responsive design
+
+    # Maximize window to prevent visibility issues due to responsive design
+    if desired_capabilities.get('browser') == 'Safari':
         driver.maximize_window()
+    else:
+        driver.set_window_size(1200, 720)
 
     # Return driver
     return driver
