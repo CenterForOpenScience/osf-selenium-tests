@@ -11,6 +11,7 @@ DRIVER = 'Chrome'
 SEL_WAIT = 5
 
 TIMEOUT = 10
+LONG_TIMEOUT = 30
 
 OSF_HOME = 'http://localhost:5000'
 API_DOMAIN = 'http://localhost:8000'

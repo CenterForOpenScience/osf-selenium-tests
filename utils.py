@@ -1,7 +1,7 @@
 import os
 
-from selenium import webdriver
 import settings
+from selenium import webdriver
 
 
 def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
@@ -43,3 +43,9 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
 
     # Return driver
     return driver
+
+
+def logout(osf_page):
+    if osf_page.is_logged_in():
+        osf_page.navbar.user_dropdown.click()
+        osf_page.navbar.logout_link.click()
