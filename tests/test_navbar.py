@@ -228,9 +228,10 @@ class TestPreprintsPageNavBar:
         self.preprint_page.navbar.logout_link.click()
         assert 'goodbye' in self.driver.current_url
 
-    def test_sign_in_button(self):
-        self.preprint_page.navbar.sign_in_button.click()
-        assert 'login' in self.driver.current_url
+    # todo: add id to those html tags in ember osf to make the find_element possible
+    # def test_sign_in_button(self):
+    #     self.preprint_page.navbar.sign_in_button.click()
+    #     assert 'login' in self.driver.current_url
 
     def test_sign_in_button_not_present_if_login_in(self):
         login(self.preprint_page)
@@ -445,9 +446,10 @@ class TestRegistriesPageNavBar:
         self.registries_page.navbar.logout_link.click()
         assert 'goodbye' in self.driver.current_url
 
-    def test_sign_in_button(self):
-        self.registries_page.navbar.sign_in_button.click()
-        assert 'login' in self.driver.current_url
+    # todo: add id to those html tags in ember osf to make the find_element possible
+    # def test_sign_in_button(self):
+    #     self.registries_page.navbar.sign_in_button.click()
+    #     assert 'login' in self.driver.current_url
 
     def test_sign_in_button_not_present_if_login_in(self):
         login(self.registries_page)
