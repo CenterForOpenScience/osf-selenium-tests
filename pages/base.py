@@ -187,20 +187,18 @@ class OSFBasePage(BasePage):
         try:
             error_head = self.find_element(By.CSS_SELECTOR, 'h2#error')
         except NoSuchElementException:
-            pass
+            return None
         else:
             return error_head.text
 
     def error_handling(self):
         # If we've got an error message here, grab it
-        try:
-            if self.error_heading:
-                raise HttpError(
-                    driver=self.driver,
-                    code=self.error_heading.get_attribute('data-http-status-code'),
-                )
-        except ValueError:
-            pass
+        if self.error_heading:
+            raise HttpError(
+                driver=self.driver,
+                code=self.error_heading.get_attribute('data-http-status-code'),
+            )
+
 
     def is_logged_in(self):
         return self.navbar.is_logged_in()
