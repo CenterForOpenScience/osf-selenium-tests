@@ -63,17 +63,17 @@ class TestBasePageNavBar:
         assert self.driver.current_url == my_projects_url
 
     def test_nagivation_bar_link_search_link(self):
-        self.base_page.search_link.click()
+        self.base_page.navbar.search_link.click()
         search_url = settings.OSF_HOME + '/search/'
         assert self.driver.current_url == search_url
 
     def test_nagivation_bar_link_support_link(self):
-        self.base_page.support_link.click()
+        self.base_page.navbar.support_link.click()
         support_url = settings.OSF_HOME + '/support/'
         assert self.driver.current_url == support_url
 
     def test_nagivation_bar_link_donate_link(self):
-        self.base_page.donate_link.click()
+        self.base_page.navbar.donate_link.click()
         assert 'cos.io/donate-to-cos' in self.driver.current_url
 
     def test_user_dropdown_menu_not_there_if_not_login(self):
@@ -174,20 +174,19 @@ class TestPreprintsPageNavBar:
         add_preprint_url = settings.OSF_HOME + '/preprints/submit/'
         assert self.driver.current_url == add_preprint_url
 
-    #todo: add id to those html tags in ember osf to make the find_element possible
-    # def test_nagivation_bar_link_search_link(self):
-    #     self.preprint_page.search_link.click()
-    #     search_url = settings.OSF_HOME + '/search/'
-    #     assert self.driver.current_url == search_url
-    #
-    # def test_nagivation_bar_link_support_link(self):
-    #     self.preprint_page.support_link.click()
-    #     support_url = settings.OSF_HOME + '/support/'
-    #     assert self.driver.current_url == support_url
-    #
-    # def test_nagivation_bar_link_donate_link(self):
-    #     self.preprint_page.donate_link.click()
-    #     assert 'cos.io/donate-to-cos' in self.driver.current_url
+    def test_nagivation_bar_link_search_link(self):
+        self.preprint_page.navbar.search_link.click()
+        search_url = settings.OSF_HOME + '/search/'
+        assert self.driver.current_url == search_url
+
+    def test_nagivation_bar_link_support_link(self):
+        self.preprint_page.navbar.support_link.click()
+        support_url = settings.OSF_HOME + '/support/'
+        assert self.driver.current_url == support_url
+
+    def test_nagivation_bar_link_donate_link(self):
+        self.preprint_page.navbar.donate_link.click()
+        assert 'cos.io/donate-to-cos' in self.driver.current_url
 
     def test_user_dropdown_menu_not_there_if_not_login(self):
         with pytest.raises(ValueError):
@@ -223,7 +222,6 @@ class TestPreprintsPageNavBar:
         self.preprint_page.navbar.logout_link.click()
         assert 'goodbye' in self.driver.current_url
 
-    # todo: add id to those html tags in ember osf to make the find_element possible
     def test_sign_in_button(self):
         self.preprint_page.navbar.sign_in_button.click()
         assert 'login' in self.driver.current_url
@@ -291,12 +289,12 @@ class TestMeetingPageNavBar:
             self.meeting_page.search_link
 
     def test_nagivation_bar_link_support_link(self):
-        self.meeting_page.support_link.click()
+        self.meeting_page.navbar.support_link.click()
         support_url = settings.OSF_HOME + '/support/'
         assert self.driver.current_url == support_url
 
     def test_nagivation_bar_link_donate_link(self):
-        self.meeting_page.donate_link.click()
+        self.meeting_page.navbar.donate_link.click()
         assert 'cos.io/donate-to-cos' in self.driver.current_url
 
     def test_user_dropdown_menu_not_there_if_not_login(self):
@@ -392,20 +390,19 @@ class TestRegistriesPageNavBar:
         meetings_url = settings.OSF_HOME + '/meetings/'
         assert self.driver.current_url == meetings_url
 
-    # todo: add id to those html tags in ember osf to make the find_element possible
-    # def test_nagivation_bar_link_search_link(self):
-    #     self.registries_page.search_link.click()
-    #     search_url = settings.OSF_HOME + '/search/'
-    #     assert self.driver.current_url == search_url
-    #
-    # def test_nagivation_bar_link_support_link(self):
-    #     self.registries_page.support_link.click()
-    #     support_url = settings.OSF_HOME + '/support/'
-    #     assert self.driver.current_url == support_url
-    #
-    # def test_nagivation_bar_link_donate_link(self):
-    #     self.registries_page.donate_link.click()
-    #     assert 'cos.io/donate-to-cos' in self.driver.current_url
+    def test_nagivation_bar_link_search_link(self):
+        self.registries_page.navbar.search_link.click()
+        search_url = settings.OSF_HOME + '/search/'
+        assert self.driver.current_url == search_url
+
+    def test_nagivation_bar_link_support_link(self):
+        self.registries_page.navbar.support_link.click()
+        support_url = settings.OSF_HOME + '/support/'
+        assert self.driver.current_url == support_url
+
+    def test_nagivation_bar_link_donate_link(self):
+        self.registries_page.navbar.donate_link.click()
+        assert 'cos.io/donate-to-cos' in self.driver.current_url
 
     def test_user_dropdown_menu_not_there_if_not_login(self):
         with pytest.raises(ValueError):
@@ -441,7 +438,6 @@ class TestRegistriesPageNavBar:
         self.registries_page.navbar.logout_link.click()
         assert 'goodbye' in self.driver.current_url
 
-    #todo: add id to those html tags in ember osf to make the find_element possible
     def test_sign_in_button(self):
         self.registries_page.navbar.sign_in_button.click()
         assert 'login' in self.driver.current_url

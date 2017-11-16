@@ -96,6 +96,9 @@ class Navbar(BaseElement):
         'preprints_link': (By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(2) > a'),
         'registries_link': (By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(3) > a'),
         'meetings_link': (By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(4) > a'),
+        'search_link':(By.ID, 'navbar-search'),
+        'support_link': (By.ID, 'navbar-support'),
+        'donate_link': (By.ID, 'navbar-donate'),
         'user_dropdown': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-of-type(1) > button'),
         'user_dropdown_profile': (By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(1) > a'),
         'user_dropdown_support': (By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(2) > a'),
@@ -106,10 +109,6 @@ class Navbar(BaseElement):
         'current_service': (By.CSS_SELECTOR, '#navbarScope > div > div > div.service-home > a > span.current-service > strong')
     }
 
-    def __init__(self, driver):
-        super(Navbar, self).__init__(driver)
-        self.second_navigation = self.SecondNavbar(driver)
-
     def verify(self):
         return len(self.find_elements(By.ID, 'navbarScope')) == 1
 
@@ -119,18 +118,6 @@ class Navbar(BaseElement):
                 return False
         except ValueError:
             return True
-
-    @property
-    def search_link(self):
-        return self.right_navbar.find_element(By.ID, 'navbar-search')
-
-    @property
-    def support_link(self):
-        return self.right_navbar.find_element(By.ID, 'navbar-support')
-
-    @property
-    def donate_link(self):
-        return self.right_navbar.find_element(By.ID, 'navbar-donate')
 
 
 class LoginPage(BasePage):
@@ -144,10 +131,9 @@ class LoginPage(BasePage):
         'remember_me_checkbox': (By.ID, 'rememberMe'),
     }
 
-    if ('localhost:5000' in settings.OSF_HOME):
+    if 'localhost:5000' in settings.OSF_HOME:
         locators['submit_button'] = (By.ID, 'submit')
         locators['identity'] = (By.ID, 'login')
-
 
     def __init__(self, driver, verify=False):
         super(LoginPage, self).__init__(driver)
