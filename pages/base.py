@@ -166,7 +166,7 @@ def login(osf_page, user=settings.USER_ONE, password=settings.USER_ONE_PASSWORD)
 class OSFBasePage(BasePage):
     url = settings.OSF_HOME
 
-    # all page must have unique identity
+    # all page must have a unique identity
     locators = {}
 
     def __init__(self, driver, verify=False, require_login=False):
@@ -192,7 +192,7 @@ class OSFBasePage(BasePage):
             return error_head.text
 
     def error_handling(self):
-        # If we've got an error message here, grab it
+        # If we've got an error message here from osf, grab it
         if self.error_heading:
             raise HttpError(
                 driver=self.driver,
