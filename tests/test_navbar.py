@@ -169,10 +169,6 @@ class TestPreprintsPageNavBar:
         meetings_url = settings.OSF_HOME + '/meetings/'
         assert self.driver.current_url == meetings_url
 
-    def test_add_a_preprint_link_not_login(self):
-        self.preprint_page.navbar.add_a_preprint_link.click()
-        assert 'login' in self.driver.current_url
-
     def test_add_a_preprint_link(self):
         login(self.preprint_page)
         self.preprint_page.navbar.add_a_preprint_link.click()
