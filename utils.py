@@ -2,7 +2,6 @@ import os
 
 import settings
 from selenium import webdriver
-from pages.login import LoginPage
 
 
 def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
@@ -45,12 +44,6 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
     # Return driver
     return driver
 
-
-def login(osf_page, user=settings.USER_ONE, password=settings.USER_ONE_PASSWORD):
-    if not osf_page.is_logged_in():
-        osf_page.navbar.sign_in_button.click()
-        login_page = LoginPage(osf_page.driver)
-        login_page.login(user, password)
 
 def logout(osf_page):
     if osf_page.is_logged_in():
