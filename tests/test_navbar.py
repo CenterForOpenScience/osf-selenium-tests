@@ -2,11 +2,13 @@ import pytest
 import settings
 
 from utils import launch_driver, logout
-from pages.base import OSFBasePage, login
+from pages.base import login
 from pages.preprint import PreprintPage
 from pages.meeting import MeetingPage
 from pages.registries import RegistriesPage
 from pages.landing import LandingPage
+
+from selenium.webdriver.common.by import By
 
 
 class TestBasePageNavBar:
@@ -63,8 +65,9 @@ class TestBasePageNavBar:
         assert self.driver.current_url == my_projects_url
 
     def test_nagivation_bar_link_search_link(self):
-        self.driver.get(self.base_page.url)
-        self.base_page.search_link.click()
+        right_navbar = self.driver.find_element(By.ID, 'secondary-navigation')
+        search_link = right_navbar.find_element(By.ID, 'navbar-search')
+        search_link.click()
         search_url = settings.OSF_HOME + '/search/'
         assert self.driver.current_url == search_url
 
