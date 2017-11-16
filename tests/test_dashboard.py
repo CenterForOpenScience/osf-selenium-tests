@@ -1,6 +1,6 @@
 import pytest
 
-from utils import launch_driver, login
+from utils import launch_driver, logout
 from pages.project import ProjectPage
 from pages.dashboard import DashboardPage
 
@@ -11,21 +11,24 @@ class TestDashboardPage:
     def setup_class(cls):
         cls.driver = launch_driver()
 
+    def teardown_method(self, method):
+        logout(self.dashboard_page)
+
     def setup_method(self, method):
         self.dashboard_page = DashboardPage(self.driver)
         self.dashboard_page.goto()
-        login(self.dashboard_page)
 
     def test_create_project(self):
-        project_title = 'Totally Unique Project'
+        project_title = 'New Project'
         self.dashboard_page.create_project_button.click()
         create_project_modal = self.dashboard_page.CreateProjectModal(self.driver)
+        create_project_modal.title_input.clear()
         create_project_modal.title_input.send_keys(project_title)
         create_project_modal.create_project_button.click()
         project_created_modal = self.dashboard_page.ProjectCreatedModal(self.driver)
         project_created_modal.go_to_project_button.click()
-        project_page = ProjectPage(self.driver)
-        assert project_page.project_title.text == project_title, 'Project title incorrect.'
+        project_page = ProjectPage(self.driver, verify=True)
+        assert project_page.project_title.text == project_title, "Project title incorrect."
 
     def test_modal_buttons(self):
         #TODO: Get user institutions from user object
