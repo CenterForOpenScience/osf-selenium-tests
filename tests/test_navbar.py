@@ -297,7 +297,7 @@ class TestMeetingPageNavBar:
 
     def test_nagivation_bar_link_support_link(self):
         self.meeting_page.navbar.support_link.click()
-        support_url = settings.OSF_HOME + '/support/'
+        support_url = 'http://help.osf.io/m/meetings/'
         assert self.driver.current_url == support_url
 
     def test_nagivation_bar_link_donate_link(self):
