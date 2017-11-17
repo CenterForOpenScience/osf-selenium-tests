@@ -7,11 +7,7 @@ commands, run ``$ invoke --list``.
 
 import os
 import sys
-import json
-import platform
-import subprocess
 import logging
-from time import sleep
 from invoke import task
 
 
@@ -22,27 +18,26 @@ BIN_PATH = os.path.dirname(sys.executable)
 
 bin_prefix = lambda cmd: os.path.join(BIN_PATH, cmd)
 
+os_env = os.environ
+
 @task(aliases=['flake8'])
 def flake(ctx):
     ctx.run('flake8 .', echo=True)
-
 
 @task(aliases=['autopep8'])
 def autopep(ctx):
     ctx.run('autopep8 .', echo=True)
 
-
 @task
 def clean(ctx, verbose=False):
     ctx.run('find . -name "*.pyc" -delete', echo=True)
-
 
 @task(aliases=['req'])
 def requirements(ctx, dev=False):
     """Install python dependencies.
 
     Examples:
-        inv requirements
+        invoke requirements
     """
 
     req_file = os.path.join(HERE, 'requirements.txt')
@@ -50,7 +45,7 @@ def requirements(ctx, dev=False):
     ctx.run(cmd, echo=True)
 
 @task
-def test_module(ctx, module=None, numprocesses=None, params=None):
+def test_module(ctx, module=None, numprocesses=1, params=None):
     """Helper for running tests.
     """
     import pytest
@@ -71,6 +66,64 @@ def test_module(ctx, module=None, numprocesses=None, params=None):
     sys.exit(retcode)
 
 @task
-def test_travis(ctx, verbose=False):
-    print('Testing modules in "{}"'.format('tests'))
-    test_module(ctx, module=['tests'], numprocesses=1)
+def test_travis_safari(ctx, numprocesses=None):
+    """
+    Run tests on the latest Safari
+    """
+    flake(ctx)
+    print('Testing modules in "{}" in Safari'.format('tests'))
+    test_module(ctx, module=['tests'])
+
+@task
+def test_travis_chrome(ctx, numprocesses=None):
+    """
+    Run tests on the latest Chrome
+    """
+    flake(ctx)
+    print('Testing modules in "{}" in Chrome'.format('tests'))
+    test_module(ctx, module=['tests'])
+
+@task
+def test_travis_edge(ctx, numprocesses=None):
+    """
+    Run tests on the latest Edge
+    """
+    flake(ctx)
+    print('Testing modules in "{}" in Edge'.format('tests'))
+    test_module(ctx, module=['tests'])
+
+@task
+def test_travis_firefox(ctx, numprocesses=None):
+    """
+    Run tests on the latest Firefox
+    """
+    flake(ctx)
+    print('Testing modules in "{}" in Firefox'.format('tests'))
+    test_module(ctx, module=['tests'])
+
+@task
+def test_travis_msie(ctx, numprocesses=None):
+    """
+    Run tests on the latest Microsoft Internet Explorer
+    """
+    flake(ctx)
+    print('Testing modules in "{}" in MSIE'.format('tests'))
+    test_module(ctx, module=['tests'])
+
+@task
+def test_travis_android(ctx, numprocesses=None):
+    """
+    Run tests on Android 7.0, Samsung Galaxy S8
+    """
+    flake(ctx)
+    print('Testing modules in "{}" in android'.format('tests'))
+    test_module(ctx, module=['tests'])
+
+@task
+def test_travis_ios(ctx, numprocesses=None):
+    """
+    Run tests on ios 10.0, iPhone 7
+    """
+    flake(ctx)
+    print('Testing modules in "{}" on ios'.format('tests'))
+    test_module(ctx, module=['tests'])

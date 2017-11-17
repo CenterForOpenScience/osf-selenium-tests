@@ -11,11 +11,26 @@ env:
     - secure: kUtIMgtYWVOvCKxZHE2mWvGH6PqRTXbYqvcX03/HZkYgHBZGWlMDRGZtYwm8kwZ/xi/cXz8ljnyTUkSPFi2BgpMrOMWkJhbFgm5u8CnLUe3opB+bM871ekVHwSXCKe0Gk27jGg0RPy4PdeJaKco+UNycyc5hSLvY8+KDLoOrRdh4WY6e5JxhuwJoOEYrJiDh9Q4pfN/A6N4sKkoj/6n7f8U4SDj76d8Mgp25Cpa51PAYrir5/NcHrtbNzx1y81syN286ZvkOl7Pz49jKBH6rq6+oiFUWoMv9HyDwwEBfUmVKIdcgR8zKmilq4egRzEVUkyKtTqK6URhUvUaYGuXBNi8YteqDfJFaOU46oIIp/N3UH50MEQHwwbJcY6m9LOptytuIPfyrp3RbSGV99NgaJFXQRYSCizSJiaZOSAJ/fBpIPi09lPxjt8MFKqG2OSITtd7a4gbw7ziQOEnl+NJ3uw//MIDn+9pmHC06pf2ikC5pXd5iB+hHF1yczIxqTpo5fGoL0hvRVJ8g6AxDYi8KbS7tJRwpYs9dRz5Gv0mh6X+bWnteezniuXPyxEc4MgE1ZLmlSsNI6W+IxEIH3RWUIeKm5rlcuZtcVbhNvbsx4wTiRCghNE6rW1PWC1NS0rBmPtMo9HMaeY7Fb8e/GK+6Lh0V7yGWQAP0o7tRwvkZrCk=
     - secure: sJ+uAoo5SUW7ko/xO7pCd0fO6sCy+fhmIxeQfppJ8qLADVXcG+zJg6qSOKJVsgiB09GJ3fkqFzj1Rn4wcTBRCVDfCIEjSXT8cDHky3tKarUuyxtyNHRT7jeTcFn+xJ/Z1X0IaSyb7LycJo4z1brVV2GNCnoxfc/DyZCXPxZNICo76GLZ5enL+rJ85fsUQgCOxaVM/gXQVSAWA+xa+y+b6S6jIlpyJNFUJ+eGGntqr5MRtipWhmt9MS07eWOvK+94PkAJWpQvDhD6OQG1L3djHixeC5DQcXYAaxtBGKgScFAOimyWjYHgDAARbn9bYFI320IxhPcI3K2Qji8FF9X1lJi1BDCBM9EmYa0Ewq7NQx6CgakD2MPOCWUCqfyB1EZHjCAHDAoppm4hxkNTzxCGsnX18guS1CqqNPH9tjpewNLIh0XlldmloobeOMj5hkxT5RwU6wNWPrSB7rN+r2lSTSDN9nQicVWk1YHZBo2VzugySUJe1gSIDXGACKTdP142EZItBhsxEwekUeT8MxDFpLKHsqnGfzveXazrColjlzRi9CSlozck/z/ZXS2//ygnwfjeWySve+EDXFsf2xr9TbycyBjnXHah+kSVTTfNaxSorT/3f8kp9y6CI+MJkrPLGxb7Msf/fvDqBDMSrqChTMoCG4YXTVjYNX53R90zymc=
     - secure: wiFFkSlnwLMDUYOPlVlKqQMnvDuIM2m6ZMCKhIuJiS8ItdcvShu7z2h98XSYy7zSrb75XSBFU9qX/I25LMkynZMi+miPWVf2izRVVST2BlwX/ikzw73oFkoJ4cvrfqih17A8IVtl2P9zCASzx96kIG+kHJ4LxsWfSV9zxxxNi57UbMeTUr18tMJu0nhYfg9HH4s+OVzAknpb64pYauKKsb6PsniW8qPLQ/c1ky8xhyYPNqSL1gtYrqzWu7suQOh6MRs1lljScr2lQdUEEu/HS4aUvwvOyvsexZCZTxaDb375iva40N/E1bGNmW9qf/btM8VQWmkGPZpNNoO6N9FUApyYoVI453DTiFpZg8c1tMp0PnPnhPZJBAo6awg88VYPEGSusSpDGRNdetjVFHJkSc0cSCvcSm81x9IedfIzErOMVzC3C9sUBDyRyLSlEgxwh4VnsRYCsKqISn/z5rrAZtxtipC7bUZlzB3KNYcRVK2NVmtosf+LpYc9+sRHmNH2U3JJk3nHC+aPtVF9uYiZus2ry8UyG8qYyAm0C+p0YDD4q2KVexgC0tSnhjl7EL2cXXDjT4CPBMUe4V7M3STEVJ85RtghTnQrnd5ZSCdK6TQ8RtnRCfT+JbDcfMk5W5zUNIGjQ0QkQ/3dxMSM6vJrDIchCdvzhvjU/k3B8hnEwqk=
+
+  matrix:
+    - TEST_BUILD="msie"
+    - TEST_BUILD="safari"
+    - TEST_BUILD="edge"
+    - TEST_BUILD="firefox"
+    - TEST_BUILD="chrome"
+
+matrix:
+  fast_finish: true
+  allow_failures:
+    - env: TEST_BUILD="safari"
+
+
 install:
   - cd $PROJECT_DIR
   - cp settings/local-travis.py settings/local.py
   - travis_retry pip install --upgrade pip
   - travis_retry pip install invoke==0.13.0
   - travis_retry invoke requirements
+
 script:
-  - invoke test_travis
+  - invoke test_travis_$TEST_BUILD
