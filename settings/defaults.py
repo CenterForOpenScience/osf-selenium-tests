@@ -13,6 +13,6 @@ SEL_WAIT = 5
 TIMEOUT = 10
 LONG_TIMEOUT = 30
 
-OSF_HOME = 'http://localhost:5000'
-API_DOMAIN = 'http://localhost:8000'
+OSF_HOME = 'https://staging.osf.io'
+API_DOMAIN = 'https://staging-api.osf.io/v2'
 HEADLESS = False
