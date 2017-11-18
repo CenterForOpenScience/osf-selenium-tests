@@ -1,7 +1,9 @@
 import pytest
 import settings
 
-from utils import launch_driver, logout
+from tests.base import SeleniumTest
+
+from utils import logout
 from pages.base import login
 from pages.preprint import PreprintPage
 from pages.meeting import MeetingPage
@@ -9,15 +11,7 @@ from pages.registries import RegistriesPage
 from pages.landing import LandingPage
 
 
-class TestBasePageNavBar:
-
-    @classmethod
-    def setup_class(cls):
-        cls.driver = launch_driver()
-
-    @classmethod
-    def teardown_class(cls):
-        cls.driver.quit()
+class TestBasePageNavBar(SeleniumTest):
 
     def setup_method(self, method):
         self.base_page = LandingPage(self.driver)
@@ -126,15 +120,7 @@ class TestBasePageNavBar:
             self.base_page.navbar.sign_up_button
 
 
-class TestPreprintsPageNavBar:
-
-    @classmethod
-    def setup_class(cls):
-        cls.driver = launch_driver()
-
-    @classmethod
-    def teardown_class(cls):
-        cls.driver.quit()
+class TestPreprintsPageNavBar(SeleniumTest):
 
     def setup_method(self, method):
         self.preprint_page = PreprintPage(self.driver)
@@ -244,15 +230,7 @@ class TestPreprintsPageNavBar:
             self.preprint_page.navbar.sign_up_button
 
 
-class TestMeetingPageNavBar:
-
-    @classmethod
-    def setup_class(cls):
-        cls.driver = launch_driver()
-
-    @classmethod
-    def teardown_class(cls):
-        cls.driver.quit()
+class TestMeetingPageNavBar(SeleniumTest):
 
     def setup_method(self, method):
         self.meeting_page = MeetingPage(self.driver)
@@ -350,15 +328,7 @@ class TestMeetingPageNavBar:
             self.meeting_page.navbar.sign_up_button
 
 
-class TestRegistriesPageNavBar:
-
-    @classmethod
-    def setup_class(cls):
-        cls.driver = launch_driver()
-
-    @classmethod
-    def teardown_class(cls):
-        cls.driver.quit()
+class TestRegistriesPageNavBar(SeleniumTest):
 
     def setup_method(self, method):
         self.registries_page = RegistriesPage(self.driver)
