@@ -31,6 +31,12 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
             command_executor=command_executor,
             desired_capabilities=desired_capabilities
         )
+
+        # Maximize window to prevent visibility issues due to responsive design
+        if desired_capabilities.get('browser') == 'Safari':
+            driver.maximize_window()
+        else:
+            driver.set_window_size(1200, 720)
     elif driver_name == 'Chrome' and settings.HEADLESS:
         from selenium.webdriver.chrome.options import Options
         chrome_options = Options()
@@ -40,12 +46,6 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
         driver = driver_cls(chrome_options=chrome_options)
     else:
         driver = driver_cls()
-
-    # Maximize window to prevent visibility issues due to responsive design
-    if desired_capabilities.get('browser') == 'Safari':
-        driver.maximize_window()
-    else:
-        driver.set_window_size(1200, 720)
 
     # Return driver
     return driver
