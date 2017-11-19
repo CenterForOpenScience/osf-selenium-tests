@@ -289,7 +289,7 @@ class TestMeetingPageNavBar:
 
     def test_nagivation_bar_link_search_link_not_present(self):
         with pytest.raises(ValueError):
-            self.meeting_page.search_link
+            self.meeting_page.navbar.search_link
 
     def test_nagivation_bar_link_support_link(self):
         self.meeting_page.navbar.support_link.click()
