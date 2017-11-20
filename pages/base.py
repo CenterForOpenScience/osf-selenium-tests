@@ -7,55 +7,60 @@ from selenium.common.exceptions import StaleElementReferenceException, TimeoutEx
 
 from pages.exceptions import HttpError, PageException, LoginError
 
+class Locator:
 
-class BaseElement(object):
+    def __init__(self, selector, path, timeout=settings.TIMEOUT):
+        self.selector = selector
+        self.path = path
+        self.location = (selector, path)
+        self.timeout = timeout
+
+    def get_web_element(self, driver, element):
+        """
+        Checks if elements are on page, visible, and clickable before returning the selenium webElement.
+
+        This method is adapted from code provided on seleniumframework.com
+        """
+
+        try:
+            WebDriverWait(driver, self.timeout).until(
+                EC.presence_of_element_located(self.location)
+            )
+        except(TimeoutException, StaleElementReferenceException):
+            raise ValueError('Element {} not present on page. {}'.format(element, driver.current_url))
+
+        try:
+            WebDriverWait(driver, self.timeout).until(
+                EC.visibility_of_element_located(self.location)
+            )
+        except(TimeoutException, StaleElementReferenceException):
+            raise ValueError('Element {} not visible before timeout. {}'.format(element, driver.current_url))
+
+        if 'link' in element:
+            try:
+                WebDriverWait(driver, self.timeout).until(
+                    EC.element_to_be_clickable(self.location)
+                )
+            except(TimeoutException, StaleElementReferenceException):
+                raise ValueError('Element {} on page but not clickable. {}'.format(element, driver.current_url))
+
+        return driver.find_element(self.selector, self.path)
+
+
+class BaseElement:
     default_timeout = settings.TIMEOUT
 
     def __init__(self, driver):
         self.driver = driver
 
-    def find_element(self, *loc):
-        return self.driver.find_element(*loc)
-
     def verify(self):
         raise NotImplementedError
 
-    def __getattr__(self, element):
-        """
-        This method is adapted from code provided on seleniumframework.com
-        """
-        timeout = self.default_timeout
-
-        if element in self.locators:
-            if len(self.locators[element]) == 3:
-                timeout = self.locators[element][2]
-            location = (self.locators[element][0], self.locators[element][1])
-
-            try:
-                WebDriverWait(self.driver, timeout).until(
-                    EC.presence_of_element_located(location)
-                )
-            except(TimeoutException, StaleElementReferenceException):
-                raise ValueError('Element {} not present on page. {}'.format(element, self.driver.current_url))
-
-            try:
-                WebDriverWait(self.driver, timeout).until(
-                    EC.visibility_of_element_located(location)
-                )
-            except(TimeoutException, StaleElementReferenceException):
-                raise ValueError('Element {} not visible before timeout. {}'.format(element, self.driver.current_url))
-
-            if 'link' in element:
-                try:
-                    WebDriverWait(self.driver, timeout).until(
-                        EC.element_to_be_clickable(location)
-                    )
-                except(TimeoutException, StaleElementReferenceException):
-                    raise ValueError('Element {} on page but not clickable. {}'.format(element, self.driver.current_url))
-
-            return self.find_element(*location)
-        else:
-            raise ValueError('Cannot find element {}. {}'.format(element, self.driver.current_url))
+    def __getattribute__(self, item):
+        value = object.__getattribute__(self, item)
+        if type(value) is Locator:
+            return value.get_web_element(self.driver, item)
+        return value
 
 
 class BasePage(BaseElement):
@@ -69,9 +74,7 @@ class BasePage(BaseElement):
         if not self.verify():
             # handle any specific kind of error before go to page exception
             self.error_handling()
-            raise PageException('Unexpected page structure: `{}` with identity {}'.format(
-                self.driver.current_url, self.locators['identity']
-            ))
+            raise PageException('Unexpected page structure: `{}`'.format(self.driver.current_url))  # TODO: Add locator information here
 
     def verify(self):
         try:
@@ -89,28 +92,25 @@ class BasePage(BaseElement):
 
 
 class Navbar(BaseElement):
-
-    locators = {
-        'service_dropdown': (By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > button'),
-        'home_link': (By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(1) > a'),
-        'preprints_link': (By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(2) > a'),
-        'registries_link': (By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(3) > a'),
-        'meetings_link': (By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(4) > a'),
-        'search_link': (By.ID, 'navbar-search'),
-        'support_link': (By.ID, 'navbar-support'),
-        'donate_link': (By.ID, 'navbar-donate'),
-        'user_dropdown': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-of-type(1) > button'),
-        'user_dropdown_profile': (By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(1) > a'),
-        'user_dropdown_support': (By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(2) > a'),
-        'user_dropdown_settings': (By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(3) > a'),
-        'sign_up_button': (By.LINK_TEXT, 'Sign Up'),
-        'sign_in_button': (By.LINK_TEXT, 'Sign In'),
-        'logout_link': (By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(4) > a'),
-        'current_service': (By.CSS_SELECTOR, '#navbarScope > div > div > div.service-home > a > span.current-service > strong')
-    }
+    service_dropdown = Locator(By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > button')
+    home_link = Locator(By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(1) > a')
+    preprints_link = Locator(By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(2) > a')
+    registries_link = Locator(By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(3) > a')
+    meetings_link = Locator(By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(4) > a')
+    search_link = Locator(By.ID, 'navbar-search')
+    support_link = Locator(By.ID, 'navbar-support')
+    donate_link = Locator(By.ID, 'navbar-donate')
+    user_dropdown = Locator(By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-of-type(1) > button')
+    user_dropdown_profile = Locator(By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(1) > a')
+    user_dropdown_support = Locator(By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(2) > a')
+    user_dropdown_settings = Locator(By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(3) > a')
+    sign_up_button = Locator(By.LINK_TEXT, 'Sign Up')
+    sign_in_button = Locator(By.LINK_TEXT, 'Sign In')
+    logout_link = Locator(By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(4) > a')
+    current_service = Locator(By.CSS_SELECTOR, '#navbarScope > div > div > div.service-home > a > span.current-service > strong')
 
     def verify(self):
-        return len(self.find_elements(By.ID, 'navbarScope')) == 1
+        return len(self.driver.find_elements(By.ID, 'navbarScope')) == 1
 
     def is_logged_in(self):
         try:
@@ -123,17 +123,16 @@ class Navbar(BaseElement):
 class LoginPage(BasePage):
     url = settings.OSF_HOME + '/login'
 
-    locators = {
-        'identity': (By.XPATH, '/html/body[@id="cas"]/div[@id="container"]', settings.LONG_TIMEOUT),
-        'username_input': (By.ID, 'username'),
-        'password_input': (By.ID, 'password'),
-        'submit_button': (By.NAME, 'submit'),
-        'remember_me_checkbox': (By.ID, 'rememberMe'),
-    }
+    # Locators
+    identity = Locator(By.XPATH, '/html/body[@id="cas"]/div[@id="container"]', settings.LONG_TIMEOUT)
+    username_input = Locator(By.ID, 'username')
+    password_input = Locator(By.ID, 'password')
+    submit_button = Locator(By.NAME, 'submit')
+    remember_me_checkbox = Locator(By.ID, 'rememberMe')
 
     if 'localhost:5000' in settings.OSF_HOME:
-        locators['submit_button'] = (By.ID, 'submit')
-        locators['identity'] = (By.ID, 'login')
+        submit_button = Locator(By.ID, 'submit')
+        identity = Locator(By.ID, 'login')
 
     def __init__(self, driver, verify=False):
         super(LoginPage, self).__init__(driver)
@@ -167,7 +166,6 @@ class OSFBasePage(BasePage):
     url = settings.OSF_HOME
 
     # all page must have a unique identity
-    locators = {}
 
     def __init__(self, driver, verify=False, require_login=False):
         super(OSFBasePage, self).__init__(driver)
@@ -204,12 +202,8 @@ class OSFBasePage(BasePage):
 
     class BasePageNavbar(Navbar):
 
-        locators = {
-            **Navbar.locators,
-            **{
-                'my_project_link': (By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-child(5) > a'),
-            }
-        }
+        # Locators
+        my_project_link = Locator(By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-child(5) > a')
 
         def verify(self):
             return self.current_service.text == 'HOME'

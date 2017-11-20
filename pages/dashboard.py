@@ -1,32 +1,29 @@
 import settings
 
-from pages.base import OSFBasePage, BaseElement
 from selenium.webdriver.common.by import By
-
+from pages.base import OSFBasePage, BaseElement, Locator
 
 class DashboardPage(OSFBasePage):
 
-    locators = {
-        'identity': (By.CSS_SELECTOR, '#osfHome > div.prereg-banner', settings.LONG_TIMEOUT),
-        'create_project_button': (By.CSS_SELECTOR, 'button.btn-success:nth-child(1)', settings.LONG_TIMEOUT),
-    }
+    # Locators
+    identity = Locator(By.CSS_SELECTOR, '#osfHome > div.prereg-banner', settings.LONG_TIMEOUT)
+    create_project_button = Locator(By.CSS_SELECTOR, 'button.btn-success:nth-child(1)', settings.LONG_TIMEOUT)
 
     def __init__(self, driver, verify=False):
         super(DashboardPage, self).__init__(driver, verify, require_login=True)
 
     class CreateProjectModal(BaseElement):
 
-        locators = {
-            'modal': (By.ID, 'addProjectFromHome'),
-            'create_project_button': (By.CSS_SELECTOR, '#addProjectFromHome > div > div > div.modal-footer > button.btn.btn-success'),
-            'cancel_button': (By.CSS_SELECTOR, '#addProjectFromHome > div > div > div.modal-footer > button.btn.btn-default'),
-            'title_input': (By.CSS_SELECTOR, '.form-control'),
-            'select_all_link': (By.LINK_TEXT, 'Select all'),
-            'remove_all_link': (By.LINK_TEXT, 'Remove all'),
-            'more_arrow': (By.CSS_SELECTOR, '#addProjectFromHome > div > div > div.modal-body > div > div.text-muted.pointer'),
-            'description_input': (By.CSS_SELECTOR, '#addProjectFromHome > div > div > div.modal-body > div > div:nth-child(4) > input'),
-            'template_dropdown': (By.ID, 'select2-chosen-2'),
-        }
+        # Locators
+        modal = Locator(By.ID, 'addProjectFromHome')
+        create_project_button = Locator(By.CSS_SELECTOR, '#addProjectFromHome > div > div > div.modal-footer > button.btn.btn-success')
+        cancel_button = Locator(By.CSS_SELECTOR, '#addProjectFromHome > div > div > div.modal-footer > button.btn.btn-default')
+        title_input = Locator(By.CSS_SELECTOR, '.form-control')
+        select_all_link = Locator(By.LINK_TEXT, 'Select all')
+        remove_all_link = Locator(By.LINK_TEXT, 'Remove all')
+        more_arrow = Locator(By.CSS_SELECTOR, '#addProjectFromHome > div > div > div.modal-body > div > div.text-muted.pointer')
+        description_input = Locator(By.CSS_SELECTOR, '#addProjectFromHome > div > div > div.modal-body > div > div:nth-child(4) > input')
+        template_dropdown = Locator(By.ID, 'select2-chosen-2')
 
         def institutions_are_selected(self, institutions):
             try:
@@ -38,7 +35,6 @@ class DashboardPage(OSFBasePage):
 
     class ProjectCreatedModal(BaseElement):
 
-        locators = {
-            'go_to_project_button': (By.CSS_SELECTOR, '#addProjectFromHome > div > div > div > div.modal-footer > a', settings.LONG_TIMEOUT),
-            'keep_working_here_button': (By.CSS_SELECTOR, '#addProjectFromHome > div > div > div > div.modal-footer > button'),
-        }
+        # Locators
+        go_to_project_button = Locator(By.CSS_SELECTOR, '#addProjectFromHome > div > div > div > div.modal-footer > a', settings.LONG_TIMEOUT)
+        keep_working_here_button = Locator(By.CSS_SELECTOR, '#addProjectFromHome > div > div > div > div.modal-footer > button')
