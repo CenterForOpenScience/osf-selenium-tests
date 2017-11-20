@@ -1,18 +1,11 @@
 import pytest
+from tests.base import SeleniumTest
 
-from utils import launch_driver, logout
 from pages.project import ProjectPage
 from pages.dashboard import DashboardPage
 
 
-class TestDashboardPage:
-
-    @classmethod
-    def setup_class(cls):
-        cls.driver = launch_driver()
-
-    def teardown_method(self, method):
-        logout(self.dashboard_page)
+class TestDashboardPage(SeleniumTest):
 
     def setup_method(self, method):
         self.dashboard_page = DashboardPage(self.driver)
@@ -54,7 +47,3 @@ class TestDashboardPage:
         create_project_modal.cancel_button.click()
         with pytest.raises(ValueError):
             create_project_modal.modal
-
-    @classmethod
-    def teardown_class(cls):
-        cls.driver.quit()

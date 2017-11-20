@@ -154,7 +154,6 @@ class LoginPage(BasePage):
                 self.remember_me_checkbox.click()
         self.submit_button.click()
 
-
 def login(osf_page, user=settings.USER_ONE, password=settings.USER_ONE_PASSWORD):
     login_page = LoginPage(osf_page.driver)
     login_page.goto()
