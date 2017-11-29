@@ -1,5 +1,7 @@
 import pytest
+
 from tests.base import SeleniumTest
+from api import osf_api as osf
 
 from pages.project import ProjectPage
 from pages.dashboard import DashboardPage
@@ -45,5 +47,78 @@ class TestDashboardPage(SeleniumTest):
         # assert create_project_modal.institutions_are_selected(institutions)
 
         create_project_modal.cancel_button.click()
-        with pytest.raises(ValueError):
-            create_project_modal.modal
+        create_project_modal.modal
+
+class TestDashboardPageProjectList(SeleniumTest):
+
+    def setup_method(self, method):
+        self.dashboard_page = DashboardPage(self.driver)
+        self.dashboard_page.goto()
+
+    @pytest.fixture()
+    def project_one(self):
+        project_one = osf.create_project(self.session, title='&&aaaaaa')
+        yield project_one
+        project_one.delete()
+
+    @pytest.fixture()
+    def project_two(self):
+        project_two = osf.create_project(self.session, title='&&aaaabb')
+        yield project_two
+        project_two.delete()
+
+    @pytest.fixture()
+    def project_three(self):
+        project_three = osf.create_project(self.session, title='&&aaaaac')
+        yield project_three
+        project_three.delete()
+
+    def test_sorting(self, project_one, project_two, project_three):
+        self.dashboard_page.reload()
+
+        project_list = self.dashboard_page.ProjectList(self.driver)
+        project_list.search_input.clear()
+        project_list.search_input.send_keys('&&aaaa')
+
+        assert 'selected' in project_list.sort_date_dsc_button.get_attribute('class')
+        assert 'not-selected' in project_list.sort_date_asc_button.get_attribute('class')
+        assert project_three.id in project_list.get_nth_project(self.driver, 1)['guid']
+        assert project_two.id in project_list.get_nth_project(self.driver, 2)['guid']
+        assert project_one.id in project_list.get_nth_project(self.driver, 3)['guid']
+
+        project_list.sort_date_asc_button.click()
+        assert 'selected' in project_list.sort_date_asc_button.get_attribute('class')
+        assert 'not-selected' in project_list.sort_date_dsc_button.get_attribute('class')
+        assert project_one.id in project_list.get_nth_project(self.driver, 1)['guid']
+        assert project_two.id in project_list.get_nth_project(self.driver, 2)['guid']
+        assert project_three.id in project_list.get_nth_project(self.driver, 3)['guid']
+
+        project_list.sort_title_asc_button.click()
+        assert 'selected' in project_list.sort_title_asc_button.get_attribute('class')
+        assert 'not-selected' in project_list.sort_title_dsc_button.get_attribute('class')
+        assert project_one.id in project_list.get_nth_project(self.driver, 1)['guid']
+        assert project_three.id in project_list.get_nth_project(self.driver, 2)['guid']
+        assert project_two.id in project_list.get_nth_project(self.driver, 3)['guid']
+
+        project_list.sort_title_dsc_button.click()
+        assert 'selected' in project_list.sort_title_dsc_button.get_attribute('class')
+        assert 'not-selected' in project_list.sort_title_asc_button.get_attribute('class')
+        assert project_two.id in project_list.get_nth_project(self.driver, 1)['guid']
+        assert project_three.id in project_list.get_nth_project(self.driver, 2)['guid']
+        assert project_one.id in project_list.get_nth_project(self.driver, 3)['guid']
+
+    def test_quick_search(self, project_one, project_two, project_three):
+        self.dashboard_page.reload()
+
+        project_list = self.dashboard_page.ProjectList(self.driver)
+
+        project_list.search_input.clear()
+        project_list.search_input.send_keys('&&aaaa')
+        assert project_list.get_list_length(self.driver) == 3
+
+        project_list.search_input.send_keys('a')
+        assert project_list.get_list_length(self.driver) == 2
+
+        project_list.search_input.send_keys('a')
+        assert project_list.get_list_length(self.driver) == 1
+        assert project_one.id in project_list.get_nth_project(self.driver, 1)['guid']
