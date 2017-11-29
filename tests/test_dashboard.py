@@ -47,7 +47,8 @@ class TestDashboardPage(SeleniumTest):
         # assert create_project_modal.institutions_are_selected(institutions)
 
         create_project_modal.cancel_button.click()
-        create_project_modal.modal
+        with pytest.raises(ValueError):
+            create_project_modal.modal
 
 class TestDashboardPageProjectList(SeleniumTest):
 
