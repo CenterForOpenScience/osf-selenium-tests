@@ -7,7 +7,7 @@ from selenium.common.exceptions import StaleElementReferenceException, TimeoutEx
 
 from pages.exceptions import HttpError, PageException, LoginError
 
-class Locator:
+class BaseLocator:
 
     def __init__(self, selector, path, timeout=settings.TIMEOUT):
         self.selector = selector
@@ -15,14 +15,15 @@ class Locator:
         self.location = (selector, path)
         self.timeout = timeout
 
-    # TODO: Allow getting groups?
+
+class Locator(BaseLocator):
+
     def get_web_element(self, driver, element):
         """
-        Checks if elements are on page, visible, and clickable before returning the selenium webElement.
+        Checks if element is on page, visible, and clickable before returning the selenium webElement.
 
         This method is adapted from code provided on seleniumframework.com
         """
-
         try:
             WebDriverWait(driver, self.timeout).until(
                 EC.presence_of_element_located(self.location)
@@ -46,7 +47,7 @@ class Locator:
                 raise ValueError('Element {} on page but not clickable. {}'.format(element, driver.current_url))
 
         return driver.find_element(self.selector, self.path)
-    
+
     def is_gone(self, driver):
         try:
             WebDriverWait(driver, settings.DISAPPEARANCE_TIMEOUT).until(
@@ -55,6 +56,12 @@ class Locator:
             return True
         except TimeoutException:
             return False
+
+
+class GroupLocator(BaseLocator):
+    # TODO: Is there language that I can use to make this and get_web_element the same?
+    def get_web_elements(self, driver):
+        return driver.find_elements(self.selector, self.path)
 
 
 class BaseElement:
@@ -66,18 +73,28 @@ class BaseElement:
     def verify(self):
         raise NotImplementedError
 
+    # TODO: Consider removing this and adding more functionality to locators
     def __getattribute__(self, item):
         value = object.__getattribute__(self, item)
         if type(value) is Locator:
             return value.get_web_element(self.driver, item)
+        elif type(value) is GroupLocator:
+            return value.get_web_elements(self.driver)
+        return value
+
+    def get_locator(self, item):
+        value = object.__getattribute__(self, item)
+        if not isinstance(value, BaseLocator):
+            raise ValueError('{} is not a Locator'.format(item))
         return value
 
     def invisible(self, item):
         """
         Boolean to check if an element is no longer visible on a page.
         """
-        value = object.__getattribute__(self, item)
-        return value.is_gone(self.driver)
+        locator = self.get_locator(item)
+        if locator:
+            return locator.is_gone(self.driver)
 
 
 class BasePage(BaseElement):
