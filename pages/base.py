@@ -216,7 +216,7 @@ class OSFBasePage(BasePage):
     @property
     def error_heading(self):
         try:
-            error_head = self.find_element(By.CSS_SELECTOR, 'h2#error')
+            error_head = self.driver.find_element(By.CSS_SELECTOR, 'h2#error')
         except NoSuchElementException:
             return None
         else:

@@ -38,7 +38,7 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
         else:
             driver.set_window_size(1200, 720)
     elif driver_name == 'Chrome' and settings.HEADLESS:
-        from selenium.webdriver.chrome.options import Options
+        from webdriver.chrome.options import Options
         chrome_options = Options()
         chrome_options.add_argument('--headless')
         chrome_options.add_argument('--disable-gpu')
