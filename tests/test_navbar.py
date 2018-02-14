@@ -2,7 +2,7 @@ import settings
 
 from pages.base import login
 from pages.landing import LandingPage
-from pages.meeting import MeetingPage
+from pages.meetings import MeetingsPage
 from pages.dashboard import DashboardPage
 from pages.registries import RegistriesPage
 from pages.preprint import PreprintPage, SubmitPreprintPage
@@ -31,7 +31,7 @@ class NavbarTestLoggedOut(SeleniumTest):
     def test_meetings_dropdown_link(self):
         self.page.navbar.service_dropdown.click()
         self.page.navbar.meetings_link.click()
-        self.assert_on_page(MeetingPage)
+        self.assert_on_page(MeetingsPage)
 
     def test_sign_up_button(self):
         self.page.navbar.sign_up_button.click()
@@ -154,7 +154,7 @@ class TestPreprintsNavbarLoggedIn(NavbarTestLoggedIn):
 class TestMeetingsNavbar(NavbarTestLoggedOut):
 
     def setup_method(self, method):
-        self.page = MeetingPage(self.driver)
+        self.page = MeetingsPage(self.driver)
         self.page.goto()
 
     def test_search_link_not_present(self):
@@ -177,7 +177,7 @@ class TestMeetingsNavbar(NavbarTestLoggedOut):
 class TestMeetingsNavbarLoggedIn(NavbarTestLoggedIn):
 
     def setup_method(self, method):
-        self.page = MeetingPage(self.driver)
+        self.page = MeetingsPage(self.driver)
         self.page.goto()
 
 

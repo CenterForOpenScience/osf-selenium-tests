@@ -3,7 +3,7 @@ import pytest
 from tests.base import SeleniumTest
 from api import osf_api as osf
 
-from pages.meeting import MeetingPage
+from pages.meetings import MeetingsPage
 
 
 class TestMeetingsPage(SeleniumTest):
