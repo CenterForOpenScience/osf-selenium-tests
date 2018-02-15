@@ -3,6 +3,7 @@ import settings
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import StaleElementReferenceException, TimeoutException, NoSuchElementException
 
 from pages.exceptions import HttpError, PageException, LoginError
@@ -123,6 +124,16 @@ class BasePage(BaseElement):
 
     def reload(self):
         self.driver.refresh()
+
+    def scroll_into_view(self, element):
+        self.driver.execute_script('arguments[0].scrollIntoView(false);', element)
+        # Account for navbar
+        self.driver.execute_script('window.scrollBy(0, 55)')
+
+    def drag_and_drop(self, source_element, dest_element):
+        source_element.click()
+        ActionChains(self.driver).drag_and_drop(source_element, dest_element).perform()
+        # Note: If you close the browser too quickly, the drag/drop may not go through
 
 
 class Navbar(BaseElement):
