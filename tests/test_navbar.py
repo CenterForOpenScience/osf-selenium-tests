@@ -47,8 +47,7 @@ class TestBasePageNavBar(SeleniumTest):
         assert self.driver.current_url == meetings_url
 
     def test_nagivation_bar_link_my_projects_link_not_there_if_not_login(self):
-        with pytest.raises(ValueError):
-            self.base_page.navbar.my_project_link
+        assert self.base_page.navbar.invisible('my_project_link')
 
     def test_nagivation_bar_link_my_projects_link_present_if_login(self):
         login(self.base_page)
@@ -71,8 +70,7 @@ class TestBasePageNavBar(SeleniumTest):
         assert 'cos.io/donate-to-cos' in self.driver.current_url
 
     def test_user_dropdown_menu_not_there_if_not_login(self):
-        with pytest.raises(ValueError):
-            self.base_page.navbar.user_dropdown
+        assert self.base_page.navbar.invisible('user_dropdown')
 
     def test_user_profile_menu_profile_present_if_login(self):
         login(self.base_page)
@@ -107,8 +105,7 @@ class TestBasePageNavBar(SeleniumTest):
 
     def test_sign_in_button_not_present_if_login_in(self):
         login(self.base_page)
-        with pytest.raises(ValueError):
-            self.base_page.navbar.sign_in_button
+        assert self.base_page.navbar.invisible('sign_in_button')
 
     def test_sign_up_button(self):
         self.base_page.navbar.sign_up_button.click()
@@ -116,8 +113,7 @@ class TestBasePageNavBar(SeleniumTest):
 
     def test_sign_up_button_not_present_if_login_in(self):
         login(self.base_page)
-        with pytest.raises(ValueError):
-            self.base_page.navbar.sign_up_button
+        assert self.base_page.navbar.invisible('sign_up_button')
 
 
 class TestPreprintsPageNavBar(SeleniumTest):
@@ -177,8 +173,7 @@ class TestPreprintsPageNavBar(SeleniumTest):
     #     assert 'cos.io/donate-to-cos' in self.driver.current_url
 
     def test_user_dropdown_menu_not_there_if_not_login(self):
-        with pytest.raises(ValueError):
-            self.preprint_page.navbar.user_dropdown
+        assert self.preprint_page.navbar.invisible('user_dropdown')
 
     def test_user_profile_menu_profile_present_if_login(self):
         login(self.preprint_page)
@@ -217,8 +212,7 @@ class TestPreprintsPageNavBar(SeleniumTest):
 
     def test_sign_in_button_not_present_if_login_in(self):
         login(self.preprint_page)
-        with pytest.raises(ValueError):
-            self.preprint_page.navbar.sign_in_button
+        assert self.preprint_page.navbar.invisible('sign_in_button')
 
     def test_sign_up_button(self):
         self.preprint_page.navbar.sign_up_button.click()
@@ -226,8 +220,7 @@ class TestPreprintsPageNavBar(SeleniumTest):
 
     def test_sign_up_button_not_present_if_login_in(self):
         login(self.preprint_page)
-        with pytest.raises(ValueError):
-            self.preprint_page.navbar.sign_up_button
+        assert self.preprint_page.navbar.invisible('sign_up_button')
 
 
 class TestMeetingPageNavBar(SeleniumTest):
@@ -266,8 +259,7 @@ class TestMeetingPageNavBar(SeleniumTest):
         assert self.driver.current_url == meetings_url
 
     def test_nagivation_bar_link_search_link_not_present(self):
-        with pytest.raises(ValueError):
-            self.meeting_page.navbar.search_link
+        assert self.meeting_page.navbar.invisible('search_link')
 
     def test_nagivation_bar_link_support_link(self):
         self.meeting_page.navbar.support_link.click()
@@ -279,8 +271,7 @@ class TestMeetingPageNavBar(SeleniumTest):
         assert 'cos.io/donate-to-cos' in self.driver.current_url
 
     def test_user_dropdown_menu_not_there_if_not_login(self):
-        with pytest.raises(ValueError):
-            self.meeting_page.navbar.user_dropdown
+        assert self.meeting_page.navbar.invisible('user_dropdown')
 
     def test_user_profile_menu_profile_present_if_login(self):
         login(self.meeting_page)
@@ -315,8 +306,7 @@ class TestMeetingPageNavBar(SeleniumTest):
 
     def test_sign_in_button_not_present_if_login_in(self):
         login(self.meeting_page)
-        with pytest.raises(ValueError):
-            self.meeting_page.navbar.sign_in_button
+        assert self.meeting_page.navbar.invisible('sign_in_button')
 
     def test_sign_up_button(self):
         self.meeting_page.navbar.sign_up_button.click()
@@ -324,8 +314,7 @@ class TestMeetingPageNavBar(SeleniumTest):
 
     def test_sign_up_button_not_present_if_login_in(self):
         login(self.meeting_page)
-        with pytest.raises(ValueError):
-            self.meeting_page.navbar.sign_up_button
+        assert self.meeting_page.navbar.invisible('sign_up_button')
 
 
 class TestRegistriesPageNavBar(SeleniumTest):
@@ -379,8 +368,7 @@ class TestRegistriesPageNavBar(SeleniumTest):
     #     assert 'cos.io/donate-to-cos' in self.driver.current_url
 
     def test_user_dropdown_menu_not_there_if_not_login(self):
-        with pytest.raises(ValueError):
-            self.registries_page.navbar.user_dropdown
+        assert self.registries_page.navbar.invisible('user_dropdown')
 
     def test_user_profile_menu_profile_present_if_login(self):
         login(self.registries_page)
@@ -419,8 +407,7 @@ class TestRegistriesPageNavBar(SeleniumTest):
 
     def test_sign_in_button_not_present_if_login_in(self):
         login(self.registries_page)
-        with pytest.raises(ValueError):
-            self.registries_page.navbar.sign_in_button
+        assert self.registries_page.navbar.invisible('sign_in_button')
 
     def test_sign_up_button(self):
         self.registries_page.navbar.sign_up_button.click()
@@ -428,5 +415,4 @@ class TestRegistriesPageNavBar(SeleniumTest):
 
     def test_sign_up_button_not_present_if_login_in(self):
         login(self.registries_page)
-        with pytest.raises(ValueError):
-            self.registries_page.navbar.sign_up_button
+        assert self.registries_page.navbar.invisible('sign_up_button')
