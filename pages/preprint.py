@@ -4,15 +4,10 @@ from pages.base import OSFBasePage, Navbar, Locator
 from selenium.webdriver.common.by import By
 
 
-class PreprintPage(OSFBasePage):
-    url = settings.OSF_HOME + '/preprints'
-
-    # Locators
-    identity = Locator(By.CSS_SELECTOR, 'body.ember-application > div.ember-view > div.preprints-page > div.preprint-header', settings.LONG_TIMEOUT)
-    add_preprint_link = Locator(By.CSS_SELECTOR, 'div.preprint-page div.preprint-header div.container div div a[href="/preprints/submit"]', settings.LONG_TIMEOUT)
+class BasePreprintPage(OSFBasePage):
 
     def __init__(self, driver, verify=False):
-        super(PreprintPage, self).__init__(driver, verify)
+        super(BasePreprintPage, self).__init__(driver, verify)
         self.navbar = self.PreprintPageNavbar(driver)
 
     class PreprintPageNavbar(Navbar):
@@ -24,3 +19,17 @@ class PreprintPage(OSFBasePage):
 
         def verify(self):
             return self.current_service.text == 'PREPRINTS'
+
+class PreprintPage(BasePreprintPage):
+    url = settings.OSF_HOME + '/preprints/'
+
+    # Locators
+    identity = Locator(By.CSS_SELECTOR, 'body.ember-application > div.ember-view > div.preprints-page > div.preprint-header', settings.LONG_TIMEOUT)
+    add_preprint_link = Locator(By.CSS_SELECTOR, 'div.preprint-page div.preprint-header div.container div div a[href="/preprints/submit"]', settings.LONG_TIMEOUT)
+
+
+class SubmitPreprintPage(BasePreprintPage):
+    url = settings.OSF_HOME + '/preprints/submit/'
+
+    # Locators
+    identity = Locator(By.CSS_SELECTOR, 'div.preprint-submit-header')

@@ -14,5 +14,5 @@ if '/osf.io' in OSF_HOME:
         'during testing.)'
     )
 
-# make sure there is no trailing slash.
+# make sure there is no trailing slash. TODO: Remove this
 OSF_HOME = OSF_HOME.rstrip('/')

@@ -8,6 +8,35 @@ from selenium.common.exceptions import StaleElementReferenceException, TimeoutEx
 
 from pages.exceptions import HttpError, PageException, LoginError
 
+
+class WebElementWrapper:
+
+    def __init__(self, driver, element_name, locator):
+        self.driver = driver
+        self.locator = locator
+        self.name = element_name
+
+    def __getattr__(self, item):
+        return getattr(self.element, item)
+
+    @property
+    def element(self):
+        return self.locator.get_web_element(self.driver, self.name)
+
+    def present(self):
+        try:
+            self.element
+            return True
+        except ValueError:
+            return False
+
+    def invisible(self):
+        """
+        Boolean to check if an element is no longer visible on a page.
+        """
+        return self.locator.is_gone(self.driver)
+
+
 class BaseLocator:
 
     def __init__(self, selector, path, timeout=settings.TIMEOUT):
@@ -30,14 +59,14 @@ class Locator(BaseLocator):
                 EC.presence_of_element_located(self.location)
             )
         except(TimeoutException, StaleElementReferenceException):
-            raise ValueError('Element {} not present on page. {}'.format(element, driver.current_url))
+            raise ValueError('Element {} not present on page. {}'.format(element, driver.current_url)) from None
 
         try:
             WebDriverWait(driver, self.timeout).until(
                 EC.visibility_of_element_located(self.location)
             )
         except(TimeoutException, StaleElementReferenceException):
-            raise ValueError('Element {} not visible before timeout. {}'.format(element, driver.current_url))
+            raise ValueError('Element {} not visible before timeout. {}'.format(element, driver.current_url)) from None
 
         if 'link' in element:
             try:
@@ -45,7 +74,7 @@ class Locator(BaseLocator):
                     EC.element_to_be_clickable(self.location)
                 )
             except(TimeoutException, StaleElementReferenceException):
-                raise ValueError('Element {} on page but not clickable. {}'.format(element, driver.current_url))
+                raise ValueError('Element {} on page but not clickable. {}'.format(element, driver.current_url)) from None
 
         return driver.find_element(self.selector, self.path)
 
@@ -60,7 +89,6 @@ class Locator(BaseLocator):
 
 
 class GroupLocator(BaseLocator):
-    # TODO: Is there language that I can use to make this and get_web_element the same?
     def get_web_elements(self, driver):
         return driver.find_elements(self.selector, self.path)
 
@@ -74,28 +102,13 @@ class BaseElement:
     def verify(self):
         raise NotImplementedError
 
-    # TODO: Consider removing this and adding more functionality to locators
     def __getattribute__(self, item):
         value = object.__getattribute__(self, item)
         if type(value) is Locator:
-            return value.get_web_element(self.driver, item)
+            return WebElementWrapper(self.driver, item, value)
         elif type(value) is GroupLocator:
             return value.get_web_elements(self.driver)
         return value
-
-    def get_locator(self, item):
-        value = object.__getattribute__(self, item)
-        if not isinstance(value, BaseLocator):
-            raise ValueError('{} is not a Locator'.format(item))
-        return value
-
-    def invisible(self, item):
-        """
-        Boolean to check if an element is no longer visible on a page.
-        """
-        locator = self.get_locator(item)
-        if locator:
-            return locator.is_gone(self.driver)
 
 
 class BasePage(BaseElement):
@@ -109,15 +122,10 @@ class BasePage(BaseElement):
         if not self.verify():
             # handle any specific kind of error before go to page exception
             self.error_handling()
-            raise PageException('Unexpected page structure: `{}`'.format(self.driver.current_url))  # TODO: Add locator information here
+            raise PageException('Unexpected page structure: `{}`'.format(self.driver.current_url))
 
     def verify(self):
-        try:
-            self.identity
-        except ValueError:
-            return False
-        else:
-            return True
+        return self.identity.present()
 
     def error_handling(self):
         pass
@@ -158,12 +166,7 @@ class Navbar(BaseElement):
         return len(self.driver.find_elements(By.ID, 'navbarScope')) == 1
 
     def is_logged_in(self):
-        try:
-            if self.sign_up_button:
-                return False
-        except ValueError:
-            return True
-
+        return self.sign_up_button.invisible()
 
 class LoginPage(BasePage):
     url = settings.OSF_HOME + '/login'
@@ -185,7 +188,7 @@ class LoginPage(BasePage):
             self.check_page()
 
     def error_handling(self):
-        if self.url not in self.driver.current_url:
+        if '/login' not in self.driver.current_url:
             raise LoginError(
                 driver=self.driver,
                 error_info='Already logged in'

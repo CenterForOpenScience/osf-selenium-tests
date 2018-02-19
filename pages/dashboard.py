@@ -17,8 +17,8 @@ class DashboardPage(OSFBasePage):
     view_meetings_button = Locator(By.LINK_TEXT, 'View meetings')
     view_preprints_button = Locator(By.LINK_TEXT, 'View preprints')
     start_prereg_button = Locator(By.LINK_TEXT, 'Start Prereg Challenge')
-    new_and_noteworthy = Locator(By.CSS_SELECTOR, '#osfHome > div.newAndNoteworthy > div > div:nth-child(2) > div > div > div:nth-child(1) > div:nth-child(1) > div > h4')
-    popular_projects = Locator(By.CSS_SELECTOR, '#osfHome > div.newAndNoteworthy > div > div:nth-child(2) > div > div > div:nth-child(1) > div:nth-child(2) > div > h4')
+    new_and_noteworthy = Locator(By.CSS_SELECTOR, '#osfHome > div.newAndNoteworthy > div > div:nth-child(2) > div > div > div:nth-child(1) > div:nth-child(1) > div > h4', settings.LONG_TIMEOUT)
+    popular_projects = Locator(By.CSS_SELECTOR, '#osfHome > div.newAndNoteworthy > div > div:nth-child(2) > div > div > div:nth-child(1) > div:nth-child(2) > div > h4', settings.LONG_TIMEOUT)
     institutions_carousel_left_arrow = Locator(By.CSS_SELECTOR, '#__carousel > div:nth-child(2) > a.left.carousel-control')
     institutions_carousel_right_arrow = Locator(By.CSS_SELECTOR, '#__carousel > div:nth-child(2) > a.right.carousel-control')
 
@@ -27,7 +27,7 @@ class DashboardPage(OSFBasePage):
 
     def get_institutions(self):
         page_institutions = self.institution_carousel_logos
-        if self.invisible('institutions_carousel_left_arrow'):
+        if self.institutions_carousel_left_arrow.invisible():
             return page_institutions
         while True:
             self.institutions_carousel_right_arrow.click()

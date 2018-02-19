@@ -6,9 +6,8 @@ from utils import launch_driver
 from pages.base import login
 from pages.landing import LandingPage
 
-
-API_TOKEN = settings.USER_ONE_TOKEN
 API_DOMAIN = settings.API_DOMAIN
+API_TOKEN = settings.USER_ONE_TOKEN
 
 class SeleniumTest:
 

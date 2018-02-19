@@ -1,14 +1,13 @@
 import settings
 
-from tests.base import SeleniumTest, LoggedInTest
-
 from pages.base import login
-from pages.preprint import PreprintPage
-from pages.meeting import MeetingPage
-from pages.registries import RegistriesPage
 from pages.landing import LandingPage
+from pages.meeting import MeetingPage
 from pages.dashboard import DashboardPage
+from pages.registries import RegistriesPage
+from pages.preprint import PreprintPage, SubmitPreprintPage
 
+from tests.base import SeleniumTest, LoggedInTest
 
 #TODO: Test Navbar from all services including reviews and such - they might not have the same navbar always
 
@@ -39,7 +38,7 @@ class NavbarTestLoggedOut(SeleniumTest):
         assert 'register' in self.driver.current_url
 
     def test_user_dropdown_not_present(self):
-        assert self.page.navbar.invisible('user_dropdown')
+        assert self.page.navbar.user_dropdown.invisible()
 
 
 class NavbarTestLoggedIn(LoggedInTest):
@@ -63,10 +62,10 @@ class NavbarTestLoggedIn(LoggedInTest):
         assert self.driver.current_url == settings_url
 
     def test_sign_in_button_not_present(self):
-        assert self.page.navbar.invisible('sign_in_button')
+        assert self.page.navbar.sign_in_button.invisible()
 
     def test_sign_up_button_not_present(self):
-        assert self.page.navbar.invisible('sign_up_button')
+        assert self.page.navbar.sign_up_button.invisible()
 
     def test_logout_link(self):
         self.page.navbar.user_dropdown.click()
@@ -82,7 +81,7 @@ class TestOSFHomeNavbar(NavbarTestLoggedOut):
         self.page.goto()
 
     def test_my_projects_link_not_present(self):
-        assert self.page.navbar.invisible('my_project_link')
+        assert self.page.navbar.my_project_link.invisible()
 
     def test_search_link(self):
         self.page.navbar.search_link.click()
@@ -149,8 +148,7 @@ class TestPreprintsNavbarLoggedIn(NavbarTestLoggedIn):
 
     def test_add_a_preprint_link(self):
         self.page.navbar.add_a_preprint_link.click()
-        add_preprint_url = settings.OSF_HOME + '/preprints/submit/'
-        assert self.driver.current_url == add_preprint_url
+        self.assert_on_page(SubmitPreprintPage)
 
 
 class TestMeetingsNavbar(NavbarTestLoggedOut):
@@ -160,7 +158,7 @@ class TestMeetingsNavbar(NavbarTestLoggedOut):
         self.page.goto()
 
     def test_search_link_not_present(self):
-        assert self.page.navbar.invisible('search_link')
+        assert self.page.navbar.search_link.invisible()
 
     def test_support_link(self):
         self.page.navbar.support_link.click()

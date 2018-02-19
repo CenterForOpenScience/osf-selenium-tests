@@ -48,12 +48,12 @@ class TestDashboardPage(SeleniumTest):
         assert create_project_modal.description_input, 'Description input missing.'
         assert create_project_modal.template_dropdown, 'Template dropdown missing.'
         create_project_modal.more_arrow.click()
-        assert create_project_modal.invisible('description_input')
-        assert create_project_modal.invisible('template_dropdown')
+        assert create_project_modal.description_input.invisible()
+        assert create_project_modal.template_dropdown.invisible()
 
         create_project_modal.cancel_button.click()
 
-        assert create_project_modal.invisible('modal')
+        assert create_project_modal.modal.invisible()
 
     def test_institution_logos(self):
         # TODO: This will not work on production - we don't put up all logos
@@ -63,7 +63,6 @@ class TestDashboardPage(SeleniumTest):
         assert set(page_institution_names) == set(api_institution_names)
 
     def test_new_and_noteworthy(self):
-        # TODO: Possibly write this to fail gracefully with assertions
         # Check if new and noteworthy and public projects are loaded
         self.dashboard_page.new_and_noteworthy
         self.dashboard_page.popular_projects
