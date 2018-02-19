@@ -145,7 +145,7 @@ class Navbar(BaseElement):
     search_link = Locator(By.ID, 'navbar-search')
     support_link = Locator(By.ID, 'navbar-support')
     donate_link = Locator(By.ID, 'navbar-donate')
-    user_dropdown = Locator(By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-of-type(1) > button')
+    user_dropdown = Locator(By.CSS_SELECTOR, 'a.dropdown-toggle')
     user_dropdown_profile = Locator(By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(1) > a')
     user_dropdown_support = Locator(By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(2) > a')
     user_dropdown_settings = Locator(By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(3) > a')

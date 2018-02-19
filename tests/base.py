@@ -1,7 +1,11 @@
-from utils import launch_driver
 from pythosf import client
 
 import settings
+from utils import launch_driver
+
+from pages.base import login
+from pages.landing import LandingPage
+
 
 API_TOKEN = settings.USER_ONE_TOKEN
 API_DOMAIN = settings.API_DOMAIN
@@ -16,3 +20,16 @@ class SeleniumTest:
     @classmethod
     def teardown_class(cls):
         cls.driver.quit()
+
+    def assert_on_page(self, page_class):
+        page_class(self.driver, verify=True)
+
+
+class LoggedInTest(SeleniumTest):
+
+    @classmethod
+    def setup_class(cls):
+        super(LoggedInTest, cls).setup_class()
+        page = LandingPage(cls.driver)
+        page.goto()
+        login(page)
