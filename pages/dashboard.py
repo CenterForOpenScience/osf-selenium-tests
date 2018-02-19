@@ -27,7 +27,7 @@ class DashboardPage(OSFBasePage):
 
     def get_institutions(self):
         page_institutions = self.institution_carousel_logos
-        if self.institutions_carousel_left_arrow.invisible():
+        if self.institutions_carousel_left_arrow.absent():
             return page_institutions
         while True:
             self.institutions_carousel_right_arrow.click()

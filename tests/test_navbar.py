@@ -38,7 +38,7 @@ class NavbarTestLoggedOut(SeleniumTest):
         assert 'register' in self.driver.current_url
 
     def test_user_dropdown_not_present(self):
-        assert self.page.navbar.user_dropdown.invisible()
+        assert self.page.navbar.user_dropdown.absent()
 
 
 class NavbarTestLoggedIn(LoggedInTest):
@@ -62,10 +62,10 @@ class NavbarTestLoggedIn(LoggedInTest):
         assert self.driver.current_url == settings_url
 
     def test_sign_in_button_not_present(self):
-        assert self.page.navbar.sign_in_button.invisible()
+        assert self.page.navbar.sign_in_button.absent()
 
     def test_sign_up_button_not_present(self):
-        assert self.page.navbar.sign_up_button.invisible()
+        assert self.page.navbar.sign_up_button.absent()
 
     def test_logout_link(self):
         self.page.navbar.user_dropdown.click()
@@ -81,7 +81,7 @@ class TestOSFHomeNavbar(NavbarTestLoggedOut):
         self.page.goto()
 
     def test_my_projects_link_not_present(self):
-        assert self.page.navbar.my_project_link.invisible()
+        assert self.page.navbar.my_project_link.absent()
 
     def test_search_link(self):
         self.page.navbar.search_link.click()
@@ -158,7 +158,7 @@ class TestMeetingsNavbar(NavbarTestLoggedOut):
         self.page.goto()
 
     def test_search_link_not_present(self):
-        assert self.page.navbar.search_link.invisible()
+        assert self.page.navbar.search_link.absent()
 
     def test_support_link(self):
         self.page.navbar.support_link.click()

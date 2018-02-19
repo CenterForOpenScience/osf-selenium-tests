@@ -30,11 +30,17 @@ class WebElementWrapper:
         except ValueError:
             return False
 
-    def invisible(self):
+    def absent(self):
         """
         Boolean to check if an element is no longer visible on a page.
         """
-        return self.locator.is_gone(self.driver)
+        try:
+            WebDriverWait(self.driver, settings.DISAPPEARANCE_TIMEOUT).until(
+                EC.invisibility_of_element_located(self.locator.location)
+            )
+            return True
+        except TimeoutException:
+            return False
 
 
 class BaseLocator:
@@ -77,15 +83,6 @@ class Locator(BaseLocator):
                 raise ValueError('Element {} on page but not clickable. {}'.format(element, driver.current_url)) from None
 
         return driver.find_element(self.selector, self.path)
-
-    def is_gone(self, driver):
-        try:
-            WebDriverWait(driver, settings.DISAPPEARANCE_TIMEOUT).until(
-                EC.invisibility_of_element_located(self.location)
-            )
-            return True
-        except TimeoutException:
-            return False
 
 
 class GroupLocator(BaseLocator):
@@ -166,7 +163,7 @@ class Navbar(BaseElement):
         return len(self.driver.find_elements(By.ID, 'navbarScope')) == 1
 
     def is_logged_in(self):
-        return self.sign_up_button.invisible()
+        return self.sign_up_button.absent()
 
 class LoginPage(BasePage):
     url = settings.OSF_HOME + '/login'

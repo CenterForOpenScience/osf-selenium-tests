@@ -17,7 +17,7 @@ class RegistriesPage(OSFBasePage):
     class RegistriesPageNavbar(Navbar):
 
         # Locators
-        user_dropdown = Locator(By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-of-type(1) > a')
+        user_dropdown = Locator(By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-of-type(1) > a', settings.LONG_TIMEOUT)
         sign_in_button = Locator(By.CSS_SELECTOR, '#secondary-navigation > ul.nav > li.ember-view.dropdown.sign-in > a.btn.btn-info.btn-top-login', settings.LONG_TIMEOUT)
 
         def verify(self):

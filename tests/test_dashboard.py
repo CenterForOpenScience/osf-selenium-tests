@@ -48,12 +48,12 @@ class TestDashboardPage(SeleniumTest):
         assert create_project_modal.description_input, 'Description input missing.'
         assert create_project_modal.template_dropdown, 'Template dropdown missing.'
         create_project_modal.more_arrow.click()
-        assert create_project_modal.description_input.invisible()
-        assert create_project_modal.template_dropdown.invisible()
+        assert create_project_modal.description_input.absent()
+        assert create_project_modal.template_dropdown.absent()
 
         create_project_modal.cancel_button.click()
 
-        assert create_project_modal.modal.invisible()
+        assert create_project_modal.modal.absent()
 
     def test_institution_logos(self):
         # TODO: This will not work on production - we don't put up all logos
