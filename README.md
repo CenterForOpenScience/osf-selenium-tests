@@ -1,10 +1,5 @@
-# qaproto
+# OSF Selenium Tests
 
+This is the beginnings of test automation for the OSF.
 
-Ghost Inspector: https://ghostinspector.com
-
-Selenium Quickstart Guide: https://docs.google.com/document/d/1HHqoJxQRDtGbcuT6e_Ev0ofaGm6vVVDUPRSNoZgTM6k/
-
-BrowserStack: https://www.browserstack.com/
-
-test
+It now uses the Page Object design pattern which is bomb.
