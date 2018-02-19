@@ -3,7 +3,7 @@ import pytest
 from api import osf_api as osf
 from tests.base import SeleniumTest
 from pages.project import ProjectPage
-from pages.meeting import MeetingPage
+from pages.meetings import MeetingsPage
 from pages.preprint import PreprintPage
 from pages.dashboard import DashboardPage
 from pages.prereg import PreregLandingPage
@@ -69,7 +69,7 @@ class TestDashboardPage(SeleniumTest):
 
     def test_meetings_link(self):
         self.dashboard_page.view_meetings_button.click()
-        assert MeetingPage(self.driver).verify()
+        assert MeetingsPage(self.driver).verify()
 
     def test_preprints_link(self):
         self.dashboard_page.view_preprints_button.click()
