@@ -55,8 +55,8 @@ class DashboardPage(OSFBasePage):
 
         def institution_selected(self, institution):
             try:
-                logo = self.driver.find_element(By.NAME, institution)
-                return 'grayscale' not in logo.value_of_css_property('filter')
+                logo = self.modal.find_element(By.NAME, institution)
+                return '0.25' not in logo.value_of_css_property('opacity')
             except:
                 raise ValueError('Institution logo for {} not present in modal'.format(institution))
 
