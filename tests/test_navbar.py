@@ -1,6 +1,7 @@
 import settings
 
 from pages.base import login
+from pages.cos import COSDonatePage
 from pages.landing import LandingPage
 from pages.meetings import MeetingsPage
 from pages.dashboard import DashboardPage
@@ -95,7 +96,7 @@ class TestOSFHomeNavbar(NavbarTestLoggedOut):
 
     def test_donate_link(self):
         self.page.navbar.donate_link.click()
-        assert 'cos.io/donate-to-cos' in self.driver.current_url
+        self.assert_on_page(COSDonatePage)
 
     def test_sign_in_button(self):
         self.page.navbar.sign_in_button.click()
@@ -167,7 +168,7 @@ class TestMeetingsNavbar(NavbarTestLoggedOut):
 
     def test_donate_link(self):
         self.page.navbar.donate_link.click()
-        assert 'cos.io/donate-to-cos' in self.driver.current_url
+        self.assert_on_page(COSDonatePage)
 
     def test_sign_in_button(self):
         self.page.navbar.sign_in_button.click()

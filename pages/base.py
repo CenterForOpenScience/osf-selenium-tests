@@ -111,6 +111,11 @@ class BaseElement:
 class BasePage(BaseElement):
     url = None
 
+    def __init__(self, driver, verify=False):
+        super(BasePage, self).__init__(driver)
+        if verify:
+            self.check_page()
+
     def goto(self):
         self.driver.get(self.url)
         self.check_page()
@@ -178,11 +183,6 @@ class LoginPage(BasePage):
     if 'localhost:5000' in settings.OSF_HOME:
         submit_button = Locator(By.ID, 'submit')
         identity = Locator(By.ID, 'login')
-
-    def __init__(self, driver, verify=False):
-        super(LoginPage, self).__init__(driver)
-        if verify:
-            self.check_page()
 
     def error_handling(self):
         if '/login' not in self.driver.current_url:
