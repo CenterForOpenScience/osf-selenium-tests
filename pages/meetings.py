@@ -46,3 +46,6 @@ class MeetingDetailPage(BaseMeetingsPage):
     # Locators
     identity = Locator(By.CSS_SELECTOR, '#grid > div > div > div.tb-head > div > input')
     meeting_title = Locator(By.CSS_SELECTOR, 'body > div.watermarked > div > h2')
+    entry_download_button = Locator(By.CSS_SELECTOR, '#tb-tbody > div > div > div:nth-child(1) > div.tb-td.tb-col-4 > a > button > i')
+    second_entry_link = Locator(By.CSS_SELECTOR, '#tb-tbody > div > div > div:nth-child(2) > div.tb-td.tb-col-0 > a')
+    project_title = Locator(By.CSS_SELECTOR, '#nodeTitleEditable')
