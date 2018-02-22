@@ -7,8 +7,7 @@ These settings can be overridden in local.py.
 # Default selenium driver
 DRIVER = 'Chrome'
 
-# Default time for WebDriver.implicitly_wait
-SEL_WAIT = 5
+DISAPPEARANCE_TIMEOUT = 1
 
 TIMEOUT = 10
 LONG_TIMEOUT = 30

@@ -31,14 +31,9 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
             command_executor=command_executor,
             desired_capabilities=desired_capabilities
         )
-
-        # Maximize window to prevent visibility issues due to responsive design
-        if desired_capabilities.get('browser') == 'Safari':
-            driver.maximize_window()
-        else:
-            driver.set_window_size(1200, 720)
+        driver.maximize_window()
     elif driver_name == 'Chrome' and settings.HEADLESS:
-        from selenium.webdriver.chrome.options import Options
+        from webdriver.chrome.options import Options
         chrome_options = Options()
         chrome_options.add_argument('--headless')
         chrome_options.add_argument('--disable-gpu')
@@ -47,7 +42,6 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
     else:
         driver = driver_cls()
 
-    # Return driver
     return driver
 
 

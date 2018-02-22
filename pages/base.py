@@ -3,11 +3,47 @@ import settings
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import StaleElementReferenceException, TimeoutException, NoSuchElementException
 
 from pages.exceptions import HttpError, PageException, LoginError
 
-class Locator:
+
+class WebElementWrapper:
+
+    def __init__(self, driver, element_name, locator):
+        self.driver = driver
+        self.locator = locator
+        self.name = element_name
+
+    def __getattr__(self, item):
+        return getattr(self.element, item)
+
+    @property
+    def element(self):
+        return self.locator.get_web_element(self.driver, self.name)
+
+    def present(self):
+        try:
+            self.element
+            return True
+        except ValueError:
+            return False
+
+    def absent(self):
+        """
+        Boolean to check if an element is no longer visible on a page.
+        """
+        try:
+            WebDriverWait(self.driver, settings.DISAPPEARANCE_TIMEOUT).until(
+                EC.invisibility_of_element_located(self.locator.location)
+            )
+            return True
+        except TimeoutException:
+            return False
+
+
+class BaseLocator:
 
     def __init__(self, selector, path, timeout=settings.TIMEOUT):
         self.selector = selector
@@ -15,26 +51,28 @@ class Locator:
         self.location = (selector, path)
         self.timeout = timeout
 
+
+class Locator(BaseLocator):
+
     def get_web_element(self, driver, element):
         """
-        Checks if elements are on page, visible, and clickable before returning the selenium webElement.
+        Checks if element is on page, visible, and clickable before returning the selenium webElement.
 
         This method is adapted from code provided on seleniumframework.com
         """
-
         try:
             WebDriverWait(driver, self.timeout).until(
                 EC.presence_of_element_located(self.location)
             )
         except(TimeoutException, StaleElementReferenceException):
-            raise ValueError('Element {} not present on page. {}'.format(element, driver.current_url))
+            raise ValueError('Element {} not present on page. {}'.format(element, driver.current_url)) from None
 
         try:
             WebDriverWait(driver, self.timeout).until(
                 EC.visibility_of_element_located(self.location)
             )
         except(TimeoutException, StaleElementReferenceException):
-            raise ValueError('Element {} not visible before timeout. {}'.format(element, driver.current_url))
+            raise ValueError('Element {} not visible before timeout. {}'.format(element, driver.current_url)) from None
 
         if 'link' in element:
             try:
@@ -42,9 +80,14 @@ class Locator:
                     EC.element_to_be_clickable(self.location)
                 )
             except(TimeoutException, StaleElementReferenceException):
-                raise ValueError('Element {} on page but not clickable. {}'.format(element, driver.current_url))
+                raise ValueError('Element {} on page but not clickable. {}'.format(element, driver.current_url)) from None
 
         return driver.find_element(self.selector, self.path)
+
+
+class GroupLocator(BaseLocator):
+    def get_web_elements(self, driver):
+        return driver.find_elements(self.selector, self.path)
 
 
 class BaseElement:
@@ -59,12 +102,19 @@ class BaseElement:
     def __getattribute__(self, item):
         value = object.__getattribute__(self, item)
         if type(value) is Locator:
-            return value.get_web_element(self.driver, item)
+            return WebElementWrapper(self.driver, item, value)
+        elif type(value) is GroupLocator:
+            return value.get_web_elements(self.driver)
         return value
 
 
 class BasePage(BaseElement):
     url = None
+
+    def __init__(self, driver, verify=False):
+        super(BasePage, self).__init__(driver)
+        if verify:
+            self.check_page()
 
     def goto(self):
         self.driver.get(self.url)
@@ -74,21 +124,26 @@ class BasePage(BaseElement):
         if not self.verify():
             # handle any specific kind of error before go to page exception
             self.error_handling()
-            raise PageException('Unexpected page structure: `{}`'.format(self.driver.current_url))  # TODO: Add locator information here
+            raise PageException('Unexpected page structure: `{}`'.format(self.driver.current_url))
 
     def verify(self):
-        try:
-            self.identity
-        except ValueError:
-            return False
-        else:
-            return True
+        return self.identity.present()
 
     def error_handling(self):
         pass
 
     def reload(self):
         self.driver.refresh()
+
+    def scroll_into_view(self, element):
+        self.driver.execute_script('arguments[0].scrollIntoView(false);', element)
+        # Account for navbar
+        self.driver.execute_script('window.scrollBy(0, 55)')
+
+    def drag_and_drop(self, source_element, dest_element):
+        source_element.click()
+        ActionChains(self.driver).drag_and_drop(source_element, dest_element).perform()
+        # Note: If you close the browser too quickly, the drag/drop may not go through
 
 
 class Navbar(BaseElement):
@@ -100,7 +155,7 @@ class Navbar(BaseElement):
     search_link = Locator(By.ID, 'navbar-search')
     support_link = Locator(By.ID, 'navbar-support')
     donate_link = Locator(By.ID, 'navbar-donate')
-    user_dropdown = Locator(By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-of-type(1) > button')
+    user_dropdown = Locator(By.CSS_SELECTOR, 'a.dropdown-toggle')
     user_dropdown_profile = Locator(By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(1) > a')
     user_dropdown_support = Locator(By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(2) > a')
     user_dropdown_settings = Locator(By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(3) > a')
@@ -113,12 +168,7 @@ class Navbar(BaseElement):
         return len(self.driver.find_elements(By.ID, 'navbarScope')) == 1
 
     def is_logged_in(self):
-        try:
-            if self.sign_up_button:
-                return False
-        except ValueError:
-            return True
-
+        return self.sign_up_button.absent()
 
 class LoginPage(BasePage):
     url = settings.OSF_HOME + '/login'
@@ -134,13 +184,8 @@ class LoginPage(BasePage):
         submit_button = Locator(By.ID, 'submit')
         identity = Locator(By.ID, 'login')
 
-    def __init__(self, driver, verify=False):
-        super(LoginPage, self).__init__(driver)
-        if verify:
-            self.check_page()
-
     def error_handling(self):
-        if self.url not in self.driver.current_url:
+        if '/login' not in self.driver.current_url:
             raise LoginError(
                 driver=self.driver,
                 error_info='Already logged in'
@@ -182,7 +227,7 @@ class OSFBasePage(BasePage):
     @property
     def error_heading(self):
         try:
-            error_head = self.find_element(By.CSS_SELECTOR, 'h2#error')
+            error_head = self.driver.find_element(By.CSS_SELECTOR, 'h2#error')
         except NoSuchElementException:
             return None
         else:
