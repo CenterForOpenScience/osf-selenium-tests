@@ -1,4 +1,5 @@
 import pytest
+import markers
 
 from api import osf_api as osf
 from tests.base import SeleniumTest
@@ -19,6 +20,7 @@ class TestDashboardPage(SeleniumTest):
     def teardown_method(self, method):
         osf.delete_all_user_projects(session=self.session)
 
+    @markers.core_functionality
     def test_create_project(self):
         project_title = 'New Project'
         self.dashboard_page.create_project_button.click()
