@@ -1,4 +1,5 @@
 import pytest
+import markers
 
 from api import osf_api as osf
 from tests.base import SeleniumTest
@@ -19,6 +20,7 @@ class TestDashboardPage(SeleniumTest):
     def teardown_method(self, method):
         osf.delete_all_user_projects(session=self.session)
 
+    @markers.core_functionality
     def test_create_project(self):
         project_title = 'New Project'
         self.dashboard_page.create_project_button.click()
@@ -37,12 +39,13 @@ class TestDashboardPage(SeleniumTest):
 
         create_project_modal = self.dashboard_page.CreateProjectModal(self.driver)
 
-        create_project_modal.remove_all_link.click()
-        for institution in institutions:
-            assert not create_project_modal.institution_selected(institution)
-        create_project_modal.select_all_link.click()
-        for institution in institutions:
-            assert create_project_modal.institution_selected(institution)
+        if institutions:
+            create_project_modal.remove_all_link.click()
+            for institution in institutions:
+                assert not create_project_modal.institution_selected(institution)
+            create_project_modal.select_all_link.click()
+            for institution in institutions:
+                assert create_project_modal.institution_selected(institution)
 
         create_project_modal.more_arrow.click()
         assert create_project_modal.description_input, 'Description input missing.'
@@ -63,9 +66,7 @@ class TestDashboardPage(SeleniumTest):
         assert set(page_institution_names) == set(api_institution_names)
 
     def test_new_and_noteworthy(self):
-        # Check if new and noteworthy and public projects are loaded
-        self.dashboard_page.new_and_noteworthy
-        self.dashboard_page.popular_projects
+        assert self.dashboard_page.first_popular_project_entry.present()
 
     def test_meetings_link(self):
         self.dashboard_page.view_meetings_button.click()

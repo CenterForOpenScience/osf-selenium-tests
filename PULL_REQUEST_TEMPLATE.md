@@ -1,23 +1,24 @@
-<!-- Before submit your Pull Request, make sure you picked
-     the right branch:
 
-     - For hotfixes, select "master" as the target branch
-     - For new features, select "develop" as the target branch
-     - For release feature fixes, select the relevant release branch (release/X.Y.Z) as the target branch -->
+<!-- Before you submit your Pull Request, please confirm that
+
+     - Any test that will create public data either has the `QAtest` tag or the `dont_run_on_production` marker
+     - `core_functionality` is marked as such
+     - Your tests will be able to run on *all* servers (all stagings, test)
+ -->
+
 
 ## Purpose
 
-<!-- Describe the purpose of your changes -->
 
-## Changes
 
-<!-- Briefly describe or list your changes  -->
+## Summery of Changes
 
-## Side effects
 
-<!--Any possible side effects? -->
+
+## Side Effects
+
 
 
 ## Ticket
 
-<!-- Link to JIRA ticket, if applicable e.g. https://openscience.atlassian.net/browse/OSF-1234 -->
+https://openscience.atlassian.net/browse/QA-

@@ -18,6 +18,7 @@ class DashboardPage(OSFBasePage):
     view_preprints_button = Locator(By.LINK_TEXT, 'View preprints')
     start_prereg_button = Locator(By.LINK_TEXT, 'Start Prereg Challenge')
     new_and_noteworthy = Locator(By.CSS_SELECTOR, '#osfHome > div.newAndNoteworthy > div > div:nth-child(2) > div > div > div:nth-child(1) > div:nth-child(1) > div > h4', settings.LONG_TIMEOUT)
+    first_popular_project_entry = Locator(By.CLASS_NAME, 'public-projects-item')
     popular_projects = Locator(By.CSS_SELECTOR, '#osfHome > div.newAndNoteworthy > div > div:nth-child(2) > div > div > div:nth-child(1) > div:nth-child(2) > div > h4', settings.LONG_TIMEOUT)
     institutions_carousel_left_arrow = Locator(By.CSS_SELECTOR, '#__carousel > div:nth-child(2) > a.left.carousel-control')
     institutions_carousel_right_arrow = Locator(By.CSS_SELECTOR, '#__carousel > div:nth-child(2) > a.right.carousel-control')

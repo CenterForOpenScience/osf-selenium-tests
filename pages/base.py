@@ -209,7 +209,7 @@ def login(osf_page, user=settings.USER_ONE, password=settings.USER_ONE_PASSWORD)
 class OSFBasePage(BasePage):
     url = settings.OSF_HOME
 
-    # all page must have a unique identity
+    # all pages must have a unique identity or overwrite verify
 
     def __init__(self, driver, verify=False, require_login=False):
         super(OSFBasePage, self).__init__(driver)
