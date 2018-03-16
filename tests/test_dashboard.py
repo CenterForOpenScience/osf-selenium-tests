@@ -39,12 +39,13 @@ class TestDashboardPage(SeleniumTest):
 
         create_project_modal = self.dashboard_page.CreateProjectModal(self.driver)
 
-        create_project_modal.remove_all_link.click()
-        for institution in institutions:
-            assert not create_project_modal.institution_selected(institution)
-        create_project_modal.select_all_link.click()
-        for institution in institutions:
-            assert create_project_modal.institution_selected(institution)
+        if institutions:
+            create_project_modal.remove_all_link.click()
+            for institution in institutions:
+                assert not create_project_modal.institution_selected(institution)
+            create_project_modal.select_all_link.click()
+            for institution in institutions:
+                assert create_project_modal.institution_selected(institution)
 
         create_project_modal.more_arrow.click()
         assert create_project_modal.description_input, 'Description input missing.'
