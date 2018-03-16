@@ -65,9 +65,7 @@ class TestDashboardPage(SeleniumTest):
         assert set(page_institution_names) == set(api_institution_names)
 
     def test_new_and_noteworthy(self):
-        # Check if new and noteworthy and public projects are loaded
-        self.dashboard_page.new_and_noteworthy
-        self.dashboard_page.popular_projects
+        assert self.dashboard_page.first_popular_project_entry.present()
 
     def test_meetings_link(self):
         self.dashboard_page.view_meetings_button.click()
