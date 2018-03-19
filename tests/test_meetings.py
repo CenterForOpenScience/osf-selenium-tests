@@ -1,8 +1,6 @@
-# import pytest
-
+import markers
 from tests.base import SeleniumTest
 from time import sleep
-# from api import osf_api as osf
 
 from pages.meetings import MeetingsPage, MeetingDetailPage
 from pages.project import ProjectPage
@@ -41,6 +39,7 @@ class TestMeetingsPage(SeleniumTest):
         sorted_top_result = self.meetings_page.top_meeting_link.text
         assert default_top_result != sorted_top_result
 
+    @markers.core_functionality
     def test_meetings_list(self):
         meeting_name = self.meetings_page.top_meeting_link.text
         self.meetings_page.top_meeting_link.click()
@@ -60,6 +59,7 @@ class TestMeetingDetailPage(SeleniumTest):
         self.driver.switch_to.window(self.driver.window_handles[1])
         self.meeting_detail_page = MeetingDetailPage(self.driver)
 
+    @markers.core_functionality
     def test_meeting_detail(self):
         assert self.meeting_detail_page.entry_download_button.present()
         entry_title = self.meeting_detail_page.second_entry_link.text
