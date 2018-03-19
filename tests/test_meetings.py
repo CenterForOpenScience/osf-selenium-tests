@@ -28,6 +28,19 @@ class TestMeetingsPage(SeleniumTest):
         assert self.meetings_page.nrao_logo.present()
         assert self.meetings_page.spsp_logo.present()
 
+    def test_filtering(self):
+        default_top_result = self.meetings_page.top_meeting_link.text
+        self.meetings_page.filter_input.clear()
+        self.meetings_page.filter_input.send_keys('j')
+        filtered_top_result = self.meetings_page.top_meeting_link.text
+        assert default_top_result != filtered_top_result
+
+    def test_carets(self):
+        default_top_result = self.meetings_page.top_meeting_link.text
+        self.meetings_page.sort_caret_name_desc.click()
+        sorted_top_result = self.meetings_page.top_meeting_link.text
+        assert default_top_result != sorted_top_result
+
     def test_meetings_list(self):
         meeting_name = self.meetings_page.top_meeting_link.text
         self.meetings_page.top_meeting_link.click()
@@ -37,23 +50,41 @@ class TestMeetingsPage(SeleniumTest):
         assert meeting_name == meeting_detail.meeting_title.text
         self.driver.switch_to.window(self.driver.window_handles[0])
 
-    def test_meeting_detail(self):
+class TestMeetingDetailPage(SeleniumTest):
+
+    def setup_method(self, method):
+        self.meetings_page = MeetingsPage(self.driver)
+        self.meetings_page.goto()
         self.meetings_page.top_meeting_link.click()
         sleep(.1)
         self.driver.switch_to.window(self.driver.window_handles[1])
-        meeting_detail = MeetingDetailPage(self.driver)
-        assert meeting_detail.entry_download_button.present()
-        entry_name = meeting_detail.second_entry_link.text
-        meeting_detail.second_entry_link.click()
+        self.meeting_detail_page = MeetingDetailPage(self.driver)
+
+    def test_meeting_detail(self):
+        assert self.meeting_detail_page.entry_download_button.present()
+        entry_title = self.meeting_detail_page.second_entry_link.text
+        self.meeting_detail_page.second_entry_link.click()
         sleep(.1)
         self.driver.switch_to.window(self.driver.window_handles[2])
         project_page = ProjectPage(self.driver)
-        assert entry_name == project_page.project_title.text
+        assert entry_title == project_page.project_title.text
         self.driver.switch_to.window(self.driver.window_handles[0])
-        # TODO close tabs when test complete instead of navigate back to zero
+
+    def test_filtering_detail(self):
+        default_second_result = self.meeting_detail_page.second_entry_link.text
+        self.meeting_detail_page.filter_input.clear()
+        self.meeting_detail_page.filter_input.send_keys('q')
+        filtered_second_result = self.meeting_detail_page.second_entry_link.text
+        assert default_second_result != filtered_second_result
+        self.driver.switch_to.window(self.driver.window_handles[0])
+
+    def test_carets_detail(self):
+        default_second_result = self.meeting_detail_page.second_entry_link.text
+        self.meeting_detail_page.sort_caret_title_asc.click()
+        sorted_second_result = self.meeting_detail_page.second_entry_link.text
+        assert default_second_result != sorted_second_result
+        self.driver.switch_to.window(self.driver.window_handles[0])
+# TODO close tabs when test complete instead of navigate back to zero
 
 # Future tests could include:
-# - sort carets exist
-# - lightly testing sort carets
-# - lightly testing filtering
 # - click download button, confirm download count increases (this will have to be omitted in production test runs)
