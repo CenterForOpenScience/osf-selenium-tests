@@ -43,9 +43,3 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
         driver = driver_cls()
 
     return driver
-
-
-def logout(osf_page):
-    if osf_page.is_logged_in():
-        osf_page.navbar.user_dropdown.click()
-        osf_page.navbar.logout_link.click()

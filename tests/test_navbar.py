@@ -1,6 +1,7 @@
+import pytest
 import settings
 
-from pages.base import login
+from pages.login import login
 from pages.cos import COSDonatePage
 from pages.landing import LandingPage
 from pages.meetings import MeetingsPage
@@ -8,208 +9,228 @@ from pages.dashboard import DashboardPage
 from pages.registries import RegistriesPage
 from pages.preprint import PreprintPage, SubmitPreprintPage
 
-from tests.base import SeleniumTest, LoggedInTest
 
 #TODO: Test Navbar from all services including reviews and such - they might not have the same navbar always
 
-class NavbarTestLoggedOut(SeleniumTest):
 
-    def test_osf_home_dropdown_link(self):
-        self.page.navbar.service_dropdown.click()
-        self.page.navbar.home_link.click()
-        self.assert_on_page(LandingPage)
+# Class used to inject generic tests
+class NavbarTestLoggedOut:
 
-    def test_preprints_dropdown_link(self):
-        self.page.navbar.service_dropdown.click()
-        self.page.navbar.preprints_link.click()
-        self.assert_on_page(PreprintPage)
+    def test_osf_home_dropdown_link(self, page, driver):
+        page.navbar.service_dropdown.click()
+        page.navbar.home_link.click()
+        LandingPage(driver, verify=True)
 
-    def test_registries_dropdown_link(self):
-        self.page.navbar.service_dropdown.click()
-        self.page.navbar.registries_link.click()
-        self.assert_on_page(RegistriesPage)
+    def test_preprints_dropdown_link(self, page, driver):
+        page.navbar.service_dropdown.click()
+        page.navbar.preprints_link.click()
+        PreprintPage(driver, verify=True)
 
-    def test_meetings_dropdown_link(self):
-        self.page.navbar.service_dropdown.click()
-        self.page.navbar.meetings_link.click()
-        self.assert_on_page(MeetingsPage)
+    def test_registries_dropdown_link(self, driver, page):
+        page.navbar.service_dropdown.click()
+        page.navbar.registries_link.click()
+        RegistriesPage(driver, verify=True)
 
-    def test_sign_up_button(self):
-        self.page.navbar.sign_up_button.click()
-        assert 'register' in self.driver.current_url
+    def test_meetings_dropdown_link(self, page, driver):
+        page.navbar.service_dropdown.click()
+        page.navbar.meetings_link.click()
+        MeetingsPage(driver, verify=True)
 
-    def test_user_dropdown_not_present(self):
-        assert self.page.navbar.user_dropdown.absent()
+    def test_sign_up_button(self, driver, page):
+        page.navbar.sign_up_button.click()
+        assert 'register' in driver.current_url
 
+    def test_user_dropdown_not_present(self, page):
+        assert page.navbar.user_dropdown.absent()
 
-class NavbarTestLoggedIn(LoggedInTest):
+# Class used to inject generic tests
+class NavbarTestLoggedIn:
 
-    def test_user_profile_menu_profile_link(self):
-        self.page.navbar.user_dropdown.click()
-        self.page.navbar.user_dropdown_profile.click()
+    def test_user_profile_menu_profile_link(self, driver, page):
+        page.navbar.user_dropdown.click()
+        page.navbar.user_dropdown_profile.click()
         profile_url = settings.OSF_HOME + '/profile/'
-        assert self.driver.current_url == profile_url
+        assert driver.current_url == profile_url
 
-    def test_user_profile_menu_support_link(self):
-        self.page.navbar.user_dropdown.click()
-        self.page.navbar.user_dropdown_support.click()
+    def test_user_profile_menu_support_link(self, driver, page):
+        page.navbar.user_dropdown.click()
+        page.navbar.user_dropdown_support.click()
         support_url = settings.OSF_HOME + '/support/'
-        assert self.driver.current_url == support_url
+        assert driver.current_url == support_url
 
-    def test_user_profile_menu_settings_link(self):
-        self.page.navbar.user_dropdown.click()
-        self.page.navbar.user_dropdown_settings.click()
+    def test_user_profile_menu_settings_link(self, driver, page):
+        page.navbar.user_dropdown.click()
+        page.navbar.user_dropdown_settings.click()
         settings_url = settings.OSF_HOME + '/settings/'
-        assert self.driver.current_url == settings_url
+        assert driver.current_url == settings_url
 
-    def test_sign_in_button_not_present(self):
-        assert self.page.navbar.sign_in_button.absent()
+    def test_sign_in_button_not_present(self, page):
+        assert page.navbar.sign_in_button.absent()
 
-    def test_sign_up_button_not_present(self):
-        assert self.page.navbar.sign_up_button.absent()
+    def test_sign_up_button_not_present(self, page):
+        assert page.navbar.sign_up_button.absent()
 
-    def test_logout_link(self):
-        self.page.navbar.user_dropdown.click()
-        self.page.navbar.logout_link.click()
-        assert 'goodbye' in self.driver.current_url
-        login(self.page)
+    def test_logout_link(self, driver, page):
+        page.navbar.user_dropdown.click()
+        page.navbar.logout_link.click()
+        assert 'goodbye' in driver.current_url
+        login(driver)
 
 
 class TestOSFHomeNavbar(NavbarTestLoggedOut):
 
-    def setup_method(self, method):
-        self.page = LandingPage(self.driver)
-        self.page.goto()
+    @pytest.fixture()
+    def page(self, driver):
+        page = LandingPage(driver)
+        page.goto()
+        return page
 
-    def test_my_projects_link_not_present(self):
-        assert self.page.navbar.my_project_link.absent()
+    def test_my_projects_link_not_present(self, page):
+        assert page.navbar.my_project_link.absent()
 
-    def test_search_link(self):
-        self.page.navbar.search_link.click()
+    def test_search_link(self, driver, page):
+        page.navbar.search_link.click()
         search_url = settings.OSF_HOME + '/search/'
-        assert self.driver.current_url == search_url
+        assert driver.current_url == search_url
 
-    def test_support_link(self):
-        self.page.navbar.support_link.click()
+    def test_support_link(self, page, driver):
+        page.navbar.support_link.click()
         support_url = settings.OSF_HOME + '/support/'
-        assert self.driver.current_url == support_url
+        assert driver.current_url == support_url
 
-    def test_donate_link(self):
-        self.page.navbar.donate_link.click()
-        self.assert_on_page(COSDonatePage)
+    def test_donate_link(self, page, driver):
+        page.navbar.donate_link.click()
+        COSDonatePage(driver, verify=True)
 
-    def test_sign_in_button(self):
-        self.page.navbar.sign_in_button.click()
-        assert 'login' in self.driver.current_url
+    def test_sign_in_button(self, page, driver):
+        page.navbar.sign_in_button.click()
+        assert 'login' in driver.current_url
 
 
+@pytest.mark.usefixtures('must_be_logged_in')
 class TestOSFHomeNavbarLoggedIn(NavbarTestLoggedIn):
 
-    def setup_method(self, method):
-        self.page = DashboardPage(self.driver)
-        self.page.goto()
+    @pytest.fixture()
+    def page(self, driver):
+        page = DashboardPage(driver)
+        page.goto()
+        return page
 
-    def test_my_projects_link(self):
-        self.page.navbar.my_project_link.click()
+    def test_my_projects_link(self, page, driver):
+        page.navbar.my_project_link.click()
         my_projects_url = settings.OSF_HOME + '/myprojects/'
-        assert self.driver.current_url == my_projects_url
+        assert driver.current_url == my_projects_url
 
 
 class TestPreprintsNavbar(NavbarTestLoggedOut):
 
-    def setup_method(self, method):
-        self.page = PreprintPage(self.driver)
-        self.page.goto()
+    @pytest.fixture()
+    def page(self, driver):
+        page = PreprintPage(driver)
+        page.goto()
+        return page
 
     # todo: add id to those html tags in ember osf to make the find_element possible
     # def test_search_link(self):
-    #     self.page.navbar.search_link.click()
+    #     page.navbar.search_link.click()
     #     search_url = settings.OSF_HOME + '/search/'
-    #     assert self.driver.current_url == search_url
+    #     assert driver.current_url == search_url
     #
     # def test_support_link(self):
-    #     self.page.navbar.support_link.click()
+    #     page.navbar.support_link.click()
     #     support_url = settings.OSF_HOME + '/support/'
-    #     assert self.driver.current_url == support_url
+    #     assert driver.current_url == support_url
     #
     # def test_donate_link(self):
-    #     self.page.navbar.donate_link.click()
-    #     assert 'cos.io/donate-to-cos' in self.driver.current_url
+    #     page.navbar.donate_link.click()
+    #     assert 'cos.io/donate-to-cos' in driver.current_url
     #
     # def test_sign_in_button(self):
-    #     self.page.navbar.sign_in_button.click()
-    #     assert 'login' in self.driver.current_url
+    #     page.navbar.sign_in_button.click()
+    #     assert 'login' in driver.current_url
 
-
+@pytest.mark.usefixtures('must_be_logged_in')
 class TestPreprintsNavbarLoggedIn(NavbarTestLoggedIn):
 
-    def setup_method(self, method):
-        self.page = PreprintPage(self.driver)
-        self.page.goto()
+    @pytest.fixture()
+    def page(self, driver):
+        page = PreprintPage(driver)
+        page.goto()
+        return page
 
-    def test_add_a_preprint_link(self):
-        self.page.navbar.add_a_preprint_link.click()
-        self.assert_on_page(SubmitPreprintPage)
+    def test_add_a_preprint_link(self, page, driver):
+        page.navbar.add_a_preprint_link.click()
+        SubmitPreprintPage(driver, verify=True)
 
 
 class TestMeetingsNavbar(NavbarTestLoggedOut):
 
-    def setup_method(self, method):
-        self.page = MeetingsPage(self.driver)
-        self.page.goto()
+    @pytest.fixture()
+    def page(self, driver):
+        page = MeetingsPage(driver)
+        page.goto()
+        return page
 
-    def test_search_link_not_present(self):
-        assert self.page.navbar.search_link.absent()
+    def test_search_link_not_present(self, page):
+        assert page.navbar.search_link.absent()
 
-    def test_support_link(self):
-        self.page.navbar.support_link.click()
+    def test_support_link(self, page, driver):
+        page.navbar.support_link.click()
         support_url = 'http://help.osf.io/m/meetings/'
-        assert self.driver.current_url == support_url
+        assert driver.current_url == support_url
 
-    def test_donate_link(self):
-        self.page.navbar.donate_link.click()
-        self.assert_on_page(COSDonatePage)
+    def test_donate_link(self, page, driver):
+        page.navbar.donate_link.click()
+        COSDonatePage(driver, verify=True)
 
-    def test_sign_in_button(self):
-        self.page.navbar.sign_in_button.click()
-        assert 'login' in self.driver.current_url
+    def test_sign_in_button(self, page, driver):
+        page.navbar.sign_in_button.click()
+        assert 'login' in driver.current_url
 
 
+@pytest.mark.usefixtures('must_be_logged_in')
 class TestMeetingsNavbarLoggedIn(NavbarTestLoggedIn):
 
-    def setup_method(self, method):
-        self.page = MeetingsPage(self.driver)
-        self.page.goto()
+    @pytest.fixture()
+    def page(self, driver):
+        page = MeetingsPage(driver)
+        page.goto()
+        return page
 
 
 class TestRegistriesNavbar(NavbarTestLoggedOut):
 
-    def setup_method(self, method):
-        self.page = RegistriesPage(self.driver)
-        self.page.goto()
+    @pytest.fixture()
+    def page(self, driver):
+        page = RegistriesPage(driver)
+        page.goto()
+        return page
 
     # todo: add id to those html tags in ember osf to make the find_element possible
     # def test_search_link(self):
-    #     self.page.navbar.search_link.click()
+    #     page.navbar.search_link.click()
     #     search_url = settings.OSF_HOME + '/search/'
-    #     assert self.driver.current_url == search_url
+    #     assert driver.current_url == search_url
     #
     # def test_support_link(self):
-    #     self.page.navbar.support_link.click()
+    #     page.navbar.support_link.click()
     #     support_url = settings.OSF_HOME + '/support/'
-    #     assert self.driver.current_url == support_url
+    #     assert driver.current_url == support_url
     #
     # def test_donate_link(self):
-    #     self.page.navbar.donate_link.click()
-    #     assert 'cos.io/donate-to-cos' in self.driver.current_url
+    #     page.navbar.donate_link.click()
+    #     assert 'cos.io/donate-to-cos' in driver.current_url
     #
     # def test_sign_in_button(self):
-    #     self.page.navbar.sign_in_button.click()
-    #     assert 'login' in self.driver.current_url
+    #     page.navbar.sign_in_button.click()
+    #     assert 'login' in driver.current_url
 
 
+@pytest.mark.usefixtures('must_be_logged_in')
 class TestRegistriesNavbarLoggedIn(NavbarTestLoggedIn):
 
-    def setup_method(self, method):
-        self.page = RegistriesPage(self.driver)
-        self.page.goto()
+    @pytest.fixture()
+    def page(self, driver):
+        page = RegistriesPage(driver)
+        page.goto()
+        return page

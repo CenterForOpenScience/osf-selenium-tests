@@ -2,7 +2,6 @@ import pytest
 import markers
 
 from api import osf_api as osf
-from tests.base import SeleniumTest
 from pages.project import ProjectPage
 from pages.meetings import MeetingsPage
 from pages.preprint import PreprintPage
@@ -10,34 +9,34 @@ from pages.dashboard import DashboardPage
 from pages.prereg import PreregLandingPage
 
 
-class TestDashboardPage(SeleniumTest):
+@pytest.fixture()
+def dashboard_page(driver):
+    dashboard_page = DashboardPage(driver)
+    dashboard_page.goto()
+    return dashboard_page
 
-    def setup_method(self, method):
-        self.dashboard_page = DashboardPage(self.driver)
-        self.dashboard_page.goto()
 
-    #TODO: Decide if deleting all projects should go somewhere else
-    def teardown_method(self, method):
-        osf.delete_all_user_projects(session=self.session)
+@pytest.mark.usefixtures('must_be_logged_in')
+class TestDashboardPage:
 
     @markers.core_functionality
-    def test_create_project(self):
+    def test_create_project(self, driver, dashboard_page):
         project_title = 'New Project'
-        self.dashboard_page.create_project_button.click()
-        create_project_modal = self.dashboard_page.CreateProjectModal(self.driver)
+        dashboard_page.create_project_button.click()
+        create_project_modal = dashboard_page.CreateProjectModal(driver)
         create_project_modal.title_input.clear()
         create_project_modal.title_input.send_keys(project_title)
         create_project_modal.create_project_button.click()
-        project_created_modal = self.dashboard_page.ProjectCreatedModal(self.driver)
+        project_created_modal = dashboard_page.ProjectCreatedModal(driver)
         project_created_modal.go_to_project_button.click()
-        project_page = ProjectPage(self.driver, verify=True)
+        project_page = ProjectPage(driver, verify=True)
         assert project_page.project_title.text == project_title, 'Project title incorrect.'
 
-    def test_create_project_modal_buttons(self):
-        institutions = osf.get_user_institutions(self.session)
-        self.dashboard_page.create_project_button.click()
+    def test_create_project_modal_buttons(self, dashboard_page, session, driver):
+        institutions = osf.get_user_institutions(session)
+        dashboard_page.create_project_button.click()
 
-        create_project_modal = self.dashboard_page.CreateProjectModal(self.driver)
+        create_project_modal = dashboard_page.CreateProjectModal(driver)
 
         if institutions:
             create_project_modal.remove_all_link.click()
@@ -58,57 +57,55 @@ class TestDashboardPage(SeleniumTest):
 
         assert create_project_modal.modal.absent()
 
-    def test_institution_logos(self):
+    def test_institution_logos(self, dashboard_page, session):
         # TODO: This will not work on production - we don't put up all logos
-        api_institution_names = osf.get_all_institutions(self.session)
-        page_institutions = self.dashboard_page.get_institutions()
+        api_institution_names = osf.get_all_institutions(session)
+        page_institutions = dashboard_page.get_institutions()
         page_institution_names = [i.get_property('name') for i in page_institutions]
         assert set(page_institution_names) == set(api_institution_names)
 
-    def test_new_and_noteworthy(self):
-        assert self.dashboard_page.first_popular_project_entry.present()
+    def test_new_and_noteworthy(self, dashboard_page):
+        assert dashboard_page.first_popular_project_entry.present()
 
-    def test_meetings_link(self):
-        self.dashboard_page.view_meetings_button.click()
-        assert MeetingsPage(self.driver).verify()
+    def test_meetings_link(self, driver, dashboard_page):
+        dashboard_page.view_meetings_button.click()
+        assert MeetingsPage(driver).verify()
 
-    def test_preprints_link(self):
-        self.dashboard_page.view_preprints_button.click()
-        assert PreprintPage(self.driver).verify()
+    def test_preprints_link(self, driver, dashboard_page):
+        dashboard_page.view_preprints_button.click()
+        assert PreprintPage(driver).verify()
 
-    def test_prereg_link(self):
-        self.dashboard_page.start_prereg_button.click()
-        assert PreregLandingPage(self.driver).verify()
+    def test_prereg_link(self, driver, dashboard_page):
+        dashboard_page.start_prereg_button.click()
+        assert PreregLandingPage(driver).verify()
 
 
-class TestDashboardPageProjectList(SeleniumTest):
-
-    def setup_method(self, method):
-        self.dashboard_page = DashboardPage(self.driver)
-        self.dashboard_page.goto()
+@pytest.mark.usefixtures('must_be_logged_in')
+@pytest.mark.usefixtures('delete_user_projects_at_setup')
+class TestDashboardPageProjectList:
 
     @pytest.fixture()
-    def project_one(self):
-        project_one = osf.create_project(self.session, title='&&aaaaaa')
+    def project_one(self, session):
+        project_one = osf.create_project(session, title='&&aaaaaa')
         yield project_one
         project_one.delete()
 
     @pytest.fixture()
-    def project_two(self):
-        project_two = osf.create_project(self.session, title='&&aaaabb')
+    def project_two(self, session):
+        project_two = osf.create_project(session, title='&&aaaabb')
         yield project_two
         project_two.delete()
 
     @pytest.fixture()
-    def project_three(self):
-        project_three = osf.create_project(self.session, title='&&aaaaac')
+    def project_three(self, session):
+        project_three = osf.create_project(session, title='&&aaaaac')
         yield project_three
         project_three.delete()
 
-    def test_project_sorting(self, project_one, project_two, project_three):
-        self.dashboard_page.reload()
+    def test_project_sorting(self, driver, dashboard_page, project_one, project_two, project_three):
+        dashboard_page.reload()
 
-        project_list = self.dashboard_page.ProjectList(self.driver)
+        project_list = dashboard_page.ProjectList(driver)
         project_list.search_input.clear()
         project_list.search_input.send_keys('&&aaaa')
 
@@ -139,10 +136,10 @@ class TestDashboardPageProjectList(SeleniumTest):
         assert project_three.id in project_list.get_nth_project(2)['guid']
         assert project_one.id in project_list.get_nth_project(3)['guid']
 
-    def test_project_quick_search(self, project_one, project_two, project_three):
-        self.dashboard_page.reload()
+    def test_project_quick_search(self, dashboard_page, driver, project_one, project_two, project_three):
+        dashboard_page.reload()
 
-        project_list = self.dashboard_page.ProjectList(self.driver)
+        project_list = dashboard_page.ProjectList(driver)
 
         project_list.search_input.clear()
         project_list.search_input.send_keys('&&aaaa')

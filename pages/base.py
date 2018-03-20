@@ -6,7 +6,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import StaleElementReferenceException, TimeoutException, NoSuchElementException
 
-from pages.exceptions import HttpError, PageException, LoginError
+from pages.exceptions import HttpError, PageException
 
 
 class WebElementWrapper:
@@ -168,42 +168,10 @@ class Navbar(BaseElement):
         return len(self.driver.find_elements(By.ID, 'navbarScope')) == 1
 
     def is_logged_in(self):
-        return self.sign_up_button.absent()
+        return self.user_dropdown.present()
 
-class LoginPage(BasePage):
-    url = settings.OSF_HOME + '/login'
-
-    # Locators
-    identity = Locator(By.XPATH, '/html/body[@id="cas"]/div[@id="container"]', settings.LONG_TIMEOUT)
-    username_input = Locator(By.ID, 'username')
-    password_input = Locator(By.ID, 'password')
-    submit_button = Locator(By.NAME, 'submit')
-    remember_me_checkbox = Locator(By.ID, 'rememberMe')
-
-    if 'localhost:5000' in settings.OSF_HOME:
-        submit_button = Locator(By.ID, 'submit')
-        identity = Locator(By.ID, 'login')
-
-    def error_handling(self):
-        if '/login' not in self.driver.current_url:
-            raise LoginError(
-                driver=self.driver,
-                error_info='Already logged in'
-            )
-
-    def login(self, user, password):
-        self.username_input.send_keys(user)
-        if ('localhost:5000' not in settings.OSF_HOME):
-            self.password_input.send_keys(password)
-            if self.remember_me_checkbox.is_selected():
-                self.remember_me_checkbox.click()
-        self.submit_button.click()
-
-def login(osf_page, user=settings.USER_ONE, password=settings.USER_ONE_PASSWORD):
-    login_page = LoginPage(osf_page.driver)
-    login_page.goto()
-    login_page.login(user, password)
-    osf_page.driver.get(osf_page.url)
+    def is_logged_out(self):
+        return self.sign_in_button.present()
 
 
 class OSFBasePage(BasePage):
@@ -211,15 +179,10 @@ class OSFBasePage(BasePage):
 
     # all pages must have a unique identity or overwrite verify
 
-    def __init__(self, driver, verify=False, require_login=False):
+    def __init__(self, driver, verify=False):
         super(OSFBasePage, self).__init__(driver)
 
         self.navbar = self.BasePageNavbar(driver)
-
-        if require_login:
-            self.driver.get(self.url)
-            if not self.is_logged_in():
-                login(self)
 
         if verify:
             self.check_page()
@@ -243,6 +206,9 @@ class OSFBasePage(BasePage):
 
     def is_logged_in(self):
         return self.navbar.is_logged_in()
+
+    def is_logged_out(self):
+        return self.navbar.is_logged_out()
 
     class BasePageNavbar(Navbar):
 

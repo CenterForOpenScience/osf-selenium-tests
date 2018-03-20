@@ -1,5 +1,5 @@
 
-<!-- Before you submit your Pull Request, please confirm that
+<!-- Before you submit your Pull Request, please confirm that:
 
      - Any test that will create public data either has the `QAtest` tag or the `dont_run_on_production` marker
      - `core_functionality` is marked as such
@@ -11,11 +11,11 @@
 
 
 
-## Summery of Changes
+## Summary of Changes
 
 
 
-## Side Effects
+## Testing Changes Moving Forward
 
 
 
