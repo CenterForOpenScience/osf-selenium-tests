@@ -1,25 +1,23 @@
-# import pytest
-
-from tests.base import SeleniumTest
-# from api import osf_api as osf
-
+import pytest
 from pages.meetings import MeetingsPage
 
 
-class TestMeetingsPage(SeleniumTest):
+@pytest.fixture()
+def meetings_page(driver):
+    meetings_page = MeetingsPage(driver)
+    meetings_page.goto()
+    return meetings_page
 
-    def setup_method(self, method):
-        self.meetings_page = MeetingsPage(self.driver)
-        self.meetings_page.goto()
+class TestMeetingsPage:
 
-    def test_meetings_landing(self):
-        self.meetings_page.register_text.absent()
-        self.meetings_page.register_button.click()
-        self.meetings_page.register_text
+    def test_meetings_landing(self, meetings_page):
+        meetings_page.register_text.absent()
+        meetings_page.register_button.click()
+        meetings_page.register_text
 
-        self.meetings_page.upload_text.absent()
-        self.meetings_page.upload_button.click()
-        self.meetings_page.upload_text
+        meetings_page.upload_text.absent()
+        meetings_page.upload_button.click()
+        meetings_page.upload_text
 
     # check 4 logos at bottom
 
