@@ -3,7 +3,7 @@ import settings
 from pythosf import client
 from api import osf_api as osf
 from utils import launch_driver
-from pages.login import logout, safe_login
+from pages.login import logout, login
 
 
 @pytest.fixture(scope='session', autouse=True)
@@ -31,7 +31,7 @@ def default_logout(driver):
 
 @pytest.fixture(scope='class')
 def must_be_logged_in(driver):
-    safe_login(driver)
+    login(driver)
 
 
 @pytest.fixture(scope='class')
