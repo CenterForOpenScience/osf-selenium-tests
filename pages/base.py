@@ -30,17 +30,23 @@ class WebElementWrapper:
         except ValueError:
             return False
 
-    def absent(self):
+    def absent(self, timeout=settings.QUICK_TIMEOUT):
         """
         Boolean to check if an element is no longer visible on a page.
         """
         try:
-            WebDriverWait(self.driver, settings.DISAPPEARANCE_TIMEOUT).until(
+            WebDriverWait(self.driver, timeout).until(
                 EC.invisibility_of_element_located(self.locator.location)
             )
             return True
         except TimeoutException:
             return False
+
+    def here_then_gone(self):
+        self.present()  # Allow a wait for it to appear, but don't force it to have been present
+        if not self.absent():
+            raise ValueError('Element {} is not absent.'.format(self.name))
+        return True
 
 
 class BaseLocator:
@@ -92,6 +98,17 @@ class GroupLocator(BaseLocator):
 
 class BaseElement:
     default_timeout = settings.TIMEOUT
+
+    def __new__(cls, *args, **kwargs):
+        page = None
+        if hasattr(cls, 'waffle_override'):
+            for waffle_name in cls.waffle_override:
+                if waffle_name in settings.EMBER_PAGES:
+                    page = super().__new__(cls.waffle_override[waffle_name])
+        else:
+            page = super().__new__(cls)
+        page.__init__(*args, **kwargs)  # TODO: is there a way to not have to do this?
+        return page
 
     def __init__(self, driver):
         self.driver = driver

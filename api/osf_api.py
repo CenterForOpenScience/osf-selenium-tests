@@ -1,3 +1,4 @@
+import settings
 from pythosf import client
 
 def create_project(session, title='osf selenium test'):
@@ -38,6 +39,16 @@ def delete_all_user_projects(session, user=None):
         n = client.Node(id=node['id'], session=session)
         n.get()
         n.delete()
+
+def waffled_pages():
+    waffle_list = []
+    url = '/v2/_waffle/'
+    session = client.Session(api_base_url=settings.API_DOMAIN)
+    data = session.get(url)
+    for page in data['data']:
+        if page['attributes']['active']:
+            waffle_list.append(page['attributes']['name'])
+    return waffle_list
 
 
 class User(client.APIDetail):

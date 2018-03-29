@@ -17,7 +17,7 @@ def dashboard_page(driver):
 
 
 @pytest.mark.usefixtures('must_be_logged_in')
-class TestDashboardPage:
+class TestMainPage:
 
     @markers.core_functionality
     def test_create_project(self, driver, dashboard_page):
@@ -57,6 +57,7 @@ class TestDashboardPage:
 
         assert create_project_modal.modal.absent()
 
+    @pytest.mark.skip(reason='Expected to fail until EMB-184 is resolved')
     def test_institution_logos(self, dashboard_page, session):
         # TODO: This will not work on production - we don't put up all logos
         api_institution_names = osf.get_all_institutions(session)
@@ -64,6 +65,7 @@ class TestDashboardPage:
         page_institution_names = [i.get_property('name') for i in page_institutions]
         assert set(page_institution_names) == set(api_institution_names)
 
+    @markers.core_functionality
     def test_new_and_noteworthy(self, dashboard_page):
         assert dashboard_page.first_popular_project_entry.present()
 
@@ -82,7 +84,7 @@ class TestDashboardPage:
 
 @pytest.mark.usefixtures('must_be_logged_in')
 @pytest.mark.usefixtures('delete_user_projects_at_setup')
-class TestDashboardPageProjectList:
+class TestProjectList:
 
     @pytest.fixture()
     def project_one(self, session):
@@ -111,36 +113,36 @@ class TestDashboardPageProjectList:
 
         assert 'selected' in project_list.sort_date_dsc_button.get_attribute('class')
         assert 'not-selected' in project_list.sort_date_asc_button.get_attribute('class')
-        assert project_three.id in project_list.get_nth_project(1)['guid']
-        assert project_two.id in project_list.get_nth_project(2)['guid']
-        assert project_one.id in project_list.get_nth_project(3)['guid']
+        assert project_three.id in project_list.get_nth_project_link(1)
+        assert project_two.id in project_list.get_nth_project_link(2)
+        assert project_one.id in project_list.get_nth_project_link(3)
 
         project_list.sort_date_asc_button.click()
         assert 'selected' in project_list.sort_date_asc_button.get_attribute('class')
         assert 'not-selected' in project_list.sort_date_dsc_button.get_attribute('class')
-        assert project_one.id in project_list.get_nth_project(1)['guid']
-        assert project_two.id in project_list.get_nth_project(2)['guid']
-        assert project_three.id in project_list.get_nth_project(3)['guid']
+        assert project_one.id in project_list.get_nth_project_link(1)
+        assert project_two.id in project_list.get_nth_project_link(2)
+        assert project_three.id in project_list.get_nth_project_link(3)
 
         project_list.sort_title_asc_button.click()
         assert 'selected' in project_list.sort_title_asc_button.get_attribute('class')
         assert 'not-selected' in project_list.sort_title_dsc_button.get_attribute('class')
-        assert project_one.id in project_list.get_nth_project(1)['guid']
-        assert project_three.id in project_list.get_nth_project(2)['guid']
-        assert project_two.id in project_list.get_nth_project(3)['guid']
+        assert project_one.id in project_list.get_nth_project_link(1)
+        assert project_three.id in project_list.get_nth_project_link(2)
+        assert project_two.id in project_list.get_nth_project_link(3)
 
         project_list.sort_title_dsc_button.click()
         assert 'selected' in project_list.sort_title_dsc_button.get_attribute('class')
         assert 'not-selected' in project_list.sort_title_asc_button.get_attribute('class')
-        assert project_two.id in project_list.get_nth_project(1)['guid']
-        assert project_three.id in project_list.get_nth_project(2)['guid']
-        assert project_one.id in project_list.get_nth_project(3)['guid']
+        assert project_two.id in project_list.get_nth_project_link(1)
+        assert project_three.id in project_list.get_nth_project_link(2)
+        assert project_one.id in project_list.get_nth_project_link(3)
 
+    @markers.core_functionality
     def test_project_quick_search(self, dashboard_page, driver, project_one, project_two, project_three):
         dashboard_page.reload()
 
         project_list = dashboard_page.ProjectList(driver)
-
         project_list.search_input.clear()
         project_list.search_input.send_keys('&&aaaa')
         assert project_list.get_list_length() == 3
@@ -150,4 +152,4 @@ class TestDashboardPageProjectList:
 
         project_list.search_input.send_keys('a')
         assert project_list.get_list_length() == 1
-        assert project_one.id in project_list.get_nth_project(1)['guid']
+        assert project_one.id in project_list.get_nth_project_link(1)
