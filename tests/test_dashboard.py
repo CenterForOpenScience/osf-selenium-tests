@@ -4,39 +4,36 @@ import markers
 from api import osf_api as osf
 from pages.project import ProjectPage
 from pages.meetings import MeetingsPage
-from pages.preprint import PreprintPage
+from pages.preprints import PreprintPage
 from pages.dashboard import DashboardPage
 from pages.prereg import PreregLandingPage
 
-
 @pytest.fixture()
-def dashboard_page(driver):
+def dashboard_page(driver, must_be_logged_in):
     dashboard_page = DashboardPage(driver)
     dashboard_page.goto()
     return dashboard_page
 
 
-@pytest.mark.usefixtures('must_be_logged_in')
 class TestMainPage:
 
     @markers.core_functionality
     def test_create_project(self, driver, dashboard_page):
         project_title = 'New Project'
         dashboard_page.create_project_button.click()
-        create_project_modal = dashboard_page.CreateProjectModal(driver)
+        create_project_modal = dashboard_page.create_project_modal
         create_project_modal.title_input.clear()
         create_project_modal.title_input.send_keys(project_title)
         create_project_modal.create_project_button.click()
-        project_created_modal = dashboard_page.ProjectCreatedModal(driver)
-        project_created_modal.go_to_project_button.click()
+        dashboard_page.project_created_modal.go_to_project_button.click()
         project_page = ProjectPage(driver, verify=True)
         assert project_page.project_title.text == project_title, 'Project title incorrect.'
 
-    def test_create_project_modal_buttons(self, dashboard_page, session, driver):
+    def test_create_project_modal_buttons(self, dashboard_page, session):
         institutions = osf.get_user_institutions(session)
         dashboard_page.create_project_button.click()
 
-        create_project_modal = dashboard_page.CreateProjectModal(driver)
+        create_project_modal = dashboard_page.create_project_modal
 
         if institutions:
             create_project_modal.remove_all_link.click()
@@ -57,7 +54,7 @@ class TestMainPage:
 
         assert create_project_modal.modal.absent()
 
-    @pytest.mark.skip(reason='Expected to fail until EMB-184 is resolved')
+    # @pytest.mark.skip(reason='Expected to fail until EMB-184 is resolved')
     def test_institution_logos(self, dashboard_page, session):
         # TODO: This will not work on production - we don't put up all logos
         api_institution_names = osf.get_all_institutions(session)
@@ -104,10 +101,10 @@ class TestProjectList:
         yield project_three
         project_three.delete()
 
-    def test_project_sorting(self, driver, dashboard_page, project_one, project_two, project_three):
+    def test_project_sorting(self, dashboard_page, project_one, project_two, project_three):
         dashboard_page.reload()
 
-        project_list = dashboard_page.ProjectList(driver)
+        project_list = dashboard_page.project_list
         project_list.search_input.clear()
         project_list.search_input.send_keys('&&aaaa')
 
@@ -139,10 +136,10 @@ class TestProjectList:
         assert project_one.id in project_list.get_nth_project_link(3)
 
     @markers.core_functionality
-    def test_project_quick_search(self, dashboard_page, driver, project_one, project_two, project_three):
+    def test_project_quick_search(self, dashboard_page, project_one, project_two, project_three):
         dashboard_page.reload()
 
-        project_list = dashboard_page.ProjectList(driver)
+        project_list = dashboard_page.project_list
         project_list.search_input.clear()
         project_list.search_input.send_keys('&&aaaa')
         assert project_list.get_list_length() == 3

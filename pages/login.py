@@ -1,14 +1,14 @@
-import settings
-
-from pages.exceptions import LoginError
 from selenium.webdriver.common.by import By
-from pages.base import BasePage, Locator, OSFBasePage
+
+import settings
+from base.exceptions import LoginError
+from base.locators import Locator
+from pages.base import BasePage, OSFBasePage
 
 
 class LoginPage(BasePage):
     url = settings.OSF_HOME + '/login'
 
-    # Locators
     identity = Locator(By.XPATH, '/html/body[@id="cas"]/div[@id="container"]', settings.LONG_TIMEOUT)
     username_input = Locator(By.ID, 'username')
     password_input = Locator(By.ID, 'password')
