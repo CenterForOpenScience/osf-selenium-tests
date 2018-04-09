@@ -1,13 +1,16 @@
 import pytest
-import settings
 
 from pages.login import login
 from pages.cos import COSDonatePage
+from pages.search import SearchPage
 from pages.landing import LandingPage
+from pages.support import SupportPage
 from pages.meetings import MeetingsPage
+from pages.project import MyProjectsPage
 from pages.dashboard import DashboardPage
 from pages.registries import RegistriesPage
-from pages.preprint import PreprintPage, SubmitPreprintPage
+from pages.user import UserProfilePage, UserSettingsPage
+from pages.preprints import PreprintPage, SubmitPreprintPage
 
 
 #TODO: Test Navbar from all services including reviews and such - they might not have the same navbar always
@@ -49,20 +52,17 @@ class NavbarTestLoggedIn:
     def test_user_profile_menu_profile_link(self, driver, page):
         page.navbar.user_dropdown.click()
         page.navbar.user_dropdown_profile.click()
-        profile_url = settings.OSF_HOME + '/profile/'
-        assert driver.current_url == profile_url
+        assert UserProfilePage(driver, verify=True)
 
     def test_user_profile_menu_support_link(self, driver, page):
         page.navbar.user_dropdown.click()
         page.navbar.user_dropdown_support.click()
-        support_url = settings.OSF_HOME + '/support/'
-        assert driver.current_url == support_url
+        assert SupportPage(driver, verify=True)
 
     def test_user_profile_menu_settings_link(self, driver, page):
         page.navbar.user_dropdown.click()
         page.navbar.user_dropdown_settings.click()
-        settings_url = settings.OSF_HOME + '/settings/'
-        assert driver.current_url == settings_url
+        assert UserSettingsPage(driver, verify=True)
 
     def test_sign_in_button_not_present(self, page):
         assert page.navbar.sign_in_button.absent()
@@ -86,17 +86,15 @@ class TestOSFHomeNavbar(NavbarTestLoggedOut):
         return page
 
     def test_my_projects_link_not_present(self, page):
-        assert page.navbar.my_project_link.absent()
+        assert page.navbar.my_projects_link.absent()
 
     def test_search_link(self, driver, page):
         page.navbar.search_link.click()
-        search_url = settings.OSF_HOME + '/search/'
-        assert driver.current_url == search_url
+        assert SearchPage(driver, verify=True)
 
     def test_support_link(self, page, driver):
         page.navbar.support_link.click()
-        support_url = settings.OSF_HOME + '/support/'
-        assert driver.current_url == support_url
+        assert SupportPage(driver, verify=True)
 
     def test_donate_link(self, page, driver):
         page.navbar.donate_link.click()
@@ -107,19 +105,17 @@ class TestOSFHomeNavbar(NavbarTestLoggedOut):
         assert 'login' in driver.current_url
 
 
-@pytest.mark.usefixtures('must_be_logged_in')
 class TestOSFHomeNavbarLoggedIn(NavbarTestLoggedIn):
 
     @pytest.fixture()
-    def page(self, driver):
+    def page(self, driver, must_be_logged_in):
         page = DashboardPage(driver)
         page.goto()
         return page
 
     def test_my_projects_link(self, page, driver):
-        page.navbar.my_project_link.click()
-        my_projects_url = settings.OSF_HOME + '/myprojects/'
-        assert driver.current_url == my_projects_url
+        page.navbar.my_projects_link.click()
+        assert MyProjectsPage(driver, verify=True)
 
 
 class TestPreprintsNavbar(NavbarTestLoggedOut):

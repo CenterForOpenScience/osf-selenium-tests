@@ -9,9 +9,13 @@ DRIVER = 'Chrome'
 
 DISAPPEARANCE_TIMEOUT = 1
 
+QUICK_TIMEOUT = 2
 TIMEOUT = 10
 LONG_TIMEOUT = 30
 
 OSF_HOME = 'https://staging.osf.io'
 API_DOMAIN = 'https://staging-api.osf.io/v2'
 HEADLESS = False
+
+
+EMBER_PAGES = []

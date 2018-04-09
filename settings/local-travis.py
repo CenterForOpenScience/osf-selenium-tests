@@ -27,3 +27,6 @@ USER_ONE_TOKEN = os_env.get('{}_USER_TOKEN'.format(upper_build))
 
 OSF_HOME = 'https://staging.osf.io'
 API_DOMAIN = 'https://staging-api.osf.io/v2'
+
+BSTACK_USER = os.environ.get('BSTACK_USER')
+BSTACK_KEY = os.environ.get('BSTACK_KEY')
