@@ -27,7 +27,7 @@ class EmberCreateProjectModal(BaseElement):
 
 class EmberProjectCreatedModal(BaseElement):
 
-    go_to_project_button = Locator(By.LINK_TEXT, 'Go to new project', settings.LONG_TIMEOUT)
+    go_to_project_button = Locator(By.CSS_SELECTOR, '.__fe314__modal.modal a', settings.LONG_TIMEOUT)
     keep_working_here_button = Locator(By.CSS_SELECTOR, 'button.btn-default')
 
 

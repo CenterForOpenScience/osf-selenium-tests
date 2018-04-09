@@ -11,15 +11,15 @@ class Navbar(BaseElement):
     preprints_link = Locator(By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(2) > a')
     registries_link = Locator(By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(3) > a')
     meetings_link = Locator(By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(4) > a')
-    search_link = Locator(By.LINK_TEXT, 'Search')
-    support_link = Locator(By.LINK_TEXT, 'Support')
+    search_link = Locator(By.XPATH, '//a[text()="Search"]')
+    support_link = Locator(By.XPATH, '//a[text()="Support"]')
     donate_link = Locator(By.ID, 'navbar-donate')
     user_dropdown = Locator(By.CSS_SELECTOR, 'a.btn-link')
     user_dropdown_profile = Locator(By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(1) > a')
     user_dropdown_support = Locator(By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(2) > a')
     user_dropdown_settings = Locator(By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(3) > a')
     logout_link = Locator(By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(4) > a')
-    sign_up_button = Locator(By.LINK_TEXT, 'Sign Up')
+    sign_up_button = Locator(By.XPATH, '//a[text()="Sign Up"]')
     sign_in_button = Locator(By.LINK_TEXT, 'Sign In')
     current_service = Locator(By.CSS_SELECTOR, '#navbarScope .current-service > strong')
 
@@ -34,7 +34,7 @@ class Navbar(BaseElement):
 
 
 class HomeNavbar(Navbar):
-    my_project_link = Locator(By.LINK_TEXT, 'My Projects')
+    my_projects_link = Locator(By.XPATH, '//a[text()="My Projects"]')
 
     def verify(self):
         return self.current_service.text == 'HOME'
@@ -70,6 +70,5 @@ class EmberNavbar(HomeNavbar):
     user_dropdown_support = Locator(By.CSS_SELECTOR, '.dropdown-menu.auth-dropdown li:nth-child(2) > a')
     user_dropdown_settings = Locator(By.CSS_SELECTOR, '.dropdown-menu.auth-dropdown li:nth-child(3) > a')
     logout_link = Locator(By.CSS_SELECTOR, '.dropdown-menu.auth-dropdown li:nth-child(4) > a')
-    sign_in_button = Locator(By.LINK_TEXT, 'Sign in')
-
-    donate_link = Locator(By.CLASS_NAME, 'navbar-donate-button')
+    sign_in_button = Locator(By.CSS_SELECTOR, '.btn-top-login')
+    donate_link = Locator(By.XPATH, '//a[text()="Donate"]')

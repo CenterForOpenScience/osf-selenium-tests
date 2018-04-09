@@ -86,7 +86,7 @@ class TestOSFHomeNavbar(NavbarTestLoggedOut):
         return page
 
     def test_my_projects_link_not_present(self, page):
-        assert page.navbar.my_project_link.absent()
+        assert page.navbar.my_projects_link.absent()
 
     def test_search_link(self, driver, page):
         page.navbar.search_link.click()
@@ -114,7 +114,7 @@ class TestOSFHomeNavbarLoggedIn(NavbarTestLoggedIn):
         return page
 
     def test_my_projects_link(self, page, driver):
-        page.navbar.my_project_link.click()
+        page.navbar.my_projects_link.click()
         assert MyProjectsPage(driver, verify=True)
 
 
