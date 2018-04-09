@@ -25,7 +25,7 @@ class TestMainPage:
         create_project_modal.title_input.clear()
         create_project_modal.title_input.send_keys(project_title)
         create_project_modal.create_project_button.click()
-        dashboard_page.project_created_modal.go_to_project_button.click()
+        dashboard_page.project_created_modal.go_to_project_href_link.click()
         project_page = ProjectPage(driver, verify=True)
         assert project_page.project_title.text == project_title, 'Project title incorrect.'
 

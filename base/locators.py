@@ -1,5 +1,6 @@
 import settings
 
+from base import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import StaleElementReferenceException, TimeoutException, NoSuchElementException
@@ -75,13 +76,13 @@ class Locator(BaseLocator):
         except(TimeoutException, StaleElementReferenceException):
             raise ValueError('Element {} not visible before timeout. {}'.format(element, driver.current_url)) from None
 
-        if 'link' in element:
+        if 'href' in element:
             try:
                 WebDriverWait(driver, self.timeout).until(
-                    EC.element_to_be_clickable(self.location)
+                    ec.link_has_href(self.location)
                 )
             except(TimeoutException, StaleElementReferenceException):
-                raise ValueError('Element {} on page but not clickable. {}'.format(element, driver.current_url)) from None
+                raise ValueError('Element {} on page but does not have a href. {}'.format(element, driver.current_url)) from None
         try:
             return driver.find_element(self.selector, self.path)
         except NoSuchElementException:
