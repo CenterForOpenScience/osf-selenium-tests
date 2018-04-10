@@ -1,9 +1,9 @@
 import pytest
 import markers
-from time import sleep
 
-from pages.meetings import MeetingsPage, MeetingDetailPage
+from utils import switch_to_tab
 from pages.project import ProjectPage
+from pages.meetings import MeetingsPage, MeetingDetailPage
 
 
 @pytest.fixture
@@ -11,6 +11,12 @@ def meetings_page(driver):
     meetings_page = MeetingsPage(driver)
     meetings_page.goto()
     return meetings_page
+
+@pytest.fixture
+def close_last_tab(driver):
+    yield
+    driver.close()
+    switch_to_tab(driver, 0)
 
 
 class TestMeetingsPage:
@@ -43,38 +49,29 @@ class TestMeetingsPage:
         assert default_top_result != sorted_top_result
 
     @markers.core_functionality
-    def test_meetings_list(self, meetings_page, driver):
+    def test_meetings_list(self, meetings_page, driver, close_last_tab):
         meeting_name = meetings_page.top_meeting_link.text
         meetings_page.top_meeting_link.click()
-        sleep(.1)
-        driver.switch_to.window(driver.window_handles[1])
-        meeting_detail = MeetingDetailPage(driver)
-        assert meeting_name == meeting_detail.meeting_title.text
-        driver.switch_to.window(driver.window_handles[0])
+        switch_to_tab(driver, 1)
+        meeting_detail = MeetingDetailPage(driver, verify=True)
+        assert meeting_name == meeting_detail.meeting_title.text.strip()
+
 
 class TestMeetingDetailPage:
 
     @pytest.fixture
-    def meeting_detail_page(self, meetings_page, driver):
+    def meeting_detail_page(self, meetings_page, driver, close_last_tab):
         meetings_page.top_meeting_link.click()
-        sleep(.1)
-        driver.switch_to.window(driver.window_handles[1])
-        return MeetingDetailPage(driver)
-
-    @pytest.fixture(autouse=True)
-    def switch_to_first_tab(self, driver):
-        # TODO: Close tabs when test complete instead of navigate back to zero
-        yield
-        driver.switch_to.window(driver.window_handles[0])
+        switch_to_tab(driver, 1)
+        return MeetingDetailPage(driver, verify=True)
 
     @markers.core_functionality
-    def test_meeting_detail(self, meeting_detail_page, driver):
+    def test_meeting_detail(self, meeting_detail_page, driver, close_last_tab):
         assert meeting_detail_page.entry_download_button.present()
         entry_title = meeting_detail_page.second_entry_link.text
         meeting_detail_page.second_entry_link.click()
-        sleep(.1)
-        driver.switch_to.window(driver.window_handles[2])
-        project_page = ProjectPage(driver)
+        switch_to_tab(driver, 2)
+        project_page = ProjectPage(driver, verify=True)
         assert entry_title == project_page.project_title.text
 
     def test_filtering_detail(self, meeting_detail_page):
