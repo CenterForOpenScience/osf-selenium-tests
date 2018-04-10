@@ -48,7 +48,7 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
 
     return driver
 
-def switch_to_tab(driver, page_index, timeout=settings.QUICK_TIMEOUT):
+def switch_to_tab(driver, page_index, timeout=settings.TIMEOUT):
     try:
         WebDriverWait(driver, timeout).until(
             ec.window_at_index(page_index)

@@ -7,7 +7,7 @@ from pages.meetings import MeetingsPage, MeetingDetailPage
 
 
 @pytest.fixture
-def meetings_page(driver):
+def meetings_page(driver, close_extra_tabs):
     meetings_page = MeetingsPage(driver)
     meetings_page.goto()
     return meetings_page
