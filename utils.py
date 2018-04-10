@@ -55,4 +55,4 @@ def switch_to_tab(driver, page_index, timeout=settings.QUICK_TIMEOUT):
         )
         driver.switch_to.window(driver.window_handles[page_index])
     except TimeoutException:
-        raise ValueError('No tab open at index {}. {}'.format(page_index, driver.current_url))
+        raise ValueError('No tab open at index {}. {}'.format(page_index, driver.current_url)) from None

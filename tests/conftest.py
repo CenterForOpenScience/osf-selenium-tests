@@ -2,8 +2,8 @@ import pytest
 import settings
 from api import osf_api
 from pythosf import client
-from utils import launch_driver
 from pages.login import logout, login
+from utils import launch_driver, switch_to_tab
 
 
 @pytest.fixture(scope='session')
@@ -40,3 +40,10 @@ def must_be_logged_in(driver):
 @pytest.fixture(scope='class')
 def delete_user_projects_at_setup(session):
     osf_api.delete_all_user_projects(session=session)
+
+@pytest.fixture(autouse=True)
+def close_extra_tabs(driver):
+    yield
+    while len(driver.window_handles) > 1:
+        driver.close()
+        switch_to_tab(driver, 0)
