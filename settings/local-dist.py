@@ -9,4 +9,3 @@ from . import defaults
 # User information
 USER_ONE = 'CHANGEME'
 USER_ONE_PASSWORD = 'CHANGEME'
-USER_ONE_TOKEN = 'CHANGEME'

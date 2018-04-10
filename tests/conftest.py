@@ -25,8 +25,8 @@ def driver():
     driver.quit()
 
 @pytest.fixture(scope='session', autouse=True)
-def waffled_pages():
-    settings.EMBER_PAGES = osf_api.waffled_pages()
+def waffled_pages(session):
+    settings.EMBER_PAGES = osf_api.waffled_pages(session)
 
 @pytest.fixture(scope='class', autouse=True)
 def default_logout(driver):

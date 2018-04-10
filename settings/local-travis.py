@@ -23,7 +23,6 @@ password = os_env.get('{}_USER_PASSWORD'.format(upper_build))
 
 USER_ONE = os_env.get('{}_USER'.format(upper_build))
 USER_ONE_PASSWORD = password if password else os_env.get('USER_ONE_PASSWORD')
-USER_ONE_TOKEN = os_env.get('{}_USER_TOKEN'.format(upper_build))
 
 OSF_HOME = 'https://staging.osf.io'
 API_DOMAIN = 'https://staging-api.osf.io/v2'
