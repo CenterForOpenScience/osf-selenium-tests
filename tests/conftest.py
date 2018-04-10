@@ -6,10 +6,13 @@ from utils import launch_driver
 from pages.login import logout, login
 
 
+@pytest.fixture(scope='session')
+def session():
+    return client.Session(api_base_url=settings.API_DOMAIN, auth=(settings.USER_ONE, settings.USER_ONE_PASSWORD))
+
 @pytest.fixture(scope='session', autouse=True)
-def check_credentials():
+def check_credentials(session):
     # This only checks if your API key is correct, not if you can log in
-    session = client.Session(api_base_url=settings.API_DOMAIN, token=settings.USER_ONE_TOKEN)
     try:
         osf_api.current_user(session)
     except Exception:
@@ -20,10 +23,6 @@ def driver():
     driver = launch_driver()
     yield driver
     driver.quit()
-
-@pytest.fixture(scope='session')
-def session():
-    return client.Session(api_base_url=settings.API_DOMAIN, token=settings.USER_ONE_TOKEN)
 
 @pytest.fixture(scope='session', autouse=True)
 def waffled_pages():
