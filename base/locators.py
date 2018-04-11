@@ -7,10 +7,10 @@ from selenium.common.exceptions import StaleElementReferenceException, TimeoutEx
 
 class WebElementWrapper:
 
-    def __init__(self, driver, element_name, locator):
+    def __init__(self, driver, attribute_name, locator):
         self.driver = driver
         self.locator = locator
-        self.name = element_name
+        self.name = attribute_name
 
     def __getattr__(self, item):
         return getattr(self.element, item)
@@ -53,10 +53,13 @@ class BaseLocator:
         self.location = (selector, path)
         self.timeout = timeout
 
+    def get_element(self, driver, attribute_name):
+        raise NotImplementedError
+
 
 class Locator(BaseLocator):
 
-    def get_web_element(self, driver, element):
+    def get_web_element(self, driver, attribute_name):
         """
         Checks if element is on page, visible, and clickable before returning the selenium webElement.
 
@@ -67,31 +70,41 @@ class Locator(BaseLocator):
                 EC.presence_of_element_located(self.location)
             )
         except(TimeoutException, StaleElementReferenceException):
-            raise ValueError('Element {} not present on page. {}'.format(element, driver.current_url)) from None
+            raise ValueError('Element {} not present on page. {}'.format(
+                attribute_name, driver.current_url)) from None
 
         try:
             WebDriverWait(driver, self.timeout).until(
                 EC.visibility_of_element_located(self.location)
             )
         except(TimeoutException, StaleElementReferenceException):
-            raise ValueError('Element {} not visible before timeout. {}'.format(element, driver.current_url)) from None
+            raise ValueError('Element {} not visible before timeout. {}'.format(
+                attribute_name, driver.current_url)) from None
 
-        if 'href' in element:
+        if 'href' in attribute_name:
             try:
                 WebDriverWait(driver, self.timeout).until(
                     ec.link_has_href(self.location)
                 )
             except(TimeoutException, StaleElementReferenceException):
-                raise ValueError('Element {} on page but does not have a href. {}'.format(element, driver.current_url)) from None
+                raise ValueError('Element {} on page but does not have a href. {}'.format(
+                    attribute_name, driver.current_url)) from None
         try:
             return driver.find_element(self.selector, self.path)
         except NoSuchElementException:
-            raise ValueError('Element {} was present, but now is gone. {}'.format(element, driver.current_url))
+            raise ValueError('Element {} was present, but now is gone. {}'.format(
+                attribute_name, driver.current_url)) from None
+
+    def get_element(self, driver, attribute_name):
+        return WebElementWrapper(driver, attribute_name, self)
 
 
 class GroupLocator(BaseLocator):
     def get_web_elements(self, driver):
         return driver.find_elements(self.selector, self.path)
+
+    def get_element(self, driver, attribute_name=None):
+        return self.get_web_elements(driver)
 
 
 class ComponentLocator(Locator):
@@ -100,7 +113,7 @@ class ComponentLocator(Locator):
         super().__init__(selector, path, timeout)
         self.component_class = component_class
 
-    def get_component_object(self, driver):
+    def get_element(self, driver, attribute_name=None):
         return self.component_class(driver)
 
 
@@ -122,12 +135,8 @@ class BaseElement:
     def verify(self):
         raise NotImplementedError
 
-    def __getattribute__(self, item):
-        value = object.__getattribute__(self, item)
-        if type(value) is Locator:
-            return WebElementWrapper(self.driver, item, value)
-        elif type(value) is GroupLocator:
-            return value.get_web_elements(self.driver)
-        elif type(value) is ComponentLocator:
-            return value.get_component_object(self.driver)
+    def __getattribute__(self, attribute_name):
+        value = object.__getattribute__(self, attribute_name)
+        if isinstance(value, BaseLocator):
+            return value.get_element(self.driver, attribute_name)
         return value
