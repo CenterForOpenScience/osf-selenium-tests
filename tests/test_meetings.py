@@ -7,7 +7,7 @@ from pages.meetings import MeetingsPage, MeetingDetailPage
 
 
 @pytest.fixture
-def meetings_page(driver, close_extra_tabs):
+def meetings_page(driver):
     meetings_page = MeetingsPage(driver)
     meetings_page.goto()
     return meetings_page
@@ -43,7 +43,7 @@ class TestMeetingsPage:
         assert default_top_result != sorted_top_result
 
     @markers.core_functionality
-    def test_meetings_list(self, meetings_page, driver):
+    def test_meetings_list(self, meetings_page, driver, close_extra_tabs):
         meeting_name = meetings_page.top_meeting_link.text
         meetings_page.top_meeting_link.click()
         switch_to_tab(driver, 1)
@@ -54,13 +54,13 @@ class TestMeetingsPage:
 class TestMeetingDetailPage:
 
     @pytest.fixture
-    def meeting_detail_page(self, meetings_page, driver):
+    def meeting_detail_page(self, meetings_page, driver, close_extra_tabs):
         meetings_page.top_meeting_link.click()
         switch_to_tab(driver, 1)
         return MeetingDetailPage(driver, verify=True)
 
     @markers.core_functionality
-    def test_meeting_detail(self, meeting_detail_page, driver):
+    def test_meeting_detail(self, meeting_detail_page, driver, close_extra_tabs):
         assert meeting_detail_page.entry_download_button.present()
         entry_title = meeting_detail_page.second_entry_link.text
         meeting_detail_page.second_entry_link.click()

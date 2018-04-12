@@ -43,6 +43,6 @@ def delete_user_projects_at_setup(session):
 
 @pytest.fixture
 def close_extra_tabs(driver):
-    while len(driver.window_handles) > 1:
-        driver.close()
-        switch_to_tab(driver, 0)
+    yield
+    driver.close()
+    switch_to_tab(driver, 0)
