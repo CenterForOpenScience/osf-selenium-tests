@@ -44,13 +44,12 @@ def delete_user_projects_at_setup(session):
 @pytest.fixture()
 def close_extra_tabs(driver):
     """
-    Closes all tabs but the last tab. Then switches focus to the last tab.
-    Grabs the window number once to avoid race conditions of driver state.
+    Closes all tabs but one. Then switches focus to the last one.
     """
     yield
-    window_number = len(driver.window_handles) - 1
-    while window_number > 0:
-        switch_to_tab(driver, window_number)
+    for window in driver.window_handles:
+        if len(driver.window_handles) == 1:
+            break
+        driver.switch_to.window(window)
         driver.close()
-        window_number -= window_number
     switch_to_tab(driver, 0)
