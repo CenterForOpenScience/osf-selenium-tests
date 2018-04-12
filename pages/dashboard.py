@@ -26,7 +26,7 @@ class BaseDashboardPage(OSFBasePage):
 
 
 class EmberDashboardPage(BaseDashboardPage):
-    # url = settings.OSF_HOME + '/dashboard'
+    url = settings.OSF_HOME + '/dashboard/'
 
     identity = Locator(By.CSS_SELECTOR, '.__35060.Application__page > div.quickSearch > div > div > div > div > div:nth-child(1) > h2', settings.LONG_TIMEOUT)
     create_project_button = Locator(By.CSS_SELECTOR, '.__35060.Application__page > div.quickSearch > div > div > div > div > div:nth-child(1) > div > div > button', settings.LONG_TIMEOUT)

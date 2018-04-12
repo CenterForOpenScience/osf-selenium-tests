@@ -87,7 +87,7 @@ class ProjectCreatedModal(BaseElement):
 
 class ProjectList(BaseElement):
 
-    search_input = Locator(By.ID, 'searchQuery')
+    search_input = Locator(By.ID, 'searchQuery', settings.LONG_TIMEOUT)
     top_project_link = Locator(By.CSS_SELECTOR, 'div.quick-search-table > div:nth-child(3) > a:nth-child(1)')
     sort_title_asc_button = Locator(By.CSS_SELECTOR,
         'div.quick-search-table > div.row.node-col-headers.m-t-md > div.col-sm-3.col-md-6 > div > button:nth-child(1)')
@@ -101,7 +101,7 @@ class ProjectList(BaseElement):
     # Group Locators
     project_list_projects = GroupLocator(By.CSS_SELECTOR, 'div.quick-search-table > div:nth-child(3) > a')
 
-    def get_nth_project_guid(self, n=0):
+    def get_nth_project_link(self, n=0):
         base_selector = 'div.quick-search-table > div:nth-child(3) > a:nth-child'
         try:
             selector = '{}({})'.format(base_selector, n)
