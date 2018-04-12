@@ -41,8 +41,16 @@ def must_be_logged_in(driver):
 def delete_user_projects_at_setup(session):
     osf_api.delete_all_user_projects(session=session)
 
-@pytest.fixture
+@pytest.fixture()
 def close_extra_tabs(driver):
+    """
+    Closes all tabs but the last tab. Then switches focus to the last tab.
+    Grabs the window number once to avoid race conditions of driver state.
+    """
     yield
-    driver.close()
+    window_number = len(driver.window_handles) - 1
+    while window_number > 0:
+        switch_to_tab(driver, window_number)
+        driver.close()
+        window_number -= window_number
     switch_to_tab(driver, 0)

@@ -60,7 +60,7 @@ class TestMeetingDetailPage:
         return MeetingDetailPage(driver, verify=True)
 
     @markers.core_functionality
-    def test_meeting_detail(self, meeting_detail_page, driver, close_extra_tabs):
+    def test_meeting_detail(self, meeting_detail_page, driver):
         assert meeting_detail_page.entry_download_button.present()
         entry_title = meeting_detail_page.second_entry_link.text
         meeting_detail_page.second_entry_link.click()
