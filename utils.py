@@ -1,11 +1,7 @@
 import os
-
 import settings
-from base import expected_conditions as ec
 
 from selenium import webdriver
-from selenium.common.exceptions import TimeoutException
-from selenium.webdriver.support.ui import WebDriverWait
 
 
 HERE = os.path.abspath(os.path.dirname(os.path.abspath(__file__)))
@@ -47,12 +43,3 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
         driver = driver_cls()
 
     return driver
-
-def switch_to_tab(driver, page_index, timeout=settings.TIMEOUT):
-    try:
-        WebDriverWait(driver, timeout).until(
-            ec.window_at_index(page_index)
-        )
-        driver.switch_to.window(driver.window_handles[page_index])
-    except TimeoutException:
-        raise ValueError('No tab open at index {}. {}'.format(page_index, driver.current_url)) from None
