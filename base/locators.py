@@ -64,6 +64,7 @@ class WebElementWrapper:
             raise ValueError('No new window was opened.')
         self.driver.close()
         self.driver.switch_to.window(self.driver.window_handles[0])
+        self.driver.maximize_window()
 
 
 class BaseLocator:
