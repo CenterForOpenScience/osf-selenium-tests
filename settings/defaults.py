@@ -8,7 +8,7 @@ These settings can be overridden in local.py.
 DRIVER = 'Chrome'
 
 
-QUICK_TIMEOUT = 3
+QUICK_TIMEOUT = 4
 TIMEOUT = 10
 LONG_TIMEOUT = 30
 
