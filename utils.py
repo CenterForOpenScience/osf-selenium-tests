@@ -1,6 +1,6 @@
 import os
-
 import settings
+
 from selenium import webdriver
 
 

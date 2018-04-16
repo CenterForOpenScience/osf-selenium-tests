@@ -6,7 +6,7 @@ from selenium.webdriver.common.by import By
 
 
 class Navbar(BaseElement):
-    service_dropdown = Locator(By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > button')
+    service_dropdown = Locator(By.CSS_SELECTOR, '.fa-caret-down')
     home_link = Locator(By.CSS_SELECTOR, '#navbarScope > div > div.navbar-header > div.dropdown.primary-nav.open > ul > li:nth-child(1) > a')
     preprints_link = Locator(By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(2) > a')
     registries_link = Locator(By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(3) > a')
@@ -33,13 +33,6 @@ class Navbar(BaseElement):
         return self.sign_in_button.present()
 
 
-class HomeNavbar(Navbar):
-    my_projects_link = Locator(By.XPATH, '//a[text()="My Projects"]')
-
-    def verify(self):
-        return self.current_service.text == 'HOME'
-
-
 class AbstractLegacyEmberNavbar(Navbar):
     user_dropdown = Locator(By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-of-type(1) > a', settings.LONG_TIMEOUT)
     sign_in_button = Locator(By.CSS_SELECTOR, '#secondary-navigation > ul.nav > li.ember-view.dropdown.sign-in > a.btn.btn-info.btn-top-login', settings.LONG_TIMEOUT)
@@ -57,10 +50,18 @@ class RegistriesNavbar(AbstractLegacyEmberNavbar):
     def verify(self):
         return self.current_service.text == 'REGISTRIES'
 
+
 class MeetingsNavbar(Navbar):
 
     def verify(self):
         return self.current_service.text == 'MEETINGS'
+
+
+class HomeNavbar(Navbar):
+    my_projects_link = Locator(By.XPATH, '//a[text()="My Projects"]')
+
+    def verify(self):
+        return self.current_service.text == 'HOME'
 
 
 class EmberNavbar(HomeNavbar):

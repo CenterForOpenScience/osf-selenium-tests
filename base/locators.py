@@ -44,6 +44,28 @@ class WebElementWrapper:
             raise ValueError('Element {} is not absent.'.format(self.name))
         return True
 
+    def click_expecting_popup(self, timeout=settings.TIMEOUT):
+        og_window = self.driver.current_window_handle
+
+        for window in self.driver.window_handles:
+            if window == og_window:
+                continue
+            self.driver.switch_to.window(window)
+            self.driver.close()
+
+        self.driver.switch_to.window(og_window)
+        self.driver.maximize_window()
+        self.click()
+
+        try:
+            WebDriverWait(self.driver, timeout).until(
+                EC.number_of_windows_to_be(2))
+        except TimeoutException:
+            raise ValueError('No new window was opened.')
+        self.driver.close()
+        self.driver.switch_to.window(self.driver.window_handles[0])
+        self.driver.maximize_window()
+
 
 class BaseLocator:
 

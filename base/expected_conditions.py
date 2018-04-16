@@ -12,3 +12,13 @@ class link_has_href(object):
             return element_href
         else:
             return False
+
+
+class window_at_index(object):
+    """ An Expectation for checking if a tab is open for certain index
+    so you can switch to it."""
+    def __init__(self, page_index):
+        self.page_index = page_index
+
+    def __call__(self, driver):
+        return len(driver.window_handles) > self.page_index

@@ -2,8 +2,8 @@ import pytest
 import settings
 from api import osf_api
 from pythosf import client
-from utils import launch_driver
 from pages.login import logout, login
+from utils import launch_driver
 
 
 @pytest.fixture(scope='session')

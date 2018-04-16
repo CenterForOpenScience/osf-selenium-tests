@@ -8,7 +8,7 @@ from pages.base import GuidBasePage, OSFBasePage
 
 class ProjectPage(GuidBasePage):
     identity = Locator(By.CSS_SELECTOR, '#overview > nav#projectSubnav')
-    project_title = Locator(By.ID, 'nodeTitleEditable')
+    project_title = Locator(By.ID, 'nodeTitleEditable', settings.LONG_TIMEOUT)
 
 
 class MyProjectsPage(OSFBasePage):
