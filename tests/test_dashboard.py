@@ -5,7 +5,7 @@ import settings
 from api import osf_api as osf
 from pages.project import ProjectPage
 from pages.meetings import MeetingsPage
-from pages.preprints import PreprintPage
+from pages.preprints import PreprintLandingPage
 from pages.dashboard import DashboardPage
 
 @pytest.fixture()
@@ -72,8 +72,7 @@ class TestMainPage:
 
     def test_preprints_link(self, driver, dashboard_page):
         dashboard_page.view_preprints_button.click()
-        assert PreprintPage(driver).verify()
-
+        assert PreprintLandingPage(driver).verify()
 
 @pytest.mark.usefixtures('must_be_logged_in')
 @pytest.mark.usefixtures('delete_user_projects_at_setup')

@@ -32,7 +32,7 @@ def waffled_pages(session):
 def default_logout(driver):
     logout(driver)
 
-#TODO: Possibly return to safe_login in the future
+# TODO: Possibly return to safe_login in the future
 @pytest.fixture(scope='class')
 def must_be_logged_in(driver):
     login(driver)
@@ -40,3 +40,9 @@ def must_be_logged_in(driver):
 @pytest.fixture(scope='class')
 def delete_user_projects_at_setup(session):
     osf_api.delete_all_user_projects(session=session)
+
+@pytest.fixture
+def default_project(session):
+    project = osf_api.create_project(session, title='OSF Test Project')
+    yield project
+    project.delete()

@@ -85,9 +85,8 @@ class OSFBasePage(BasePage):
 
 class GuidBasePage(OSFBasePage):
     base_url = urllib.parse.urljoin(settings.OSF_HOME, '{guid}')
-    guid = ''
 
-    def __init__(self, driver, verify=False, guid=None):
+    def __init__(self, driver, verify=False, guid=''):
         super().__init__(driver, verify)
         self.guid = guid
 

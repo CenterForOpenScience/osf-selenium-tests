@@ -46,3 +46,7 @@ def waffled_pages(session):
         if page['attributes']['active']:
             waffle_list.append(page['attributes']['name'])
     return waffle_list
+
+def upload_fake_file(session, node, name='osf selenium test.txt'):
+    session.put(url='https://staging-files.osf.io/v1/resources/{}/providers/osfstorage/'.format(node.id), query_parameters={'kind': 'file', 'name': name}, raw_body={})
+    return name

@@ -10,7 +10,7 @@ from pages.project import MyProjectsPage
 from pages.dashboard import DashboardPage
 from pages.registries import RegistriesPage
 from pages.user import UserProfilePage, UserSettingsPage
-from pages.preprints import PreprintPage, SubmitPreprintPage
+from pages.preprints import PreprintLandingPage, PreprintSubmitPage
 
 
 #TODO: Test Navbar from all services including reviews and such - they might not have the same navbar always
@@ -27,7 +27,7 @@ class NavbarTestLoggedOut:
     def test_preprints_dropdown_link(self, page, driver):
         page.navbar.service_dropdown.click()
         page.navbar.preprints_link.click()
-        PreprintPage(driver, verify=True)
+        PreprintLandingPage(driver, verify=True)
 
     def test_registries_dropdown_link(self, driver, page):
         page.navbar.service_dropdown.click()
@@ -122,7 +122,7 @@ class TestPreprintsNavbar(NavbarTestLoggedOut):
 
     @pytest.fixture()
     def page(self, driver):
-        page = PreprintPage(driver)
+        page = PreprintLandingPage(driver)
         page.goto()
         return page
 
@@ -150,13 +150,13 @@ class TestPreprintsNavbarLoggedIn(NavbarTestLoggedIn):
 
     @pytest.fixture()
     def page(self, driver):
-        page = PreprintPage(driver)
+        page = PreprintLandingPage(driver)
         page.goto()
         return page
 
     def test_add_a_preprint_link(self, page, driver):
         page.navbar.add_a_preprint_link.click()
-        SubmitPreprintPage(driver, verify=True)
+        PreprintSubmitPage(driver, verify=True)
 
 
 class TestMeetingsNavbar(NavbarTestLoggedOut):
