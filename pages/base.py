@@ -84,6 +84,16 @@ class OSFBasePage(BasePage):
 
 
 class GuidBasePage(OSFBasePage):
+    base_url = urllib.parse.urljoin(settings.OSF_HOME, '{guid}')
+    guid = ''
+
     def __init__(self, driver, verify=False, guid=None):
         super().__init__(driver, verify)
-        self.url = urllib.parse.urljoin(settings.OSF_HOME, guid) if guid else None
+        self.guid = guid
+
+    @property
+    def url(self):
+        if '{guid}' in self.base_url:
+            return self.base_url.format(guid=self.guid)
+        else:
+            raise ValueError('No space in base_url for GUID specified.')
