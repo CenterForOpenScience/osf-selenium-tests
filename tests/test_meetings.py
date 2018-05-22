@@ -45,7 +45,7 @@ class TestMeetingsPage:
     @markers.core_functionality
     def test_meetings_list(self, meetings_page, driver):
         meeting_name = meetings_page.top_meeting_link.text
-        meetings_page.top_meeting_link.click_expecting_popup()
+        meetings_page.top_meeting_link.click()
         meeting_detail = MeetingDetailPage(driver, verify=True)
         assert meeting_name == meeting_detail.meeting_title.text.strip()
 
@@ -54,21 +54,21 @@ class TestMeetingDetailPage:
 
     @pytest.fixture
     def meeting_detail_page(self, meetings_page, driver):
-        meetings_page.top_meeting_link.click_expecting_popup()
+        meetings_page.top_meeting_link.click()
         return MeetingDetailPage(driver, verify=True)
 
     @markers.core_functionality
     def test_meeting_detail(self, meeting_detail_page, driver):
         assert meeting_detail_page.entry_download_button.present()
         entry_title = meeting_detail_page.second_entry_link.text
-        meeting_detail_page.second_entry_link.click_expecting_popup()
+        meeting_detail_page.second_entry_link.click()
         project_page = ProjectPage(driver, verify=True)
         assert entry_title == project_page.project_title.text
 
     def test_filtering_detail(self, meeting_detail_page):
         default_second_result = meeting_detail_page.second_entry_link.text
         meeting_detail_page.filter_input.clear()
-        meeting_detail_page.filter_input.send_keys('q')
+        meeting_detail_page.filter_input.send_keys('w')
         filtered_second_result = meeting_detail_page.second_entry_link.text
         assert default_second_result != filtered_second_result
 

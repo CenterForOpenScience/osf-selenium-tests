@@ -54,9 +54,8 @@ class TestMainPage:
 
         assert create_project_modal.modal.absent()
 
-    # @pytest.mark.skip(reason='Expected to fail until EMB-184 is resolved')
+    @pytest.mark.skip(reason='Works on new ember pages, not on stage3')
     def test_institution_logos(self, dashboard_page, session):
-        # TODO: This will not work on production - we don't put up all logos
         api_institution_names = osf.get_all_institutions(session)
         page_institutions = dashboard_page.get_institutions()
         page_institution_names = [i.get_property('name') for i in page_institutions]
