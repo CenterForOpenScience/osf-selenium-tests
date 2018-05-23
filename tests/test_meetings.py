@@ -1,5 +1,6 @@
 import pytest
 import markers
+import settings
 
 from pages.project import ProjectPage
 from pages.meetings import MeetingsPage, MeetingDetailPage
@@ -12,6 +13,7 @@ def meetings_page(driver):
     return meetings_page
 
 
+@pytest.mark.skipif(settings.STAGE2, reason='No meetings on staging2')
 class TestMeetingsPage:
 
     def test_meetings_landing(self, meetings_page):
@@ -50,6 +52,7 @@ class TestMeetingsPage:
         assert meeting_name == meeting_detail.meeting_title.text.strip()
 
 
+@pytest.mark.skipif(settings.STAGE2, reason='No meetings on staging2')
 class TestMeetingDetailPage:
 
     @pytest.fixture

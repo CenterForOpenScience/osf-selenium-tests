@@ -8,6 +8,11 @@ except ImportError as error:
 
 PRODUCTION = '/osf.io' in OSF_HOME
 
+STAGE1 = 'staging.' in OSF_HOME
+STAGE2 = 'staging2.' in OSF_HOME
+STAGE3 = 'staging3.' in OSF_HOME
+TEST = 'test.' in OSF_HOME
+
 # raise an exception if the root domain is production. # TODO: Change to add failsafe but not prohibit
 if PRODUCTION:
     raise Exception(

@@ -1,5 +1,6 @@
 import pytest
 import markers
+import settings
 
 from api import osf_api as osf
 from pages.project import ProjectPage
@@ -54,13 +55,14 @@ class TestMainPage:
 
         assert create_project_modal.modal.absent()
 
-    @pytest.mark.skip(reason='Works on new ember pages, not on stage3')
+    @pytest.mark.skipif(settings.STAGE3, reason='Works on new ember pages, not on stage3')
     def test_institution_logos(self, dashboard_page, session):
         api_institution_names = osf.get_all_institutions(session)
         page_institutions = dashboard_page.get_institutions()
         page_institution_names = [i.get_property('name') for i in page_institutions]
         assert set(page_institution_names) == set(api_institution_names)
 
+    @pytest.mark.skipif(settings.STAGE2 or settings.TEST, reason='No new and noteworthy node on stage2 or test')
     @markers.core_functionality
     def test_new_and_noteworthy(self, dashboard_page):
         assert dashboard_page.first_popular_project_entry.present()
