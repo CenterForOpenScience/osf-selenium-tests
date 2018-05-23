@@ -27,8 +27,8 @@ USER_ONE_PASSWORD = password if password else os_env.get('USER_ONE_PASSWORD')
 # OSF_HOME = 'https://staging.osf.io'
 # API_DOMAIN = 'https://staging-api.osf.io/v2'
 
-OSF_HOME = 'https://staging3.osf.io'
-API_DOMAIN = 'https://staging3-api.osf.io/v2'
+OSF_HOME = 'https://test.osf.io'
+API_DOMAIN = 'https://test-api.osf.io/v2'
 
 BSTACK_USER = os.environ.get('BSTACK_USER')
 BSTACK_KEY = os.environ.get('BSTACK_KEY')
