@@ -7,7 +7,6 @@ from pages.project import ProjectPage
 from pages.meetings import MeetingsPage
 from pages.preprints import PreprintPage
 from pages.dashboard import DashboardPage
-from pages.prereg import PreregLandingPage
 
 @pytest.fixture()
 def dashboard_page(driver, must_be_logged_in):
@@ -74,10 +73,6 @@ class TestMainPage:
     def test_preprints_link(self, driver, dashboard_page):
         dashboard_page.view_preprints_button.click()
         assert PreprintPage(driver).verify()
-
-    def test_prereg_link(self, driver, dashboard_page):
-        dashboard_page.start_prereg_button.click()
-        assert PreregLandingPage(driver).verify()
 
 
 @pytest.mark.usefixtures('must_be_logged_in')

@@ -14,6 +14,7 @@ def meetings_page(driver):
 
 
 @pytest.mark.skipif(settings.STAGE2, reason='No meetings on staging2')
+@pytest.mark.skipif(settings.TEST, reason='Only one meeting on test')
 class TestMeetingsPage:
 
     def test_meetings_landing(self, meetings_page):
@@ -53,6 +54,7 @@ class TestMeetingsPage:
 
 
 @pytest.mark.skipif(settings.STAGE2, reason='No meetings on staging2')
+@pytest.mark.skipif(settings.TEST, reason='Only one meeting on test')
 class TestMeetingDetailPage:
 
     @pytest.fixture
