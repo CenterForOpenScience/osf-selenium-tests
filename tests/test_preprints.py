@@ -5,7 +5,8 @@ from api import osf_api
 from pages.preprints import (
     PreprintLandingPage,
     PreprintSubmitPage,
-    PreprintDetailPage
+    PreprintDetailPage,
+    PreprintDiscoverPage,
 )
 
 
@@ -50,3 +51,9 @@ class TestPreprintWorkflow:
         submit_page.modal_create_preprint_button.click()
         PreprintDetailPage(driver, verify=True)
         # TODO: Make a clean way to check if you are on the correct project
+
+    @markers.core_functionality
+    def test_search_results_exist(self, driver, landing_page):
+        landing_page.search_button.click()
+        discover_page = PreprintDiscoverPage(driver, verify=True)
+        assert len(discover_page.search_results) > 0
