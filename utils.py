@@ -31,7 +31,6 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
             command_executor=command_executor,
             desired_capabilities=desired_capabilities
         )
-        driver.maximize_window()
     elif driver_name == 'Chrome' and settings.HEADLESS:
         from webdriver.chrome.options import Options
         chrome_options = Options()
@@ -42,4 +41,5 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
     else:
         driver = driver_cls()
 
+    driver.maximize_window()
     return driver
