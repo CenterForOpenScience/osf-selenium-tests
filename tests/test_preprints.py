@@ -1,6 +1,5 @@
 import pytest
 import markers
-from time import sleep
 from api import osf_api
 
 from pages.preprints import (
@@ -32,7 +31,7 @@ class TestPreprintWorkflow:
         submit_page.select_a_service_save_button.click()
         submit_page.upload_from_existing_project_button.click()
         submit_page.upload_project_selector.click()
-        sleep(.5)  # TODO: Remove this, figure out a way to do without it
+        submit_page.upload_project_help_text.here_then_gone()
         submit_page.upload_project_selector_project.click()
         submit_page.upload_existing_file_button.click()
         submit_page.upload_select_file.click()

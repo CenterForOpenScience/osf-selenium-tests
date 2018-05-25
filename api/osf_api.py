@@ -1,3 +1,4 @@
+import settings
 from pythosf import client
 
 def create_project(session, title='osf selenium test'):
@@ -48,5 +49,5 @@ def waffled_pages(session):
     return waffle_list
 
 def upload_fake_file(session, node, name='osf selenium test.txt'):
-    session.put(url='https://staging-files.osf.io/v1/resources/{}/providers/osfstorage/'.format(node.id), query_parameters={'kind': 'file', 'name': name}, raw_body={})
+    session.put(url='{}/v1/resources/{}/providers/osfstorage/'.format(settings.FILE_DOMAIN, node.id), query_parameters={'kind': 'file', 'name': name}, raw_body={})
     return name

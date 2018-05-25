@@ -28,7 +28,8 @@ class PreprintSubmitPage(BasePreprintPage):
     upload_from_existing_project_button = Locator(By.CSS_SELECTOR, '#preprint-form-upload > div > div > div > div > div > div:nth-child(2) > button')
     upload_project_selector = Locator(By.CSS_SELECTOR, '#preprint-form-upload .ember-power-select-placeholder')
     upload_project_selector_input = Locator(By.CSS_SELECTOR, '#preprint-form-upload .ember-power-select-search-input')
-    upload_project_selector_project = Locator(By.CSS_SELECTOR, '.ember-power-select-options')
+    upload_project_help_text = Locator(By.CSS_SELECTOR, '.ember-power-select-option--search-message')
+    upload_project_selector_project = Locator(By.CSS_SELECTOR, '.ember-power-select-option')
     upload_existing_project_new_file_button = Locator(By.CSS_SELECTOR, '#preprint-form-upload .fa-cloud-upload')
     upload_existing_file_button = Locator(By.CSS_SELECTOR, '#preprint-form-upload .fa-th-list')
     upload_select_file = Locator(By.CSS_SELECTOR, '.file-browser-item > a:nth-child(2)')
@@ -48,6 +49,7 @@ class PreprintSubmitPage(BasePreprintPage):
 
     create_preprint_button = Locator(By.CSS_SELECTOR, '.preprint-submit-body .submit-section > div > button.btn.btn-success.btn-md.m-t-md.pull-right')
     modal_create_preprint_button = Locator(By.CSS_SELECTOR, '.modal-footer button.btn-success:nth-child(2)')
+
 
 class PreprintDiscoverPage(BasePreprintPage):
     url = settings.OSF_HOME + '/preprints/discover/'

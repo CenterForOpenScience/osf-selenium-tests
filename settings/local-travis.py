@@ -24,11 +24,11 @@ password = os_env.get('{}_USER_PASSWORD'.format(upper_build))
 USER_ONE = os_env.get('{}_USER'.format(upper_build))
 USER_ONE_PASSWORD = password if password else os_env.get('USER_ONE_PASSWORD')
 
-# OSF_HOME = 'https://staging.osf.io'
-# API_DOMAIN = 'https://staging-api.osf.io/v2'
 
+#TODO: Fix settings. Possibly turn into envars. Let the consistent pattern be utilized.
 OSF_HOME = 'https://test.osf.io'
-API_DOMAIN = 'https://test-api.osf.io/v2'
+API_DOMAIN = 'https://test-api.osf.io'
+FILE_DOMAIN = 'https://test-files.osf.io'
 
 BSTACK_USER = os.environ.get('BSTACK_USER')
 BSTACK_KEY = os.environ.get('BSTACK_KEY')
