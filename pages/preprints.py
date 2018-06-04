@@ -2,7 +2,7 @@ import settings
 
 from selenium.webdriver.common.by import By
 
-from base.locators import Locator, ComponentLocator
+from base.locators import Locator, ComponentLocator, GroupLocator
 from components.navbars import PreprintsNavbar
 from pages.base import OSFBasePage, GuidBasePage
 
@@ -16,6 +16,7 @@ class PreprintLandingPage(BasePreprintPage):
 
     identity = Locator(By.CSS_SELECTOR, '.ember-application .preprint-header', settings.LONG_TIMEOUT)
     add_preprint_button = Locator(By.CLASS_NAME, 'preprint-submit-button', settings.LONG_TIMEOUT)
+    search_button = Locator(By.CSS_SELECTOR, '.preprint-search .btn-default')
 
 
 class PreprintSubmitPage(BasePreprintPage):
@@ -55,6 +56,7 @@ class PreprintDiscoverPage(BasePreprintPage):
     url = settings.OSF_HOME + '/preprints/discover/'
 
     identity = Locator(By.ID, 'share-logo')
+    search_results = GroupLocator(By.CLASS_NAME, 'search-result')
 
 
 class PreprintDetailPage(GuidBasePage, BasePreprintPage):
