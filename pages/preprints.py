@@ -48,7 +48,7 @@ class PreprintSubmitPage(BasePreprintPage):
     basics_save_button = Locator(By.CSS_SELECTOR, '#preprint-form-basics .btn-primary')
 
     create_preprint_button = Locator(By.CSS_SELECTOR, '.preprint-submit-body .submit-section > div > button.btn.btn-success.btn-md.m-t-md.pull-right')
-    modal_create_preprint_button = Locator(By.CSS_SELECTOR, '.modal-footer button.btn-success:nth-child(2)')
+    modal_create_preprint_button = Locator(By.CSS_SELECTOR, '.modal-footer button.btn-success:nth-child(2)', settings.LONG_TIMEOUT)
 
 
 class PreprintDiscoverPage(BasePreprintPage):
