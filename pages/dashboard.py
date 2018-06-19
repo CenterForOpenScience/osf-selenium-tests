@@ -28,17 +28,16 @@ class BaseDashboardPage(OSFBasePage):
 class EmberDashboardPage(BaseDashboardPage):
     url = settings.OSF_HOME + '/dashboard/'
 
-    identity = Locator(By.CSS_SELECTOR, '.__35060.Application__page > div.quickSearch > div > div > div > div > div:nth-child(1) > h2', settings.LONG_TIMEOUT)
-    create_project_button = Locator(By.CSS_SELECTOR, '.__35060.Application__page > div.quickSearch > div > div > div > div > div:nth-child(1) > div > div > button', settings.LONG_TIMEOUT)
+    identity = Locator(By.CSS_SELECTOR, '._institutions-panel_1b28t4', settings.LONG_TIMEOUT)
+    create_project_button = Locator(By.CSS_SELECTOR, '.btn-success-high-contrast', settings.LONG_TIMEOUT)
     view_meetings_button = Locator(By.LINK_TEXT, 'View meetings')
     view_preprints_button = Locator(By.LINK_TEXT, 'View preprints')
-    start_prereg_button = Locator(By.LINK_TEXT, 'Start Prereg Challenge')
-    first_popular_project_entry = Locator(By.CLASS_NAME, '__66865', settings.LONG_TIMEOUT)
-    institutions_carousel_left_arrow = Locator(By.CSS_SELECTOR, '.left.carousel-control')
-    institutions_carousel_right_arrow = Locator(By.CSS_SELECTOR, '.right.carousel-control')
+    first_popular_project_entry = Locator(By.CSS_SELECTOR, '._NoteworthyProject__item_ko80g1', settings.LONG_TIMEOUT)
+    institutions_carousel_left_arrow = Locator(By.CSS_SELECTOR, '._InstitutionCarousel__control_16pdz4.carousel-control._left_16pdz4')
+    institutions_carousel_right_arrow = Locator(By.CSS_SELECTOR, '._InstitutionCarousel__control_16pdz4.carousel-control._right_16pdz4')
 
     # Group locators
-    institution_carousel_logos = GroupLocator(By.CLASS_NAME, 'InstitutionCarousel__item__image')
+    institution_carousel_logos = GroupLocator(By.CSS_SELECTOR, '.carousel-inner img')
 
     # Components
     navbar = ComponentLocator(EmberNavbar)

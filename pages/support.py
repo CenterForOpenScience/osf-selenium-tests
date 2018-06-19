@@ -9,7 +9,7 @@ from pages.base import OSFBasePage
 class EmberSupportPage(OSFBasePage):
     url = settings.OSF_HOME + '/support'
 
-    identity = Locator(By.CLASS_NAME, '__bd682', settings.LONG_TIMEOUT)
+    identity = Locator(By.CSS_SELECTOR, '._Support_15i3vw', settings.LONG_TIMEOUT)
 
 
 class SupportPage(OSFBasePage):
