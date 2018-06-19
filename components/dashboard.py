@@ -8,11 +8,11 @@ from base.locators import Locator, GroupLocator, BaseElement
 class EmberCreateProjectModal(BaseElement):
 
     modal = Locator(By.CLASS_NAME, 'modal-dialog')
-    create_project_button = Locator(By.CSS_SELECTOR, 'button.btn:nth-child(2)')
-    cancel_button = Locator(By.CSS_SELECTOR, 'button.btn:nth-child(1)')
-    title_input = Locator(By.CLASS_NAME, 'form-control')
-    select_all_link = Locator(By.LINK_TEXT, 'Select all')
-    remove_all_link = Locator(By.LINK_TEXT, 'Remove all')
+    create_project_button = Locator(By.CSS_SELECTOR, '.modal-dialog .btn-success')
+    cancel_button = Locator(By.CSS_SELECTOR, '.modal-dialog .btn-default')
+    title_input = Locator(By.CSS_SELECTOR, '._NewProject__label_fz56y2 input')
+    select_all_link = Locator(By.XPATH, '//a[text()="Select all"]')
+    remove_all_link = Locator(By.XPATH, '//a[text()="Remove all"]')
     more_arrow = Locator(By.CLASS_NAME, 'fa')
     description_input = Locator(By.CLASS_NAME, 'project-desc')
     template_dropdown = Locator(By.CLASS_NAME, 'ember-power-select-placeholder')
@@ -27,22 +27,22 @@ class EmberCreateProjectModal(BaseElement):
 
 class EmberProjectCreatedModal(BaseElement):
 
-    go_to_project_href_link = Locator(By.CSS_SELECTOR, '.__fe314__modal.modal a', settings.LONG_TIMEOUT)
+    go_to_project_href_link = Locator(By.CSS_SELECTOR, '.modal-dialog a', settings.LONG_TIMEOUT)
     keep_working_here_button = Locator(By.CSS_SELECTOR, 'button.btn-default')
 
 
 class EmberProjectList(BaseElement):
 
-    search_input = Locator(By.CSS_SELECTOR, '.__35060.Application__page > div.quickSearch input')
-    top_project_link = Locator(By.CLASS_NAME, 'DashboardItem')
-    sort_title_asc_button = Locator(By.CSS_SELECTOR, '.__35060 .quick-search-table > div.row.node-col-headers.m-t-md > div.col-sm-3.col-md-6 > div > span > button:nth-child(1)')
-    sort_title_dsc_button = Locator(By.CSS_SELECTOR, '.__35060 .quick-search-table > div.row.node-col-headers.m-t-md > div.col-sm-3.col-md-6 > div > span > button:nth-child(2)')
-    sort_date_asc_button = Locator(By.CSS_SELECTOR, '.__35060 .quick-search-table > div.row.node-col-headers.m-t-md > div:nth-child(3) > div > span > button:nth-child(1)')
-    sort_date_dsc_button = Locator(By.CSS_SELECTOR, '.__35060 .quick-search-table > div.row.node-col-headers.m-t-md > div:nth-child(3) > div > span > button:nth-child(2)')
-    loading_dashboard_item = Locator(By.CLASS_NAME, 'loading-dashboard-item', settings.QUICK_TIMEOUT)
+    search_input = Locator(By.CSS_SELECTOR, '._quick-search-input_1b28t4 > input')
+    top_project_link = Locator(By.CLASS_NAME, '_DashboardItem_17nn6d')
+    sort_title_asc_button = Locator(By.CSS_SELECTOR, '._quick-search-col_1b28t4 ._SortButton_1ifm79 [title~="ascending"]')
+    sort_title_dsc_button = Locator(By.CSS_SELECTOR, '._quick-search-col_1b28t4 ._SortButton_1ifm79 [title~="descending"]')
+    sort_date_asc_button = Locator(By.CSS_SELECTOR, '.col-md-3 ._quick-search-col_1b28t4 ._SortButton_1ifm79 [title~="ascending"]')
+    sort_date_dsc_button = Locator(By.CSS_SELECTOR, '.col-md-3 ._quick-search-col_1b28t4 ._SortButton_1ifm79 [title~="descending"]')
+    loading_dashboard_item = Locator(By.CLASS_NAME, '_loading-dashboard-item_1b28t4', settings.QUICK_TIMEOUT)
 
     # Group Locators
-    project_list_projects = GroupLocator(By.CSS_SELECTOR, '.__3eb7f > a')
+    project_list_projects = GroupLocator(By.CSS_SELECTOR, '._quick-search-table_1b28t4 a')
 
     def get_nth_project_link(self, n=0):
         if self.loading_dashboard_item.here_then_gone():
@@ -65,8 +65,8 @@ class CreateProjectModal(BaseElement):
     create_project_button = Locator(By.CSS_SELECTOR, '#addProjectFromHome > div > div > div.modal-footer > button.btn.btn-success')
     cancel_button = Locator(By.CSS_SELECTOR, '#addProjectFromHome > div > div > div.modal-footer > button.btn.btn-default')
     title_input = Locator(By.CSS_SELECTOR, '.form-control')
-    select_all_link = Locator(By.LINK_TEXT, 'Select all')
-    remove_all_link = Locator(By.LINK_TEXT, 'Remove all')
+    select_all_link = Locator(By.XPATH, '//a[text()="Select all"]')
+    remove_all_link = Locator(By.XPATH, '//a[text()="Remove all"]')
     more_arrow = Locator(By.CSS_SELECTOR, '#addProjectFromHome > div > div > div.modal-body > div > div.text-muted.pointer')
     description_input = Locator(By.CSS_SELECTOR, '#addProjectFromHome > div > div > div.modal-body > div > div:nth-child(4) > input')
     template_dropdown = Locator(By.ID, 'select2-chosen-2')

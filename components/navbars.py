@@ -20,7 +20,7 @@ class Navbar(BaseElement):
     user_dropdown_settings = Locator(By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(3) > a')
     logout_link = Locator(By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(4) > a')
     sign_up_button = Locator(By.XPATH, '//a[text()="Sign Up"]')
-    sign_in_button = Locator(By.LINK_TEXT, 'Sign In')
+    sign_in_button = Locator(By.XPATH, '//a[text()="Sign In"]')
     current_service = Locator(By.CSS_SELECTOR, '#navbarScope .current-service > strong')
 
     def verify(self):
