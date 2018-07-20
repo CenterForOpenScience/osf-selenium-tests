@@ -20,6 +20,7 @@ def landing_page(driver):
 @pytest.mark.usefixtures('delete_user_projects_at_setup')
 class TestPreprintWorkflow:
 
+    @markers.dont_run_on_prod
     @markers.core_functionality
     def test_create_preprint_from_landing(self, driver, landing_page, project_with_file):
         landing_page.add_preprint_button.click()

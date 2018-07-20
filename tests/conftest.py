@@ -53,7 +53,7 @@ def delete_user_projects_at_setup(session):
 
 @pytest.fixture
 def default_project(session):
-    project = osf_api.create_project(session, title='OSF Test Project')
+    project = osf_api.create_project(session, title='OSF Test Project', tags=['qatest'])
     yield project
     project.delete()
 
