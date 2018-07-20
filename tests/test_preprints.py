@@ -52,4 +52,5 @@ class TestPreprintWorkflow:
     def test_search_results_exist(self, driver, landing_page):
         landing_page.search_button.click()
         discover_page = PreprintDiscoverPage(driver, verify=True)
+        discover_page.loading_indicator.here_then_gone()
         assert len(discover_page.search_results) > 0

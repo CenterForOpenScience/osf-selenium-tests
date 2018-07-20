@@ -20,6 +20,21 @@ def project_page_with_file(driver, project_with_file):
 class TestProjectDetailPage:
 
     @markers.core_functionality
+    def test_change_title(self, project_page):
+        new_title = 'New Day. New Title.'
+        assert project_page.title.text != new_title
+        project_page.title.click()
+        project_page.title_input.clear()
+        project_page.title_input.send_keys(new_title)
+        project_page.title_edit_submit_button.click()
+        assert project_page.title.text == new_title
+
+    @markers.core_functionality
+    def test_file_widget_loads(self, project_page_with_file):
+        # Check the uploaded file shows up in the files widget
+        assert project_page_with_file.file_widget.component_and_file_titles[3]
+
+    @markers.core_functionality
     def test_make_public(self, driver, project_page):
         # Set project to public
         project_page.make_public_link.click()
@@ -38,17 +53,3 @@ class TestProjectDetailPage:
         logout(driver)
         project_page.goto(expect_login_redirect=True)
         login(driver)
-
-    @markers.core_functionality
-    def test_change_title(self, project_page):
-        new_title = 'New Day. New Title.'
-        assert project_page.title.text != new_title
-        project_page.title.click()
-        project_page.title_input.clear()
-        project_page.title_input.send_keys(new_title)
-        project_page.title_edit_submit_button.click()
-        assert project_page.title.text == new_title
-
-    def test_file_widget_loads(self, project_page_with_file):
-        # Check the uploaded file shows up in the files widget
-        assert project_page_with_file.file_widget.component_and_file_titles[3]

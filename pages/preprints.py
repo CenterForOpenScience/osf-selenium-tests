@@ -56,7 +56,11 @@ class PreprintDiscoverPage(BasePreprintPage):
     url = settings.OSF_HOME + '/preprints/discover/'
 
     identity = Locator(By.ID, 'share-logo')
-    search_results = GroupLocator(By.CLASS_NAME, 'search-result')
+
+    loading_indicator = Locator(By.CSS_SELECTOR, '.ball-scale')
+
+    # Group Locators
+    search_results = GroupLocator(By.CSS_SELECTOR, '.search-result')
 
 
 class PreprintDetailPage(GuidBasePage, BasePreprintPage):
