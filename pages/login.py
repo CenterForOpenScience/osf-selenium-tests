@@ -10,7 +10,7 @@ from pages.base import BasePage, OSFBasePage
 class LoginPage(BasePage):
     url = settings.OSF_HOME + '/login'
 
-    identity = Locator(By.XPATH, '/html/body[@id="cas"]/div[@id="container"]', settings.LONG_TIMEOUT)
+    identity = Locator(By.ID, 'cas', settings.LONG_TIMEOUT)
     username_input = Locator(By.ID, 'username')
     password_input = Locator(By.ID, 'password')
     submit_button = Locator(By.NAME, 'submit')

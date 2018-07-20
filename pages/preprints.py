@@ -62,4 +62,4 @@ class PreprintDiscoverPage(BasePreprintPage):
 class PreprintDetailPage(GuidBasePage, BasePreprintPage):
 
     identity = Locator(By.ID, 'preprintTitle')
-    preprint_title = Locator(By.ID, 'preprintTitle')
+    title = Locator(By.ID, 'preprintTitle')

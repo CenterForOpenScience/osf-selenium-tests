@@ -19,15 +19,15 @@ class TestMainPage:
 
     @markers.core_functionality
     def test_create_project(self, driver, dashboard_page):
-        project_title = 'New Project'
+        title = 'New Project'
         dashboard_page.create_project_button.click()
         create_project_modal = dashboard_page.create_project_modal
         create_project_modal.title_input.clear()
-        create_project_modal.title_input.send_keys(project_title)
+        create_project_modal.title_input.send_keys(title)
         create_project_modal.create_project_button.click()
         dashboard_page.project_created_modal.go_to_project_href_link.click()
         project_page = ProjectPage(driver, verify=True)
-        assert project_page.project_title.text == project_title, 'Project title incorrect.'
+        assert project_page.title.text == title, 'Project title incorrect.'
 
     def test_create_project_modal_buttons(self, dashboard_page, session):
         institutions = osf.get_user_institutions(session)

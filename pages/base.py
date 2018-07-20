@@ -6,21 +6,37 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 
 from components.navbars import HomeNavbar
-from base.locators import BaseElement, ComponentLocator
+from base.locators import BaseElement, ComponentLocator, Locator
 from base.exceptions import HttpError, PageException
 
 
 class BasePage(BaseElement):
     url = None
 
+    cas_identity = Locator(By.ID, 'cas')
+
     def __init__(self, driver, verify=False):
         super().__init__(driver)
         if verify:
             self.check_page()
 
-    def goto(self):
+    def goto(self, expect_login_redirect=False):
+        """Navigate to a page based on its `url` attribute
+        and confirms you are on the expected page.
+
+        If you are testing permissions, you may want to navigate to a page that
+        requires authentication as a logged out user. In this case you will be
+        redirected to CAS. You can set `expect_login_redirect` to True to verify
+        you are on the login page.
+        """
         self.driver.get(self.url)
-        self.check_page()
+        if expect_login_redirect:
+
+            current_url = self.driver.current_url
+            if not (self.cas_identity.present() and self.url in current_url):
+                raise PageException('Unexpected page structure: `{}`'.format(self.driver.current_url))
+        else:
+            self.check_page()
 
     def check_page(self):
         if not self.verify():
@@ -29,6 +45,9 @@ class BasePage(BaseElement):
             raise PageException('Unexpected page structure: `{}`'.format(self.driver.current_url))
 
     def verify(self):
+        """Verify that you are on the expected page by confirming the page's `identity`
+        element is present on the page.
+        """
         return self.identity.present()
 
     def error_handling(self):
@@ -49,9 +68,11 @@ class BasePage(BaseElement):
 
 
 class OSFBasePage(BasePage):
+    """
+    Note: All pages must have a unique identity or overwrite `verify`
+    """
     url = settings.OSF_HOME
     navbar = ComponentLocator(HomeNavbar)
-    # all pages must have a unique identity or overwrite verify
 
     def __init__(self, driver, verify=False):
         super().__init__(driver)

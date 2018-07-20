@@ -14,9 +14,7 @@ class BaseDashboardPage(OSFBasePage):
 
     def get_institutions(self):
         page_institutions = self.institution_carousel_logos
-        if self.institutions_carousel_left_arrow.absent():
-            return page_institutions
-        while True:
+        while self.institutions_carousel_left_arrow.present():
             self.institutions_carousel_right_arrow.click()
             for logo in self.institution_carousel_logos:
                 if logo in page_institutions:
@@ -61,7 +59,7 @@ class DashboardPage(BaseDashboardPage):
     institutions_carousel_right_arrow = Locator(By.CSS_SELECTOR, '.right.carousel-control')
 
     # Group locators
-    institution_carousel_logos = GroupLocator(By.CLASS_NAME, 'img-circle')
+    institution_carousel_logos = GroupLocator(By.CSS_SELECTOR, '.carousel-inner .img-circle')
 
     # Components
     create_project_modal = ComponentLocator(components.CreateProjectModal)

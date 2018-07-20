@@ -68,7 +68,7 @@ class TestMeetingDetailPage:
         entry_title = meeting_detail_page.second_entry_link.text
         meeting_detail_page.second_entry_link.click()
         project_page = ProjectPage(driver, verify=True)
-        assert entry_title == project_page.project_title.text
+        assert entry_title == project_page.title.text
 
     def test_filtering_detail(self, meeting_detail_page):
         default_second_result = meeting_detail_page.second_entry_link.text
