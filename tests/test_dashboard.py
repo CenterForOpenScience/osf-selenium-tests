@@ -58,6 +58,7 @@ class TestMainPage:
     def test_institution_logos(self, dashboard_page, session):
         api_institution_names = osf.get_all_institutions(session)
         page_institutions = dashboard_page.get_institutions()
+        assert page_institutions, 'Institution logos missing.'
         page_institution_names = [i.get_property('name') for i in page_institutions]
         assert set(page_institution_names) == set(api_institution_names)
 

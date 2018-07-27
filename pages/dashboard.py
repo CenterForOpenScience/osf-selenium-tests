@@ -10,7 +10,6 @@ from base.locators import Locator, GroupLocator, ComponentLocator
 
 
 class BaseDashboardPage(OSFBasePage):
-    # TODO: Write in mandatory locators?
 
     def get_institutions(self):
         page_institutions = self.institution_carousel_logos
@@ -21,6 +20,7 @@ class BaseDashboardPage(OSFBasePage):
                     return page_institutions
                 page_institutions.append(logo)
             return page_institutions
+        return []
 
 
 class EmberDashboardPage(BaseDashboardPage):

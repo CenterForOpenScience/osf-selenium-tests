@@ -35,6 +35,13 @@ class TestProjectDetailPage:
         assert project_page_with_file.file_widget.component_and_file_titles[3]
 
     @markers.core_functionality
+    def test_is_private(self, driver, project_page):
+        # Verify that a logged out user cannot see the project
+        logout(driver)
+        project_page.goto(expect_login_redirect=True)
+        login(driver)
+
+    @markers.core_functionality
     def test_make_public(self, driver, project_page):
         # Set project to public
         project_page.make_public_link.click()
@@ -43,13 +50,4 @@ class TestProjectDetailPage:
         # Confirm logged out user can now see project
         logout(driver)
         project_page.goto()
-        # Set project back to private
-        login(driver)
-        project_page.goto()
-        project_page.make_private_link.click()
-        project_page.confirm_privacy_change_link.click()
-        assert project_page.make_public_link.present()
-        # Verify that a logged out user cannot see the project
-        logout(driver)
-        project_page.goto(expect_login_redirect=True)
         login(driver)
