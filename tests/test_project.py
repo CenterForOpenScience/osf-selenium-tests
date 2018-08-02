@@ -41,6 +41,7 @@ class TestProjectDetailPage:
         project_page.goto(expect_login_redirect=True)
         login(driver)
 
+    @markers.dont_run_on_prod
     @markers.core_functionality
     def test_make_public(self, driver, project_page):
         # Set project to public

@@ -131,6 +131,7 @@ class TestProjectList:
         assert project_three.id in project_list.get_nth_project_link(2)
         assert project_one.id in project_list.get_nth_project_link(3)
 
+    #TODO: Update this test to use more complex characters
     @markers.core_functionality
     def test_project_quick_search(self, dashboard_page, project_one, project_two, project_three):
         dashboard_page.reload()

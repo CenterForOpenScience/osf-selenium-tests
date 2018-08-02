@@ -15,7 +15,7 @@ def landing_page(driver):
     landing_page.goto()
     return landing_page
 
-
+#TODO: Add checking for missing translations
 @pytest.mark.usefixtures('must_be_logged_in')
 @pytest.mark.usefixtures('delete_user_projects_at_setup')
 class TestPreprintWorkflow:
