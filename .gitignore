@@ -44,5 +44,5 @@ cover/
 
 # Private Info
 variables.py
-local.py
+.env
 .cache/

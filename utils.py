@@ -1,10 +1,6 @@
-import os
 import settings
-
 from selenium import webdriver
 
-
-HERE = os.path.abspath(os.path.dirname(os.path.abspath(__file__)))
 
 def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
     """Create and configure a WebDriver.
