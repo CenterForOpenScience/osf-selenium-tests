@@ -28,8 +28,8 @@ class EmberDashboardPage(BaseDashboardPage):
 
     identity = Locator(By.CSS_SELECTOR, '._institutions-panel_1b28t4', settings.LONG_TIMEOUT)
     create_project_button = Locator(By.CSS_SELECTOR, '.btn-success-high-contrast', settings.LONG_TIMEOUT)
-    view_meetings_button = Locator(By.LINK_TEXT, 'View meetings')
-    view_preprints_button = Locator(By.LINK_TEXT, 'View preprints')
+    view_meetings_button = Locator(By.XPATH, '//a[text()="View meetings"]')
+    view_preprints_button = Locator(By.XPATH, '//a[text()="View preprints"]')
     first_popular_project_entry = Locator(By.CSS_SELECTOR, '._NoteworthyProject__item_ko80g1', settings.LONG_TIMEOUT)
     institutions_carousel_left_arrow = Locator(By.CSS_SELECTOR, '._InstitutionCarousel__control_16pdz4.carousel-control._left_16pdz4')
     institutions_carousel_right_arrow = Locator(By.CSS_SELECTOR, '._InstitutionCarousel__control_16pdz4.carousel-control._right_16pdz4')
@@ -49,9 +49,8 @@ class DashboardPage(BaseDashboardPage):
 
     identity = Locator(By.CSS_SELECTOR, '#osfHome > div.prereg-banner', settings.LONG_TIMEOUT)
     create_project_button = Locator(By.CSS_SELECTOR, 'button.btn-success:nth-child(1)', settings.LONG_TIMEOUT)
-    view_meetings_button = Locator(By.LINK_TEXT, 'View meetings')
-    view_preprints_button = Locator(By.LINK_TEXT, 'View preprints')
-    start_prereg_button = Locator(By.LINK_TEXT, 'Start Prereg Challenge')
+    view_meetings_button = Locator(By.XPATH, '//a[text()="View meetings"]')
+    view_preprints_button = Locator(By.XPATH, '//a[text()="View preprints"]')
     new_and_noteworthy = Locator(By.CSS_SELECTOR, '#osfHome > div.newAndNoteworthy > div > div:nth-child(2) > div > div > div:nth-child(1) > div:nth-child(1) > div > h4', settings.LONG_TIMEOUT)
     first_popular_project_entry = Locator(By.CLASS_NAME, 'public-projects-item', settings.LONG_TIMEOUT)
     popular_projects = Locator(By.CSS_SELECTOR, '#osfHome > div.newAndNoteworthy > div > div:nth-child(2) > div > div > div:nth-child(1) > div:nth-child(2) > div > h4', settings.LONG_TIMEOUT)
