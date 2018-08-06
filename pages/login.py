@@ -48,4 +48,10 @@ def safe_login(driver):
         login(driver)
 
 def logout(driver):
+    """Log the user put. Also set the cookieconsent cookie so that that cookie banner doesn't show up
+    (as it can obscure other UI elements).
+
+    Note: If we ever want to test that banner will need to stop this cookie from being set.
+    """
     driver.get(settings.OSF_HOME + '/logout/')
+    driver.add_cookie({'name': 'osf_cookieconsent', 'value': '1', 'domain': '.osf.io'})

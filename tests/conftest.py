@@ -33,15 +33,6 @@ def waffled_pages(session):
 def default_logout(driver):
     logout(driver)
 
-@pytest.fixture(scope='class', autouse=True)
-def hide_cookie_banner(driver):
-    """Set the cookieconsent cookie so that that cookie banner doesn't show up
-    (as it can obscure other UI elements).
-
-    Note: If we ever want to test that banner will need to stop this cookie from being set.
-    """
-    driver.add_cookie({'name': 'osf_cookieconsent', 'value': '1'})
-
 # TODO: Possibly return to safe_login in the future
 @pytest.fixture(scope='class')
 def must_be_logged_in(driver):
