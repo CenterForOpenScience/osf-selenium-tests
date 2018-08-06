@@ -18,8 +18,6 @@ BIN_PATH = os.path.dirname(sys.executable)
 
 bin_prefix = lambda cmd: os.path.join(BIN_PATH, cmd)
 
-os_env = os.environ
-
 @task(aliases=['flake8'])
 def flake(ctx):
     ctx.run('flake8 .', echo=True)

@@ -1,11 +1,6 @@
-import os
-from read_env import read_env
-
-# Read .env into os.environ (if it exists)
-try:
-    read_env()
-except FileNotFoundError:
-    pass
+from environs import Env
+env = Env()
+env.read_env()  # Read .env into os.environ, if it exists
 
 domains = {
     'stage1': {
@@ -40,22 +35,19 @@ domains = {
     }
 }
 
-DRIVER = os.environ.get('DRIVER', 'Firefox')
-HEADLESS = os.environ.get('HEADLESS', False)
+DRIVER = env('DRIVER', 'Firefox')
+HEADLESS = env.bool('HEADLESS', False)
 
-QUICK_TIMEOUT = os.environ.get('QUICK_TIMEOUT', 4)
-TIMEOUT = os.environ.get('TIMEOUT', 10)
-LONG_TIMEOUT = os.environ.get('LONG_TIMEOUT', 30)
+QUICK_TIMEOUT = env.int('QUICK_TIMEOUT', 4)
+TIMEOUT = env.int('TIMEOUT', 10)
+LONG_TIMEOUT = env.int('LONG_TIMEOUT', 30)
 
-DOMAIN = os.environ.get('DOMAIN', 'stage1')
+DOMAIN = env('DOMAIN', 'stage1')
 
 OSF_HOME = domains[DOMAIN]['home']
 API_DOMAIN = domains[DOMAIN]['api']
 FILE_DOMAIN = domains[DOMAIN]['files']
 CAS_DOMAIN = domains[DOMAIN]['cas']
-
-USER_ONE = os.environ.get('USER_ONE')
-USER_ONE_PASSWORD = os.environ.get('USER_ONE_PASSWORD')
 
 # Browser capabilities for browserstack testing
 caps = {
@@ -72,19 +64,20 @@ caps = {
                'safari.options': {'technologyPreview': 'true'}}
 }
 
-
-# Used for remote testing
 if DRIVER == 'Remote':
-    BSTACK_USER = os.environ.get('BSTACK_USER')
-    BSTACK_KEY = os.environ.get('BSTACK_KEY')
+    BSTACK_USER = env('BSTACK_USER')
+    BSTACK_KEY = env('BSTACK_KEY')
 
-    BUILD = os.environ.get('TEST_BUILD', 'firefox')
+    BUILD = env('TEST_BUILD', 'firefox')
     DESIRED_CAP = caps[BUILD]
 
     upper_build = BUILD.upper()
 
-    USER_ONE = os.environ.get('{}_USER'.format(upper_build), os.environ.get('USER_ONE'))
-    USER_ONE_PASSWORD = os.environ.get('{}_USER_PASSWORD'.format(upper_build), os.environ.get('USER_ONE_PASSWORD'))
+    USER_ONE = env('{}_USER'.format(upper_build), env('USER_ONE', ''))
+    USER_ONE_PASSWORD = env('{}_USER_PASSWORD'.format(upper_build), env('USER_ONE_PASSWORD', ''))
+else:
+    USER_ONE = env('USER_ONE')
+    USER_ONE_PASSWORD = env('USER_ONE_PASSWORD')
 
 
 # Used to skip certain tests on specific stagings
