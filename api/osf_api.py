@@ -1,9 +1,14 @@
 import settings
 from pythosf import client
 
-def create_project(session, title='osf selenium test'):
+def create_project(session, title='osf selenium test', tags=['qatest']):
+    """Create a project for your current user through the OSF api.
+
+    By default, projects will be given the `qatest` tag just in case deleting fails.
+    If testing search, you will want to give the project no tags (or different tags).
+    """
     node = client.Node(session=session)
-    node.create(title=title)
+    node.create(title=title, tags=tags)
     return node
 
 def current_user(session):

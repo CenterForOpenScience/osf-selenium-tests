@@ -19,15 +19,15 @@ class TestMainPage:
 
     @markers.core_functionality
     def test_create_project(self, driver, dashboard_page):
-        project_title = 'New Project'
+        title = 'New Project'
         dashboard_page.create_project_button.click()
         create_project_modal = dashboard_page.create_project_modal
         create_project_modal.title_input.clear()
-        create_project_modal.title_input.send_keys(project_title)
+        create_project_modal.title_input.send_keys(title)
         create_project_modal.create_project_button.click()
         dashboard_page.project_created_modal.go_to_project_href_link.click()
         project_page = ProjectPage(driver, verify=True)
-        assert project_page.project_title.text == project_title, 'Project title incorrect.'
+        assert project_page.title.text == title, 'Project title incorrect.'
 
     def test_create_project_modal_buttons(self, dashboard_page, session):
         institutions = osf.get_user_institutions(session)
@@ -58,6 +58,7 @@ class TestMainPage:
     def test_institution_logos(self, dashboard_page, session):
         api_institution_names = osf.get_all_institutions(session)
         page_institutions = dashboard_page.get_institutions()
+        assert page_institutions, 'Institution logos missing.'
         page_institution_names = [i.get_property('name') for i in page_institutions]
         assert set(page_institution_names) == set(api_institution_names)
 
@@ -130,6 +131,7 @@ class TestProjectList:
         assert project_three.id in project_list.get_nth_project_link(2)
         assert project_one.id in project_list.get_nth_project_link(3)
 
+    #TODO: Update this test to use more complex characters
     @markers.core_functionality
     def test_project_quick_search(self, dashboard_page, project_one, project_two, project_three):
         dashboard_page.reload()

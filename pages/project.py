@@ -2,13 +2,24 @@ import settings
 
 from selenium.webdriver.common.by import By
 
-from base.locators import Locator
+from components.project import FileWidget
 from pages.base import GuidBasePage, OSFBasePage
+from base.locators import Locator, ComponentLocator
 
 
 class ProjectPage(GuidBasePage):
     identity = Locator(By.CSS_SELECTOR, '#overview > nav#projectSubnav')
-    project_title = Locator(By.ID, 'nodeTitleEditable', settings.LONG_TIMEOUT)
+    title = Locator(By.ID, 'nodeTitleEditable', settings.LONG_TIMEOUT)
+    title_input = Locator(By.CSS_SELECTOR, '.form-inline input')
+    title_edit_submit_button = Locator(By.CSS_SELECTOR, '.editable-submit')
+    title_edit_cancel_button = Locator(By.CSS_SELECTOR, '.editable-cancel')
+    make_public_link = Locator(By.XPATH, '//a[contains(text(), "Make Public")]')
+    make_private_link = Locator(By.XPATH, '//a[contains(text(), "Make Private")]')
+    confirm_privacy_change_link = Locator(By.XPATH, '//a[text()="Confirm"]')
+    cancel_privacy_change_link = Locator(By.XPATH, '//a[text()="Cancel"]')
+
+    # Components
+    file_widget = ComponentLocator(FileWidget)
 
 
 class MyProjectsPage(OSFBasePage):

@@ -1,5 +1,6 @@
 import pytest
 import settings
+
 from api import osf_api
 from pythosf import client
 from pages.login import logout, login
@@ -28,6 +29,15 @@ def driver():
 def waffled_pages(session):
     settings.EMBER_PAGES = osf_api.waffled_pages(session)
 
+@pytest.fixture(scope='session', autouse=True)
+def hide_cookie_banner(driver):
+    """Set the cookieconsent cookie so that that cookie banner doesn't show up
+    (as it can obscure other UI elements).
+     Note: If we ever want to test that banner will need to stop this cookie from being set.
+    """
+    driver.get(settings.OSF_HOME)
+    driver.add_cookie({'name': 'osf_cookieconsent', 'value': '1', 'domain': '.osf.io'})
+
 @pytest.fixture(scope='class', autouse=True)
 def default_logout(driver):
     logout(driver)
@@ -43,6 +53,11 @@ def delete_user_projects_at_setup(session):
 
 @pytest.fixture
 def default_project(session):
-    project = osf_api.create_project(session, title='OSF Test Project')
+    project = osf_api.create_project(session, title='OSF Test Project', tags=['qatest'])
     yield project
     project.delete()
+
+@pytest.fixture
+def project_with_file(session, default_project):
+    osf_api.upload_fake_file(session, default_project)
+    return default_project

@@ -10,7 +10,7 @@ from pages.base import BasePage, OSFBasePage
 class LoginPage(BasePage):
     url = settings.OSF_HOME + '/login'
 
-    identity = Locator(By.XPATH, '/html/body[@id="cas"]/div[@id="container"]', settings.LONG_TIMEOUT)
+    identity = Locator(By.ID, 'cas', settings.LONG_TIMEOUT)
     username_input = Locator(By.ID, 'username')
     password_input = Locator(By.ID, 'password')
     submit_button = Locator(By.NAME, 'submit')
@@ -48,4 +48,9 @@ def safe_login(driver):
         login(driver)
 
 def logout(driver):
+    """Log the user put. Also set the cookieconsent cookie so that that cookie banner doesn't show up
+    (as it can obscure other UI elements).
+
+    Note: If we ever want to test that banner will need to stop this cookie from being set.
+    """
     driver.get(settings.OSF_HOME + '/logout/')

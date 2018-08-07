@@ -1,6 +1,5 @@
 import pytest
 import markers
-from api import osf_api
 
 from pages.preprints import (
     PreprintLandingPage,
@@ -16,15 +15,12 @@ def landing_page(driver):
     landing_page.goto()
     return landing_page
 
-@pytest.fixture
-def project_with_file(session, default_project):
-    osf_api.upload_fake_file(session, default_project)
-
-
+#TODO: Add checking for missing translations
 @pytest.mark.usefixtures('must_be_logged_in')
 @pytest.mark.usefixtures('delete_user_projects_at_setup')
 class TestPreprintWorkflow:
 
+    @markers.dont_run_on_prod
     @markers.core_functionality
     def test_create_preprint_from_landing(self, driver, landing_page, project_with_file):
         landing_page.add_preprint_button.click()
@@ -49,11 +45,12 @@ class TestPreprintWorkflow:
 
         submit_page.create_preprint_button.click()
         submit_page.modal_create_preprint_button.click()
-        PreprintDetailPage(driver, verify=True)
-        # TODO: Make a clean way to check if you are on the correct project
+        preprint_detail = PreprintDetailPage(driver, verify=True)
+        assert preprint_detail.title.text == project_with_file.title
 
     @markers.core_functionality
     def test_search_results_exist(self, driver, landing_page):
         landing_page.search_button.click()
         discover_page = PreprintDiscoverPage(driver, verify=True)
+        discover_page.loading_indicator.here_then_gone()
         assert len(discover_page.search_results) > 0
