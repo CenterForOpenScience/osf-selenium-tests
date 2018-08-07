@@ -54,4 +54,3 @@ def logout(driver):
     Note: If we ever want to test that banner will need to stop this cookie from being set.
     """
     driver.get(settings.OSF_HOME + '/logout/')
-    driver.add_cookie({'name': 'osf_cookieconsent', 'value': '1', 'domain': '.osf.io'})
