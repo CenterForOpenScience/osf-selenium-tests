@@ -43,7 +43,7 @@ def requirements(ctx, dev=False):
     ctx.run(cmd, echo=True)
 
 @task
-def test_module(ctx, module=None, numprocesses=1, params=None, marker=None):
+def test_module(ctx, module=None, numprocesses=1, params=None):
     """Helper for running tests.
     """
     import pytest
@@ -56,7 +56,7 @@ def test_module(ctx, module=None, numprocesses=1, params=None, marker=None):
     if numprocesses > 1:
         args += ['-n {}'.format(numprocesses), '--max-slave-restart=0']
 
-    for e in [module, marker, params]:
+    for e in [module, params]:
         if e:
             args.extend([e] if isinstance(e, str) else e)
 
@@ -133,4 +133,4 @@ def test_travis_on_prod(ctx, numprocesses=None):
     """
     flake(ctx)
     print('Testing modules in "{}" in Chrome'.format('tests'))
-    test_module(ctx, marker='smoke_test')
+    test_module(ctx, module=['-m','smoke_test'])
