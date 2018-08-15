@@ -5,31 +5,31 @@ env.read_env()  # Read .env into os.environ, if it exists
 domains = {
     'stage1': {
         'home': 'https://staging.osf.io',
-        'api': 'https://staging-api.osf.io',
+        'api': 'https://api.staging.osf.io',
         'files': 'https://files.us.staging.osf.io',
         'cas': 'https://accounts.staging.osf.io'
     },
     'stage2': {
         'home': 'https://staging2.osf.io',
-        'api': 'https://staging2-api.osf.io',
+        'api': 'https://api.staging2.osf.io',
         'files': 'https://files.us.staging2.osf.io',
         'cas': 'https://accounts.staging2.osf.io'
     },
     'stage3': {
         'home': 'https://staging3.osf.io',
-        'api': 'https://staging3-api.osf.io',
+        'api': 'https://api.staging3.osf.io',
         'files': 'https://files.us.staging3.osf.io',
         'cas': 'https://accounts.staging3.osf.io'
     },
     'test': {
         'home': 'https://test.osf.io',
-        'api': 'https://test-api.osf.io',
+        'api': 'https://api.test.osf.io',
         'files': 'https://files.us.test.osf.io',
         'cas': 'https://accounts.test.osf.io'
     },
     'prod': {
         'home': 'https://osf.io',
-        'api': 'https://osf-api.io',
+        'api': 'https://api.osf.io',
         'files': 'https://files.us.osf.io',
         'cas': 'https://accounts.osf.io'
     }
@@ -43,6 +43,10 @@ TIMEOUT = env.int('TIMEOUT', 10)
 LONG_TIMEOUT = env.int('LONG_TIMEOUT', 30)
 
 DOMAIN = env('DOMAIN', 'stage1')
+
+PREFERRED_NODE = env('PREFERRED_NODE', None)
+if DOMAIN == 'prod':
+    PREFERRED_NODE = env('PREFERRED_NODE')
 
 OSF_HOME = domains[DOMAIN]['home']
 API_DOMAIN = domains[DOMAIN]['api']
