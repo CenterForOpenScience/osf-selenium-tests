@@ -73,7 +73,7 @@ if DRIVER == 'Remote':
     BSTACK_USER = env('BSTACK_USER')
     BSTACK_KEY = env('BSTACK_KEY')
 
-    BUILD = env('TEST_BUILD', 'firefox')
+    BUILD = env('TEST_BUILD', 'chrome')
     DESIRED_CAP = caps[BUILD]
 
     upper_build = BUILD.upper()
