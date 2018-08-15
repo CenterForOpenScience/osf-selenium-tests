@@ -1,4 +1,6 @@
 import pytest
+from faker import Faker
+
 import settings
 
 from api import osf_api
@@ -24,6 +26,10 @@ def driver():
     driver = launch_driver()
     yield driver
     driver.quit()
+
+@pytest.fixture(scope='session')
+def fake():
+    return Faker()
 
 @pytest.fixture(scope='session', autouse=True)
 def waffled_pages(session):
@@ -53,11 +59,21 @@ def delete_user_projects_at_setup(session):
 
 @pytest.fixture
 def default_project(session):
-    project = osf_api.create_project(session, title='OSF Test Project', tags=['qatest'])
-    yield project
-    project.delete()
+    """Creates a new project through the api and returns it. Deletes the project at the end of the test run.
+     If PREFERRED_NODE is set, returns the APIDetail of preferred node.
+     """
+    if settings.PREFERRED_NODE:
+        yield osf_api.get_preferred_node(session)
+    else:
+        project = osf_api.create_project(session, title='OSF Test Project', tags=['qatest'])
+        yield project
+        project.delete()
 
 @pytest.fixture
 def project_with_file(session, default_project):
+    """
+    """
+    if settings.PREFERRED_NODE:
+        return osf_api.get_preferred_node(session)
     osf_api.upload_fake_file(session, default_project)
     return default_project
