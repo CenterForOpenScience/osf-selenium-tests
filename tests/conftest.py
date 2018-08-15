@@ -71,9 +71,11 @@ def default_project(session):
 
 @pytest.fixture
 def project_with_file(session, default_project):
-    """
+    """Returns a project with a file.
+    Returns PREFERRED_NODE if it is set.
     """
     if settings.PREFERRED_NODE:
-        return osf_api.get_preferred_node(session)
-    osf_api.upload_fake_file(session, default_project)
+        osf_api.get_existing_file(session)
+    else:
+        osf_api.upload_fake_file(session, default_project)
     return default_project

@@ -30,7 +30,7 @@ domains = {
     'prod': {
         'home': 'https://osf.io',
         'api': 'https://api.osf.io',
-        'files': 'https://files.us.osf.io',
+        'files': 'https://files.osf.io',
         'cas': 'https://accounts.osf.io'
     }
 }
