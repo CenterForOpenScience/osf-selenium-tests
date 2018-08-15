@@ -44,6 +44,7 @@ LONG_TIMEOUT = env.int('LONG_TIMEOUT', 30)
 
 DOMAIN = env('DOMAIN', 'stage1')
 
+# Preferred node must be set to run tests on production
 PREFERRED_NODE = env('PREFERRED_NODE', None)
 if DOMAIN == 'prod':
     PREFERRED_NODE = env('PREFERRED_NODE')
@@ -90,11 +91,3 @@ STAGE2 = DOMAIN == 'stage2'
 STAGE3 = DOMAIN == 'stage3'
 TEST = DOMAIN == 'test'
 PRODUCTION = DOMAIN == 'prod'
-
-# TODO: Change to add failsafe but not prohibit
-if PRODUCTION:
-    raise Exception(
-        'OSF UI tests should *never* be run against production. '
-        '(A large number of database entries and files are generated '
-        'during testing.)'
-    )
