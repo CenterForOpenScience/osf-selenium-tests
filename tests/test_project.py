@@ -19,9 +19,10 @@ def project_page_with_file(driver, project_with_file):
 @pytest.mark.usefixtures('must_be_logged_in')
 class TestProjectDetailPage:
 
+    @markers.smoke_test
     @markers.core_functionality
-    def test_change_title(self, project_page):
-        new_title = 'New Day. New Title.'
+    def test_change_title(self, project_page, fake):
+        new_title = fake.sentence(nb_words=4)
         assert project_page.title.text != new_title
         project_page.title.click()
         project_page.title_input.clear()
@@ -29,6 +30,7 @@ class TestProjectDetailPage:
         project_page.title_edit_submit_button.click()
         assert project_page.title.text == new_title
 
+    @markers.smoke_test
     @markers.core_functionality
     def test_file_widget_loads(self, project_page_with_file):
         # Check the uploaded file shows up in the files widget
@@ -42,6 +44,7 @@ class TestProjectDetailPage:
         login(driver)
 
     @markers.dont_run_on_prod
+    @markers.dont_run_on_preferred_node
     @markers.core_functionality
     def test_make_public(self, driver, project_page):
         # Set project to public

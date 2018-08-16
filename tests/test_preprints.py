@@ -48,6 +48,7 @@ class TestPreprintWorkflow:
         preprint_detail = PreprintDetailPage(driver, verify=True)
         assert preprint_detail.title.text == project_with_file.title
 
+    @markers.smoke_test
     @markers.core_functionality
     def test_search_results_exist(self, driver, landing_page):
         landing_page.search_button.click()

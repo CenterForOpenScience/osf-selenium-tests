@@ -30,7 +30,7 @@ domains = {
     'prod': {
         'home': 'https://osf.io',
         'api': 'https://api.osf.io',
-        'files': 'https://files.us.osf.io',
+        'files': 'https://files.osf.io',
         'cas': 'https://accounts.osf.io'
     }
 }
@@ -44,6 +44,7 @@ LONG_TIMEOUT = env.int('LONG_TIMEOUT', 30)
 
 DOMAIN = env('DOMAIN', 'stage1')
 
+# Preferred node must be set to run tests on production
 PREFERRED_NODE = env('PREFERRED_NODE', None)
 if DOMAIN == 'prod':
     PREFERRED_NODE = env('PREFERRED_NODE')
@@ -72,7 +73,7 @@ if DRIVER == 'Remote':
     BSTACK_USER = env('BSTACK_USER')
     BSTACK_KEY = env('BSTACK_KEY')
 
-    BUILD = env('TEST_BUILD', 'firefox')
+    BUILD = env('TEST_BUILD', 'chrome')
     DESIRED_CAP = caps[BUILD]
 
     upper_build = BUILD.upper()
@@ -90,11 +91,3 @@ STAGE2 = DOMAIN == 'stage2'
 STAGE3 = DOMAIN == 'stage3'
 TEST = DOMAIN == 'test'
 PRODUCTION = DOMAIN == 'prod'
-
-# TODO: Change to add failsafe but not prohibit
-if PRODUCTION:
-    raise Exception(
-        'OSF UI tests should *never* be run against production. '
-        '(A large number of database entries and files are generated '
-        'during testing.)'
-    )

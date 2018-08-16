@@ -55,11 +55,11 @@ def test_module(ctx, module=None, numprocesses=1, params=None):
     args = ['-s', '-v']
     if numprocesses > 1:
         args += ['-n {}'.format(numprocesses), '--max-slave-restart=0']
-    modules = [module] if isinstance(module, str) else module
-    args.extend(modules)
-    if params:
-        params = [params] if isinstance(params, str) else params
-        args.extend(params)
+
+    for e in [module, params]:
+        if e:
+            args.extend([e] if isinstance(e, str) else e)
+
     retcode = pytest.main(args)
     sys.exit(retcode)
 
@@ -70,7 +70,7 @@ def test_travis_safari(ctx, numprocesses=None):
     """
     flake(ctx)
     print('Testing modules in "{}" in Safari'.format('tests'))
-    test_module(ctx, module=['tests'])
+    test_module(ctx)
 
 @task
 def test_travis_chrome(ctx, numprocesses=None):
@@ -79,7 +79,7 @@ def test_travis_chrome(ctx, numprocesses=None):
     """
     flake(ctx)
     print('Testing modules in "{}" in Chrome'.format('tests'))
-    test_module(ctx, module=['tests'])
+    test_module(ctx)
 
 @task
 def test_travis_edge(ctx, numprocesses=None):
@@ -88,7 +88,7 @@ def test_travis_edge(ctx, numprocesses=None):
     """
     flake(ctx)
     print('Testing modules in "{}" in Edge'.format('tests'))
-    test_module(ctx, module=['tests'])
+    test_module(ctx)
 
 @task
 def test_travis_firefox(ctx, numprocesses=None):
@@ -97,7 +97,7 @@ def test_travis_firefox(ctx, numprocesses=None):
     """
     flake(ctx)
     print('Testing modules in "{}" in Firefox'.format('tests'))
-    test_module(ctx, module=['tests'])
+    test_module(ctx)
 
 @task
 def test_travis_msie(ctx, numprocesses=None):
@@ -106,7 +106,7 @@ def test_travis_msie(ctx, numprocesses=None):
     """
     flake(ctx)
     print('Testing modules in "{}" in MSIE'.format('tests'))
-    test_module(ctx, module=['tests'])
+    test_module(ctx)
 
 @task
 def test_travis_android(ctx, numprocesses=None):
@@ -115,7 +115,7 @@ def test_travis_android(ctx, numprocesses=None):
     """
     flake(ctx)
     print('Testing modules in "{}" in android'.format('tests'))
-    test_module(ctx, module=['tests'])
+    test_module(ctx)
 
 @task
 def test_travis_ios(ctx, numprocesses=None):
@@ -124,4 +124,13 @@ def test_travis_ios(ctx, numprocesses=None):
     """
     flake(ctx)
     print('Testing modules in "{}" on ios'.format('tests'))
-    test_module(ctx, module=['tests'])
+    test_module(ctx)
+
+@task
+def test_travis_on_prod(ctx, numprocesses=None):
+    """
+    Runs targeted prod smoke tests on the latest Chrome
+    """
+    flake(ctx)
+    print('Testing modules in "{}" in Chrome'.format('tests'))
+    test_module(ctx, module=['-m','smoke_test'])
