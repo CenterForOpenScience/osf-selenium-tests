@@ -28,13 +28,20 @@ class TestProjectDetailPage:
         project_page.title_input.clear()
         project_page.title_input.send_keys(new_title)
         project_page.title_edit_submit_button.click()
+        project_page.verify()  # Wait for the page to reload
         assert project_page.title.text == new_title
 
     @markers.smoke_test
     @markers.core_functionality
     def test_file_widget_loads(self, project_page_with_file):
         # Check the uploaded file shows up in the files widget
+        project_page_with_file.file_widget.loading_indicator.here_then_gone()
         assert project_page_with_file.file_widget.component_and_file_titles[3]
+
+    @markers.core_functionality
+    def test_log_widget_loads(self, project_page):
+        project_page.log_widget.loading_indicator.here_then_gone()
+        assert project_page.log_widget.log_items
 
     @markers.core_functionality
     def test_is_private(self, driver, project_page):

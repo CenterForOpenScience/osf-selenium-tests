@@ -2,7 +2,7 @@ import settings
 
 from selenium.webdriver.common.by import By
 
-from components.project import FileWidget
+from components.project import FileWidget, LogWidget
 from pages.base import GuidBasePage, OSFBasePage
 from base.locators import Locator, ComponentLocator
 
@@ -20,6 +20,7 @@ class ProjectPage(GuidBasePage):
 
     # Components
     file_widget = ComponentLocator(FileWidget)
+    log_widget = ComponentLocator(LogWidget)
 
 
 class MyProjectsPage(OSFBasePage):
