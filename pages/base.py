@@ -17,6 +17,7 @@ class BasePage(BaseElement):
 
     def __init__(self, driver, verify=False):
         super().__init__(driver)
+
         if verify:
             self.check_page()
 
@@ -75,10 +76,7 @@ class OSFBasePage(BasePage):
     navbar = ComponentLocator(HomeNavbar)
 
     def __init__(self, driver, verify=False):
-        super().__init__(driver)
-
-        if verify:
-            self.check_page()
+        super().__init__(driver, verify)
 
     @property
     def error_heading(self):
@@ -105,15 +103,13 @@ class OSFBasePage(BasePage):
 
 
 class GuidBasePage(OSFBasePage):
-    base_url = urllib.parse.urljoin(settings.OSF_HOME, '{guid}')
 
-    def __init__(self, driver, verify=False, guid=''):
+    def __init__(self, driver, verify=False, guid='', domain=settings.OSF_HOME):
         super().__init__(driver, verify)
+        self.domain = domain
         self.guid = guid
 
     @property
     def url(self):
-        if '{guid}' in self.base_url:
-            return self.base_url.format(guid=self.guid)
-        else:
-            raise ValueError('No space in base_url for GUID specified.')
+        base_url = urllib.parse.urljoin(self.domain, '{guid}')
+        return base_url.format(guid=self.guid)

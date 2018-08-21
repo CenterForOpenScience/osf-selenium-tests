@@ -82,3 +82,11 @@ def upload_fake_file(session, node, name='osf selenium test file for testing bec
     session.put(url='{}/v1/resources/{}/providers/osfstorage/'.format(settings.FILE_DOMAIN, node.id),
                     query_parameters={'kind': 'file', 'name': name}, raw_body={})
     return name
+
+def get_providers_list(session=None, type='preprints'):
+    """Return the providers list data. The default is the preprint providers list.
+    """
+    if not session:
+        session = client.Session(api_base_url=settings.API_DOMAIN)
+    url = '/v2/providers/' + type
+    return session.get(url)['data']
