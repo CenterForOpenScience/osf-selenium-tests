@@ -1,5 +1,7 @@
+import pytest
 import settings
 
+from urllib.parse import urljoin
 from selenium.webdriver.common.by import By
 
 from base.locators import Locator, ComponentLocator, GroupLocator
@@ -8,19 +10,49 @@ from pages.base import OSFBasePage, GuidBasePage
 
 
 class BasePreprintPage(OSFBasePage):
-        navbar = ComponentLocator(PreprintsNavbar)
+    """The base page from which all preprint pages inherit.
+    """
+    base_url = settings.OSF_HOME + '/preprints/'
+    url_addition = ''
+    navbar = ComponentLocator(PreprintsNavbar)
+
+    def __init__(self, driver, verify=False, provider=None):
+        self.provider = provider
+        if provider:
+            self.provider_id = provider['id']
+            self.provider_name = provider['attributes']['name']
+            self.provider_domain = provider['attributes']['domain']
+
+        super().__init__(driver, verify)
+
+    @property
+    def url(self):
+        """Set the URL based on the provider domain.
+        """
+        if self.provider and self.provider_id != 'osf':
+            if self.provider['attributes']['domain_redirect_enabled']:
+                return urljoin(self.provider_domain, self.url_addition)
+            else:
+                return urljoin(self.base_url, self.provider_id) + '/' + self.url_addition
+        return self.base_url + self.url_addition
+
+    def verify(self):
+        """Return true if you are on the expected page.
+        Checks both the general page identity and the branding.
+        """
+        if self.provider and self.provider_id != 'osf':
+            return super().verify() and self.provider_name in self.navbar.title.text
+        return super().verify()
 
 
 class PreprintLandingPage(BasePreprintPage):
-    url = settings.OSF_HOME + '/preprints/'
-
     identity = Locator(By.CSS_SELECTOR, '.ember-application .preprint-header', settings.LONG_TIMEOUT)
     add_preprint_button = Locator(By.CLASS_NAME, 'preprint-submit-button', settings.LONG_TIMEOUT)
     search_button = Locator(By.CSS_SELECTOR, '.preprint-search .btn-default')
 
 
 class PreprintSubmitPage(BasePreprintPage):
-    url = settings.OSF_HOME + '/preprints/submit/'
+    url_addition = 'submit'
 
     identity = Locator(By.CLASS_NAME, 'preprint-submit-header')
     select_a_service_save_button = Locator(By.CSS_SELECTOR, '#preprint-form-server button.btn.btn-primary')
@@ -52,18 +84,17 @@ class PreprintSubmitPage(BasePreprintPage):
     modal_create_preprint_button = Locator(By.CSS_SELECTOR, '.modal-footer button.btn-success:nth-child(2)', settings.LONG_TIMEOUT)
 
 
+@pytest.mark.usefixtures('must_be_logged_in')
 class PreprintDiscoverPage(BasePreprintPage):
-    url = settings.OSF_HOME + '/preprints/discover/'
+    url_addition = 'discover'
 
     identity = Locator(By.ID, 'share-logo')
-
     loading_indicator = Locator(By.CSS_SELECTOR, '.ball-scale')
 
     # Group Locators
-    search_results = GroupLocator(By.CSS_SELECTOR, '.search-result')
+    search_results = GroupLocator(By.CSS_SELECTOR, '.search-result h4 > a')
 
 
 class PreprintDetailPage(GuidBasePage, BasePreprintPage):
-
     identity = Locator(By.ID, 'preprintTitle')
     title = Locator(By.ID, 'preprintTitle')

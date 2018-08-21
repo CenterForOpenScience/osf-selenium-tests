@@ -39,6 +39,7 @@ class AbstractLegacyEmberNavbar(Navbar):
 
 
 class PreprintsNavbar(AbstractLegacyEmberNavbar):
+    title = Locator(By.CSS_SELECTOR, '.navbar-title')
     add_a_preprint_link = Locator(By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-child(5) > a')
 
     def verify(self):

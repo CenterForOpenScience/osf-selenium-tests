@@ -1,5 +1,8 @@
 import pytest
 import markers
+import settings
+
+from api import osf_api
 
 from pages.preprints import (
     PreprintLandingPage,
@@ -55,3 +58,48 @@ class TestPreprintWorkflow:
         discover_page = PreprintDiscoverPage(driver, verify=True)
         discover_page.loading_indicator.here_then_gone()
         assert len(discover_page.search_results) > 0
+
+
+@pytest.fixture(scope='session')
+def providers():
+    """Return all preprint providers.
+    """
+    return osf_api.get_providers_list()
+
+@pytest.fixture(scope='session')
+def custom_providers():
+    """Return the API data of the OSF preprint provider and all preprint providers with custom domains.
+    """
+    providers = osf_api.get_providers_list()
+    return [provider for provider in providers if provider['attributes']['domain_redirect_enabled'] or provider['id'] == 'osf']
+
+
+class TestBrandedProviders:
+
+    @pytest.fixture(params=custom_providers(), ids=[prov['id'] for prov in custom_providers()])
+    def provider(self, request):
+        return request.param
+
+    def test_landing_page_loads(self, driver, provider):
+        PreprintLandingPage(driver, provider=provider).goto()
+
+    def test_discover_page_loads(self, driver, provider):
+        PreprintDiscoverPage(driver, provider=provider).goto()
+
+    @pytest.mark.usefixtures('must_be_logged_in')
+    def test_submit_page_loads(self, driver, provider):
+        PreprintSubmitPage(driver, provider=provider).goto()
+
+    @markers.smoke_test
+    @markers.core_functionality
+    @pytest.mark.skipif(settings.STAGE1 or settings.STAGE2 or settings.STAGE3, reason='Cannot test on stagings as they share SHARE')
+    def test_detail_page(self, driver, provider):
+        """Test a preprint detail page by grabbing the first search result from the discover page.
+        """
+        discover_page = PreprintDiscoverPage(driver, provider=provider)
+        discover_page.goto()
+        discover_page.loading_indicator.here_then_gone()
+        search_results = discover_page.search_results
+        assert search_results
+        search_results[0].click()
+        PreprintDetailPage(driver, verify=True)
