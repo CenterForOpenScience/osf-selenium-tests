@@ -98,6 +98,7 @@ class TestBrandedProviders:
         """
         discover_page = PreprintDiscoverPage(driver, provider=provider)
         discover_page.goto()
+        discover_page.reload()  # In IE, sometimes search results don't appear without refresh
         discover_page.loading_indicator.here_then_gone()
         search_results = discover_page.search_results
         assert search_results
