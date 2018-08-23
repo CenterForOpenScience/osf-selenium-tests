@@ -92,13 +92,13 @@ class TestBrandedProviders:
 
     @markers.smoke_test
     @markers.core_functionality
+    @pytest.mark.skipif(settings.TEST_BUILD == 'msie', reason='Sometimes IE discover page yields no results, see IN-438')
     @pytest.mark.skipif(settings.STAGE1 or settings.STAGE2 or settings.STAGE3, reason='Cannot test on stagings as they share SHARE')
     def test_detail_page(self, driver, provider):
         """Test a preprint detail page by grabbing the first search result from the discover page.
         """
         discover_page = PreprintDiscoverPage(driver, provider=provider)
         discover_page.goto()
-        discover_page.reload()  # In IE, sometimes search results don't appear without refresh
         discover_page.loading_indicator.here_then_gone()
         search_results = discover_page.search_results
         assert search_results
