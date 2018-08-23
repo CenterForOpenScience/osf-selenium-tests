@@ -69,6 +69,8 @@ caps = {
                'safari.options': {'technologyPreview': 'true'}}
 }
 
+BUILD = DRIVER
+
 if DRIVER == 'Remote':
     BSTACK_USER = env('BSTACK_USER')
     BSTACK_KEY = env('BSTACK_KEY')
