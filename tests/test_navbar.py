@@ -1,4 +1,5 @@
 import pytest
+import markers
 
 from pages.login import login
 from pages.cos import COSDonatePage
@@ -85,14 +86,22 @@ class TestOSFHomeNavbar(NavbarTestLoggedOut):
         page.goto()
         return page
 
+    @markers.smoke_test
+    @markers.core_functionality
     def test_my_projects_link_not_present(self, page):
+        """Used as a core test to make sure the landing page loads.
+        """
         assert page.navbar.my_projects_link.absent()
 
     def test_search_link(self, driver, page):
         page.navbar.search_link.click()
         assert SearchPage(driver, verify=True)
 
+    @markers.smoke_test
+    @markers.core_functionality
     def test_support_link(self, page, driver):
+        """Used as a core test to make sure the support page loads.
+        """
         page.navbar.support_link.click()
         assert SupportPage(driver, verify=True)
 
