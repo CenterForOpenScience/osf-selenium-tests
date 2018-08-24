@@ -1,5 +1,9 @@
 import settings
+
 from pythosf import client
+
+def get_default_session():
+    return client.Session(api_base_url=settings.API_DOMAIN, auth=(settings.USER_ONE, settings.USER_ONE_PASSWORD))
 
 def create_project(session, title='osf selenium test', tags=['qatest']):
     """Create a project for your current user through the OSF api.
@@ -11,13 +15,15 @@ def create_project(session, title='osf selenium test', tags=['qatest']):
     node.create(title=title, tags=tags)
     return node
 
-def current_user(session):
+def current_user(session=None):
+    if not session:
+        session = get_default_session()
     user = client.User(session=session)
     user.get()
     return user
 
-def get_preferred_node(session):
-    return client.Node(session=session, id=settings.PREFERRED_NODE)
+def get_node(session, node_id=settings.PREFERRED_NODE):
+    return client.Node(session=session, id=node_id)
 
 def get_user_institutions(session, user=None):
     if not user:
@@ -28,6 +34,19 @@ def get_user_institutions(session, user=None):
     for institution in data['data']:
         institutions.append(institution['attributes']['name'])
     return institutions
+
+def upload_single_quickfile(session):
+    """Upload a file to the current user's quickfiles if one is not already uploaded.
+    Return the name of the file or none if one wasn't uploaded.
+
+    Note: Currently using v2.0 of the API. Certain lines will need to be changed on update.
+    TODO: Make this more general.
+    """
+    user = current_user(session)
+    quickfiles_url = user.relationships.quickfiles['links']['related']['href']
+    if session.get(quickfiles_url)['links']['meta']['total'] < 1:
+        upload_url = user.relationships.quickfiles['links']['upload']['href']
+        return upload_fake_file(session, upload_url=upload_url)
 
 def get_all_institutions(session):
     url = '/v2/institutions/'
@@ -74,19 +93,23 @@ def get_existing_file(session, node_id=settings.PREFERRED_NODE):
     else:
         return upload_fake_file(session, node)
 
-def upload_fake_file(session, node, name='osf selenium test file for testing because its fake.txt'):
+def upload_fake_file(session, node=None, name='osf selenium test file for testing because its fake.txt', upload_url=None):
     """Upload an almost empty file to the given node. Return the file's name.
 
     Note: The default file has a very long name because it makes it easier to click a link to it.
     """
-    session.put(url='{}/v1/resources/{}/providers/osfstorage/'.format(settings.FILE_DOMAIN, node.id),
-                    query_parameters={'kind': 'file', 'name': name}, raw_body={})
+    if not upload_url:
+        if not node:
+            raise TypeError('Node must not be none when upload URL is not set.')
+        upload_url = '{}/v1/resources/{}/providers/osfstorage/'.format(settings.FILE_DOMAIN, node.id)
+
+    session.put(url=upload_url, query_parameters={'kind': 'file', 'name': name}, raw_body={})
     return name
 
 def get_providers_list(session=None, type='preprints'):
     """Return the providers list data. The default is the preprint providers list.
     """
     if not session:
-        session = client.Session(api_base_url=settings.API_DOMAIN)
+        session = get_default_session()
     url = '/v2/providers/' + type
     return session.get(url)['data']
