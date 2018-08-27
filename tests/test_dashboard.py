@@ -15,7 +15,7 @@ def dashboard_page(driver, must_be_logged_in):
     return dashboard_page
 
 
-class TestMainPage:
+class TestDashboardPage:
 
     @markers.dont_run_on_prod
     @markers.core_functionality

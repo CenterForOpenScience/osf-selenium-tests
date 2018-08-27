@@ -66,6 +66,8 @@ VERY_LONG_TIMEOUT = env.int('VERY_LONG_TIMEOUT', 60)
 
 DOMAIN = env('DOMAIN', 'stage1')
 
+NEW_USER_EMAIL = env('NEW_USER_EMAIL')
+
 # Preferred node must be set to run tests on production
 PREFERRED_NODE = env('PREFERRED_NODE', None)
 if DOMAIN == 'prod':

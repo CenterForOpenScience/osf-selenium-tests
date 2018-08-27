@@ -10,6 +10,14 @@ from base.locators import Locator, ComponentLocator
 class LandingPage(OSFBasePage):
     identity = Locator(By.ID, 'home-hero', settings.LONG_TIMEOUT)
 
+    name_input = Locator(By.CSS_SELECTOR, '#fullName')
+    email_one_input = Locator(By.CSS_SELECTOR, '#email1')
+    email_two_input = Locator(By.CSS_SELECTOR, '#email2')
+    password_input = Locator(By.CSS_SELECTOR, '#password')
+    terms_of_service_checkbox = Locator(By.CSS_SELECTOR, '#acceptedTermsOfService')
+    sign_up_button = Locator(By.CSS_SELECTOR, '._SignUpForm_3ntsx4 .btn-success')
+    registration_success = Locator(By.CSS_SELECTOR, '.ext-success', settings.LONG_TIMEOUT)
+
     # Components
     navbar = ComponentLocator(EmberNavbar)
 
