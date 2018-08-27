@@ -1,12 +1,13 @@
 import pytest
 import markers
 
-from pages.login import login
+from pages.login import LoginPage, login
 from pages.cos import COSDonatePage
 from pages.search import SearchPage
 from pages.landing import LandingPage
 from pages.support import SupportPage
 from pages.meetings import MeetingsPage
+from pages.register import RegisterPage
 from pages.project import MyProjectsPage
 from pages.dashboard import DashboardPage
 from pages.registries import RegistriesPage
@@ -42,7 +43,7 @@ class NavbarTestLoggedOut:
 
     def test_sign_up_button(self, driver, page):
         page.navbar.sign_up_button.click()
-        assert 'register' in driver.current_url
+        RegisterPage(driver, verify=True)
 
     def test_user_dropdown_not_present(self, page):
         assert page.navbar.user_dropdown.absent()
@@ -74,6 +75,7 @@ class NavbarTestLoggedIn:
     def test_logout_link(self, driver, page):
         page.navbar.user_dropdown.click()
         page.navbar.logout_link.click()
+        LandingPage(driver, verify=True)
         assert 'goodbye' in driver.current_url
         login(driver)
 
@@ -111,7 +113,7 @@ class TestOSFHomeNavbar(NavbarTestLoggedOut):
 
     def test_sign_in_button(self, page, driver):
         page.navbar.sign_in_button.click()
-        assert 'login' in driver.current_url
+        LoginPage(driver, verify=True)
 
 
 class TestOSFHomeNavbarLoggedIn(NavbarTestLoggedIn):
