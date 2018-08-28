@@ -1,7 +1,6 @@
 from selenium.webdriver.common.by import By
 
 import settings
-from time import sleep
 from base.exceptions import LoginError
 from base.locators import Locator
 from pages.base import BasePage, OSFBasePage
@@ -38,8 +37,6 @@ class LoginPage(BasePage):
 def login(driver, user=settings.USER_ONE, password=settings.USER_ONE_PASSWORD):
     login_page = LoginPage(driver)
     login_page.goto()
-    if settings.DRIVER == 'Remote' and settings.DESIRED_CAP['browser'] == 'IE':
-        sleep(.5)
     login_page.submit_login(user, password)
 
 def safe_login(driver):

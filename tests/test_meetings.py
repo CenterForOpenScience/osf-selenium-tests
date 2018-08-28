@@ -34,8 +34,7 @@ class TestMeetingsPage:
     def test_filtering(self, meetings_page):
         default_top_result = meetings_page.top_meeting_link.text
         meetings_page.filter_input.clear()
-        meetings_page.filter_input.send_keys('e')
-        meetings_page.filter_input.send_keys('a')  # TODO: Remove this, hack to make IE work
+        meetings_page.filter_input.send_keys('ea')
         filtered_top_result = meetings_page.top_meeting_link.text
         assert default_top_result != filtered_top_result
 
