@@ -96,5 +96,6 @@ class PreprintDiscoverPage(BasePreprintPage):
 
 
 class PreprintDetailPage(GuidBasePage, BasePreprintPage):
+    url_base = urljoin(settings.OSF_HOME, '{guid}')
     identity = Locator(By.ID, 'preprintTitle')
     title = Locator(By.ID, 'preprintTitle')

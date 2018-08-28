@@ -15,7 +15,7 @@ def session():
 
 @pytest.fixture(scope='session', autouse=True)
 def check_credentials(session):
-    # This only checks if your API key is correct, not if you can log in
+    # TODO: Add future check for USER_TWO
     try:
         osf_api.current_user(session)
     except Exception:
@@ -54,6 +54,10 @@ def must_be_logged_in(driver):
     login(driver)
 
 @pytest.fixture(scope='class')
+def must_be_logged_in_as_user_two(driver):
+    login(driver, user=settings.USER_TWO, password=settings.USER_TWO_PASSWORD)
+
+@pytest.fixture(scope='class')
 def delete_user_projects_at_setup(session):
     osf_api.delete_all_user_projects(session=session)
 
@@ -63,7 +67,7 @@ def default_project(session):
      If PREFERRED_NODE is set, returns the APIDetail of preferred node.
      """
     if settings.PREFERRED_NODE:
-        yield osf_api.get_preferred_node(session)
+        yield osf_api.get_node(session)
     else:
         project = osf_api.create_project(session, title='OSF Test Project', tags=['qatest'])
         yield project
