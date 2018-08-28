@@ -69,9 +69,17 @@ def default_project(session):
     if settings.PREFERRED_NODE:
         yield osf_api.get_node(session)
     else:
-        project = osf_api.create_project(session, title='OSF Test Project', tags=['qatest'])
+        project = osf_api.create_project(session, title='OSF Test Project')
         yield project
         project.delete()
+
+@pytest.fixture
+def public_project(session):
+    if settings.PRODUCTION:
+        raise ValueError('You should not create public projects on production!')
+    project = osf_api.create_project(session, title='OSF Test Project', public=True)
+    yield project
+    project.delete()
 
 @pytest.fixture
 def project_with_file(session, default_project):
