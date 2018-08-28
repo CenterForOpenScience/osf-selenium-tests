@@ -23,7 +23,7 @@ class BaseDashboardPage(OSFBasePage):
         return []
 
 
-class EmberDashboardPage(BaseDashboardPage):
+class DashboardPage(BaseDashboardPage):
     url = settings.OSF_HOME + '/dashboard/'
 
     identity = Locator(By.CSS_SELECTOR, '._institutions-panel_1b28t4', settings.LONG_TIMEOUT)
@@ -44,8 +44,8 @@ class EmberDashboardPage(BaseDashboardPage):
     project_list = ComponentLocator(components.EmberProjectList)
 
 
-class DashboardPage(BaseDashboardPage):
-    waffle_override = {'ember_home_page': EmberDashboardPage}
+class LegacyDashboardPage(BaseDashboardPage):
+    waffle_override = {'ember_home_page': DashboardPage}
 
     identity = Locator(By.CSS_SELECTOR, '#osfHome > div.prereg-banner', settings.LONG_TIMEOUT)
     create_project_button = Locator(By.CSS_SELECTOR, 'button.btn-success:nth-child(1)', settings.LONG_TIMEOUT)
