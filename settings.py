@@ -49,6 +49,23 @@ PREFERRED_NODE = env('PREFERRED_NODE', None)
 if DOMAIN == 'prod':
     PREFERRED_NODE = env('PREFERRED_NODE')
 
+EXPECTED_PROVIDERS = env.list(
+    'EXPECTED_PROVIDERS',
+    [
+        # 'bitbucket',
+        'box',
+        'dataverse',
+        'dropbox',
+        'figshare',
+        'github',
+        'gitlab',
+        'googledrive',
+        'osfstorage',
+        # 'owncloud',
+        'onedrive',
+        's3'
+    ])
+
 OSF_HOME = domains[DOMAIN]['home']
 API_DOMAIN = domains[DOMAIN]['api']
 FILE_DOMAIN = domains[DOMAIN]['files']

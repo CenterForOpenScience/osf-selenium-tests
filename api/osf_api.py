@@ -70,6 +70,16 @@ def delete_all_user_projects(session, user=None):
             n.get()
             n.delete()
 
+def get_node_addons(session, node_id):
+    """Return a list of the names of all the addons connected to the given node.
+    """
+    url = '/v2/nodes/{}/files/'.format(node_id)
+    data = session.get(url)
+    providers = []
+    for provider in data['data']:
+        providers.append(provider['attributes']['provider'])
+    return providers
+
 def waffled_pages(session):
     waffle_list = []
     url = '/v2/_waffle/'
