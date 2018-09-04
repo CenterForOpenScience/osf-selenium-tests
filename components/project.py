@@ -1,9 +1,11 @@
+import settings
+
 from selenium.webdriver.common.by import By
 from base.locators import Locator, GroupLocator, BaseElement
 
 
 class FileWidget(BaseElement):
-    loading_indicator = Locator(By.CSS_SELECTOR, '.ball-scale')
+    loading_indicator = Locator(By.CSS_SELECTOR, '#treeGrid .ball-scale', settings.LONG_TIMEOUT)
     file_expander = Locator(By.CSS_SELECTOR, '.fa-plus')
     filter_button = Locator(By.CSS_SELECTOR, '.fangorn-toolbar-icon .fa-search')
     filter_input = Locator(By.CSS_SELECTOR, '#folderRow .form-control')

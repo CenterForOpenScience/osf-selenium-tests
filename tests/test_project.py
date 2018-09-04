@@ -58,7 +58,6 @@ class TestProjectDetailPage:
         project_page.goto()
         login(driver)
 
-    @markers.smoke_test
     @markers.core_functionality
     def test_file_widget_loads(self, project_page_with_file):
         # Check the uploaded file shows up in the files widget
