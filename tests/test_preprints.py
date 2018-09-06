@@ -68,10 +68,10 @@ def providers():
 
 @pytest.fixture(scope='session')
 def custom_providers():
-    """Return the API data of the OSF preprint provider and all preprint providers with custom domains.
+    """Return the API data of all preprint providers with custom domains.
     """
     providers = osf_api.get_providers_list()
-    return [provider for provider in providers if provider['attributes']['domain_redirect_enabled'] or provider['id'] == 'osf']
+    return [provider for provider in providers if provider['attributes']['domain_redirect_enabled']]
 
 
 class TestBrandedProviders:
