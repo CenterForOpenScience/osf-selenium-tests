@@ -11,7 +11,7 @@ from pages.register import RegisterPage
 from pages.project import MyProjectsPage
 from pages.dashboard import DashboardPage
 from pages.registries import RegistriesPage
-from pages.user import UserProfilePage, UserSettingsPage
+from pages.user import UserProfilePage, ProfileInformationPage
 from pages.preprints import PreprintLandingPage, PreprintSubmitPage
 
 
@@ -64,7 +64,7 @@ class NavbarTestLoggedIn:
     def test_user_profile_menu_settings_link(self, driver, page):
         page.navbar.user_dropdown.click()
         page.navbar.user_dropdown_settings.click()
-        assert UserSettingsPage(driver, verify=True)
+        assert ProfileInformationPage(driver, verify=True)
 
     def test_sign_in_button_not_present(self, page):
         assert page.navbar.sign_in_button.absent()

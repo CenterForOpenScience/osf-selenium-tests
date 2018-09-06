@@ -3,7 +3,7 @@ import markers
 import settings
 
 from api import osf_api
-from pages.user import UserProfilePage
+from pages import user
 
 @pytest.fixture()
 def quickfile(session):
@@ -11,7 +11,7 @@ def quickfile(session):
 
 @pytest.fixture
 def user_one_profile_page(driver):
-    profile_page = UserProfilePage(driver)
+    profile_page = user.UserProfilePage(driver)
     return profile_page
 
 
@@ -57,3 +57,36 @@ class TestProfileAsDifferentUser(ProfilePage):
     def profile_page(self, user_one_profile_page, must_be_logged_in_as_user_two):
         user_one_profile_page.goto()
         return user_one_profile_page
+
+@pytest.mark.usefixtures('must_be_logged_in')
+class TestUserSettings:
+
+    @pytest.fixture(params=[user.ProfileInformationPage, user.AccountSettingsPage, user.ConfigureAddonsPage, user.NotificationsPage, user.DeveloperAppsPage, user.PersonalAccessTokenPage])
+    def settings_page(self, request, driver):
+        """Run any test using this fixture with each user settings page individually.
+        """
+        settings_page = request.param(driver)
+        return settings_page
+
+    @pytest.fixture()
+    def profile_settings_page(self, driver):
+        profile_settings_page = user.ProfileInformationPage(driver)
+        profile_settings_page.goto()
+        return profile_settings_page
+
+    @markers.core_functionality
+    def test_user_settings_loads(self, settings_page):
+        """Confirm the given user settings page loads.
+        """
+        settings_page.goto()
+
+    @markers.core_functionality
+    def test_change_middle_name(self, profile_settings_page, fake):
+        new_name = fake.name()
+        assert profile_settings_page.middle_name_input.get_attribute('value') != new_name
+        profile_settings_page.middle_name_input.clear()
+        profile_settings_page.middle_name_input.send_keys(new_name)
+        profile_settings_page.save_button.click()
+        profile_settings_page.update_success.present()
+        profile_settings_page.reload()
+        assert profile_settings_page.middle_name_input.get_attribute('value') == new_name

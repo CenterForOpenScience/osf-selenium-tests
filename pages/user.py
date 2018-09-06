@@ -3,8 +3,9 @@ import settings
 from api import osf_api
 from selenium.webdriver.common.by import By
 
-from base.locators import Locator, GroupLocator
+from base.locators import Locator, GroupLocator, ComponentLocator
 from pages.base import GuidBasePage, OSFBasePage
+from components.user import SettingsSideNavigation
 
 
 class UserProfilePage(GuidBasePage):
@@ -28,7 +29,43 @@ class UserProfilePage(GuidBasePage):
     quickfiles = GroupLocator(By.CSS_SELECTOR, '#quickFiles .list-group-item')
 
 
-class UserSettingsPage(OSFBasePage):
+class BaseUserSettingsPage(OSFBasePage):
     url = settings.OSF_HOME + '/settings/'
 
     identity = Locator(By.ID, 'profileSettings')
+
+    # Components
+    side_navigation = ComponentLocator(SettingsSideNavigation)
+
+class ProfileInformationPage(BaseUserSettingsPage):
+    url = settings.OSF_HOME + '/settings/'
+
+    identity = Locator(By.CSS_SELECTOR, '#profileSettings')
+    middle_name_input = Locator(By.CSS_SELECTOR, '#names > div > form > div:nth-child(5) > input')
+    save_button = Locator(By.CSS_SELECTOR, '#names > div > form > div.p-t-lg.p-b-lg > button.btn.btn-success')
+    update_success = Locator(By.CSS_SELECTOR, '.text-success')
+
+class AccountSettingsPage(BaseUserSettingsPage):
+    url = settings.OSF_HOME + '/settings/account/'
+
+    identity = Locator(By.CSS_SELECTOR, '#connectedEmails')
+
+class ConfigureAddonsPage(BaseUserSettingsPage):
+    url = settings.OSF_HOME + '/settings/addons/'
+
+    identity = Locator(By.CSS_SELECTOR, '#configureAddons')
+
+class NotificationsPage(BaseUserSettingsPage):
+    url = settings.OSF_HOME + '/settings/notifications/'
+
+    identity = Locator(By.CSS_SELECTOR, '#notificationSettings')
+
+class DeveloperAppsPage(BaseUserSettingsPage):
+    url = settings.OSF_HOME + '/settings/applications/'
+
+    identity = Locator(By.CSS_SELECTOR, '#applicationListPage')
+
+class PersonalAccessTokenPage(BaseUserSettingsPage):
+    url = settings.OSF_HOME + '/settings/tokens/'
+
+    identity = Locator(By.CSS_SELECTOR, '#personalTokenListPage')
