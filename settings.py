@@ -41,6 +41,7 @@ HEADLESS = env.bool('HEADLESS', False)
 QUICK_TIMEOUT = env.int('QUICK_TIMEOUT', 4)
 TIMEOUT = env.int('TIMEOUT', 10)
 LONG_TIMEOUT = env.int('LONG_TIMEOUT', 30)
+VERY_LONG_TIMEOUT = env.int('VERY_LONG_TIMEOUT', 60)
 
 DOMAIN = env('DOMAIN', 'stage1')
 

@@ -43,13 +43,13 @@ class WebElementWrapper:
         except ValueError:
             return False
 
-    def absent(self, timeout=settings.QUICK_TIMEOUT):
+    def absent(self):
         """Wait for an element to not be visible on page.
 
         :return: True if element disappears. False if timeout.
         """
         try:
-            WebDriverWait(self.driver, timeout).until(
+            WebDriverWait(self.driver, self.locator.timeout).until(
                 EC.invisibility_of_element_located(self.locator.location)
             )
             return True

@@ -5,7 +5,7 @@ from base.locators import Locator, GroupLocator, BaseElement
 
 
 class FileWidget(BaseElement):
-    loading_indicator = Locator(By.CSS_SELECTOR, '#treeGrid .ball-scale', settings.LONG_TIMEOUT)
+    loading_indicator = Locator(By.CSS_SELECTOR, '#treeGrid .ball-scale', settings.VERY_LONG_TIMEOUT)
     file_expander = Locator(By.CSS_SELECTOR, '.fa-plus')
     filter_button = Locator(By.CSS_SELECTOR, '.fangorn-toolbar-icon .fa-search')
     filter_input = Locator(By.CSS_SELECTOR, '#folderRow .form-control')
