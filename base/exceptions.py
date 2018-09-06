@@ -3,12 +3,10 @@ class PageException(Exception):
 
 
 class HttpError(PageException):
-    def __init__(self, driver, code=None):
-        self.driver = driver
-        self.code = int(code)
+    pass
 
 
 class LoginError(PageException):
-    def __init__(self, driver, error_info=None):
-        self.driver = driver
-        self.error_info = error_info
+    """Error used when driver is in an unexpected login state.
+    """
+    pass
