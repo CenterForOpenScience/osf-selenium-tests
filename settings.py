@@ -7,31 +7,52 @@ domains = {
         'home': 'https://staging.osf.io',
         'api': 'https://api.staging.osf.io',
         'files': 'https://files.us.staging.osf.io',
-        'cas': 'https://accounts.staging.osf.io'
+        'cas': 'https://accounts.staging.osf.io',
+        'custom_institution_domains': ['https://staging-osf-nd.cos.io'],
     },
     'stage2': {
         'home': 'https://staging2.osf.io',
         'api': 'https://api.staging2.osf.io',
         'files': 'https://files.us.staging2.osf.io',
-        'cas': 'https://accounts.staging2.osf.io'
+        'cas': 'https://accounts.staging2.osf.io',
+        'custom_institution_domains': [],
     },
     'stage3': {
         'home': 'https://staging3.osf.io',
         'api': 'https://api.staging3.osf.io',
         'files': 'https://files.us.staging3.osf.io',
-        'cas': 'https://accounts.staging3.osf.io'
+        'cas': 'https://accounts.staging3.osf.io',
+        'custom_institution_domains': [],
     },
     'test': {
         'home': 'https://test.osf.io',
         'api': 'https://api.test.osf.io',
         'files': 'https://files.us.test.osf.io',
-        'cas': 'https://accounts.test.osf.io'
+        'cas': 'https://accounts.test.osf.io',
+        'custom_institution_domains': [],
     },
     'prod': {
         'home': 'https://osf.io',
         'api': 'https://api.osf.io',
         'files': 'https://files.osf.io',
-        'cas': 'https://accounts.osf.io'
+        'cas': 'https://accounts.osf.io',
+        'custom_institution_domains': [
+            'https://open.uwstout.edu',
+            'https://osf.arizona.edu',
+            'https://osf.asu.edu',
+            'https://osf.fsu.edu',
+            'https://osf.jmu.edu',
+            'https://osf.nd.edu',
+            'https://osf.nyu.edu',
+            'https://osf.sc.edu',
+            'https://osf.uc.edu',
+            'https://osf.usc.edu',
+            'https://osf.ucla.edu',
+            'https://osf.ucr.edu',
+            'https://osf.wustl.edu',
+            'https://osf.research.vcu.edu',
+            'https://research.mindandlife.org'
+        ]
     }
 }
 
@@ -71,6 +92,7 @@ OSF_HOME = domains[DOMAIN]['home']
 API_DOMAIN = domains[DOMAIN]['api']
 FILE_DOMAIN = domains[DOMAIN]['files']
 CAS_DOMAIN = domains[DOMAIN]['cas']
+CUSTOM_INSTITUTION_DOMAINS = domains[DOMAIN]['custom_institution_domains']
 
 # Browser capabilities for browserstack testing
 caps = {
