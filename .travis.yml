@@ -39,7 +39,5 @@ jobs:
       env: TEST_BUILD="firefox"
     - if: branch != master
       env: TEST_BUILD="edge"
-    - if: branch != master
-      env: TEST_BUILD="msie"
 script:
   - invoke test_travis_$TEST_BUILD
