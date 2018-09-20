@@ -67,6 +67,10 @@ class BasePage(BaseElement):
         ActionChains(self.driver).drag_and_drop(source_element, dest_element).perform()
         # Note: If you close the browser too quickly, the drag/drop may not go through
 
+    def click_recaptcha(self):
+        self.driver.switch_to.frame(self.driver.find_element_by_tag_name('iframe'))
+        self.driver.find_element_by_css_selector('.recaptcha-checkbox-checkmark').click()
+        self.driver.switch_to.default_content()
 
 class OSFBasePage(BasePage):
     """

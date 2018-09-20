@@ -13,10 +13,10 @@ def landing_page(driver):
 
 class TestLandingPage:
 
-    @pytest.mark.skip(reason='These tests will not work until the new sign up page comes out. h/t James!')
     @markers.dont_run_on_prod
+    @pytest.mark.skipif(settings.TEST, reason='There is a real recapcha on test. Robots cannot create users there.')
     @markers.core_functionality
-    def test_create_user(self, driver, landing_page, fake):
+    def test_create_user(self, landing_page, fake):
 
         name = fake.name()
         email = settings.NEW_USER_EMAIL.format(''.join(name.split()))  # Add name with no spaces to end of email
@@ -26,5 +26,6 @@ class TestLandingPage:
         landing_page.email_two_input.send_keys(email)
         landing_page.password_input.send_keys(password)
         landing_page.terms_of_service_checkbox.click()
+        landing_page.click_recaptcha()
         landing_page.sign_up_button.click()
         assert landing_page.registration_success.present()
