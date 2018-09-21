@@ -5,7 +5,7 @@ import settings
 
 from api import osf_api
 from pythosf import client
-from pages.login import logout, login
+from pages.login import logout, safe_login
 from utils import launch_driver
 
 
@@ -51,11 +51,11 @@ def default_logout(driver):
 # TODO: Possibly return to safe_login in the future
 @pytest.fixture(scope='class')
 def must_be_logged_in(driver):
-    login(driver)
+    safe_login(driver)
 
 @pytest.fixture(scope='class')
 def must_be_logged_in_as_user_two(driver):
-    login(driver, user=settings.USER_TWO, password=settings.USER_TWO_PASSWORD)
+    safe_login(driver, user=settings.USER_TWO, password=settings.USER_TWO_PASSWORD)
 
 @pytest.fixture(scope='class')
 def delete_user_projects_at_setup(session):
@@ -69,9 +69,17 @@ def default_project(session):
     if settings.PREFERRED_NODE:
         yield osf_api.get_node(session)
     else:
-        project = osf_api.create_project(session, title='OSF Test Project', tags=['qatest'])
+        project = osf_api.create_project(session, title='OSF Test Project')
         yield project
         project.delete()
+
+@pytest.fixture
+def public_project(session):
+    if settings.PRODUCTION:
+        raise ValueError('You should not create public projects on production!')
+    project = osf_api.create_project(session, title='OSF Test Project', public=True)
+    yield project
+    project.delete()
 
 @pytest.fixture
 def project_with_file(session, default_project):

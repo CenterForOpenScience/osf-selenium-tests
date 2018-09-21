@@ -21,10 +21,7 @@ class LoginPage(BasePage):
 
     def error_handling(self):
         if '/login' not in self.driver.current_url:
-            raise LoginError(
-                driver=self.driver,
-                error_info='Already logged in'
-            )
+            raise LoginError('Already logged in')
 
     def submit_login(self, user, password):
         self.username_input.send_keys(user)
@@ -39,15 +36,14 @@ def login(driver, user=settings.USER_ONE, password=settings.USER_ONE_PASSWORD):
     login_page.goto()
     login_page.submit_login(user, password)
 
-def safe_login(driver):
-    driver.get(settings.OSF_HOME)
-    if OSFBasePage(driver).is_logged_out():
-        login(driver)
+def safe_login(driver, user=settings.USER_ONE, password=settings.USER_ONE_PASSWORD):
+    """Raise a LoginError if login fails.
+    """
+    login(driver, user=user, password=password)
+    if not OSFBasePage(driver).is_logged_in():
+        raise LoginError('Login failed')
 
 def logout(driver):
-    """Log the user put. Also set the cookieconsent cookie so that that cookie banner doesn't show up
-    (as it can obscure other UI elements).
-
-    Note: If we ever want to test that banner will need to stop this cookie from being set.
+    """Log the user out.
     """
     driver.get(settings.OSF_HOME + '/logout/')
