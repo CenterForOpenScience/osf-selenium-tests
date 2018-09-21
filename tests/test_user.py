@@ -15,8 +15,12 @@ def user_one_profile_page(driver):
     return profile_page
 
 
-# Generic class for testing a user profile
-class ProfilePage:
+class ProfilePageMixin:
+    """Mixin used to inject generic tests
+    """
+    @pytest.fixture()
+    def profile_page(self, driver):
+        raise NotImplementedError()
 
     @markers.core_functionality
     def test_nothings_public(self, profile_page):
@@ -35,7 +39,7 @@ class ProfilePage:
         assert profile_page.public_projects
 
 
-class TestProfileLoggedIn(ProfilePage):
+class TestProfileLoggedIn(ProfilePageMixin):
 
     @pytest.fixture()
     def profile_page(self, user_one_profile_page, must_be_logged_in):
@@ -43,7 +47,7 @@ class TestProfileLoggedIn(ProfilePage):
         return user_one_profile_page
 
 
-class TestProfileLoggedOut(ProfilePage):
+class TestProfileLoggedOut(ProfilePageMixin):
 
     @pytest.fixture()
     def profile_page(self, user_one_profile_page):
@@ -51,7 +55,7 @@ class TestProfileLoggedOut(ProfilePage):
         return user_one_profile_page
 
 
-class TestProfileAsDifferentUser(ProfilePage):
+class TestProfileAsDifferentUser(ProfilePageMixin):
 
     @pytest.fixture()
     def profile_page(self, user_one_profile_page, must_be_logged_in_as_user_two):

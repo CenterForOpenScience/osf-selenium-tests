@@ -18,8 +18,12 @@ from pages.preprints import PreprintLandingPage, PreprintSubmitPage
 #TODO: Test Navbar from all services including reviews and such - they might not have the same navbar always
 
 
-# Class used to inject generic tests
-class NavbarTestLoggedOut:
+class NavbarTestLoggedOutMixin:
+    """Mixin used to inject generic tests
+    """
+    @pytest.fixture()
+    def page(self, driver):
+        raise NotImplementedError()
 
     def test_osf_home_dropdown_link(self, page, driver):
         page.navbar.service_dropdown.click()
@@ -49,7 +53,12 @@ class NavbarTestLoggedOut:
         assert page.navbar.user_dropdown.absent()
 
 # Class used to inject generic tests
-class NavbarTestLoggedIn:
+class NavbarTestLoggedInMixin:
+    """Mixin used to inject generic tests
+    """
+    @pytest.fixture()
+    def page(self, driver):
+        raise NotImplementedError()
 
     def test_user_profile_menu_profile_link(self, driver, page):
         page.navbar.user_dropdown.click()
@@ -80,7 +89,7 @@ class NavbarTestLoggedIn:
         login(driver)
 
 
-class TestOSFHomeNavbar(NavbarTestLoggedOut):
+class TestOSFHomeNavbar(NavbarTestLoggedOutMixin):
 
     @pytest.fixture()
     def page(self, driver):
@@ -116,7 +125,7 @@ class TestOSFHomeNavbar(NavbarTestLoggedOut):
         LoginPage(driver, verify=True)
 
 
-class TestOSFHomeNavbarLoggedIn(NavbarTestLoggedIn):
+class TestOSFHomeNavbarLoggedIn(NavbarTestLoggedInMixin):
 
     @pytest.fixture()
     def page(self, driver, must_be_logged_in):
@@ -129,7 +138,7 @@ class TestOSFHomeNavbarLoggedIn(NavbarTestLoggedIn):
         assert MyProjectsPage(driver, verify=True)
 
 
-class TestPreprintsNavbar(NavbarTestLoggedOut):
+class TestPreprintsNavbar(NavbarTestLoggedOutMixin):
 
     @pytest.fixture()
     def page(self, driver):
@@ -157,7 +166,7 @@ class TestPreprintsNavbar(NavbarTestLoggedOut):
     #     assert 'login' in driver.current_url
 
 @pytest.mark.usefixtures('must_be_logged_in')
-class TestPreprintsNavbarLoggedIn(NavbarTestLoggedIn):
+class TestPreprintsNavbarLoggedIn(NavbarTestLoggedInMixin):
 
     @pytest.fixture()
     def page(self, driver):
@@ -170,7 +179,7 @@ class TestPreprintsNavbarLoggedIn(NavbarTestLoggedIn):
         PreprintSubmitPage(driver, verify=True)
 
 
-class TestMeetingsNavbar(NavbarTestLoggedOut):
+class TestMeetingsNavbar(NavbarTestLoggedOutMixin):
 
     @pytest.fixture()
     def page(self, driver):
@@ -196,7 +205,7 @@ class TestMeetingsNavbar(NavbarTestLoggedOut):
 
 
 @pytest.mark.usefixtures('must_be_logged_in')
-class TestMeetingsNavbarLoggedIn(NavbarTestLoggedIn):
+class TestMeetingsNavbarLoggedIn(NavbarTestLoggedInMixin):
 
     @pytest.fixture()
     def page(self, driver):
@@ -205,7 +214,7 @@ class TestMeetingsNavbarLoggedIn(NavbarTestLoggedIn):
         return page
 
 
-class TestRegistriesNavbar(NavbarTestLoggedOut):
+class TestRegistriesNavbar(NavbarTestLoggedOutMixin):
 
     @pytest.fixture()
     def page(self, driver):
@@ -234,7 +243,7 @@ class TestRegistriesNavbar(NavbarTestLoggedOut):
 
 
 @pytest.mark.usefixtures('must_be_logged_in')
-class TestRegistriesNavbarLoggedIn(NavbarTestLoggedIn):
+class TestRegistriesNavbarLoggedIn(NavbarTestLoggedInMixin):
 
     @pytest.fixture()
     def page(self, driver):
