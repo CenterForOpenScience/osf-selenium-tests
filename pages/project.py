@@ -27,3 +27,8 @@ class MyProjectsPage(OSFBasePage):
     url = settings.OSF_HOME + '/myprojects/'
 
     identity = Locator(By.CSS_SELECTOR, '.col-xs-8 > h3:nth-child(1)')
+
+
+class InstitutionsLandingPage(OSFBasePage):
+
+    identity = Locator(By.CSS_SELECTOR, '#fileBrowser > div.db-header.row > div.db-buttonRow.col-xs-12.col-sm-4.col-lg-3 > div > input')
