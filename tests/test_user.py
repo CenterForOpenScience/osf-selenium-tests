@@ -87,6 +87,6 @@ class TestUserSettings:
         profile_settings_page.middle_name_input.clear()
         profile_settings_page.middle_name_input.send_keys(new_name)
         profile_settings_page.save_button.click()
-        profile_settings_page.update_success.present()
+        profile_settings_page.update_success.here_then_gone()
         profile_settings_page.reload()
         assert profile_settings_page.middle_name_input.get_attribute('value') == new_name
