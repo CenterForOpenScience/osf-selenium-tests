@@ -38,26 +38,6 @@ class AbstractLegacyEmberNavbar(Navbar):
     sign_in_button = Locator(By.CSS_SELECTOR, '#secondary-navigation > ul.nav > li.ember-view.dropdown.sign-in > a.btn.btn-info.btn-top-login', settings.LONG_TIMEOUT)
 
 
-class PreprintsNavbar(AbstractLegacyEmberNavbar):
-    title = Locator(By.CSS_SELECTOR, '.navbar-title')
-    add_a_preprint_link = Locator(By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-child(5) > a')
-
-    def verify(self):
-        return self.current_service.text == 'PREPRINTS'
-
-
-class RegistriesNavbar(AbstractLegacyEmberNavbar):
-
-    def verify(self):
-        return self.current_service.text == 'REGISTRIES'
-
-
-class MeetingsNavbar(Navbar):
-
-    def verify(self):
-        return self.current_service.text == 'MEETINGS'
-
-
 class HomeNavbar(Navbar):
     my_projects_link = Locator(By.XPATH, '//a[text()="My Projects"]')
 
@@ -74,3 +54,23 @@ class EmberNavbar(HomeNavbar):
     logout_link = Locator(By.CSS_SELECTOR, '.dropdown-menu.auth-dropdown li:nth-child(4) > a')
     sign_in_button = Locator(By.CSS_SELECTOR, '.btn-top-login')
     donate_link = Locator(By.XPATH, '//a[text()="Donate"]')
+
+
+class PreprintsNavbar(AbstractLegacyEmberNavbar):
+    title = Locator(By.CSS_SELECTOR, '.navbar-title')
+    add_a_preprint_link = Locator(By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-child(5) > a')
+
+    def verify(self):
+        return self.current_service.text == 'PREPRINTS'
+
+
+class RegistriesNavbar(EmberNavbar):
+
+    def verify(self):
+        return self.current_service.text == 'REGISTRIES'
+
+
+class MeetingsNavbar(Navbar):
+
+    def verify(self):
+        return self.current_service.text == 'MEETINGS'
