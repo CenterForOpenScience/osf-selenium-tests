@@ -97,10 +97,10 @@ CUSTOM_INSTITUTION_DOMAINS = domains[DOMAIN]['custom_institution_domains']
 # Browser capabilities for browserstack testing
 caps = {
     'chrome':
-        {'browser': 'Chrome', 'browser_version': '61.0', 'os': 'Windows', 'os_version': '10',
+        {'browser': 'Chrome', 'os': 'Windows', 'os_version': '10',
                'resolution': '2048x1536'},
     'edge': {'browser': 'Edge', 'os': 'Windows', 'os_version': '10', 'resolution': '2048x1536'},
-    'firefox': {'os': 'OS X', 'os_version': 'Sierra', 'browser': 'Firefox', 'browser_version': '59.0',
+    'firefox': {'os': 'OS X', 'os_version': 'Sierra', 'browser': 'Firefox',
                 'browserstack.geckodriver': '0.18.0'},
     'msie': {'browser': 'IE', 'browser_version': '11', 'os': 'Windows', 'os_version': '10', 'resolution': '2048x1536'},
     'android': {'device': 'Samsung Galaxy S8', 'realMobile': 'true', 'os_version': '7.0'},
