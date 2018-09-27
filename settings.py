@@ -74,7 +74,7 @@ if DOMAIN == 'prod':
 EXPECTED_PROVIDERS = env.list(
     'EXPECTED_PROVIDERS',
     [
-        # 'bitbucket',
+        'bitbucket',
         'box',
         'dataverse',
         'dropbox',
