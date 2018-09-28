@@ -99,7 +99,7 @@ caps = {
     'chrome':
         {'browser': 'Chrome', 'os': 'Windows', 'os_version': '10',
                'resolution': '2048x1536'},
-    'edge': {'browser': 'Edge', 'os': 'Windows', 'os_version': '10', 'resolution': '2048x1536'},
+    'edge': {'browser': 'Edge', 'os': 'Windows', 'os_version': '10', 'resolution': '2048x1536', 'browser_version': '17.0'},
     'firefox': {'os': 'OS X', 'os_version': 'Sierra', 'browser': 'Firefox',
                 'browserstack.geckodriver': '0.18.0'},
     'msie': {'browser': 'IE', 'browser_version': '11', 'os': 'Windows', 'os_version': '10', 'resolution': '2048x1536'},
