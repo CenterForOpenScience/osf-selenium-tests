@@ -70,7 +70,7 @@ class BasePage(BaseElement):
 
     def click_recaptcha(self):
         self.driver.switch_to.frame(self.driver.find_element_by_tag_name('iframe'))
-        self.driver.find_element_by_css_selector('.recaptcha-checkbox-checkmark').click()
+        Locator(By.CSS_SELECTOR, '.recaptcha-checkbox-checkmark').get_element(self.driver, 'capcha').click()
         self.driver.switch_to.default_content()
         #TODO: Replace with an expected condition that checks if aria-checked="true"
         sleep(1)
