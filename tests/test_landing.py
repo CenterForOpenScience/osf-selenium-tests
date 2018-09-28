@@ -21,6 +21,9 @@ class TestLandingPage:
         name = fake.name()
         email = settings.NEW_USER_EMAIL.format(''.join(name.split()))  # Add name with no spaces to end of email
         password = fake.sentence()
+
+        landing_page.scroll_into_view(landing_page.sign_up_button.element)
+
         landing_page.name_input.send_keys(name)
         landing_page.email_one_input.send_keys(email)
         landing_page.email_two_input.send_keys(email)
