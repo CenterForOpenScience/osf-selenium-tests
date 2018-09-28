@@ -73,7 +73,7 @@ def delete_all_user_projects(session, user=None):
 def get_node_addons(session, node_id):
     """Return a list of the names of all the addons connected to the given node.
     """
-    url = '/v2/nodes/{}/files/'.format(node_id)
+    url = '/v2/nodes/{}/files/?page[size]=20'.format(node_id)
     data = session.get(url)
     providers = []
     for provider in data['data']:
