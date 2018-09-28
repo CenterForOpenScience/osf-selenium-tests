@@ -48,7 +48,6 @@ def hide_cookie_banner(driver):
 def default_logout(driver):
     logout(driver)
 
-# TODO: Possibly return to safe_login in the future
 @pytest.fixture(scope='class')
 def must_be_logged_in(driver):
     safe_login(driver)

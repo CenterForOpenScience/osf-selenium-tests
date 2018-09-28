@@ -55,9 +55,14 @@ class TestQuickfilesLoggedIn:
 
         # assert my_quickfiles.download_as_zip_button.absent()
 
-# Class used to inject generic tests
+
 @markers.dont_run_on_prod
-class AnothersQuickfiles:
+class AnothersQuickfilesMixin:
+    """Mixin used to inject generic tests
+    """
+    @pytest.fixture()
+    def anothers_quickfiles(self, quickfiles_page):
+        raise NotImplementedError()
 
     @markers.core_functionality
     def test_quickfile_exists(self, driver, anothers_quickfiles):
@@ -97,7 +102,7 @@ class AnothersQuickfiles:
         # assert anothers_quickfiles.download_as_zip_button.absent()
 
 @markers.dont_run_on_prod
-class TestQuickfilesLoggedOut(AnothersQuickfiles):
+class TestQuickfilesLoggedOut(AnothersQuickfilesMixin):
 
     @pytest.fixture()
     def anothers_quickfiles(self, quickfiles_page):
@@ -105,7 +110,7 @@ class TestQuickfilesLoggedOut(AnothersQuickfiles):
         return quickfiles_page
 
 @markers.dont_run_on_prod
-class TestQuickfilesAsDifferentUser(AnothersQuickfiles):
+class TestQuickfilesAsDifferentUser(AnothersQuickfilesMixin):
 
     @pytest.fixture()
     def anothers_quickfiles(self, quickfiles_page, must_be_logged_in_as_user_two):
