@@ -26,3 +26,8 @@ class LegacyLandingPage(OSFBasePage):
     waffle_override = {'ember_home_page': LandingPage}
 
     identity = Locator(By.ID, 'home-hero', settings.LONG_TIMEOUT)
+
+class RegisteredReportsLandingPage(OSFBasePage):
+    url = settings.OSF_HOME + '/rr/'
+
+    identity = Locator(By.CSS_SELECTOR, '.reg-landing-page-logo')
