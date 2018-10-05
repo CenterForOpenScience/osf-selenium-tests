@@ -2,18 +2,20 @@ from selenium.webdriver.common.by import By
 
 import settings
 from base.exceptions import LoginError
-from base.locators import Locator
+from base.locators import Locator, GroupLocator
 from pages.base import BasePage, OSFBasePage
 
 
 class LoginPage(BasePage):
     url = settings.OSF_HOME + '/login'
 
-    identity = Locator(By.ID, 'cas', settings.LONG_TIMEOUT)
+    identity = Locator(By.CSS_SELECTOR, '#cas #forgot-password', settings.LONG_TIMEOUT)
     username_input = Locator(By.ID, 'username')
     password_input = Locator(By.ID, 'password')
     submit_button = Locator(By.NAME, 'submit')
     remember_me_checkbox = Locator(By.ID, 'rememberMe')
+    institutional_login_button = Locator(By.ID, 'alt-login-inst')
+    orcid_login_button = Locator(By.ID, 'alt-login-orcid')
 
     if 'localhost:5000' in settings.OSF_HOME:
         submit_button = Locator(By.ID, 'submit')
@@ -30,6 +32,21 @@ class LoginPage(BasePage):
             if self.remember_me_checkbox.is_selected():
                 self.remember_me_checkbox.click()
         self.submit_button.click()
+
+
+class InstitutionalLoginPage(BasePage):
+    url = settings.OSF_HOME + '/login?campaign=institution'
+
+    identity = Locator(By.CSS_SELECTOR, '#institution-form-select')
+
+    dropdown_options = GroupLocator(By.CSS_SELECTOR, '#institution-form-select option')
+
+
+class OrcidLoginPage(BasePage):
+    """This is an external page. We shouldn't test this page directly.
+    """
+    identity = Locator(By.CSS_SELECTOR, '#switch-to-register-form')
+
 
 def login(driver, user=settings.USER_ONE, password=settings.USER_ONE_PASSWORD):
     login_page = LoginPage(driver)
