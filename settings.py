@@ -85,7 +85,7 @@ EXPECTED_PROVIDERS = env.list(
         'gitlab',
         'googledrive',
         'osfstorage',
-        # 'owncloud',
+        'owncloud',
         'onedrive',
         's3'
     ])
