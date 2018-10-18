@@ -14,7 +14,7 @@ class LandingPage(OSFBasePage):
     email_one_input = Locator(By.NAME, 'email1')
     email_two_input = Locator(By.NAME, 'email2')
     password_input = Locator(By.NAME, 'password')
-    terms_of_service_checkbox = Locator(By.CSS_SELECTOR, '#ember80__acceptedTermsOfService')
+    terms_of_service_checkbox = Locator(By.NAME, 'acceptedTermsOfService')
     sign_up_button = Locator(By.CSS_SELECTOR, '._SignUpForm_3ntsx4 .btn-success')
     registration_success = Locator(By.CSS_SELECTOR, '.ext-success', settings.LONG_TIMEOUT)
 
