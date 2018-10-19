@@ -34,7 +34,7 @@ class DashboardPage(BaseDashboardPage):
     institutions_carousel_left_arrow = Locator(By.CSS_SELECTOR, '._InstitutionCarousel__control_16pdz4.carousel-control._left_16pdz4')
     institutions_carousel_right_arrow = Locator(By.CSS_SELECTOR, '._InstitutionCarousel__control_16pdz4.carousel-control._right_16pdz4')
 
-    # Group locators
+    # Group Locators
     institution_carousel_logos = GroupLocator(By.CSS_SELECTOR, '.carousel-inner img')
 
     # Components
@@ -57,7 +57,7 @@ class LegacyDashboardPage(BaseDashboardPage):
     institutions_carousel_left_arrow = Locator(By.CSS_SELECTOR, '.left.carousel-control')
     institutions_carousel_right_arrow = Locator(By.CSS_SELECTOR, '.right.carousel-control')
 
-    # Group locators
+    # Group Locators
     institution_carousel_logos = GroupLocator(By.CSS_SELECTOR, '.carousel-inner .img-circle')
 
     # Components
