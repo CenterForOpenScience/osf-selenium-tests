@@ -73,7 +73,7 @@ class BasePage(BaseElement):
         Locator(By.CSS_SELECTOR, '.recaptcha-checkbox-checkmark').get_element(self.driver, 'capcha').click()
         self.driver.switch_to.default_content()
         #TODO: Replace with an expected condition that checks if aria-checked="true"
-        sleep(1)
+        sleep(2)
 
 class OSFBasePage(BasePage):
     """
