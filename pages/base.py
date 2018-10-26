@@ -14,29 +14,27 @@ from base.exceptions import HttpError, PageException
 class BasePage(BaseElement):
     url = None
 
-    cas_identity = Locator(By.ID, 'cas')
-
     def __init__(self, driver, verify=False):
         super().__init__(driver)
 
         if verify:
             self.check_page()
 
-    def goto(self, expect_login_redirect=False):
+    def goto(self, expect_redirect_to=None):
         """Navigate to a page based on its `url` attribute
         and confirms you are on the expected page.
 
-        If you are testing permissions, you may want to navigate to a page that
-        requires authentication as a logged out user. In this case you will be
-        redirected to CAS. You can set `expect_login_redirect` to True to verify
-        you are on the login page.
+        If you are not actually expecting to end up on the page you attempt to `goto`
+        (for example when testing permissions) you can set `expect_redirect_to` equal to
+        any BasePage class and it will be verified you wind up on that page instead.
         """
-        self.driver.get(self.url)
-        if expect_login_redirect:
 
-            current_url = self.driver.current_url
-            if not (self.cas_identity.present() and self.url in current_url):
-                raise PageException('Unexpected page structure: `{}`'.format(self.driver.current_url))
+        self.driver.get(self.url)
+
+        if expect_redirect_to:
+            if self.url not in self.driver.current_url:
+                raise PageException('Unexpected url structure: `{}`'.format(self.driver.current_url))
+            expect_redirect_to(self.driver, verify=True)
         else:
             self.check_page()
 
