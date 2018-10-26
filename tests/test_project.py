@@ -3,14 +3,13 @@ import pytest
 import markers
 import settings
 from api import osf_api
-from pages.project import ProjectPage
-from pages.login import login, logout
+from pages.project import ProjectPage, RequestAccessPage
+from pages.login import LoginPage, login, logout
 
 @pytest.fixture()
-def project_page(driver, default_project):
-    project_page = ProjectPage(driver, guid=default_project.id)
-    project_page.goto()
-    return project_page
+def project_page(driver, default_project_page):
+    default_project_page.goto()
+    return default_project_page
 
 @pytest.fixture()
 def project_page_with_file(driver, project_with_file):
@@ -37,13 +36,6 @@ class TestProjectDetailPage:
     def test_log_widget_loads(self, project_page):
         project_page.log_widget.loading_indicator.here_then_gone()
         assert project_page.log_widget.log_items
-
-    @markers.core_functionality
-    def test_is_private(self, driver, project_page):
-        # Verify that a logged out user cannot see the project
-        logout(driver)
-        project_page.goto(expect_login_redirect=True)
-        login(driver)
 
     @markers.dont_run_on_prod
     @markers.dont_run_on_preferred_node
@@ -83,3 +75,21 @@ class TestProjectDetailPage:
             project_page.file_widget.filter_input.clear()
             project_page.file_widget.filter_input.send_keys(provider)
             driver.find_element_by_xpath("//*[contains(text(), '{}')]".format(provider + '.txt'))
+
+
+@pytest.mark.usefixtures('must_be_logged_in_as_user_two')
+class TestProjectDetailAsNonContributor:
+
+    @markers.smoke_test
+    @markers.core_functionality
+    def test_is_private(self, driver, default_project_page):
+        # Verify that a non contributor on a private project gets the request access page
+        default_project_page.goto(expect_redirect_to=RequestAccessPage)
+
+
+class TestProjectDetailLoggedOut:
+
+    @markers.core_functionality
+    def test_is_private(self, driver, default_project_page):
+        # Verify that a logged out user cannot see the project
+        default_project_page.goto(expect_redirect_to=LoginPage)

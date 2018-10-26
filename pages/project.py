@@ -8,6 +8,7 @@ from base.locators import Locator, ComponentLocator
 
 
 class ProjectPage(GuidBasePage):
+
     identity = Locator(By.CSS_SELECTOR, '#overview > nav#projectSubnav')
     title = Locator(By.ID, 'nodeTitleEditable', settings.LONG_TIMEOUT)
     title_input = Locator(By.CSS_SELECTOR, '.form-inline input')
@@ -21,6 +22,10 @@ class ProjectPage(GuidBasePage):
     # Components
     file_widget = ComponentLocator(FileWidget)
     log_widget = ComponentLocator(LogWidget)
+
+class RequestAccessPage(GuidBasePage):
+
+    identity = Locator(By.CSS_SELECTOR, '#requestAccessPrivateScope')
 
 
 class MyProjectsPage(OSFBasePage):

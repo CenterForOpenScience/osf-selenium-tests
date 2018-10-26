@@ -6,6 +6,7 @@ import settings
 from api import osf_api
 from pythosf import client
 from pages.login import logout, safe_login
+from pages.project import ProjectPage
 from utils import launch_driver
 
 
@@ -71,6 +72,10 @@ def default_project(session):
         project = osf_api.create_project(session, title='OSF Test Project')
         yield project
         project.delete()
+
+@pytest.fixture
+def default_project_page(driver, default_project):
+    return ProjectPage(driver, guid=default_project.id)
 
 @pytest.fixture
 def public_project(session):
