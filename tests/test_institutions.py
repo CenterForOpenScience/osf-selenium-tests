@@ -13,3 +13,4 @@ class TestCustomDomains:
         #TODO: Add check for institution name
         driver.get(domain)
         InstitutionsLandingPage(driver, verify=True)
+        assert domain in driver.current_url
