@@ -3,7 +3,7 @@ import pytest
 import markers
 import settings
 from api import osf_api
-from pages.project import ProjectPage, RequestAccessPage
+from pages.project import ProjectPage, RequestAccessPage, AnalyticsPage
 from pages.login import LoginPage, login, logout
 
 @pytest.fixture()
@@ -93,3 +93,12 @@ class TestProjectDetailLoggedOut:
     def test_is_private(self, driver, default_project_page):
         # Verify that a logged out user cannot see the project
         default_project_page.goto(expect_redirect_to=LoginPage)
+
+
+class TestAnalyticsPage:
+
+    @markers.core_functionality
+    def private_project(self, default_project):
+        analytics_page = AnalyticsPage(default_project.id)
+        assert analytics_page.private_project_message.present()
+        assert analytics_page.disabled_chart.present()
