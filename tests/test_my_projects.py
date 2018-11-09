@@ -26,12 +26,14 @@ class TestMyProjectsPage:
         project_page = ProjectPage(driver, verify=True)
         assert project_page.title.text == title, 'Project title incorrect.'
 
-    def test_custom_collection(self, my_projects_page, fake, default_project):
+    def test_custom_collection(self, default_project, my_projects_page, fake):
 
         # Create new custom collection
         name = fake.sentence(nb_words=2)
         my_projects_page.create_collection_button.click()
+        my_projects_page.create_collection_modal.name_input.click()
         my_projects_page.create_collection_modal.name_input.send_keys(name)
+        my_projects_page.create_collection_modal.name_input.click()
         my_projects_page.create_collection_modal.add_button.click()
         my_projects_page.reload()
         assert name in my_projects_page.first_custom_collection.text
