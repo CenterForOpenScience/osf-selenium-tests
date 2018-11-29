@@ -37,3 +37,10 @@ class MyProjectsPage(OSFBasePage):
 class InstitutionsLandingPage(OSFBasePage):
 
     identity = Locator(By.CSS_SELECTOR, '#fileBrowser > div.db-header.row > div.db-buttonRow.col-xs-12.col-sm-4.col-lg-3 > div > input')
+
+class AnalyticsPage(GuidBasePage):
+    base_url = settings.OSF_HOME + '/{guid}/analytics/'
+
+    identity = Locator(By.CSS_SELECTOR, '._Counts_1mhar6')
+    private_project_message = Locator(By.CSS_SELECTOR, '._PrivateProject_1mhar6')
+    disabled_chart = Locator(By.CSS_SELECTOR, '._Chart_1hff7g _Blurred_1hff7g')
