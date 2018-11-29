@@ -25,6 +25,7 @@ class TestPreprintWorkflow:
 
     @markers.dont_run_on_prod
     @markers.core_functionality
+    @pytest.mark.skip('Update/run once NPD is finalized.')
     def test_create_preprint_from_landing(self, driver, landing_page, project_with_file):
         landing_page.add_preprint_button.click()
         submit_page = PreprintSubmitPage(driver, verify=True)
