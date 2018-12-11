@@ -27,7 +27,7 @@ class DashboardPage(BaseDashboardPage):
     url = settings.OSF_HOME + '/dashboard/'
 
     identity = Locator(By.CSS_SELECTOR, '._institutions-panel_1b28t4', settings.LONG_TIMEOUT)
-    create_project_button = Locator(By.CSS_SELECTOR, '.btn-success-high-contrast', settings.LONG_TIMEOUT)
+    create_project_button = Locator(By.CSS_SELECTOR, '[data-test-create-project-modal-button]', settings.LONG_TIMEOUT)
     view_meetings_button = Locator(By.XPATH, '//a[text()="View meetings"]')
     view_preprints_button = Locator(By.XPATH, '//a[text()="View preprints"]')
     first_popular_project_entry = Locator(By.CSS_SELECTOR, '._NoteworthyProject__item_ko80g1', settings.LONG_TIMEOUT)

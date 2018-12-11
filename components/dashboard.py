@@ -8,8 +8,8 @@ from base.locators import Locator, GroupLocator, BaseElement
 class EmberCreateProjectModal(BaseElement):
 
     modal = Locator(By.CLASS_NAME, 'modal-dialog')
-    create_project_button = Locator(By.CSS_SELECTOR, '.modal-dialog .btn-success')
-    cancel_button = Locator(By.CSS_SELECTOR, '.modal-dialog .btn-default')
+    create_project_button = Locator(By.CSS_SELECTOR, '[data-test-create-project-submit]')
+    cancel_button = Locator(By.CSS_SELECTOR, '[data-test-create-project-cancel]')
     title_input = Locator(By.CSS_SELECTOR, '._NewProject__label_fz56y2 input')
     select_all_link = Locator(By.XPATH, '//a[text()="Select all"]')
     remove_all_link = Locator(By.XPATH, '//a[text()="Remove all"]')
