@@ -60,3 +60,16 @@ class AnalyticsPage(GuidBasePage):
     identity = Locator(By.CSS_SELECTOR, '._Counts_1mhar6')
     private_project_message = Locator(By.CSS_SELECTOR, '._PrivateProject_1mhar6')
     disabled_chart = Locator(By.CSS_SELECTOR, '._Chart_1hff7g _Blurred_1hff7g')
+
+
+class ForksPage(GuidBasePage):
+    base_url = settings.OSF_HOME + '/{guid}/forks/'
+
+    identity = Locator(By.CSS_SELECTOR, '._Forks_1xlord')
+    new_fork_button = Locator(By.CSS_SELECTOR, '._Forks__new-fork_1xlord .btn-success')
+    create_fork_modal_button = Locator(By.CSS_SELECTOR, '.modal-footer .btn-info')
+    cancel_modal_button = Locator(By.CSS_SELECTOR, '.modal-footer .btn-default')
+    info_toast = Locator(By.CSS_SELECTOR, '.toast-info')
+
+    # Group Locators
+    listed_forks = GroupLocator(By.CSS_SELECTOR, '.list-group-item')

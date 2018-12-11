@@ -3,7 +3,7 @@ import pytest
 import markers
 import settings
 from api import osf_api
-from pages.project import ProjectPage, RequestAccessPage, AnalyticsPage
+from pages.project import ProjectPage, RequestAccessPage, AnalyticsPage, ForksPage
 from pages.login import LoginPage, login, logout
 
 @pytest.fixture()
@@ -93,6 +93,26 @@ class TestProjectDetailLoggedOut:
     def test_is_private(self, driver, default_project_page):
         # Verify that a logged out user cannot see the project
         default_project_page.goto(expect_redirect_to=LoginPage)
+
+
+class TestForksPage:
+
+    @pytest.fixture()
+    def forks_page(self, driver, default_project):
+        forks_page = ForksPage(driver, guid=default_project.id)
+        forks_page.goto()
+        return forks_page
+
+    @markers.dont_run_on_prod
+    @markers.core_functionality
+    def test_create_fork(self, must_be_logged_in, forks_page):
+        assert len(forks_page.listed_forks) == 0
+        forks_page.new_fork_button.click()
+        forks_page.create_fork_modal_button.click()
+        forks_page.info_toast.present()
+        forks_page.reload()
+        forks_page.verify()
+        assert len(forks_page.listed_forks) == 1
 
 
 class TestAnalyticsPage:
