@@ -3,8 +3,9 @@ import settings
 from selenium.webdriver.common.by import By
 
 from components.project import FileWidget, LogWidget
+from components.dashboard import CreateProjectModal, CreateCollectionModal, DeleteCollectionModal, ProjectCreatedModal
 from pages.base import GuidBasePage, OSFBasePage
-from base.locators import Locator, ComponentLocator
+from base.locators import Locator, ComponentLocator, GroupLocator
 
 
 class ProjectPage(GuidBasePage):
@@ -32,6 +33,21 @@ class MyProjectsPage(OSFBasePage):
     url = settings.OSF_HOME + '/myprojects/'
 
     identity = Locator(By.CSS_SELECTOR, '.col-xs-8 > h3:nth-child(1)')
+    create_project_button = Locator(By.CSS_SELECTOR, '[data-target="#addProject"]')
+    create_collection_button = Locator(By.CSS_SELECTOR, '[data-target="#addColl"]')
+    first_custom_collection = Locator(By.CSS_SELECTOR, 'li[data-index="3"] span')
+    first_collection_settings_button = Locator(By.CSS_SELECTOR, '.fa-ellipsis-v')
+    first_collection_remove_button = Locator(By.CSS_SELECTOR, '[data-target="#removeColl"]')
+
+    # Group Locators
+    personal_collections = GroupLocator(By.CSS_SELECTOR, '.acceptDrop .ui-droppable')
+    projects = GroupLocator(By.CSS_SELECTOR, '#projectOrganizer .fa-cube')
+
+    # Components
+    create_collection_modal = ComponentLocator(CreateCollectionModal)
+    delete_collection_modal = ComponentLocator(DeleteCollectionModal)
+    create_project_modal = ComponentLocator(CreateProjectModal)
+    project_created_modal = ComponentLocator(ProjectCreatedModal)
 
 
 class InstitutionsLandingPage(OSFBasePage):

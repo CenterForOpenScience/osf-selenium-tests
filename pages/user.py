@@ -23,7 +23,7 @@ class UserProfilePage(GuidBasePage):
     #TODO: Seperate out by component if it becomes necessary
     loading_indicator = Locator(By.CSS_SELECTOR, '.ball-pulse')
 
-    # Group locators
+    # Group Locators
     public_projects = GroupLocator(By.CSS_SELECTOR, '#publicProjects .list-group-item')
     public_components = GroupLocator(By.CSS_SELECTOR, '#publicComponents .list-group-item')
     quickfiles = GroupLocator(By.CSS_SELECTOR, '#quickFiles .list-group-item')

@@ -178,6 +178,14 @@ class Locator(BaseLocator):
             raise ValueError('Element {} not visible before timeout. {}'.format(
                 attribute_name, driver.current_url)) from None
 
+        try:
+            WebDriverWait(driver, self.timeout).until(
+                EC.element_to_be_clickable(self.location)
+            )
+        except(TimeoutException, StaleElementReferenceException):
+            raise ValueError('Element {} not clickable before timeout. {}'.format(
+                attribute_name, driver.current_url)) from None
+
         if 'href' in attribute_name:
             try:
                 WebDriverWait(driver, self.timeout).until(

@@ -12,5 +12,5 @@ class SearchPage(OSFBasePage):
     search_bar = Locator(By.ID, 'searchPageFullBar')
     loading_indicator = Locator(By.CSS_SELECTOR, '.ball-scale')
 
-    # Group locators
+    # Group Locators
     search_results = GroupLocator(By.CSS_SELECTOR, '.search-result')

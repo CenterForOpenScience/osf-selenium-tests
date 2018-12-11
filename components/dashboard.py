@@ -8,8 +8,8 @@ from base.locators import Locator, GroupLocator, BaseElement
 class EmberCreateProjectModal(BaseElement):
 
     modal = Locator(By.CLASS_NAME, 'modal-dialog')
-    create_project_button = Locator(By.CSS_SELECTOR, '.modal-dialog .btn-success')
-    cancel_button = Locator(By.CSS_SELECTOR, '.modal-dialog .btn-default')
+    create_project_button = Locator(By.CSS_SELECTOR, '[data-test-create-project-submit]')
+    cancel_button = Locator(By.CSS_SELECTOR, '[data-test-create-project-cancel]')
     title_input = Locator(By.CSS_SELECTOR, '._NewProject__label_fz56y2 input')
     select_all_link = Locator(By.XPATH, '//a[text()="Select all"]')
     remove_all_link = Locator(By.XPATH, '//a[text()="Remove all"]')
@@ -62,7 +62,7 @@ class EmberProjectList(BaseElement):
 class CreateProjectModal(BaseElement):
 
     modal = Locator(By.ID, 'addProjectFromHome')
-    create_project_button = Locator(By.CSS_SELECTOR, '#addProjectFromHome > div > div > div.modal-footer > button.btn.btn-success')
+    create_project_button = Locator(By.CSS_SELECTOR, '#addProject button.btn.btn-success')
     cancel_button = Locator(By.CSS_SELECTOR, '#addProjectFromHome > div > div > div.modal-footer > button.btn.btn-default')
     title_input = Locator(By.CSS_SELECTOR, '.form-control')
     select_all_link = Locator(By.XPATH, '//a[text()="Select all"]')
@@ -83,6 +83,21 @@ class ProjectCreatedModal(BaseElement):
 
     go_to_project_href_link = Locator(By.XPATH, '//a[text()="Go to new project"]', settings.LONG_TIMEOUT)
     keep_working_here_button = Locator(By.CSS_SELECTOR, '#addProjectFromHome > div > div > div > div.modal-footer > button')
+
+
+class CreateCollectionModal(BaseElement):
+
+    modal = Locator(By.CSS_SELECTOR, '#addColl')
+    name_input = Locator(By.CSS_SELECTOR, '#addCollInput')
+    add_button = Locator(By.CSS_SELECTOR, '#addColl .btn-success')
+    cancel_button = Locator(By.CSS_SELECTOR, '#addColl .btn-default')
+
+
+class DeleteCollectionModal(BaseElement):
+
+    modal = Locator(By.CSS_SELECTOR, '#removeColl')
+    delete_button = Locator(By.CSS_SELECTOR, '#removeColl .btn-danger')
+    cancel_button = Locator(By.CSS_SELECTOR, '#removeColl .btn-default')
 
 
 class ProjectList(BaseElement):
