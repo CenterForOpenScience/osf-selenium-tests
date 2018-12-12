@@ -7,7 +7,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 
 from components.navbars import HomeNavbar
-from base.locators import BaseElement, ComponentLocator, Locator
+from base.locators import BaseElement, ComponentLocator
 from base.exceptions import HttpError, PageException
 
 
@@ -67,12 +67,6 @@ class BasePage(BaseElement):
         # Note: If you close the browser too quickly, the drag/drop may not go through
         sleep(1)
 
-    def click_recaptcha(self):
-        self.driver.switch_to.frame(self.driver.find_element_by_tag_name('iframe'))
-        Locator(By.CSS_SELECTOR, '.recaptcha-checkbox-checkmark').get_element(self.driver, 'capcha').click()
-        self.driver.switch_to.default_content()
-        #TODO: Replace with an expected condition that checks if aria-checked="true"
-        sleep(2)
 
 class OSFBasePage(BasePage):
     """
