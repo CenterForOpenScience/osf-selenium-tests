@@ -6,9 +6,7 @@ This is the UI test automation for the OSF. It uses Selenium WebDriver and Pytes
 [![Build Status](https://travis-ci.org/cos-qa/osf-selenium-tests.svg?branch=master)](https://travis-ci.org/cos-qa/osf-selenium-tests)
 
 
-## Setting Up
-
-This is the setup in order to run/develop these tests on your machine.
+## Setting up
 
 ### Prerequisites
 
