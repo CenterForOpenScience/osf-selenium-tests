@@ -26,7 +26,7 @@ class QuickfilesPage(BaseQuickfilesPage, GuidBasePage):
     identity = Locator(By.CSS_SELECTOR, '#quickfiles-dropzone')
     loading_indicator = Locator(By.CSS_SELECTOR, '.ball-scale')
     upload_button = Locator(By.CSS_SELECTOR, '.dz-upload-button')
-    share_button = Locator(By.CSS_SELECTOR, '#shareButton')
+    share_button = Locator(By.CSS_SELECTOR, '.btn .fa-share-alt')
     view_button = Locator(By.CSS_SELECTOR, '.btn .fa-file-o')
     help_button = Locator(By.CSS_SELECTOR, '.btn .fa-info')
     filter_button = Locator(By.CSS_SELECTOR, '.btn .fa-search')
