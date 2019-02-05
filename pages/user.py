@@ -63,7 +63,7 @@ class NotificationsPage(BaseUserSettingsPage):
 class EmberDeveloperAppsPage(BaseUserSettingsPage):
     url = settings.OSF_HOME + '/settings/applications/'
 
-    identity = Locator(By.CSS_SELECTOR, '._Top__explanation_1k7ky0')
+    identity = Locator(By.CSS_SELECTOR, '[data-test-create-app-link]')
 
 class DeveloperAppsPage(BaseUserSettingsPage):
     waffle_override = {'ember_user_settings_apps_page': EmberDeveloperAppsPage}
@@ -75,7 +75,7 @@ class DeveloperAppsPage(BaseUserSettingsPage):
 class EmberPersonalAccessTokenPage(BaseUserSettingsPage):
     url = settings.OSF_HOME + '/settings/tokens/'
 
-    identity = Locator(By.CSS_SELECTOR, '._Top_1somdw')
+    identity = Locator(By.CSS_SELECTOR, '[data-test-create-token-link]')
 
 class PersonalAccessTokenPage(BaseUserSettingsPage):
     waffle_override = {'ember_user_settings_tokens_page': EmberPersonalAccessTokenPage}
