@@ -51,7 +51,7 @@ class EmberNavbar(HomeNavbar):
     user_dropdown_profile = Locator(By.CSS_SELECTOR, '.dropdown-menu.auth-dropdown li:nth-child(1) > a')
     user_dropdown_support = Locator(By.CSS_SELECTOR, '.dropdown-menu.auth-dropdown li:nth-child(2) > a')
     user_dropdown_settings = Locator(By.CSS_SELECTOR, '.dropdown-menu.auth-dropdown li:nth-child(3) > a')
-    logout_link = Locator(By.CSS_SELECTOR, '._LogOutButton_15bw95')
+    logout_link = Locator(By.CSS_SELECTOR, '[data-test-ad-logout]')
     sign_in_button = Locator(By.CSS_SELECTOR, '.btn-top-login')
     donate_link = Locator(By.XPATH, '//a[text()="Donate"]')
 
