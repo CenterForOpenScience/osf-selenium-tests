@@ -15,7 +15,7 @@ class TestSearchPage:
 
     @markers.smoke_test
     @markers.core_functionality
-    def test_search_results_exist(self, driver, search_page):
+    def test_search_results_exist(self, search_page):
         search_page.search_bar.send_keys('*')
         search_page.search_bar.send_keys(Keys.ENTER)
         search_page.loading_indicator.here_then_gone()
