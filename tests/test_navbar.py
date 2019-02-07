@@ -10,7 +10,7 @@ from pages.meetings import MeetingsPage
 from pages.register import RegisterPage
 from pages.project import MyProjectsPage
 from pages.dashboard import DashboardPage
-from pages.registries import RegistriesPage
+from pages.registries import RegistriesLandingPage
 from pages.user import UserProfilePage, ProfileInformationPage
 from pages.preprints import PreprintLandingPage, PreprintSubmitPage
 
@@ -38,7 +38,7 @@ class NavbarTestLoggedOutMixin:
     def test_registries_dropdown_link(self, driver, page):
         page.navbar.service_dropdown.click()
         page.navbar.registries_link.click()
-        RegistriesPage(driver, verify=True)
+        RegistriesLandingPage(driver, verify=True)
 
     def test_meetings_dropdown_link(self, page, driver):
         page.navbar.service_dropdown.click()
@@ -218,7 +218,7 @@ class TestRegistriesNavbar(NavbarTestLoggedOutMixin):
 
     @pytest.fixture()
     def page(self, driver):
-        page = RegistriesPage(driver)
+        page = RegistriesLandingPage(driver)
         page.goto()
         return page
 
@@ -247,6 +247,6 @@ class TestRegistriesNavbarLoggedIn(NavbarTestLoggedInMixin):
 
     @pytest.fixture()
     def page(self, driver):
-        page = RegistriesPage(driver)
+        page = RegistriesLandingPage(driver)
         page.goto()
         return page
