@@ -9,6 +9,10 @@ class TestInstitutionsPage:
     def test_institutions_page_loads(self, driver):
         landing_page = InstitutionsLandingPage(driver)
         landing_page.goto()
+        landing_page.institution_list[0].click()
+        assert InstitutionBrandedPage(driver, verify=True)
+
+        #TODO On institution page filter for COS
 
 class TestCustomDomains:
 
