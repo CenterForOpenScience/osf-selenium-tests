@@ -11,8 +11,10 @@ class InstitutionsLandingPage(OSFBasePage):
 
     identity = Locator(By.CSS_SELECTOR, '._Institutions__header-logo_1ycvu9')
 
+    search_bar = Locator(By.CSS_SELECTOR, '.ember-text-field')
+
     # Group Locators
-    institution_list = GroupLocator(By.CSS_SELECTOR, '._Institutions__table__item_1ycvu9')
+    institution_list = GroupLocator(By.CSS_SELECTOR, '._Institutions__table__item_1ycvu9 span')
 
     #TODO: add institutional navbar
     navbar = ComponentLocator(EmberNavbar)

@@ -6,13 +6,20 @@ from pages.institutions import InstitutionsLandingPage, InstitutionBrandedPage
 
 class TestInstitutionsPage:
 
-    def test_institutions_page_loads(self, driver):
+    @pytest.fixture()
+    def landing_page(self, driver):
         landing_page = InstitutionsLandingPage(driver)
         landing_page.goto()
+        return landing_page
+
+    def test_select_institution(self, driver, landing_page):
         landing_page.institution_list[0].click()
         assert InstitutionBrandedPage(driver, verify=True)
 
-        #TODO On institution page filter for COS
+    def test_filter_by_institution(self, driver, landing_page, institution='Center For Open Science'):
+        landing_page.search_bar.send_keys(institution)
+        assert institution in landing_page.institution_list[0].text
+
 
 class TestCustomDomains:
 
