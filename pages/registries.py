@@ -2,6 +2,8 @@ import settings
 
 from urllib.parse import urljoin
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import NoSuchElementException
+
 
 from base.locators import Locator, ComponentLocator, GroupLocator
 from components.navbars import RegistriesNavbar
@@ -26,9 +28,25 @@ class RegistriesDiscoverPage(BaseRegistriesPage):
     loading_indicator = Locator(By.CSS_SELECTOR, '.ball-scale')
 
     # Group Locators
-    search_results = GroupLocator(By.CSS_SELECTOR, '._SearchResult_10ty34')
+    search_results = GroupLocator(By.CSS_SELECTOR, '._RegistriesSearchResult__Title_1wvii8')
+
+    def get_first_non_withdrawn_registration(self):
+        for result in self.search_results:
+            try:
+                result.find_element_by_class_name('label-default')
+            except NoSuchElementException:
+                return result.find_element_by_css_selector('[data-test-result-title-id]')
+
+
+class EmberRegistrationDetailPage(GuidBasePage):
+    url_base = urljoin(settings.OSF_HOME, '{guid}')
+    identity = Locator(By.CSS_SELECTOR, '[data-test-registration-title]')
+    title = Locator(By.CSS_SELECTOR, '[data-test-registration-title]')
+
 
 class RegistrationDetailPage(GuidBasePage):
+    waffle_override = {'ember_registries_detail_page': EmberRegistrationDetailPage}
+
     url_base = urljoin(settings.OSF_HOME, '{guid}')
-    identity = Locator(By.CSS_SELECTOR, '[data-test-result-title-id]')
-    title = Locator(By.CSS_SELECTOR, '[data-test-result-title-id]')
+    identity = Locator(By.LINK_TEXT, 'View Registration Form')
+    title = Locator(By.ID, 'nodeTitleEditable')

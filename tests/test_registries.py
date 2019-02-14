@@ -41,5 +41,5 @@ class TestRegistriesDiscoverPage:
         discover_page.loading_indicator.here_then_gone()
         search_results = discover_page.search_results
         assert search_results
-        search_results[0].click()
+        discover_page.get_first_non_withdrawn_registration().click()
         RegistrationDetailPage(driver, verify=True)
