@@ -70,6 +70,7 @@ def delete_all_user_projects(session, user=None):
             n.get()
             n.delete()
 
+#TODO rename this to get_node_providers, and create new function that actually IS get_node_addons - note, this is confusing, talk to BrianG before we change this
 def get_node_addons(session, node_id):
     """Return a list of the names of all the addons connected to the given node.
     """
@@ -103,7 +104,7 @@ def get_existing_file(session, node_id=settings.PREFERRED_NODE):
     else:
         return upload_fake_file(session, node)
 
-def upload_fake_file(session, node=None, name='osf selenium test file for testing because its fake.txt', upload_url=None):
+def upload_fake_file(session, node=None, name='osf selenium test file for testing because its fake.txt', upload_url=None, provider='osfstorage'):
     """Upload an almost empty file to the given node. Return the file's name.
 
     Note: The default file has a very long name because it makes it easier to click a link to it.
@@ -111,7 +112,7 @@ def upload_fake_file(session, node=None, name='osf selenium test file for testin
     if not upload_url:
         if not node:
             raise TypeError('Node must not be none when upload URL is not set.')
-        upload_url = '{}/v1/resources/{}/providers/osfstorage/'.format(settings.FILE_DOMAIN, node.id)
+        upload_url = '{}/v1/resources/{}/providers/{}/'.format(settings.FILE_DOMAIN, node.id, provider)
 
     session.put(url=upload_url, query_parameters={'kind': 'file', 'name': name}, raw_body={})
     return name

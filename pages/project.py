@@ -2,6 +2,7 @@ import settings
 
 from selenium.webdriver.common.by import By
 
+from api import osf_api
 from components.project import FileWidget, LogWidget
 from components.dashboard import CreateProjectModal, CreateCollectionModal, DeleteCollectionModal, ProjectCreatedModal
 from pages.base import GuidBasePage, OSFBasePage
@@ -69,3 +70,12 @@ class ForksPage(GuidBasePage):
 
     # Group Locators
     listed_forks = GroupLocator(By.CSS_SELECTOR, '.list-group-item')
+
+class FilesPage(GuidBasePage):
+    base_url = settings.OSF_HOME + '/{guid}/files/'
+
+    #TODO loading_indicator lives in FileWidget, don't repeat it here...
+    identity = Locator(By.CSS_SELECTOR, '#treeGrid')
+    loading_indicator = Locator(By.CSS_SELECTOR, '#treeGrid .ball-scale', settings.VERY_LONG_TIMEOUT)
+    session = osf_api.get_default_session()
+    fangorn_rows = Locator(By.CSS_SELECTOR, '#tb-tbody .fg-file-links')
