@@ -78,4 +78,8 @@ class FilesPage(GuidBasePage):
     identity = Locator(By.CSS_SELECTOR, '#treeGrid')
     loading_indicator = Locator(By.CSS_SELECTOR, '#treeGrid .ball-scale', settings.VERY_LONG_TIMEOUT)
     session = osf_api.get_default_session()
-    fangorn_rows = Locator(By.CSS_SELECTOR, '#tb-tbody .fg-file-links')
+    fangorn_rows = GroupLocator(By.CSS_SELECTOR, '#tb-tbody .fg-file-links')
+    first_file = Locator(By.CSS_SELECTOR, '#tb-tbody .td-title[data-id~="4"]')
+
+    """first_file -- looking for the 4th row ensures that the files have loaded (in our test there will only ever be 1 header row,
+    1 OSF Storage, and 1 additional addon in the widget, so the 4th row MUST be a file)"""

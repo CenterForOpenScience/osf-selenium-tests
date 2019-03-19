@@ -14,34 +14,34 @@ def files_page(driver):
 
 class TestFilesPage:
 
-    def test_addon(self, files_page):
+    def test_addon(self, files_page, session):
         node_id = 'dabnx'
-        node = osf_api.get_node(FilesPage.session, node_id=node_id)
-        #providers=osf_api.get_node_addons(FilesPage.session, node_id)
-        new_file = osf_api.upload_fake_file(session=FilesPage.session, node=node, name='foo.txt', provider='box')
+        node = osf_api.get_node(session, node_id=node_id)
+        new_file = osf_api.upload_fake_file(session=session, node=node, name='foo.txt', provider='box')
         files_page.goto()
-        files_page.loading_indicator.here_then_gone()
+        files_page.first_file.present()  # checks files have loaded
         found_it = False
         for row in files_page.fangorn_rows:
-            if row.textContent == new_file.name:
+            if row.text == new_file:
                 found_it = True
         assert found_it
+        #TODO write steps to delete file at end of test
+        #TODO figure out programmatic way to connect/configure Box to test project
+
+        #TODO if we're creating the project at the beginning of test, then, should delete project at end of test
 
         """
-        Test steps
+        FUTURE TEST STEPS
 
-        Create a project (done)
+        Create a project (√)
+            # project_one = osf_api.create_project(FilesPage.session, title='Files Test Project')
+            # assert project_one.title=='Files Test Project'
         Connect Box to project, connect folder "selenium" to project
-        ^ Do we need a special patch for this??
-        ^^ could be: node/node_id/addons/box/ POST
+            ^ Do we need a special patch for this??
+            ^^ could be: node/node_id/addons/box/ POST
         Get Box folder "selenium" from OSF API
+            # providers=osf_api.get_node_addons(FilesPage.session, node_id)
         Via osf.api create/upload text file (one step) to Box folder "selenium"
-        Assert name of file is present in files widget
-
+        Assert name of file is present in files widget (√)
         """
         #TODO use Lauren's thingy that makes a random name for the project
-
-        # project_one = osf_api.create_project(FilesPage.session, title='Files Test Project')
-        # assert project_one.title=='Files Test Project'
-
-        # For now, Box is root manually connected to test project
