@@ -1,5 +1,7 @@
 import settings
 
+import json
+
 from pythosf import client
 
 def get_default_session():
@@ -34,6 +36,13 @@ def get_user_institutions(session, user=None):
     for institution in data['data']:
         institutions.append(institution['attributes']['name'])
     return institutions
+
+def get_user_addon(session, provider, user=None):
+    """Get list of accounts on the given provider that have already been connected by the user."""
+    if not user:
+        user = current_user(session)
+    addon_url = '/v2/users/{}/addons/{}/'.format(user.id, provider)
+    return session.get(addon_url)
 
 def upload_single_quickfile(session):
     """Upload a file to the current user's quickfiles if one is not already uploaded.
@@ -124,3 +133,49 @@ def get_providers_list(session=None, type='preprints'):
         session = get_default_session()
     url = '/v2/providers/' + type
     return session.get(url)['data']
+
+def connect_provider_root_to_node(session, provider, external_account_id,
+                                  node_id=settings.PREFERRED_NODE):
+    """Initialize the node<=>addon connection, add the given external_account_id, and configure it
+    to connect to the root folder of the provider."""
+
+    if not session:
+        session = get_default_session()
+
+    url = '/v2/nodes/{}/addons/{}/'.format(node_id, provider)
+
+    # Empty POST request "turns it on" (h/t @brianjgeiger). Addon must be configured with a PATCH
+    # afterwards.
+    # TODO: if box is already connected, will return 400.  Handle that?
+    session.post(url=url, item_type='node_addons')
+
+    # This is a workaround for a bug in pythosf v0.0.9 that breaks patch requests.
+    # If raw_body is not passed, the session code tries to automatically build the body, which
+    # breaks on `item_id`.  If you build the body yourself and pass it in, this bypasses the
+    # bug.  When the fix is released, switch to the commented-out block below this.
+    raw_payload = {
+        'data': {
+            'type': 'node_addons',
+            'id': provider,
+            'attributes': {
+                'external_account_id': external_account_id,
+                'enabled': True,
+            }
+        }
+    }
+    addon = session.patch(url=url, item_type='node_addons', item_id=provider,
+                          raw_body=json.dumps(raw_payload))
+    # payload = {
+    #     'external_account_id': external_account_id,
+    #     'enabled': True,
+    # }
+    # addon = session.patch(url=url, item_type='node_addons', item_id=provider,
+    #                      attributes=payload)
+
+    # Assume the root folder is the first (and only) folder returned.  Get its id and update
+    # the addon config
+    root_folder = session.get(url + 'folders/')['data'][0]['attributes']['folder_id']
+    raw_payload['data']['attributes']['folder_id'] = root_folder
+    addon = session.patch(url=url, item_type='node_addons', item_id=provider,
+                          raw_body=json.dumps(raw_payload))
+    return addon
