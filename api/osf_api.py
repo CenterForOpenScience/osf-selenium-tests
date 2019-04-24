@@ -123,8 +123,15 @@ def upload_fake_file(session, node=None, name='osf selenium test file for testin
             raise TypeError('Node must not be none when upload URL is not set.')
         upload_url = '{}/v1/resources/{}/providers/{}/'.format(settings.FILE_DOMAIN, node.id, provider)
 
-    session.put(url=upload_url, query_parameters={'kind': 'file', 'name': name}, raw_body={})
-    return name
+    metadata = session.put(url=upload_url, query_parameters={'kind': 'file', 'name': name}, raw_body={})
+    return name, metadata
+
+def delete_file(session, delete_url):
+    """Delete a file.  A truly stupid method, caller must provide the delete url from the file
+    metadata."""
+
+    # include `item_type=None` b/c pythosf doesn't set a default value for this.
+    return session.delete(url=delete_url, item_type=None)
 
 def get_providers_list(session=None, type='preprints'):
     """Return the providers list data. The default is the preprint providers list.

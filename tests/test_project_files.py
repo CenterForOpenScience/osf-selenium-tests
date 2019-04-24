@@ -19,8 +19,8 @@ class TestFilesPage:
         box_account_id = list(box_addon['data']['links']['accounts'])[0]
         osf_api.connect_provider_root_to_node(session, 'box', box_account_id,
                                               node_id=node_id)
-        new_file = osf_api.upload_fake_file(session=session, node=node, name='foo.txt',
-                                            provider='box')
+        new_file, metadata = osf_api.upload_fake_file(session=session, node=node, name='foo.txt',
+                                                      provider='box')
 
         files_page = FilesPage(driver, guid=node_id)
         files_page.goto()
@@ -30,6 +30,8 @@ class TestFilesPage:
             if row.text == new_file:
                 found_it = True
         assert found_it
+
+        osf_api.delete_file(session, metadata['data']['links']['delete'])
 
         #TODO write steps to delete file at end of test
         #TODO figure out programmatic way to connect/configure Box to test project
