@@ -81,5 +81,13 @@ class FilesPage(GuidBasePage):
     fangorn_rows = GroupLocator(By.CSS_SELECTOR, '#tb-tbody .fg-file-links')
     first_file = Locator(By.CSS_SELECTOR, '#tb-tbody .td-title[data-id~="4"]')
 
+    def get_nth_file_link(self, n=0):
+        try:
+            selector = '#tb-tbody .td-title[data-id~="{}"]'.format(n)
+            element = self.driver.find_element(By.CSS_SELECTOR, selector)
+            return element
+        except:
+            raise ValueError('Unable to find file at position {}'.format(n))
+
     """first_file -- looking for the 4th row ensures that the files have loaded (in our test there will only ever be 1 header row,
     1 OSF Storage, and 1 additional addon in the widget, so the 4th row MUST be a file)"""
