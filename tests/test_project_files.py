@@ -6,11 +6,10 @@ from api import osf_api
 from pages.project import FilesPage
 #from pages.login import LoginPage, login, logout
 
-
 @pytest.mark.usefixtures('must_be_logged_in')
 class TestFilesPage:
 
-    @pytest.mark.parametrize('provider', ['box', 'dropbox', 's3' , 'owncloud', 'figshare'])
+    @pytest.mark.parametrize('provider', ['box'])
     def test_addon(self, driver, default_project, session, provider):
         node_id = default_project.id
 
@@ -27,17 +26,12 @@ class TestFilesPage:
         files_page.goto()
         files_page.first_file.present()  # checks files have loaded
         found_it = False
-        idx = 0
         for row in files_page.fangorn_rows:
             if row.text == new_file:
                 found_it = True
+                row.find_element_by_xpath('../..').click()  # get grandparent
                 break
-            idx += 1
         assert found_it
-        file_row = files_page.get_nth_file_link(n=idx)
-        file_row.click()
-        import ipdb;
-        ipdb.set_trace()
 
 
 # PSEUDO CODE
@@ -47,7 +41,6 @@ class TestFilesPage:
 # add one more character to name
 # hit enter/return to save
 # assert verify new name is there
-
 
         osf_api.delete_file(session, metadata['data']['links']['delete'])
 
