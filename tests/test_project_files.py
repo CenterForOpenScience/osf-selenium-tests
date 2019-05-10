@@ -40,7 +40,6 @@ class TestFilesPage:
         file_action_buttons = driver.find_elements_by_css_selector('#folderRow .fangorn-toolbar-icon')
         for button in file_action_buttons:
             if button.text == 'Rename':
-                found_it = True
                 button.click()
                 rename_text_box = driver.find_element_by_id('renameInput')
                 rename_text_box.clear()
@@ -71,15 +70,3 @@ Next steps:
 -'dataverse' Requested addon not currently configurable via API
 
 '''
-
-# Outer HTML
-# <div class="fangorn-toolbar-icon text-info"><i class="fa fa-pencil"></i><span>Rename</span></div>
-
-# XPath
-# //*[@id="folderRow"]/div/div/span[1]/div[5]
-
-# Selector
-# #folderRow > div > div > span:nth-child(1) > div:nth-child(5)
-
-# JS Path
-# document.querySelector("#folderRow > div > div > span:nth-child(1) > div:nth-child(5)")
