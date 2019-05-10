@@ -5,6 +5,7 @@ import pytest
 from api import osf_api
 from pages.project import FilesPage
 #from pages.login import LoginPage, login, logout
+from selenium.webdriver.common.keys import Keys
 
 @pytest.mark.usefixtures('must_be_logged_in')
 class TestFilesPage:
@@ -33,6 +34,20 @@ class TestFilesPage:
                 break
         assert found_it
 
+        import ipdb
+        ipdb.set_trace()
+
+        file_action_buttons = driver.find_elements_by_css_selector('#folderRow .fangorn-toolbar-icon')
+        for button in file_action_buttons:
+            if button.text == 'Rename':
+                found_it = True
+                button.click()
+                rename_text_box = driver.find_element_by_id('renameInput')
+                rename_text_box.clear()
+                rename_text_box.send_keys('Selenium Test File')
+                rename_text_box.send_keys(Keys.RETURN)
+                break
+
 
 # PSEUDO CODE
 # select file row in files widget
@@ -56,3 +71,15 @@ Next steps:
 -'dataverse' Requested addon not currently configurable via API
 
 '''
+
+# Outer HTML
+# <div class="fangorn-toolbar-icon text-info"><i class="fa fa-pencil"></i><span>Rename</span></div>
+
+# XPath
+# //*[@id="folderRow"]/div/div/span[1]/div[5]
+
+# Selector
+# #folderRow > div > div > span:nth-child(1) > div:nth-child(5)
+
+# JS Path
+# document.querySelector("#folderRow > div > div > span:nth-child(1) > div:nth-child(5)")
