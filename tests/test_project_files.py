@@ -1,6 +1,5 @@
 import pytest
 import ipdb
-import time
 #import markers
 #import settings
 from api import osf_api
@@ -9,13 +8,11 @@ from pages.project import FilesPage
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver import ActionChains
 
-
 def click_addon_row(files_page, target_file):
     row = find_addon_row(files_page, target_file)
     assert row is not None
     row.find_element_by_xpath('../..').click()
     return;
-
 
 def find_addon_row(files_page, target_file):
     files_page.goto()
@@ -26,7 +23,6 @@ def find_addon_row(files_page, target_file):
         if row.text == target_file:
             return row
     return;
-
 
 def click_button(driver, button_name):
     file_action_buttons = driver.find_elements_by_css_selector('#folderRow .fangorn-toolbar-icon')
@@ -63,7 +59,9 @@ class TestFilesPage:
         rename_text_box.clear()
         rename_text_box.send_keys('Selenium Test File')
         rename_text_box.send_keys(Keys.RETURN)
-        time.sleep(5)
+
+        # Wait for the first file in the add_on to be loaded
+        files_page.first_file.present()
 
         row = find_addon_row(files_page, "foo.txtSelenium Test File")
         assert row is not None
@@ -103,24 +101,18 @@ class TestFilesPage:
                                                       provider=provider)
 
         files_page = FilesPage(driver, guid=node_id)
+
         click_addon_row(files_page, new_file)
         click_button(driver, 'Delete')
+
+        #wait for the delete confirmation
+        files_page.delete_modal.present()
+
+        # Front End will show 'delete failed' message - still works as expected
         driver.find_element_by_css_selector('.btn-danger').click()
 
-        files_page.first_file.present()
-
-        # NEGATIVE TEST
-        # found_it = False
-        # for row in files_page.fangorn_rows:
-        #     if row.text == 'delete_this_guy.txt':
-        #         found_it = True
-        #         # try:
-        #         #     row.find_element_by_xpath('../..').click()
-        #         # except Exception('ElementNotVisibleException'):
-        #         #     print
-        #         #     "File is gone :)"
-        #         break
-        # assert not found_it
+        row = find_addon_row(files_page, 'delete_this_guy.txt')
+        assert row is None
 
     @pytest.mark.parametrize('provider', ['box'])
     def test_dragon_drop(self, driver, default_project, session, provider):
@@ -145,7 +137,9 @@ class TestFilesPage:
         target = driver.find_element_by_css_selector('div.tb-row:nth-child(4)')
         action_chains = ActionChains(driver)
         action_chains.drag_and_drop(source, target).perform()
-        time.sleep(7)
+
+        # Wait until the file is present
+        files_page.first_file.present()
 
 
         '''
