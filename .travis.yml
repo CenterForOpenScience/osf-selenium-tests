@@ -41,3 +41,7 @@ jobs:
       env: TEST_BUILD="edge"
 script:
   - invoke test_travis_$TEST_BUILD
+  
+notifications:
+  flowdock:
+    secure: ENCRYPTED-FLOW-API-TOKEN
