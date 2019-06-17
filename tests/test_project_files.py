@@ -44,7 +44,7 @@ def click_button(driver, button_name):
 @pytest.mark.usefixtures('must_be_logged_in')
 class TestFilesPage:
 
-    @pytest.mark.parametrize('provider', ['box'])
+    @pytest.mark.parametrize('provider', ['box', 'dropbox', 'owncloud', 's3'])
     def test_rename_file(self, driver, default_project, session, provider):
         node_id = default_project.id
 
@@ -64,18 +64,21 @@ class TestFilesPage:
         click_button(driver, 'Rename')
 
         rename_text_box = driver.find_element_by_id('renameInput')
-        rename_text_box.clear()
+        for _ in range(7):
+            rename_text_box.send_keys(Keys.BACKSPACE)
+
         rename_text_box.send_keys('Selenium Test File')
         rename_text_box.send_keys(Keys.RETURN)
 
+        #TODO: Write another project.py->FilesPage->Locator to wait for renamed file
         # Wait for the first file in the add_on to be loaded
+        time.sleep(10)
         files_page.first_file.present()
 
-        # Negative test case
-        row = find_addon_row(files_page, "foo.txtSelenium Test File")
+        row = find_addon_row(files_page, "Selenium Test File")
         assert row is not None
 
-        osf_api.delete_file(session, metadata['data']['links']['delete'])
+        osf_api.delete_file(session, metadata['data']['links']['delete'].replace('foo.txt', 'Selenium Test File'))
 
     def test_checkout_file(self, driver, default_project, session):
         node_id = default_project.id
@@ -99,7 +102,7 @@ class TestFilesPage:
 
         osf_api.delete_file(session, metadata['data']['links']['delete'])
 
-    @pytest.mark.parametrize('provider', ['box'])
+    @pytest.mark.parametrize('provider', ['box', 'dropbox', 's3', 'owncloud'])
     def test_delete_file(self, driver, default_project, session, provider):
         node_id = default_project.id
 
@@ -129,7 +132,20 @@ class TestFilesPage:
         row = find_addon_row(files_page, 'delete_this_guy.txt')
         assert row is None
 
-    @pytest.mark.parametrize('provider', ['box'])
+
+    # TODO: Change addons to list to [providers, modifier_key, action]
+    # ['box', 'none', 'move'],
+    # ['box', 'alt', 'copy'],
+    # ['dropbox', 'none', 'move'],
+    # ['dropbox', 'alt', 'copy'],
+    # ['owncloud', 'none', 'move'],
+    # ['owncloud', 'alt', 'copy'],
+    # ['s3', 'none', 'move'],
+    # ['s3', 'alt', 'copy']
+
+
+
+    @pytest.mark.parametrize('provider', ['box', 'dropbox', 's3', 'owncloud'])
     def test_dragon_drop(self, driver, default_project, session, provider):
         node_id = default_project.id
 
@@ -146,7 +162,9 @@ class TestFilesPage:
 
         files_page = FilesPage(driver, guid=node_id)
         files_page.goto()
-        files_page.first_file.present()  # checks files have loaded
+
+        # checks files have loaded
+        files_page.first_file.present()
 
 
         # Find the row that contains the new file
@@ -162,19 +180,37 @@ class TestFilesPage:
                 target = row
                 break;
 
-        target  = driver.find_element_by_xpath('//*[@id="tb-tbody"]/div/div/div[4]')
         action_chains = ActionChains(driver)
+        # TODO: add modifier key to action_chains
         action_chains.drag_and_drop(source, target).perform()
+
 
         # Wait until the file is present
         files_page.first_file.present()
 
+
+        ## TODO: IF action=move, run this
+        # Attempt to delete drag_this_file.txt in origin provider folder
+        try:
+            osf_api.delete_file(session, metadata['data']['links']['delete'])
+        except:
+            print("No file to be deleted")
+        ## TODO: ELIF action=copy verify both files exist
+
         '''
         Next steps:
         - Downloads? if there's a way
+        - Folders for all addons
+            - Move
+            - Copy
+            - Rename
+            - Delete
         - Writeable addons that WORK 'box', 'dropbox', 's3' , 'owncloud', 'figshare'
         -'googledrive' MUST specify both folder_id and folder_path
         -'github' Requested addon not currently configurable via API
         -'dataverse' Requested addon not currently configurable via API
 
+        Josh Testing Notes
+        - Target addon needs to be visible for dragon_drop to work
+        - Figshare has a weird file setup
         '''
