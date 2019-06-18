@@ -136,20 +136,17 @@ class TestFilesPage:
         row = find_addon_row(files_page, 'delete_this_guy.txt')
         assert row is None
 
-
-    # TODO: Change addons to list to [providers, modifier_key, action]
-    # ['box', 'none', 'move'],
-    # ['box', 'alt', 'copy'],
-    # ['dropbox', 'none', 'move'],
-    # ['dropbox', 'alt', 'copy'],
-    # ['owncloud', 'none', 'move'],
-    # ['owncloud', 'alt', 'copy'],
-    # ['s3', 'none', 'move'],
-    # ['s3', 'alt', 'copy']
-
-
-    @pytest.mark.parametrize('provider', ['box'])
-    def test_dragon_drop(self, driver, default_project, session, provider):
+    @pytest.mark.parametrize('provider, modifier_key, action', [
+        ['box', 'none', 'move'],
+        ['box', 'alt', 'copy'],
+        ['dropbox', 'none', 'move'],
+        ['dropbox', 'alt', 'copy'],
+        ['owncloud', 'none', 'move'],
+        ['owncloud', 'alt', 'copy'],
+        ['s3', 'none', 'move'],
+        ['s3', 'alt', 'copy']
+    ])
+    def test_dragon_drop(self, driver, default_project, session, provider, modifier_key, action):
         node_id = default_project.id
 
         # connect addon to node, upload a single test file
@@ -162,8 +159,6 @@ class TestFilesPage:
 
         new_file, metadata = osf_api.upload_fake_file(session=session, node=node, name='drag_this_file.txt',
                                                           provider=provider)
-
-        modifier_key = 2
 
         files_page = FilesPage(driver, guid=node_id)
         files_page.goto()
@@ -185,7 +180,7 @@ class TestFilesPage:
 
         action_chains = ActionChains(driver)
 
-        if modifier_key==1:
+        if modifier_key=='alt':
             action_chains.drag_and_drop(source, target).perform()
         else:
             action_chains = ActionChains(driver)
