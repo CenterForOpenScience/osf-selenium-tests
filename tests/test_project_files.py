@@ -5,9 +5,12 @@ import time
 #import settings
 from api import osf_api
 from pages.project import FilesPage
-#from pages.login import LoginPage, login, logout
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver import ActionChains
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
 
 def click_addon_row(files_page, target_file):
     row = find_addon_row(files_page, target_file)
@@ -44,7 +47,7 @@ def click_button(driver, button_name):
 @pytest.mark.usefixtures('must_be_logged_in')
 class TestFilesPage:
 
-    @pytest.mark.parametrize('provider', ['box', 'dropbox', 'owncloud', 's3'])
+    @pytest.mark.parametrize('provider', ['box'])
     def test_rename_file(self, driver, default_project, session, provider):
         node_id = default_project.id
 
@@ -64,7 +67,8 @@ class TestFilesPage:
         click_button(driver, 'Rename')
 
         rename_text_box = driver.find_element_by_id('renameInput')
-        for _ in range(7):
+
+        for _ in range(len(new_file)):
             rename_text_box.send_keys(Keys.BACKSPACE)
 
         rename_text_box.send_keys('Selenium Test File')
@@ -144,8 +148,7 @@ class TestFilesPage:
     # ['s3', 'alt', 'copy']
 
 
-
-    @pytest.mark.parametrize('provider', ['box', 'dropbox', 's3', 'owncloud'])
+    @pytest.mark.parametrize('provider', ['box'])
     def test_dragon_drop(self, driver, default_project, session, provider):
         node_id = default_project.id
 
@@ -160,19 +163,19 @@ class TestFilesPage:
         new_file, metadata = osf_api.upload_fake_file(session=session, node=node, name='drag_this_file.txt',
                                                           provider=provider)
 
+        modifier_key = 2
+
         files_page = FilesPage(driver, guid=node_id)
         files_page.goto()
 
         # checks files have loaded
         files_page.first_file.present()
 
-
         # Find the row that contains the new file
         for row in files_page.fangorn_rows:
             if row.text == 'drag_this_file.txt':
                 source = row
                 break;
-
 
         # Find the row with the OSF storage
         for row in files_page.fangorn_addons:
@@ -181,21 +184,29 @@ class TestFilesPage:
                 break;
 
         action_chains = ActionChains(driver)
-        # TODO: add modifier key to action_chains
-        action_chains.drag_and_drop(source, target).perform()
 
+        if modifier_key==1:
+            action_chains.drag_and_drop(source, target).perform()
+        else:
+            action_chains = ActionChains(driver)
+            action_chains.key_down(Keys.LEFT_ALT)
+            action_chains.click_and_hold(source)
+            action_chains.move_to_element(target)
+            action_chains.release()
+            action_chains.key_up(Keys.LEFT_ALT)
+            action_chains.perform()
 
-        # Wait until the file is present
+        #TODO Change this to an implicit wait (polling)
+        WebDriverWait(driver, 10).until(EC.invisibility_of_element_located((By.CLASS_NAME, 'text-muted')))
+
+        # Wait until the 4th row is present
         files_page.first_file.present()
 
-
-        ## TODO: IF action=move, run this
         # Attempt to delete drag_this_file.txt in origin provider folder
         try:
             osf_api.delete_file(session, metadata['data']['links']['delete'])
         except:
             print("No file to be deleted")
-        ## TODO: ELIF action=copy verify both files exist
 
         '''
         Next steps:
