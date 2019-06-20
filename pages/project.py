@@ -79,7 +79,7 @@ class FilesPage(GuidBasePage):
     loading_indicator = Locator(By.CSS_SELECTOR, '#treeGrid .ball-scale', settings.VERY_LONG_TIMEOUT)
     session = osf_api.get_default_session()
     fangorn_rows = GroupLocator(By.CSS_SELECTOR, '#tb-tbody .fg-file-links')
-    fangorn_addons = GroupLocator(By.CSS_SELECTOR, '#tb-tbody .tb-odd')
+    fangorn_addons = GroupLocator(By.CSS_SELECTOR, "div[data-level='2']")
     first_file = Locator(By.CSS_SELECTOR, '#tb-tbody .td-title[data-id~="4"]')
     file_action_buttons = GroupLocator(By.CSS_SELECTOR, '#folderRow .fangorn-toolbar-icon')
     delete_modal = Locator(By.CSS_SELECTOR, 'span.btn:nth-child(1)')

@@ -44,6 +44,19 @@ def click_button(driver, button_name):
     return;
 
 
+def format_provider_name(row):
+    if row.text=='Box: / (Full Box)':
+        provider = 'box'
+    elif row.text=='Dropbox: / (Full Dropbox)':
+        provider = 'dropbox'
+    elif row.text=='Amazon S3: elasticbeanstalk-us-east-1-593772593292 (US Standard)':
+        provider = 's3'
+    elif row.text=='ownCloud: / (Full ownCloud)':
+        provider = 'owncloud'
+    else:
+        provider='provider name not found :('
+    return provider;
+
 @pytest.mark.usefixtures('must_be_logged_in')
 class TestFilesPage:
 
@@ -83,6 +96,7 @@ class TestFilesPage:
         assert row is not None
 
         osf_api.delete_file(session, metadata['data']['links']['delete'].replace('foo.txt', 'Selenium Test File'))
+
 
     def test_checkout_file(self, driver, default_project, session):
         node_id = default_project.id
@@ -136,6 +150,33 @@ class TestFilesPage:
         row = find_addon_row(files_page, 'delete_this_guy.txt')
         assert row is None
 
+
+    @pytest.mark.parametrize('provider', ['box', 'dropbox', 's3', 'owncloud'])
+    def test_delete_folder(self, driver, default_project, session, provider):
+        node_id = default_project.id
+
+        # connect addon to node, upload a single test file
+        node = osf_api.get_node(session, node_id=node_id)
+        if provider != 'osfstorage':
+            addon = osf_api.get_user_addon(session, provider)
+            addon_account_id = list(addon['data']['links']['accounts'])[0]
+            osf_api.connect_provider_root_to_node(session, provider, addon_account_id,
+                                                  node_id=node_id)
+
+            files_page = FilesPage(driver, guid=node_id)
+            files_page.goto()
+
+            # checks files have loaded
+            files_page.first_file.present()
+
+            #ipdb.set_trace()
+
+            # Find the row with the OSF storage
+            for row in files_page.fangorn_addons:
+                if format_provider_name(row) == provider:
+                    row.click()
+                    break;
+
     @pytest.mark.parametrize('provider, modifier_key, action', [
         ['box', 'none', 'move'],
         ['box', 'alt', 'copy'],
@@ -181,8 +222,6 @@ class TestFilesPage:
         action_chains = ActionChains(driver)
 
         if modifier_key=='alt':
-            action_chains.drag_and_drop(source, target).perform()
-        else:
             action_chains = ActionChains(driver)
             action_chains.key_down(Keys.LEFT_ALT)
             action_chains.click_and_hold(source)
@@ -190,12 +229,11 @@ class TestFilesPage:
             action_chains.release()
             action_chains.key_up(Keys.LEFT_ALT)
             action_chains.perform()
+        else:
+            action_chains.drag_and_drop(source, target).perform()
 
         #TODO Change this to an implicit wait (polling)
         WebDriverWait(driver, 10).until(EC.invisibility_of_element_located((By.CLASS_NAME, 'text-muted')))
-
-        # Wait until the 4th row is present
-        files_page.first_file.present()
 
         # Attempt to delete drag_this_file.txt in origin provider folder
         try:
@@ -203,9 +241,29 @@ class TestFilesPage:
         except:
             print("No file to be deleted")
 
+        def test_dragon_drop(self, driver, default_project, session, provider, modifier_key, action):
+            node_id = default_project.id
+
+            # connect addon to node, upload a single test file
+            node = osf_api.get_node(session, node_id=node_id)
+            if provider != 'osfstorage':
+                addon = osf_api.get_user_addon(session, provider)
+                addon_account_id = list(addon['data']['links']['accounts'])[0]
+                osf_api.connect_provider_root_to_node(session, provider, addon_account_id,
+                                                      node_id=node_id)
+
+            new_file, metadata = osf_api.upload_fake_file(session=session, node=node, name='drag_this_file.txt',
+                                                          provider=provider)
+
         '''
         Next steps:
+        - dragon_drop needs an implicit wait
+            - Ask Fitz
         - Downloads? if there's a way
+            - Find the downloads directory
+            - Browser compatibility?
+            - Implicit wait for download to finish
+            - Traverse downloads directory for new file name
         - Folders for all addons
             - Move
             - Copy
@@ -219,4 +277,6 @@ class TestFilesPage:
         Josh Testing Notes
         - Target addon needs to be visible for dragon_drop to work
         - Figshare has a weird file setup
+        
+        
         '''
