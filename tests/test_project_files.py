@@ -11,13 +11,6 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-
-def click_addon_row(files_page, target_file):
-    row = find_addon_row(files_page, target_file)
-    assert row is not None
-    row.find_element_by_xpath('../..').click()
-    return;
-
 def find_addon_row(files_page, target_file):
     files_page.goto()
     start_time = time.time()
@@ -35,6 +28,13 @@ def find_addon_row(files_page, target_file):
             return row
     return;
 
+def click_addon_row(files_page, target_file):
+    row = find_addon_row(files_page, target_file)
+    assert row is not None
+    row.find_element_by_xpath('../..').click()
+    return;
+
+# Click a button in the toolbar, just pass in the name
 def click_button(driver, button_name):
     file_action_buttons = driver.find_elements_by_css_selector('#folderRow .fangorn-toolbar-icon')
     for button in file_action_buttons:
@@ -43,6 +43,15 @@ def click_button(driver, button_name):
             break
     return;
 
+def click_addon_folder(files_page, target_file):
+    files_page.goto()
+    time.sleep(4)
+
+    for row in files_page.fangorn_folders:
+        if row.find_element_by_xpath('../../..').text == target_file:
+            row.click()
+            break;
+    return;
 
 def format_provider_name(row):
     if row.text=='Box: / (Full Box)':
@@ -150,7 +159,6 @@ class TestFilesPage:
         row = find_addon_row(files_page, 'delete_this_guy.txt')
         assert row is None
 
-
     @pytest.mark.parametrize('provider', ['box', 'dropbox', 's3', 'owncloud'])
     def test_delete_folder(self, driver, default_project, session, provider):
         node_id = default_project.id
@@ -169,13 +177,41 @@ class TestFilesPage:
             # checks files have loaded
             files_page.first_file.present()
 
-            #ipdb.set_trace()
-
             # Find the row with the OSF storage
             for row in files_page.fangorn_addons:
                 if format_provider_name(row) == provider:
                     row.click()
                     break;
+
+            click_button(driver, 'Create Folder')
+            folder_name_text_box = driver.find_element_by_id('createFolderInput')
+            folder_name_text_box.click()
+            folder_name_text_box.send_keys('Selenium Test Folder')
+            folder_name_text_box.send_keys(Keys.RETURN)
+
+            # Rename
+            time.sleep(4)
+            click_addon_folder(files_page, 'Selenium Test Folder')
+            click_button(driver, 'Rename')
+            folder_name_text_box = driver.find_element_by_id('renameInput')
+            folder_name_text_box.click()
+            for _ in range(20):
+                folder_name_text_box.send_keys(Keys.BACKSPACE)
+            folder_name_text_box.send_keys('Automated Folder')
+            folder_name_text_box.send_keys(Keys.RETURN)
+
+
+            # do implicit wait
+            time.sleep(4)
+            click_addon_folder(files_page, 'Automated Folder')
+            click_button(driver, 'Delete Folder')
+
+            # wait for the delete confirmation
+            files_page.delete_modal.present()
+
+            # Front End will show 'delete failed' message - still works as expected
+            driver.find_element_by_css_selector('.btn-danger').click()
+
 
     @pytest.mark.parametrize('provider, modifier_key, action', [
         ['box', 'none', 'move'],
@@ -264,6 +300,9 @@ class TestFilesPage:
             - Browser compatibility?
             - Implicit wait for download to finish
             - Traverse downloads directory for new file name
+            (Possible Solution)
+            - Click downloads button
+            - Check for a 200 status    
         - Folders for all addons
             - Move
             - Copy
@@ -277,6 +316,7 @@ class TestFilesPage:
         Josh Testing Notes
         - Target addon needs to be visible for dragon_drop to work
         - Figshare has a weird file setup
+        - Delete Folder must be in window for test to pass
         
         
         '''
