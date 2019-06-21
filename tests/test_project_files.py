@@ -69,7 +69,7 @@ def format_provider_name(row):
 @pytest.mark.usefixtures('must_be_logged_in')
 class TestFilesPage:
 
-    @pytest.mark.parametrize('provider', ['box'])
+    @pytest.mark.parametrize('provider', ['box', 'dropbox'])
     def test_rename_file(self, driver, default_project, session, provider):
         node_id = default_project.id
 
@@ -97,9 +97,10 @@ class TestFilesPage:
         rename_text_box.send_keys(Keys.RETURN)
 
         #TODO: Write another project.py->FilesPage->Locator to wait for renamed file
-        # Wait for the first file in the add_on to be loaded
-        time.sleep(10)
-        files_page.first_file.present()
+        time.sleep(5)
+
+        # WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, 'tb-notify alert-success')))
+        # WebDriverWait(driver, 10).until(EC.invisibility_of_element_located((By.CLASS_NAME, 'tb-notify alert-success')))
 
         row = find_addon_row(files_page, "Selenium Test File")
         assert row is not None
@@ -159,69 +160,17 @@ class TestFilesPage:
         row = find_addon_row(files_page, 'delete_this_guy.txt')
         assert row is None
 
-    @pytest.mark.parametrize('provider', ['box', 'dropbox', 's3', 'owncloud'])
-    def test_delete_folder(self, driver, default_project, session, provider):
-        node_id = default_project.id
-
-        # connect addon to node, upload a single test file
-        node = osf_api.get_node(session, node_id=node_id)
-        if provider != 'osfstorage':
-            addon = osf_api.get_user_addon(session, provider)
-            addon_account_id = list(addon['data']['links']['accounts'])[0]
-            osf_api.connect_provider_root_to_node(session, provider, addon_account_id,
-                                                  node_id=node_id)
-
-            files_page = FilesPage(driver, guid=node_id)
-            files_page.goto()
-
-            # checks files have loaded
-            files_page.first_file.present()
-
-            # Find the row with the OSF storage
-            for row in files_page.fangorn_addons:
-                if format_provider_name(row) == provider:
-                    row.click()
-                    break;
-
-            click_button(driver, 'Create Folder')
-            folder_name_text_box = driver.find_element_by_id('createFolderInput')
-            folder_name_text_box.click()
-            folder_name_text_box.send_keys('Selenium Test Folder')
-            folder_name_text_box.send_keys(Keys.RETURN)
-
-            # Rename
-            time.sleep(4)
-            click_addon_folder(files_page, 'Selenium Test Folder')
-            click_button(driver, 'Rename')
-            folder_name_text_box = driver.find_element_by_id('renameInput')
-            folder_name_text_box.click()
-            for _ in range(20):
-                folder_name_text_box.send_keys(Keys.BACKSPACE)
-            folder_name_text_box.send_keys('Automated Folder')
-            folder_name_text_box.send_keys(Keys.RETURN)
-
-
-            # do implicit wait
-            time.sleep(4)
-            click_addon_folder(files_page, 'Automated Folder')
-            click_button(driver, 'Delete Folder')
-
-            # wait for the delete confirmation
-            files_page.delete_modal.present()
-
-            # Front End will show 'delete failed' message - still works as expected
-            driver.find_element_by_css_selector('.btn-danger').click()
 
 
     @pytest.mark.parametrize('provider, modifier_key, action', [
-        ['box', 'none', 'move'],
+        #['box', 'none', 'move'],
         ['box', 'alt', 'copy'],
-        ['dropbox', 'none', 'move'],
-        ['dropbox', 'alt', 'copy'],
-        ['owncloud', 'none', 'move'],
-        ['owncloud', 'alt', 'copy'],
-        ['s3', 'none', 'move'],
-        ['s3', 'alt', 'copy']
+        # ['dropbox', 'none', 'move'],
+        # ['dropbox', 'alt', 'copy'],
+        # ['owncloud', 'none', 'move'],
+        # ['owncloud', 'alt', 'copy'],
+        # ['s3', 'none', 'move'],
+        # ['s3', 'alt', 'copy']
     ])
     def test_dragon_drop(self, driver, default_project, session, provider, modifier_key, action):
         node_id = default_project.id
@@ -270,6 +219,10 @@ class TestFilesPage:
 
         #TODO Change this to an implicit wait (polling)
         WebDriverWait(driver, 10).until(EC.invisibility_of_element_located((By.CLASS_NAME, 'text-muted')))
+        time.sleep(5)
+
+        files_page.goto()
+        row = find_addon_row('drag_this_file.txt')
 
         # Attempt to delete drag_this_file.txt in origin provider folder
         try:
@@ -277,46 +230,31 @@ class TestFilesPage:
         except:
             print("No file to be deleted")
 
-        def test_dragon_drop(self, driver, default_project, session, provider, modifier_key, action):
-            node_id = default_project.id
 
-            # connect addon to node, upload a single test file
-            node = osf_api.get_node(session, node_id=node_id)
-            if provider != 'osfstorage':
-                addon = osf_api.get_user_addon(session, provider)
-                addon_account_id = list(addon['data']['links']['accounts'])[0]
-                osf_api.connect_provider_root_to_node(session, provider, addon_account_id,
-                                                      node_id=node_id)
-
-            new_file, metadata = osf_api.upload_fake_file(session=session, node=node, name='drag_this_file.txt',
-                                                          provider=provider)
 
         '''
         Next steps:
         - dragon_drop needs an implicit wait
             - Ask Fitz
-        - Downloads? if there's a way
-            - Find the downloads directory
-            - Browser compatibility?
-            - Implicit wait for download to finish
-            - Traverse downloads directory for new file name
-            (Possible Solution)
+            
+        - Downloads
             - Click downloads button
-            - Check for a 200 status    
-        - Folders for all addons
-            - Move
-            - Copy
-            - Rename
-            - Delete
-        - Writeable addons that WORK 'box', 'dropbox', 's3' , 'owncloud', 'figshare'
-        -'googledrive' MUST specify both folder_id and folder_path
-        -'github' Requested addon not currently configurable via API
-        -'dataverse' Requested addon not currently configurable via API
-
+            - Check for a 200 status  
+            
         Josh Testing Notes
-        - Target addon needs to be visible for dragon_drop to work
-        - Figshare has a weird file setup
-        - Delete Folder must be in window for test to pass
+        Drag and Drop
+        - Target add-on needs to be visible in the files widget
         
+        Delete btn-danger 
+        - Modal must be in current window for test to pass
+        - User cannot be in a separate window while test is running
+            
+        Writeable addons (that work)
+        - 'box', 'dropbox', 's3', 'owncloud'
+        
+        'googledrive' - MUST specify both folder_id and folder_path
+        'github' - requested add-on not currently configurable via API
+        'dataverse' - requested add-on not currently configurable via API
+        'figshare' - has a weird file setup
         
         '''
