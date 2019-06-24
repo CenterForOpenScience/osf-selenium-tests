@@ -57,6 +57,19 @@ def click_addon_folder(files_page, target_file):
             break;
     return;
 
+def format_provider_name(row):
+    if row.text=='Box: / (Full Box)':
+        provider = 'box'
+    elif row.text=='Dropbox: / (Full Dropbox)':
+        provider = 'dropbox'
+    elif row.text=='Amazon S3: elasticbeanstalk-us-east-1-593772593292 (US Standard)':
+        provider = 's3'
+    elif row.text=='ownCloud: / (Full ownCloud)':
+        provider = 'owncloud'
+    else:
+        provider='provider name not found :('
+    return provider;
+
 
 @pytest.mark.usefixtures('must_be_logged_in')
 class TestFilesPage:
@@ -73,7 +86,7 @@ class TestFilesPage:
             osf_api.connect_provider_root_to_node(session, provider, addon_account_id,
                                                   node_id=node_id)
 
-            new_file, metadata = osf_api.upload_fake_folder(session=session, node=node, name='Selenium Test Folder',
+            new_folder, metadata = osf_api.upload_fake_folder(session=session, node=node, name='Selenium Test Folder',
                                                             provider=provider)
 
             files_page = FilesPage(driver, guid=node_id)
@@ -82,17 +95,79 @@ class TestFilesPage:
             # checks files have loaded
             files_page.first_file.present()
 
-            # # Find the row with the OSF storage
-            # for row in files_page.fangorn_addons:
-            #     if format_provider_name(row) == provider:
-            #         row.click()
-            #         break;
-            #
-            # click_button(driver, 'Create Folder')
-            # folder_name_text_box = driver.find_element_by_id('createFolderInput')
-            # folder_name_text_box.click()
-            # folder_name_text_box.send_keys('Selenium Test Folder')
-            # folder_name_text_box.send_keys(Keys.RETURN)
+            # do implicit wait
+            time.sleep(4)
+            click_addon_folder(files_page, new_folder)
+            click_button(driver, 'Delete Folder')
+
+            # wait for the delete confirmation
+            files_page.delete_modal.present()
+
+            # Front End will show 'delete failed' message - still works as expected
+            driver.find_element_by_css_selector('.btn-danger').click()
+
+
+    @pytest.mark.parametrize('provider', ['box'])
+    def test_create_folder(self, driver, default_project, session, provider):
+        node_id = default_project.id
+
+        # connect addon to node, upload a single test file
+        node = osf_api.get_node(session, node_id=node_id)
+        if provider != 'osfstorage':
+            addon = osf_api.get_user_addon(session, provider)
+            addon_account_id = list(addon['data']['links']['accounts'])[0]
+            osf_api.connect_provider_root_to_node(session, provider, addon_account_id,
+                                                  node_id=node_id)
+
+            files_page = FilesPage(driver, guid=node_id)
+            files_page.goto()
+
+            # checks files have loaded
+            files_page.first_file.present()
+
+            # Find the row with the OSF storage
+            for row in files_page.fangorn_addons:
+                if format_provider_name(row) == provider:
+                    row.click()
+                    break;
+
+            click_button(driver, 'Create Folder')
+            folder_name_text_box = driver.find_element_by_id('createFolderInput')
+            folder_name_text_box.click()
+            folder_name_text_box.send_keys('Selenium Test Folder')
+            folder_name_text_box.send_keys(Keys.RETURN)
+
+            # do implicit wait
+            time.sleep(4)
+            click_addon_folder(files_page, 'Selenium Test Folder')
+            click_button(driver, 'Delete Folder')
+
+            # wait for the delete confirmation
+            files_page.delete_modal.present()
+
+            # Front End will show 'delete failed' message - still works as expected
+            driver.find_element_by_css_selector('.btn-danger').click()
+
+    @pytest.mark.parametrize('provider', ['box'])
+    def test_rename_folder(self, driver, default_project, session, provider):
+        node_id = default_project.id
+
+        # connect addon to node, upload a single test file
+        node = osf_api.get_node(session, node_id=node_id)
+        if provider != 'osfstorage':
+            addon = osf_api.get_user_addon(session, provider)
+            addon_account_id = list(addon['data']['links']['accounts'])[0]
+            osf_api.connect_provider_root_to_node(session, provider, addon_account_id,
+                                                  node_id=node_id)
+
+            new_folder, metadata = osf_api.upload_fake_folder(session=session, node=node, name='Selenium Test Folder',
+                                                            provider=provider)
+
+            files_page = FilesPage(driver, guid=node_id)
+            files_page.goto()
+
+            # checks files have loaded
+            files_page.first_file.present()
 
             # Rename
             time.sleep(4)
@@ -100,7 +175,7 @@ class TestFilesPage:
             click_button(driver, 'Rename')
             folder_name_text_box = driver.find_element_by_id('renameInput')
             folder_name_text_box.click()
-            for _ in range(20):
+            for _ in range(len(new_folder)):
                 folder_name_text_box.send_keys(Keys.BACKSPACE)
             folder_name_text_box.send_keys('Automated Folder')
             folder_name_text_box.send_keys(Keys.RETURN)
@@ -122,6 +197,9 @@ class TestFilesPage:
         Downloads
         - Click downloads button
         - Check for a 200 status 
+        
+        API
+        - Write a delete call for Folders
            
         Folders for all addons
         - Move
