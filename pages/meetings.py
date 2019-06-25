@@ -15,7 +15,7 @@ class BaseMeetingsPage(OSFBasePage):
 class MeetingsPage(BaseMeetingsPage):
     url = settings.OSF_HOME + '/meetings/'
 
-    identity = Locator(By.CSS_SELECTOR, 'div.osf-meeting-header-img', settings.LONG_TIMEOUT)
+    identity = Locator(By.CSS_SELECTOR, 'img[alt="Logo for OSF meeting"]', settings.LONG_TIMEOUT)
     register_button = Locator(By.CSS_SELECTOR, 'div.osf-meeting-header-img div.osf-meeting-header div button[data-target="#osf-meeting-register"]', settings.LONG_TIMEOUT)
     register_text = Locator(By.CSS_SELECTOR, '#osf-meeting-register > div:nth-child(1) > p:nth-child(1)')
     upload_button = Locator(By.CSS_SELECTOR, 'div.osf-meeting-header-img div.osf-meeting-header div button[data-target="#osf-meeting-upload"]', settings.LONG_TIMEOUT)

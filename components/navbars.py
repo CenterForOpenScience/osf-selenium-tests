@@ -70,7 +70,7 @@ class RegistriesNavbar(EmberNavbar):
         return self.current_service.text == 'REGISTRIES'
 
 
-class MeetingsNavbar(Navbar):
+class MeetingsNavbar(EmberNavbar):
 
     def verify(self):
         return self.current_service.text == 'MEETINGS'
