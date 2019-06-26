@@ -13,8 +13,8 @@ def meetings_page(driver):
     return meetings_page
 
 
-@pytest.mark.skipif(settings.STAGE2, reason='No meetings on staging2')
-@pytest.mark.skipif(settings.TEST, reason='Only one meeting on test')
+# @pytest.mark.skipif(settings.STAGE2, reason='No meetings on staging2')
+@pytest.mark.skipif(settings.STAGE1, reason='Only one meeting on test')
 class TestMeetingsPage:
 
     def test_meetings_landing(self, meetings_page):
@@ -31,34 +31,34 @@ class TestMeetingsPage:
         assert meetings_page.nrao_logo.present()
         assert meetings_page.spsp_logo.present()
 
-    def test_filtering(self, meetings_page):
-        default_top_result = meetings_page.top_meeting_link.text
-        meetings_page.filter_input.clear()
-        meetings_page.filter_input.send_keys('ea')
-        filtered_top_result = meetings_page.top_meeting_link.text
-        assert default_top_result != filtered_top_result
+    # def test_filtering(self, meetings_page):
+    #     default_top_result = meetings_page.bottom_meeting_link.text
+    #     meetings_page.filter_input.clear()
+    #     meetings_page.filter_input.send_keys('ea')
+    #     filtered_top_result = meetings_page.bottom_meeting_link.text
+    #     assert default_top_result != filtered_top_result
 
-    def test_carets(self, meetings_page):
-        default_top_result = meetings_page.top_meeting_link.text
-        meetings_page.sort_caret_name_desc.click()
-        sorted_top_result = meetings_page.top_meeting_link.text
-        assert default_top_result != sorted_top_result
+    # def test_carets(self, meetings_page):
+    #     default_top_result = meetings_page.bottom_meeting_link.text
+    #     meetings_page.sort_caret_name_desc.click()
+    #     sorted_top_result = meetings_page.bottom_meeting_link.text
+    #     assert default_top_result != sorted_top_result
+    #
+    # @markers.core_functionality
+    # def test_meetings_list(self, meetings_page, driver):
+    #     meeting_name = meetings_page.bottom_meeting_link.text
+    #     meetings_page.bottom_meeting_link.click()
+    #     meeting_detail = MeetingDetailPage(driver, verify=True)
+    #     assert meeting_name == meeting_detail.meeting_title.text.strip()
 
-    @markers.core_functionality
-    def test_meetings_list(self, meetings_page, driver):
-        meeting_name = meetings_page.top_meeting_link.text
-        meetings_page.top_meeting_link.click()
-        meeting_detail = MeetingDetailPage(driver, verify=True)
-        assert meeting_name == meeting_detail.meeting_title.text.strip()
 
-
-@pytest.mark.skipif(settings.STAGE2, reason='No meetings on staging2')
-@pytest.mark.skipif(settings.TEST, reason='Only one meeting on test')
+# @pytest.mark.skipif(settings.STAGE2, reason='No meetings on staging2')
+@pytest.mark.skipif(settings.STAGE1, reason='Only one meeting on test')
 class TestMeetingDetailPage:
 
     @pytest.fixture
     def meeting_detail_page(self, meetings_page, driver):
-        meetings_page.top_meeting_link.click()
+        meetings_page.bottom_meeting_link.click()
         return MeetingDetailPage(driver, verify=True)
 
     @markers.core_functionality
