@@ -207,6 +207,9 @@ class TestMeetingsNavbar(NavbarTestLoggedOutMixin):
         # 360001550933 -> Zendesk Link
         assert '360001550933' in driver.current_url
 
+        # OR assert support (is acceptable)
+        # maybe try an if, elif statement
+
     def test_donate_link(self, page, driver):
         page.navbar.donate_link.click()
         COSDonatePage(driver, verify=True)
