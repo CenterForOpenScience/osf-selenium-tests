@@ -17,7 +17,7 @@ def meetings_page(driver):
 @pytest.mark.skipif(settings.STAGE1, reason='Only one meeting on test')
 class TestMeetingsPage:
 
-    def test_meetings_landing(self, meetings_page):
+    def test_meetings_landing(self, meetings_page, driver):
         assert meetings_page.register_text.absent()
         meetings_page.register_button.click()
         assert meetings_page.register_text.present()
@@ -38,6 +38,10 @@ class TestMeetingsPage:
     #     filtered_top_result = meetings_page.bottom_meeting_link.text
     #     assert default_top_result != filtered_top_result
 
+    # element = driver.find_element_by_xpath("//select[@name='city']")
+    # actions = ActionChains(driver)
+    # actions.move_to_element(element).perform()
+
     # def test_carets(self, meetings_page):
     #     default_top_result = meetings_page.bottom_meeting_link.text
     #     meetings_page.sort_caret_name_desc.click()
@@ -50,6 +54,8 @@ class TestMeetingsPage:
     #     meetings_page.bottom_meeting_link.click()
     #     meeting_detail = MeetingDetailPage(driver, verify=True)
     #     assert meeting_name == meeting_detail.meeting_title.text.strip()
+
+    #TODO: Update Locator names
 
 
 # @pytest.mark.skipif(settings.STAGE2, reason='No meetings on staging2')

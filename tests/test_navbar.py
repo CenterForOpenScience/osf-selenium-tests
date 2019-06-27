@@ -17,19 +17,6 @@ from pages.preprints import PreprintLandingPage, PreprintSubmitPage
 
 #TODO: Test Navbar from all services including reviews and such - they might not have the same navbar always
 
-# def generate_url:
-#     if driver.current_url = staging:
-#         return 'https://staging.osf.io/support'
-#     elif driver.current_url = staging2:
-#         return 'https://staging2.osf.io/support'
-#     elif driver.current_url = staging3:
-#         return 'https://staging3.osf.io/support'
-#     elif driver.current_url = test:
-#         return 'https://test.osf.io/support'
-#     elif driver.current_url = prod:
-#         return 'https://osf.io/support'
-
-
 class NavbarTestLoggedOutMixin:
     """Mixin used to inject generic tests
     """
@@ -201,14 +188,11 @@ class TestMeetingsNavbar(NavbarTestLoggedOutMixin):
 
     def test_support_link(self, page, driver):
         page.navbar.support_link.click()
-        #support_url = 'http://help.osf.io/support/'
-        #assert driver.current_url == support_url
+        assert '360001550933' in driver.current_url or 'support' in driver.current_url
 
-        # 360001550933 -> Zendesk Link
-        assert '360001550933' in driver.current_url
-
-        # OR assert support (is acceptable)
-        # maybe try an if, elif statement
+        # For future use
+        # support_url = 'https://openscience.zendesk.com/hc/en-us/categories/360001550933'
+        # assert driver.current_url == support_url
 
     def test_donate_link(self, page, driver):
         page.navbar.donate_link.click()
