@@ -163,14 +163,14 @@ class TestFilesPage:
 
 
     @pytest.mark.parametrize('provider, modifier_key, action', [
-        #['box', 'none', 'move'],
+        ['box', 'none', 'move'],
         ['box', 'alt', 'copy'],
-        # ['dropbox', 'none', 'move'],
-        # ['dropbox', 'alt', 'copy'],
-        # ['owncloud', 'none', 'move'],
-        # ['owncloud', 'alt', 'copy'],
-        # ['s3', 'none', 'move'],
-        # ['s3', 'alt', 'copy']
+        ['dropbox', 'none', 'move'],
+        ['dropbox', 'alt', 'copy'],
+        ['owncloud', 'none', 'move'],
+        ['owncloud', 'alt', 'copy'],
+        ['s3', 'none', 'move'],
+        ['s3', 'alt', 'copy']
     ])
     def test_dragon_drop(self, driver, default_project, session, provider, modifier_key, action):
         node_id = default_project.id

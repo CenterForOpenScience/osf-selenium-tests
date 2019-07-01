@@ -46,13 +46,22 @@ def click_button(driver, button_name):
             break
     return;
 
+def find_addon_row(files_page, target_folder):
+    files_page.goto()
 
-def click_addon_folder(files_page, target_file):
+    # return files_page
+    for row in files_page.fangorn_rows:
+        if row.find_element_by_xpath('../../..').text == target_folder:
+            return row
+    return;
+
+
+def click_addon_folder(files_page, target_folder):
     files_page.goto()
     time.sleep(4)
 
     for row in files_page.fangorn_folders:
-        if row.find_element_by_xpath('../../..').text == target_file:
+        if row.find_element_by_xpath('../../..').text == target_folder:
             row.click()
             break;
     return;
@@ -191,6 +200,70 @@ class TestFilesPage:
             # Front End will show 'delete failed' message - still works as expected
             driver.find_element_by_css_selector('.btn-danger').click()
 
+    @pytest.mark.parametrize('provider, modifier_key, action', [
+        ['box', 'none', 'move'],
+        ['box', 'alt', 'copy'],
+        ['dropbox', 'none', 'move'],
+        ['dropbox', 'alt', 'copy'],
+        ['owncloud', 'none', 'move'],
+        ['owncloud', 'alt', 'copy'],
+        ['s3', 'none', 'move'],
+        ['s3', 'alt', 'copy']
+    ])
+    def test_dragon_drop(self, driver, default_project, session, provider, modifier_key, action):
+        node_id = default_project.id
+
+        # connect addon to node, upload a single test file
+        node = osf_api.get_node(session, node_id=node_id)
+        if provider != 'osfstorage':
+            addon = osf_api.get_user_addon(session, provider)
+            addon_account_id = list(addon['data']['links']['accounts'])[0]
+            osf_api.connect_provider_root_to_node(session, provider, addon_account_id,
+                                                  node_id=node_id)
+
+        new_folder, metadata = osf_api.upload_fake_folder(session=session, node=node, name='Selenium Test Folder',
+                                                          provider=provider)
+
+        files_page = FilesPage(driver, guid=node_id)
+        files_page.goto()
+
+        # checks files have loaded
+        files_page.first_file.present()
+
+        # Find the row that contains the new file
+        for row in files_page.fangorn_folders:
+            if row.find_element_by_xpath('../../..').text == 'Selenium Test Folder':
+                source = row
+                break;
+
+        # Find the row with the OSF storage
+        for row in files_page.fangorn_addons:
+            if row.text == 'OSF Storage (United States)':
+                target = row
+                break;
+
+        action_chains = ActionChains(driver)
+
+        if modifier_key == 'alt':
+            action_chains = ActionChains(driver)
+            action_chains.key_down(Keys.LEFT_ALT)
+            action_chains.click_and_hold(source)
+            action_chains.move_to_element(target)
+            action_chains.release()
+            action_chains.key_up(Keys.LEFT_ALT)
+            action_chains.perform()
+        else:
+            action_chains.drag_and_drop(source, target).perform()
+
+        # TODO Change this to an implicit wait (polling)
+        WebDriverWait(driver, 10).until(EC.invisibility_of_element_located((By.CLASS_NAME, 'text-muted')))
+        time.sleep(7)
+
+        # api.delete just generates a url so file/folder doesn't matter
+        try:
+            osf_api.delete_file(session, metadata['data']['links']['delete'])
+        except:
+            print("No file to be deleted")
 
         '''
         Next steps:
@@ -204,7 +277,4 @@ class TestFilesPage:
         Folders for all addons
         - Move
         - Copy
-        - Rename
-        - Delete
-
         '''

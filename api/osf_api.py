@@ -144,6 +144,7 @@ def delete_file(session, delete_url):
     # include `item_type=None` b/c pythosf doesn't set a default value for this.
     return session.delete(url=delete_url, item_type=None)
 
+
 def get_providers_list(session=None, type='preprints'):
     """Return the providers list data. The default is the preprint providers list.
     """
