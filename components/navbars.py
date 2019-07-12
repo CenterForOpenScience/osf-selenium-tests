@@ -14,10 +14,12 @@ class Navbar(BaseElement):
     search_link = Locator(By.XPATH, '//a[text()="Search"]')
     support_link = Locator(By.XPATH, '//a[text()="Support"]')
     donate_link = Locator(By.ID, 'navbar-donate')
-    user_dropdown = Locator(By.CSS_SELECTOR, 'a.btn-link')
-    user_dropdown_profile = Locator(By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(1) > a')
-    user_dropdown_support = Locator(By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(2) > a')
-    user_dropdown_settings = Locator(By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(3) > a')
+
+    # Preprints Locators
+    user_dropdown = Locator(By.CSS_SELECTOR, 'ul.navbar-nav > li:nth-child(6) > a')
+    user_dropdown_profile = Locator(By.CSS_SELECTOR, 'ul.dropdown-menu-right > li:nth-child(1)')
+    user_dropdown_support = Locator(By.CSS_SELECTOR, 'ul.dropdown-menu-right > li:nth-child(2)')
+    user_dropdown_settings = Locator(By.CSS_SELECTOR, 'ul.dropdown-menu-right > li:nth-child(3)')
     logout_link = Locator(By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(4) > a')
     sign_up_button = Locator(By.XPATH, '//a[text()="Sign Up"]')
     sign_in_button = Locator(By.XPATH, '//a[text()="Sign In"]')
@@ -46,14 +48,25 @@ class HomeNavbar(Navbar):
 
 
 class EmberNavbar(HomeNavbar):
-    user_dropdown = Locator(By.CLASS_NAME, 'nav-profile-name')
-
-    user_dropdown_profile = Locator(By.CSS_SELECTOR, '.dropdown-menu.auth-dropdown li:nth-child(1) > a')
-    user_dropdown_support = Locator(By.CSS_SELECTOR, '.dropdown-menu.auth-dropdown li:nth-child(2) > a')
-    user_dropdown_settings = Locator(By.CSS_SELECTOR, '.dropdown-menu.auth-dropdown li:nth-child(3) > a')
+    user_dropdown = Locator(By.CSS_SELECTOR, 'ul.navbar-nav > li:nth-child(6) > a')
+    user_dropdown_profile = Locator(By.CSS_SELECTOR, 'ul.auth-dropdown > li:nth-child(1)')
+    user_dropdown_support = Locator(By.CSS_SELECTOR, 'ul.auth-dropdown > li:nth-child(2)')
+    user_dropdown_settings = Locator(By.CSS_SELECTOR, 'ul.auth-dropdown > li:nth-child(3)')
     logout_link = Locator(By.CSS_SELECTOR, '[data-test-ad-logout]')
     sign_in_button = Locator(By.CSS_SELECTOR, '.btn-top-login')
     donate_link = Locator(By.XPATH, '//a[text()="Donate"]')
+
+    # Meetings Locators
+    # user_dropdown = Locator(By.CSS_SELECTOR, 'ul.navbar-nav > li:nth-child(6) > a')
+    # user_dropdown_profile = Locator(By.CSS_SELECTOR, 'ul.auth-dropdown > li:nth-child(1)')
+    # user_dropdown_support = Locator(By.CSS_SELECTOR, 'ul.auth-dropdown > li:nth-child(2)')
+    # user_dropdown_settings = Locator(By.CSS_SELECTOR, 'ul.auth-dropdown > li:nth-child(3)')
+
+    # Registries Locators
+    # user_dropdown = Locator(By.CSS_SELECTOR, 'a[class="dropdown-toggle ember-view _Dropdown_nar5mu"]')
+    # user_dropdown_profile = Locator(By.CSS_SELECTOR, 'ul.dropdown-menu-right > li:nth-child(1)')
+    # user_dropdown_support = Locator(By.CSS_SELECTOR, 'ul.dropdown-menu-right > li:nth-child(2)')
+    # user_dropdown_settings = Locator(By.CSS_SELECTOR, 'ul.dropdown-menu-right > li:nth-child(3)')
 
 
 class PreprintsNavbar(AbstractLegacyEmberNavbar):
