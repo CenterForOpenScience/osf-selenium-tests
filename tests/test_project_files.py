@@ -3,6 +3,8 @@ import ipdb
 import time
 #import markers
 #import settings
+import requests
+
 from api import osf_api
 from pages.project import FilesPage
 from selenium.webdriver.common.keys import Keys
@@ -10,6 +12,8 @@ from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium import webdriver
+
 
 def find_addon_row(files_page, target_file):
     files_page.goto()
@@ -53,8 +57,21 @@ def click_addon_folder(files_page, target_file):
             break;
     return;
 
+def create_dictionary(files_page):
+    thisdict = {
+        "osfstorage"
+    }
+
+    #ipdb.set_trace()
+
+    for row in files_page.fangorn_addons:
+        print(row.find_element_by_xpath('../../..').text)
+
+
+    print(thisdict);
+
 def format_provider_name(row):
-    if row.text=='Box: / (Full Box)':
+    if row.text.startswith('Box:'):
         provider = 'box'
     elif row.text=='Dropbox: / (Full Dropbox)':
         provider = 'dropbox'
@@ -162,6 +179,7 @@ class TestFilesPage:
 
 
 
+
     @pytest.mark.parametrize('provider, modifier_key, action', [
         ['box', 'none', 'move'],
         ['box', 'alt', 'copy'],
@@ -230,6 +248,42 @@ class TestFilesPage:
         except:
             print("No file to be deleted")
 
+    @pytest.mark.parametrize('provider', ['box'])
+    def test_download_file(self, driver, default_project, session, provider):
+        node_id = default_project.id
+
+        # connect addon to node, upload a single test file
+        node = osf_api.get_node(session, node_id=node_id)
+        if provider != 'osfstorage':
+            addon = osf_api.get_user_addon(session, provider)
+            addon_account_id = list(addon['data']['links']['accounts'])[0]
+            osf_api.connect_provider_root_to_node(session, provider, addon_account_id,
+                                                  node_id=node_id)
+
+        new_file, metadata = osf_api.upload_fake_file(session=session, node=node, name='download_file.txt',
+                                                      provider=provider)
+
+        files_page = FilesPage(driver, guid=node_id)
+        files_page.goto()
+
+        click_addon_row(files_page, new_file)
+
+        click_button(driver, 'Download')
+
+        time.sleep(7)
+
+        # def test_status_code(self):
+        #     url = "https://reqres.in/api/user?page=2"
+        #     response = requests.get(url)
+        #     print(response.status_code)
+        #     print(response.content)
+        #     print(response.headers)
+
+        assert 'Could not retrieve file or directory' not in driver.find_element_by_xpath('/html/body').text
+
+        osf_api.delete_file(session, metadata['data']['links']['delete'])
+
+        # assert response.status_code == '200'
 
 
         '''
@@ -240,6 +294,12 @@ class TestFilesPage:
         - Downloads
             - Click downloads button
             - Check for a 200 status  
+            
+        - Dictionary
+            - # create_dictionary(files_page)
+            - change n -> 1 in the next line
+            - row = driver.find_element_by_css_selector('#tb-tbody > div > div > div:nth-child(n)')
+            - val = row.get_attribute('data-level')
             
         Josh Testing Notes
         Drag and Drop

@@ -3,6 +3,8 @@ import ipdb
 import time
 # import markers
 # import settings
+import requests
+
 from api import osf_api
 from pages.project import FilesPage
 from selenium.webdriver.common.keys import Keys
@@ -265,16 +267,24 @@ class TestFilesPage:
         except:
             print("No file to be deleted")
 
+    def test_status_code(self):
+
+        url = "https://reqres.in/api/user?page=2"
+        response = requests.get(url)
+        print(response.status_code)
+        print(response.content)
+        print(response.headers)
+
+        # assert response.status_code == '200'
+
+
         '''
         Next steps:
         Downloads
         - Click downloads button
         - Check for a 200 status 
         
-        API
-        - Write a delete call for Folders
-           
-        Folders for all addons
-        - Move
-        - Copy
+        Upload Files
+        
+        Drag and Drop files between from folder -> service
         '''
