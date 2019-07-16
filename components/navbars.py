@@ -56,18 +56,6 @@ class EmberNavbar(HomeNavbar):
     sign_in_button = Locator(By.CSS_SELECTOR, '.btn-top-login')
     donate_link = Locator(By.XPATH, '//a[text()="Donate"]')
 
-    # Meetings Locators
-    # user_dropdown = Locator(By.CSS_SELECTOR, 'ul.navbar-nav > li:nth-child(6) > a')
-    # user_dropdown_profile = Locator(By.CSS_SELECTOR, 'ul.auth-dropdown > li:nth-child(1)')
-    # user_dropdown_support = Locator(By.CSS_SELECTOR, 'ul.auth-dropdown > li:nth-child(2)')
-    # user_dropdown_settings = Locator(By.CSS_SELECTOR, 'ul.auth-dropdown > li:nth-child(3)')
-
-    # Registries Locators
-    # user_dropdown = Locator(By.CSS_SELECTOR, 'a[class="dropdown-toggle ember-view _Dropdown_nar5mu"]')
-    # user_dropdown_profile = Locator(By.CSS_SELECTOR, 'ul.dropdown-menu-right > li:nth-child(1)')
-    # user_dropdown_support = Locator(By.CSS_SELECTOR, 'ul.dropdown-menu-right > li:nth-child(2)')
-    # user_dropdown_settings = Locator(By.CSS_SELECTOR, 'ul.dropdown-menu-right > li:nth-child(3)')
-
 
 class PreprintsNavbar(AbstractLegacyEmberNavbar):
     title = Locator(By.CSS_SELECTOR, '.navbar-title')
@@ -78,6 +66,18 @@ class PreprintsNavbar(AbstractLegacyEmberNavbar):
 
 
 class RegistriesNavbar(EmberNavbar):
+    # For Registries Only -> This clicks the gravatar image. (Same effect)
+    user_dropdown = Locator(By.CSS_SELECTOR, 'img[data-test-gravatar]')
+
+    user_dropdown_profile = Locator(By.CSS_SELECTOR, 'ul.dropdown-menu-right > li:nth-child(1) > a')
+    user_dropdown_support = Locator(By.CSS_SELECTOR, 'ul.dropdown-menu-right > li:nth-child(2) > a')
+    user_dropdown_settings = Locator(By.CSS_SELECTOR, 'ul.dropdown-menu-right > li:nth-child(3) > a')
+
+    home_link = Locator(By.CSS_SELECTOR,  'ul._ServiceDropdownMenu_nar5mu > li:nth-child(1) > a')
+    preprints_link = Locator(By.CSS_SELECTOR, 'ul._ServiceDropdownMenu_nar5mu > li:nth-child(2) > a')
+    registries_link = Locator(By.CSS_SELECTOR, 'ul._ServiceDropdownMenu_nar5mu > li:nth-child(3) > a')
+    meetings_link = Locator(By.CSS_SELECTOR, 'ul._ServiceDropdownMenu_nar5mu > li:nth-child(4) > a')
+    sign_up_button = Locator(By.CSS_SELECTOR, 'a[data-test-join')
 
     def verify(self):
         return self.current_service.text == 'REGISTRIES'

@@ -15,7 +15,7 @@ from pages.user import UserProfilePage, ProfileInformationPage
 from pages.preprints import PreprintLandingPage, PreprintSubmitPage
 
 
-#TODO: Test Navbar from all services including reviews and such - they might not have the same navbar always
+# TODO: Test Navbar from all services including reviews and such - they might not have the same navbar always
 
 class NavbarTestLoggedOutMixin:
     """Mixin used to inject generic tests
@@ -50,6 +50,7 @@ class NavbarTestLoggedOutMixin:
 
     def test_user_dropdown_not_present(self, page):
         assert page.navbar.user_dropdown.absent()
+
 
 # Class used to inject generic tests
 class NavbarTestLoggedInMixin:
@@ -220,6 +221,7 @@ class TestRegistriesNavbar(NavbarTestLoggedOutMixin):
         page = RegistriesPage(driver)
         page.goto()
         return page
+
 
     # todo: add id to those html tags in ember osf to make the find_element possible
     # def test_search_link(self):
