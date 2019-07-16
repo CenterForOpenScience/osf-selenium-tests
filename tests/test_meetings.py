@@ -37,7 +37,7 @@ class TestMeetingsPage:
 
     def test_filtering(self, meetings_page, driver):
         search_bar = driver.find_element_by_css_selector('div[data-test-meetings-list-search]')
-        driver.execute_script("arguments[0].scrollIntoView();", search_bar)
+        driver.execute_script('arguments[0].scrollIntoView();', search_bar)
 
         default_top_result = meetings_page.top_meeting_link.text
         meetings_page.filter_input.clear()
@@ -48,7 +48,7 @@ class TestMeetingsPage:
 
     def test_carets(self, meetings_page, driver):
         search_bar = driver.find_element_by_css_selector('div[data-test-meetings-list-search]')
-        driver.execute_script("arguments[0].scrollIntoView();", search_bar)
+        driver.execute_script('arguments[0].scrollIntoView();', search_bar)
 
         default_top_result = meetings_page.top_meeting_link.text
         meetings_page.sort_caret_name_asc.click()
@@ -58,7 +58,7 @@ class TestMeetingsPage:
     @markers.core_functionality
     def test_meetings_list(self, meetings_page, driver):
         search_bar = driver.find_element_by_css_selector('div[data-test-meetings-list-search]')
-        driver.execute_script("arguments[0].scrollIntoView();", search_bar)
+        driver.execute_script('arguments[0].scrollIntoView();', search_bar)
 
         meeting_name = meetings_page.top_meeting_link.text
         meetings_page.top_meeting_link.click()
@@ -73,7 +73,7 @@ class TestMeetingDetailPage:
     @pytest.fixture
     def meeting_detail_page(self, meetings_page, driver):
         search_bar = driver.find_element_by_css_selector('div[data-test-meetings-list-search]')
-        driver.execute_script("arguments[0].scrollIntoView();", search_bar)
+        driver.execute_script('arguments[0].scrollIntoView();', search_bar)
 
         meetings_page.top_meeting_link.click()
         return MeetingDetailPage(driver, verify=True)

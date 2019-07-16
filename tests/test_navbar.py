@@ -222,7 +222,6 @@ class TestRegistriesNavbar(NavbarTestLoggedOutMixin):
         page.goto()
         return page
 
-
     # todo: add id to those html tags in ember osf to make the find_element possible
     # def test_search_link(self):
     #     page.navbar.search_link.click()

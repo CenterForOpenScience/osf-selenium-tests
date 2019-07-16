@@ -73,7 +73,7 @@ class RegistriesNavbar(EmberNavbar):
     user_dropdown_support = Locator(By.CSS_SELECTOR, 'ul.dropdown-menu-right > li:nth-child(2) > a')
     user_dropdown_settings = Locator(By.CSS_SELECTOR, 'ul.dropdown-menu-right > li:nth-child(3) > a')
 
-    home_link = Locator(By.CSS_SELECTOR,  'ul._ServiceDropdownMenu_nar5mu > li:nth-child(1) > a')
+    home_link = Locator(By.CSS_SELECTOR, 'ul._ServiceDropdownMenu_nar5mu > li:nth-child(1) > a')
     preprints_link = Locator(By.CSS_SELECTOR, 'ul._ServiceDropdownMenu_nar5mu > li:nth-child(2) > a')
     registries_link = Locator(By.CSS_SELECTOR, 'ul._ServiceDropdownMenu_nar5mu > li:nth-child(3) > a')
     meetings_link = Locator(By.CSS_SELECTOR, 'ul._ServiceDropdownMenu_nar5mu > li:nth-child(4) > a')
