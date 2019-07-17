@@ -43,5 +43,3 @@ class MeetingDetailPage(BaseMeetingsPage):
     sort_caret_title_asc = Locator(By.CSS_SELECTOR, 'button[data-test-ascending-sort="title"]')
     paginate_next = Locator(By.CSS_SELECTOR, 'button[data-test-next-page-button]')
     paginate_previous = Locator(By.CSS_SELECTOR, 'button[data-test-previous-page-button]')
-
-

@@ -1,10 +1,8 @@
 import pytest
-from selenium.webdriver import ActionChains
 
 import markers
 import settings
 import time
-import ipdb
 
 from pages.project import ProjectPage
 from pages.meetings import MeetingsPage, MeetingDetailPage
