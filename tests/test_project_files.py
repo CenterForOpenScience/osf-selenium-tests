@@ -57,27 +57,37 @@ def click_addon_folder(files_page, target_file):
             break;
     return;
 
-def create_dictionary(files_page):
-    thisdict = {
-        "osfstorage"
-    }
+def create_dictionary(files_page, driver):
 
-    #ipdb.set_trace()
+    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, '#tb-tbody div[data-level="3"]')))
+    WebDriverWait(driver, 10).until(EC.invisibility_of_element_located((By.CSS_SELECTOR, '#tb-tbody .fa-refresh')))
 
-    for row in files_page.fangorn_addons:
-        print(row.find_element_by_xpath('../../..').text)
+    all_fangorn_rows = driver.find_elements_by_css_selector('#treeGrid .tb-table .tb-tbody-inner > div > div')
+
+    fangorn_dictionary = {}
+    key = ""
+
+    for row in all_fangorn_rows:
+        data_level = row.get_attribute('data-level')
+        print('\ndata-level = {}: text = {}'.format(data_level, row.text))
+        if data_level == '2':
+            key = row.text
+            fangorn_dictionary[key] = []
+        elif data_level == '3':
+            fangorn_dictionary[key].append(row.text)
+
+    print(fangorn_dictionary)
 
 
-    print(thisdict);
 
 def format_provider_name(row):
     if row.text.startswith('Box:'):
         provider = 'box'
-    elif row.text=='Dropbox: / (Full Dropbox)':
+    elif row.text.startswith('Dropbox:'):
         provider = 'dropbox'
-    elif row.text=='Amazon S3: elasticbeanstalk-us-east-1-593772593292 (US Standard)':
+    elif row.text.startswith('Amazon S3:'):
         provider = 's3'
-    elif row.text=='ownCloud: / (Full ownCloud)':
+    elif row.text.startswith('ownCloud'):
         provider = 'owncloud'
     else:
         provider='provider name not found :('
@@ -177,9 +187,6 @@ class TestFilesPage:
         row = find_addon_row(files_page, 'delete_this_guy.txt')
         assert row is None
 
-
-
-
     @pytest.mark.parametrize('provider, modifier_key, action', [
         ['box', 'none', 'move'],
         ['box', 'alt', 'copy'],
@@ -248,7 +255,7 @@ class TestFilesPage:
         except:
             print("No file to be deleted")
 
-    @pytest.mark.parametrize('provider', ['box'])
+    @pytest.mark.parametrize('provider', ['box', 'dropbox', 's3', 'owncloud'])
     def test_download_file(self, driver, default_project, session, provider):
         node_id = default_project.id
 
@@ -266,18 +273,11 @@ class TestFilesPage:
         files_page = FilesPage(driver, guid=node_id)
         files_page.goto()
 
-        click_addon_row(files_page, new_file)
+        create_dictionary(files_page, driver)
 
-        click_button(driver, 'Download')
-
-        time.sleep(7)
-
-        # def test_status_code(self):
-        #     url = "https://reqres.in/api/user?page=2"
-        #     response = requests.get(url)
-        #     print(response.status_code)
-        #     print(response.content)
-        #     print(response.headers)
+        # click_addon_row(files_page, new_file)
+        # click_button(driver, 'Download')
+        # time.sleep(7)
 
         assert 'Could not retrieve file or directory' not in driver.find_element_by_xpath('/html/body').text
 
@@ -300,6 +300,11 @@ class TestFilesPage:
             - change n -> 1 in the next line
             - row = driver.find_element_by_css_selector('#tb-tbody > div > div > div:nth-child(n)')
             - val = row.get_attribute('data-level')
+            - clean up provider & filenames
+            - update and return dictionary from function
+            
+        - EC Waits
+            - Explain the purpose & reasoning for the new waits
             
         Josh Testing Notes
         Drag and Drop
