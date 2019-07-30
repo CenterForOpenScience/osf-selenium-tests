@@ -40,10 +40,10 @@ class BaseUserSettingsPage(OSFBasePage):
 class ProfileInformationPage(BaseUserSettingsPage):
     url = settings.OSF_HOME + '/settings/'
 
-    identity = Locator(By.CSS_SELECTOR, 'div[data-analytics-scope="Profile"]')
+    identity = Locator(By.CSS_SELECTOR, 'div[id="profileSettings"]')
     middle_name_input = Locator(By.CSS_SELECTOR, '#names > div > form > div:nth-child(5) > input')
     save_button = Locator(By.CSS_SELECTOR, '#names > div > form > div.p-t-lg.p-b-lg > button.btn.btn-success')
-    update_success = Locator(By.CSS_SELECTOR, '.text-success')
+    # update_success = Locator(By.CSS_SELECTOR, '.text-success')
 
 class AccountSettingsPage(BaseUserSettingsPage):
     url = settings.OSF_HOME + '/settings/account/'
