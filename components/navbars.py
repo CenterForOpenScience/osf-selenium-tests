@@ -36,7 +36,7 @@ class Navbar(BaseElement):
 
 
 class AbstractLegacyEmberNavbar(Navbar):
-    user_dropdown = Locator(By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-of-type(1) > a', settings.LONG_TIMEOUT)
+    user_dropdown = Locator(By.CSS_SELECTOR, 'ul.navbar-nav > li:nth-child(6) > a')
     sign_in_button = Locator(By.CSS_SELECTOR, '#secondary-navigation > ul.nav > li.ember-view.dropdown.sign-in > a.btn.btn-info.btn-top-login', settings.LONG_TIMEOUT)
 
 
@@ -51,7 +51,7 @@ class EmberNavbar(HomeNavbar):
     user_dropdown = Locator(By.CSS_SELECTOR, 'ul.navbar-nav > li:nth-child(6) > a')
     user_dropdown_profile = Locator(By.CSS_SELECTOR, 'ul.auth-dropdown > li:nth-child(1)')
     user_dropdown_support = Locator(By.CSS_SELECTOR, 'ul.auth-dropdown > li:nth-child(2)')
-    user_dropdown_settings = Locator(By.CSS_SELECTOR, 'ul.auth-dropdown > li:nth-child(3)')
+    user_dropdown_settings = Locator(By.CSS_SELECTOR, 'a[data-analytics-name="Settings"]')
     logout_link = Locator(By.CSS_SELECTOR, '[data-test-ad-logout]')
     sign_in_button = Locator(By.CSS_SELECTOR, '.btn-top-login')
     donate_link = Locator(By.XPATH, '//a[text()="Donate"]')
@@ -71,7 +71,7 @@ class RegistriesNavbar(EmberNavbar):
 
     user_dropdown_profile = Locator(By.CSS_SELECTOR, 'ul.dropdown-menu-right > li:nth-child(1) > a')
     user_dropdown_support = Locator(By.CSS_SELECTOR, 'ul.dropdown-menu-right > li:nth-child(2) > a')
-    user_dropdown_settings = Locator(By.CSS_SELECTOR, 'ul.dropdown-menu-right > li:nth-child(3) > a')
+    user_dropdown_settings = Locator(By.CSS_SELECTOR, 'a[data-analytics-name="Settings"]')
 
     home_link = Locator(By.CSS_SELECTOR, 'ul._ServiceDropdownMenu_nar5mu > li:nth-child(1) > a')
     preprints_link = Locator(By.CSS_SELECTOR, 'ul._ServiceDropdownMenu_nar5mu > li:nth-child(2) > a')

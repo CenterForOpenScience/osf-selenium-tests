@@ -1,5 +1,6 @@
 import pytest
 import markers
+import ipdb
 
 from pages.login import LoginPage, login
 from pages.cos import COSDonatePage
@@ -127,6 +128,7 @@ class TestOSFHomeNavbar(NavbarTestLoggedOutMixin):
 
 class TestOSFHomeNavbarLoggedIn(NavbarTestLoggedInMixin):
 
+    # Profile settings page
     @pytest.fixture()
     def page(self, driver, must_be_logged_in):
         page = DashboardPage(driver)
