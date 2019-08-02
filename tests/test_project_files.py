@@ -57,8 +57,9 @@ def click_addon_folder(files_page, target_file):
             break;
     return;
 
-def create_dictionary(files_page, driver):
+def create_dictionary( driver):
 
+    # Wait until fangorn has loaded all files in the tree before testing
     WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, '#tb-tbody div[data-level="3"]')))
     WebDriverWait(driver, 10).until(EC.invisibility_of_element_located((By.CSS_SELECTOR, '#tb-tbody .fa-refresh')))
 
@@ -71,12 +72,15 @@ def create_dictionary(files_page, driver):
         data_level = row.get_attribute('data-level')
         print('\ndata-level = {}: text = {}'.format(data_level, row.text))
         if data_level == '2':
-            key = row.text
+            key = format_provider_name(row)
             fangorn_dictionary[key] = []
         elif data_level == '3':
-            fangorn_dictionary[key].append(row.text)
+            file_name = row.find_element_by_css_selector('.td-title .title-text')
+            # create sub-dictionary entries for each provider
+            # each sub-dictionary contains name of the row and the row object
+            fangorn_dictionary[key].append({'file_name': file_name.text, 'row_object': row})
 
-    print(fangorn_dictionary)
+    return fangorn_dictionary
 
 
 
@@ -89,8 +93,10 @@ def format_provider_name(row):
         provider = 's3'
     elif row.text.startswith('ownCloud'):
         provider = 'owncloud'
+    elif row.text.startswith('OSF'):
+        provider = 'osf'
     else:
-        provider='provider name not found :('
+        provider = 'provider name not found :('
     return provider;
 
 @pytest.mark.usefixtures('must_be_logged_in')
@@ -125,9 +131,6 @@ class TestFilesPage:
 
         #TODO: Write another project.py->FilesPage->Locator to wait for renamed file
         time.sleep(5)
-
-        # WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, 'tb-notify alert-success')))
-        # WebDriverWait(driver, 10).until(EC.invisibility_of_element_located((By.CLASS_NAME, 'tb-notify alert-success')))
 
         row = find_addon_row(files_page, "Selenium Test File")
         assert row is not None
@@ -255,7 +258,7 @@ class TestFilesPage:
         except:
             print("No file to be deleted")
 
-    @pytest.mark.parametrize('provider', ['box', 'dropbox', 's3', 'owncloud'])
+    @pytest.mark.parametrize('provider', ['owncloud'])
     def test_download_file(self, driver, default_project, session, provider):
         node_id = default_project.id
 
@@ -273,11 +276,12 @@ class TestFilesPage:
         files_page = FilesPage(driver, guid=node_id)
         files_page.goto()
 
-        create_dictionary(files_page, driver)
-
-        # click_addon_row(files_page, new_file)
-        # click_button(driver, 'Download')
-        # time.sleep(7)
+        current_files = create_dictionary(driver)
+        ipdb.set_trace()
+        download_file = current_files[provider][1]['row_object']
+        download_file.click()
+        click_button(driver, 'Download')
+        time.sleep(7)
 
         assert 'Could not retrieve file or directory' not in driver.find_element_by_xpath('/html/body').text
 
@@ -303,8 +307,6 @@ class TestFilesPage:
             - clean up provider & filenames
             - update and return dictionary from function
             
-        - EC Waits
-            - Explain the purpose & reasoning for the new waits
             
         Josh Testing Notes
         Drag and Drop
