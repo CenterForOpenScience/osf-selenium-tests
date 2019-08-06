@@ -1,8 +1,8 @@
 import pytest
-import ipdb
 import time
-#import markers
-#import settings
+# import ipdb
+# import markers
+# import settings
 
 from api import osf_api
 from pages.project import FilesPage
@@ -11,6 +11,31 @@ from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+
+'''
+*** Next steps ***
+Update sleeps with implicit waits
+    - Work w/Fitz
+Downloads
+    - Firefox - S3 still opens prompt
+    - Click downloads button
+    - Check for a 200 status
+Drag and Drop
+    - Doesn't work for Chrome
+*** Josh Testing Notes ***
+Drag and Drop
+- Target add-on needs to be visible in the files widget
+Delete btn-danger
+- Modal must be in current window for test to pass
+- User cannot be in a separate window while test is running
+Writeable addons (that work)
+- 'box', 'dropbox', 's3', 'owncloud'
+'googledrive' - MUST specify both folder_id and folder_path
+'github' - requested add-on not currently configurable via API
+'dataverse' - requested add-on not currently configurable via API
+'figshare' - has a weird file setup
+'''
+
 
 def format_provider_name(row):
     if row.text.startswith('Box:'):
@@ -27,16 +52,7 @@ def format_provider_name(row):
         provider = 'osf'
     else:
         provider = 'provider name not found :('
-    return provider;
-
-# Click a button in the toolbar, just pass in the name
-def click_button(driver, button_name):
-    file_action_buttons = driver.find_elements_by_css_selector('#folderRow .fangorn-toolbar-icon')
-    for button in file_action_buttons:
-        if button.text == button_name:
-            button.click()
-            break
-    return;
+    return provider
 
 def create_dictionary(driver):
     # Wait until fangorn has loaded all files in the tree before testing
@@ -44,9 +60,8 @@ def create_dictionary(driver):
     WebDriverWait(driver, 10).until(EC.invisibility_of_element_located((By.CSS_SELECTOR, '#tb-tbody .fa-refresh')))
 
     all_fangorn_rows = driver.find_elements_by_css_selector('#treeGrid .tb-table .tb-tbody-inner > div > div')
-
     fangorn_dictionary = {}
-    key = ""
+    key = ''
 
     for row in all_fangorn_rows:
         data_level = row.get_attribute('data-level')
@@ -66,14 +81,20 @@ def find_row_by_name(driver, provider, row_name):
     for x in all_files[provider]:
         if x['file_name'] == row_name:
             return x['row_object']
-        else:
-            print('Row not found! :(')
+    return
 
+# Click a button in the toolbar, just pass in the name
+def find_toolbar_button_by_name(driver, button_name):
+    file_action_buttons = driver.find_elements_by_css_selector('#folderRow .fangorn-toolbar-icon')
+    for button in file_action_buttons:
+        if button.text == button_name:
+            return button
+    return
 
 @pytest.mark.usefixtures('must_be_logged_in')
 class TestFilesPage:
 
-    @pytest.mark.parametrize('provider', ['box'])
+    @pytest.mark.parametrize('provider', ['owncloud'])
     def test_rename_file(self, driver, default_project, session, provider):
         node_id = default_project.id
 
@@ -92,7 +113,8 @@ class TestFilesPage:
 
         row = find_row_by_name(driver, provider, new_file)
         row.click()
-        click_button(driver, 'Rename')
+        rename_button = find_toolbar_button_by_name(driver, 'Rename')
+        rename_button.click()
         rename_text_box = driver.find_element_by_id('renameInput')
 
         for _ in range(len(new_file)):
@@ -103,8 +125,13 @@ class TestFilesPage:
         rename_text_box.send_keys(Keys.RETURN)
         time.sleep(5)
 
-        row = find_row_by_name(driver, provider, new_file)
-        assert row is None
+        # test old file name does not exist
+        old_file = find_row_by_name(driver, provider, 'foo.txt')
+        assert old_file is None
+
+        # test that new file name is present and visible
+        renamed_file = find_row_by_name(driver, provider, 'Selenium Test File')
+        assert 'Selenium Test File' in renamed_file.text
 
         osf_api.delete_file(session, metadata['data']['links']['delete'].replace('foo.txt', 'Selenium Test File'))
 
@@ -121,20 +148,34 @@ class TestFilesPage:
 
         row = find_row_by_name(driver, 'osf', new_file)
         row.click()
-        click_button(driver, 'Check out file')
+        checkout_button = find_toolbar_button_by_name(driver, 'Check out file')
+        checkout_button.click()
 
-        #wait for the confirmation modal
-        files_page.checkout_modal.present()
+        # Accept the confirmation modal
         driver.find_element_by_css_selector('.btn-warning').click()
         time.sleep(4)
 
+        # Test that Check Out button is no longer present
         row = find_row_by_name(driver, 'osf', new_file)
         row.click()
-        click_button(driver, 'Check in file')
+        checkout_button = find_toolbar_button_by_name(driver, 'Check out file')
+        assert checkout_button is None
+
+        row = find_row_by_name(driver, 'osf', new_file)
+        row.click()
+        check_in_button = find_toolbar_button_by_name(driver, 'Check in file')
+        check_in_button.click()
+        time.sleep(4)
+
+        # Test that Check In button is no longer present
+        row = find_row_by_name(driver, 'osf', new_file)
+        row.click()
+        check_in_button = find_toolbar_button_by_name(driver, 'Check in file')
+        assert check_in_button is None
 
         osf_api.delete_file(session, metadata['data']['links']['delete'])
 
-    @pytest.mark.parametrize('provider', ['box'])
+    @pytest.mark.parametrize('provider', ['s3'])
     def test_delete_file(self, driver, default_project, session, provider):
         node_id = default_project.id
 
@@ -154,7 +195,8 @@ class TestFilesPage:
 
         row = find_row_by_name(driver, provider, new_file)
         row.click()
-        click_button(driver, 'Delete')
+        delete_button = find_toolbar_button_by_name(driver, 'Delete')
+        delete_button.click()
 
         # wait for the delete confirmation
         files_page.delete_modal.present()
@@ -163,14 +205,8 @@ class TestFilesPage:
         driver.find_element_by_css_selector('.btn-danger').click()
         time.sleep(4)
 
-        # Negative Test Case (test if delete_this_guy.txt is found)
-        all_files = create_dictionary(driver)
-        for x in all_files[provider]:
-            if x['file_name'] == new_file:
-                found = True
-            else:
-                found = False
-        assert found is False
+        deleted_row = find_row_by_name(driver, provider, new_file)
+        assert deleted_row is None
 
     @pytest.mark.parametrize('provider, modifier_key, action', [
         ['box', 'none', 'move'],
@@ -206,7 +242,7 @@ class TestFilesPage:
         for row in files_page.fangorn_addons:
             if row.text == 'OSF Storage (United States)':
                 target = row
-                break;
+                break
 
         action_chains = ActionChains(driver)
         if modifier_key == 'alt':
@@ -221,17 +257,29 @@ class TestFilesPage:
 
         #TODO Change this to an implicit wait (polling)
         WebDriverWait(driver, 10).until(EC.invisibility_of_element_located((By.CLASS_NAME, 'text-muted')))
-        time.sleep(5)
 
+        time.sleep(5)
         files_page.goto()
+
+        origin_file = find_row_by_name(driver, provider, new_file)
+        destination_file = find_row_by_name(driver, 'osf', new_file)
+
+        if modifier_key == 'alt':
+            # test for copy
+            assert 'drag_this_file.txt' in origin_file.text
+            assert 'drag_this_file.txt' in destination_file.text
+        else:
+            # test for move
+            assert origin_file is None
+            assert 'drag_this_file.txt' in destination_file.text
 
         try:
             # Attempt to delete drag_this_file.txt in origin provider folder
             osf_api.delete_file(session, metadata['data']['links']['delete'])
         except:
-            print("No file to be deleted")
+            print('No file to be deleted')
 
-    @pytest.mark.parametrize('provider', ['owncloud'])
+    @pytest.mark.parametrize('provider', ['dropbox'])
     def test_download_file(self, driver, default_project, session, provider):
         node_id = default_project.id
 
@@ -251,42 +299,11 @@ class TestFilesPage:
 
         row = find_row_by_name(driver, provider, new_file)
         row.click()
-        click_button(driver, 'Download')
+        download_button = find_toolbar_button_by_name(driver, 'Download')
+        download_button.click()
         time.sleep(7)
 
+        # Negative test
         assert 'Could not retrieve file or directory' not in driver.find_element_by_xpath('/html/body').text
 
         osf_api.delete_file(session, metadata['data']['links']['delete'])
-
-        '''
-        Next steps:
-        - dragon_drop needs an implicit wait
-            - Ask Fitz
-            
-        - Downloads
-            - Click downloads button
-            - Check for a 200 status  
-            
-        - Dictionary
-            - replace find rows functions with dictionary search
-
-        - Drag and Drop
-            - Doesn't work for Chrome
-            
-        Josh Testing Notes
-        Drag and Drop
-        - Target add-on needs to be visible in the files widget
-        
-        Delete btn-danger 
-        - Modal must be in current window for test to pass
-        - User cannot be in a separate window while test is running
-            
-        Writeable addons (that work)
-        - 'box', 'dropbox', 's3', 'owncloud'
-        
-        'googledrive' - MUST specify both folder_id and folder_path
-        'github' - requested add-on not currently configurable via API
-        'dataverse' - requested add-on not currently configurable via API
-        'figshare' - has a weird file setup
-        
-        '''
