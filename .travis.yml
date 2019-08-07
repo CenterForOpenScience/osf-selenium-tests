@@ -6,7 +6,7 @@ env:
   global:
   - PROJECT_DIR="$PWD"
   - DRIVER="Remote"
-  
+
 install:
   - cd $PROJECT_DIR
   - travis_retry pip install --upgrade pip
@@ -28,3 +28,7 @@ jobs:
       env: TEST_BUILD="edge"
 script:
   - invoke test_travis_$TEST_BUILD
+
+notifications:
+  flowdock:
+    secure: "h98OMImn7qLMPLBbpbrjlgkzmPP+1l55beA0rY1hh7pj8eXx7qEKGpdSFREGf+yyqU9xSf6aRquVQMnJeP8stDoACwSHEsCroZ6Aojp7/l+4184viqKDHypkbntsWVw+4b547tNUTkp12/yV1JZieUP7bobc6+7pksqksnmLhhlD+L+YAgXCJC3L2cFTh1mL6jHVtpgvTBf9lOWQnFnNTQy64NMZ288k9gqbRW0KKqSxaFtdS7T1Z62jH5gRUUtGAruza7tCLCmu/M/r9XDfmYsETebr6eKdWWk4qH37f0OCAgzrF3HbVkTMVUstH+7Lq4G1lJdUJAyuIS8tXhYAodDZrQB6qkw6IcWbBHrf6oO4fwvcQYbN05oAtbo5MmX4AQQnkoQbYmmYg14WlQ7LEHmWGLYwWo6qlX921IaJeYQtl5ESFKmKj4ckqz/nxjsXdy7yj7y4Zvr4kQCJg9TrSgeb1g3jlrywN8pWRf9abZ58WkJZruspx9IuZnnUVGd33rM2UpL5Bf8/SyFjiBW5tKVrKZO2vtsfx2O+5n7YafGkPp1iobK9V7AdBwezyWMh971o7q96RmCANJPnGq3scNV//gQbyXmVLMG8pdvDyTWs38ane/5PmjdmsNLmTKx5uMdja9cJ+9Yls/JGKVv58U5A3JR/R7sW89Em9fejo8U="

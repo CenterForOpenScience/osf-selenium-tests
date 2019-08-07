@@ -42,19 +42,17 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
         driver = driver_cls(chrome_options=chrome_options)
     elif driver_name == 'Firefox' and not settings.HEADLESS:
         global downloadDir
-        downloadDir = ""
+        downloadDir = ''
 
         from selenium.webdriver import FirefoxProfile
-        fp = FirefoxProfile();
-        fp.set_preference("browser.download.folderList", 2);
-        fp.set_preference("browser.download.manager.showWhenStarting", False);
-        fp.set_preference("browser.download.dir", downloadDir);
-        fp.set_preference("browser.helperApps.neverAsk.saveToDisk", "text/plain, application/octet-stream, application/binary, text/csv, application/csv, application/excel, text/comma-separated-values, text/xml, application/xml");
+        fp = FirefoxProfile()
+        fp.set_preference('browser.download.folderList', 2)
+        fp.set_preference('browser.download.manager.showWhenStarting', False)
+        fp.set_preference('browser.download.dir", downloadDir')
+        fp.set_preference('browser.helperApps.neverAsk.saveToDisk', 'text/plain, application/octet-stream, application/binary, text/csv, application/csv, application/excel, text/comma-separated-values, text/xml, application/xml')
         driver = driver_cls(firefox_profile=fp)
     else:
         driver = driver_cls()
 
     driver.maximize_window()
     return driver
-
-
