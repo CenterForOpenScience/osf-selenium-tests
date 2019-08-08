@@ -36,7 +36,7 @@ class Navbar(BaseElement):
 
 
 class AbstractLegacyEmberNavbar(Navbar):
-    user_dropdown = Locator(By.CSS_SELECTOR, 'ul.navbar-nav > li:nth-child(6) > a')
+    user_dropdown = Locator(By.CSS_SELECTOR, 'ul.navbar-nav > li:nth-child(6) > a', settings.LONG_TIMEOUT)
     sign_in_button = Locator(By.CSS_SELECTOR, '#secondary-navigation > ul.nav > li.ember-view.dropdown.sign-in > a.btn.btn-info.btn-top-login', settings.LONG_TIMEOUT)
 
 

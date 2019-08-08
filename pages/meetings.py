@@ -23,10 +23,12 @@ class MeetingsPage(BaseMeetingsPage):
     top_meeting_link = Locator(By.CSS_SELECTOR, 'li.list-group-item:nth-child(2) > div:nth-child(1) > a:nth-child(1)')
     filter_input = Locator(By.CSS_SELECTOR, 'input[class="ember-text-field ember-view"]')
     sort_caret_name_asc = Locator(By.CSS_SELECTOR, 'button[data-test-ascending-sort="name"]')
+    sort_caret_name_desc = Locator(By.CSS_SELECTOR, 'button[data-test-descending-sort="name"]')
     aps_logo = Locator(By.CSS_SELECTOR, ' img[data-test-aps-img]')
     bitss_logo = Locator(By.CSS_SELECTOR, 'img[data-test-bitss-img]')
     nrao_logo = Locator(By.CSS_SELECTOR, 'img[data-test-nrao-img]')
     spsp_logo = Locator(By.CSS_SELECTOR, 'img[data-test-spsp-img]')
+    skeleton_row = Locator(By.CSS_SELECTOR, 'div[data-test-ember-content-placeholders-text-line]')
 
 
 class MeetingDetailPage(BaseMeetingsPage):
@@ -41,5 +43,3 @@ class MeetingDetailPage(BaseMeetingsPage):
     title = Locator(By.CSS_SELECTOR, '#nodeTitleEditable', settings.LONG_TIMEOUT)
     filter_input = Locator(By.CSS_SELECTOR, 'input[placeholder="Search"]')
     sort_caret_title_asc = Locator(By.CSS_SELECTOR, 'button[data-test-ascending-sort="title"]')
-    paginate_next = Locator(By.CSS_SELECTOR, 'button[data-test-next-page-button]')
-    paginate_previous = Locator(By.CSS_SELECTOR, 'button[data-test-previous-page-button]')
