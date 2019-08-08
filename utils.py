@@ -4,11 +4,9 @@ from selenium import webdriver
 
 def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
     """Create and configure a WebDriver.
-
     Args:
         driver_name : Name of WebDriver to use
         desired_capabilities : Desired browser specs
-
     """
 
     try:
@@ -28,11 +26,16 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
             desired_capabilities=desired_capabilities
         )
     elif driver_name == 'Chrome' and settings.HEADLESS:
-        from webdriver.chrome.options import Options
+        from selenium.webdriver.chrome.options import Options
         chrome_options = Options()
         chrome_options.add_argument('--headless')
         chrome_options.add_argument('--disable-gpu')
         chrome_options.add_argument('window-size=1200x600')
+        driver = driver_cls(chrome_options=chrome_options)
+    elif driver_name == 'Chrome' and not settings.HEADLESS:
+        from selenium.webdriver.chrome.options import Options
+        chrome_options = Options()
+        chrome_options.add_experimental_option('w3c', False)
         driver = driver_cls(chrome_options=chrome_options)
     else:
         driver = driver_cls()
