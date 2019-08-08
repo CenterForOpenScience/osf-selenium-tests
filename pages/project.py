@@ -50,10 +50,6 @@ class MyProjectsPage(OSFBasePage):
     project_created_modal = ComponentLocator(ProjectCreatedModal)
 
 
-class InstitutionsLandingPage(OSFBasePage):
-
-    identity = Locator(By.CSS_SELECTOR, '#fileBrowser > div.db-header.row > div.db-buttonRow.col-xs-12.col-sm-4.col-lg-3 > div > input')
-
 class AnalyticsPage(GuidBasePage):
     base_url = settings.OSF_HOME + '/{guid}/analytics/'
 

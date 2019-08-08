@@ -15,8 +15,7 @@ from pages.user import UserProfilePage, ProfileInformationPage
 from pages.preprints import PreprintLandingPage, PreprintSubmitPage
 
 
-#TODO: Test Navbar from all services including reviews and such - they might not have the same navbar always
-
+# TODO: Test Navbar from all services including reviews and such - they might not have the same navbar always
 
 class NavbarTestLoggedOutMixin:
     """Mixin used to inject generic tests
@@ -51,6 +50,7 @@ class NavbarTestLoggedOutMixin:
 
     def test_user_dropdown_not_present(self, page):
         assert page.navbar.user_dropdown.absent()
+
 
 # Class used to inject generic tests
 class NavbarTestLoggedInMixin:
@@ -127,6 +127,7 @@ class TestOSFHomeNavbar(NavbarTestLoggedOutMixin):
 
 class TestOSFHomeNavbarLoggedIn(NavbarTestLoggedInMixin):
 
+    # Profile settings page
     @pytest.fixture()
     def page(self, driver, must_be_logged_in):
         page = DashboardPage(driver)
@@ -187,13 +188,13 @@ class TestMeetingsNavbar(NavbarTestLoggedOutMixin):
         page.goto()
         return page
 
-    def test_search_link_not_present(self, page):
-        assert page.navbar.search_link.absent()
-
     def test_support_link(self, page, driver):
         page.navbar.support_link.click()
-        support_url = 'http://help.osf.io/m/meetings/'
-        assert driver.current_url == support_url
+        assert '360001550933' in driver.current_url or 'support' in driver.current_url
+
+        # For future use
+        # support_url = 'https://openscience.zendesk.com/hc/en-us/categories/360001550933'
+        # assert driver.current_url == support_url
 
     def test_donate_link(self, page, driver):
         page.navbar.donate_link.click()
