@@ -1,4 +1,5 @@
 import settings
+import ipdb
 
 from urllib.parse import urljoin
 from selenium.webdriver.common.by import By
@@ -50,3 +51,5 @@ class RegistrationDetailPage(GuidBasePage):
     url_base = urljoin(settings.OSF_HOME, '{guid}')
     identity = Locator(By.LINK_TEXT, 'View Registration Form')
     title = Locator(By.ID, 'nodeTitleEditable')
+
+
