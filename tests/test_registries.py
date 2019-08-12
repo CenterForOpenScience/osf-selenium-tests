@@ -34,8 +34,6 @@ class TestRegistriesDiscoverPage:
         target_registration = discover_page.get_first_non_withdrawn_registration()
         target_registration_title = target_registration.text
         target_registration.click()
-        # import ipdb
-        # ipdb.set_trace()
         detail_page = RegistrationDetailPage(driver)
         detail_page.identity.present()
         assert RegistrationDetailPage(driver, verify=True)

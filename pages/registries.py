@@ -38,9 +38,4 @@ class RegistriesDiscoverPage(BaseRegistriesPage):
 
 class RegistrationDetailPage(GuidBasePage):
     identity = Locator(By.CSS_SELECTOR, '[data-test-registration-title]')
-
-    def identity_is_present(self):
-        try:
-            identity
-        except NoSuchElementException:
-            return result.find_element_by_css_selector('[data-test-result-title-id]')
+# see about this change
