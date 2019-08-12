@@ -13,18 +13,7 @@ def landing_page(driver):
     landing_page.goto()
     return landing_page
 
-class TestRegistriesLandingPage:
-    @markers.smoke_test
-    @markers.core_functionality
-    def test_landing_page_loads(self, driver):
-        RegistriesLandingPage(driver).goto()
-
 class TestRegistriesDiscoverPage:
-
-    @markers.core_functionality
-    def test_discover_page_loads(self, driver):
-        RegistriesDiscoverPage(driver).goto()
-
     @markers.smoke_test
     @markers.core_functionality
     def test_search_results_exist(self, driver, landing_page):
@@ -33,6 +22,7 @@ class TestRegistriesDiscoverPage:
         discover_page.loading_indicator.here_then_gone()
         assert len(discover_page.search_results) > 0
 
+    @markers.core_functionality
     def test_detail_page(self, driver):
         """Test a registration detail page by grabbing the first search result from the discover page.
         """
@@ -41,5 +31,12 @@ class TestRegistriesDiscoverPage:
         discover_page.loading_indicator.here_then_gone()
         search_results = discover_page.search_results
         assert search_results
-        discover_page.get_first_non_withdrawn_registration().click()
-        RegistrationDetailPage(driver, verify=True)
+        target_registration = discover_page.get_first_non_withdrawn_registration()
+        target_registration_title = target_registration.text
+        target_registration.click()
+        # import ipdb
+        # ipdb.set_trace()
+        detail_page = RegistrationDetailPage(driver)
+        detail_page.identity.present()
+        assert RegistrationDetailPage(driver, verify=True)
+        assert detail_page.identity.text in target_registration_title

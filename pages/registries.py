@@ -1,6 +1,5 @@
 import settings
 
-from urllib.parse import urljoin
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
 
@@ -37,16 +36,11 @@ class RegistriesDiscoverPage(BaseRegistriesPage):
             except NoSuchElementException:
                 return result.find_element_by_css_selector('[data-test-result-title-id]')
 
-
-class EmberRegistrationDetailPage(GuidBasePage):
-    url_base = urljoin(settings.OSF_HOME, '{guid}')
-    identity = Locator(By.CSS_SELECTOR, '[data-test-registration-title]')
-    title = Locator(By.CSS_SELECTOR, '[data-test-registration-title]')
-
-
 class RegistrationDetailPage(GuidBasePage):
-    waffle_override = {'ember_registries_detail_page': EmberRegistrationDetailPage}
+    identity = Locator(By.CSS_SELECTOR, '[data-test-registration-title]')
 
-    url_base = urljoin(settings.OSF_HOME, '{guid}')
-    identity = Locator(By.LINK_TEXT, 'View Registration Form')
-    title = Locator(By.ID, 'nodeTitleEditable')
+    def identity_is_present(self):
+        try:
+            identity
+        except NoSuchElementException:
+            return result.find_element_by_css_selector('[data-test-result-title-id]')
