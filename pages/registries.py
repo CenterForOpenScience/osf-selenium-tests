@@ -38,4 +38,3 @@ class RegistriesDiscoverPage(BaseRegistriesPage):
 
 class RegistrationDetailPage(GuidBasePage):
     identity = Locator(By.CSS_SELECTOR, '[data-test-registration-title]')
-# see about this change
