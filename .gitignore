@@ -47,3 +47,4 @@ cover/
 variables.py
 .env
 .cache/
+geckodriver.log
