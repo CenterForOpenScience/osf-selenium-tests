@@ -48,8 +48,9 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
         fp = FirefoxProfile()
         fp.set_preference('browser.download.folderList', 2)
         fp.set_preference('browser.download.manager.showWhenStarting', False)
-        fp.set_preference('browser.download.dir", downloadDir')
-        fp.set_preference('browser.helperApps.neverAsk.saveToDisk', 'text/plain, application/octet-stream, application/binary, text/csv, application/csv, application/excel, text/comma-separated-values, text/xml, application/xml')
+        fp.set_preference('browser.download.dir', downloadDir)
+        fp.set_preference('browser.helperApps.neverAsk.saveToDisk',
+                          'text/plain, application/octet-stream, application/binary, text/csv, application/csv, application/excel, text/comma-separated-values, text/xml, application/xml')
         driver = driver_cls(firefox_profile=fp)
     else:
         driver = driver_cls()
