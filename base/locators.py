@@ -1,6 +1,5 @@
 import settings
 
-from time import sleep
 from base import expected_conditions as ec
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
