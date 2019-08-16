@@ -99,28 +99,13 @@ class WebElementWrapper:
         self.driver.switch_to.window(self.driver.window_handles[0])
         self.driver.maximize_window()
 
-    def send_keys(self, keys, timeout=settings.TIMEOUT):
-        """Generally use the normal WebElement `send_keys`.
+    def send_keys(self, keys):
+        self.element.send_keys(keys)
 
-        If the browser is IE, send keys until the element has the correct keys or until timeout.
-        Only sends special keystrokes (i.e. ENTER) once.
-        """
-
-        if settings.BUILD != 'msie' or repr(keys).find('\\ue0'):
-            self.element.send_keys(keys)
-        else:
-            existing_keys = self.element.get_attribute('value')
-            sleep(.25)
-            self.element.send_keys(keys)
-
-            try:
-                WebDriverWait(self.driver, timeout).until(
-                    ec.correct_keys_sent(self.element, keys, existing_keys)
-                )
-            except(TimeoutException, StaleElementReferenceException):
-                raise ValueError('Could not get the correct keys to send to {} in IE.'.format(
-                    self.name))
-
+    def send_keys_deliberately(self, keys):
+        """Send keys one at a time to ensure accuracy"""
+        for k in keys:
+            self.element.send_keys(k)
 
 class BaseLocator:
     """Abstract base class from which all Locator classes inherit.

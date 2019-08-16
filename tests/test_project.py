@@ -73,7 +73,7 @@ class TestProjectDetailPage:
         project_page.file_widget.filter_button.click()
         for provider in providers:
             project_page.file_widget.filter_input.clear()
-            project_page.file_widget.filter_input.send_keys(provider)
+            project_page.file_widget.filter_input.send_keys_deliberately(provider)
             driver.find_element_by_xpath("//*[contains(text(), '{}')]".format(provider + '.txt'))
 
 
