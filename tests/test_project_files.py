@@ -3,6 +3,7 @@ import time
 import ipdb
 # import markers
 # import settings
+import selenium.webdriver.remote.webdriver
 
 from api import osf_api
 from pages.project import FilesPage
@@ -16,12 +17,13 @@ from selenium.webdriver.support import expected_conditions as EC
 *** Next steps ***
 Update sleeps with implicit waits
     - Work w/Fitz
+    
 Downloads
     - Firefox - S3 still opens prompt
     - Click downloads button
     - Check for a 200 status
-Drag and Drop
-    - Doesn't work for Chrome
+    
+
 *** Josh Testing Notes ***
 Drag and Drop
 - Target add-on needs to be visible in the files widget
@@ -97,7 +99,7 @@ def find_toolbar_button_by_name(driver, button_name):
 @pytest.mark.usefixtures('must_be_logged_in')
 class TestFilesPage:
 
-    @pytest.mark.parametrize('provider', ['owncloud'])
+    @pytest.mark.parametrize('provider', ['box'])
     def test_rename_file(self, driver, default_project, session, provider):
         node_id = default_project.id
 
@@ -126,6 +128,8 @@ class TestFilesPage:
         new_name = 'Selenium Test File'
         rename_text_box.send_keys(new_name)
         rename_text_box.send_keys(Keys.RETURN)
+        # WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, 'tb-notify .alert-success')))
+        # WebDriverWait(driver, 2).until(EC.invisibility_of_element_located((By.CLASS_NAME, 'tb-notify .alert-success')))
         time.sleep(5)
         files_page.goto()
 
@@ -179,7 +183,7 @@ class TestFilesPage:
 
         osf_api.delete_file(session, metadata['data']['links']['delete'])
 
-    @pytest.mark.parametrize('provider', ['s3'])
+    @pytest.mark.parametrize('provider', ['dropbox'])
     def test_delete_file(self, driver, default_project, session, provider):
         node_id = default_project.id
 
@@ -212,85 +216,118 @@ class TestFilesPage:
         deleted_row = find_row_by_name(driver, provider, new_file)
         assert deleted_row is None
 
-    # @pytest.mark.parametrize('provider, modifier_key, action', [
-    #     # ['s3', 'none', 'move'],
-    #     # ['s3', 'alt', 'copy'],
-    #     # ['box', 'none', 'move'],
-    #     # ['box', 'alt', 'copy'],
-    #     # ['dropbox', 'none', 'move'],
-    #     # ['dropbox', 'alt', 'copy'],
-    #     # ['owncloud', 'none', 'move'],
-    #     ['owncloud', 'alt', 'copy']
-    # ])
-    # def test_dragon_drop(self, driver, default_project, session, provider, modifier_key, action):
-    #     node_id = default_project.id
-    #
-    #     # connect addon to node, upload a single test file
-    #     node = osf_api.get_node(session, node_id=node_id)
-    #     if provider != 'osfstorage':
-    #         addon = osf_api.get_user_addon(session, provider)
-    #         addon_account_id = list(addon['data']['links']['accounts'])[0]
-    #         osf_api.connect_provider_root_to_node(session, provider, addon_account_id,
-    #                                                   node_id=node_id)
-    #
-    #     new_file, metadata = osf_api.upload_fake_file(session=session, node=node, name='drag_this_file.txt',
-    #                                                       provider=provider)
-    #
-    #     files_page = FilesPage(driver, guid=node_id)
-    #     files_page.goto()
-    #
-    #     # Find the row that contains the new file
-    #     source_row = find_row_by_name(driver, provider, new_file)
-    #
-    #     # Find the row with the OSF storage
-    #     for row in files_page.fangorn_addons:
-    #         if row.text == 'OSF Storage (United States)':
-    #             target = row
-    #             break
-    #
-    #     action_chains = ActionChains(driver)
-    #     if modifier_key == 'alt':
-    #         action_chains.key_down(Keys.ALT).click_and_hold(source_row)
-    #         time.sleep(1)
-    #         action_chains.perform()
-    #         action_chains.key_down(Keys.LEFT_ALT)
-    #         action_chains.perform()
-    #         time.sleep(2)
-    #         action_chains.move_to_element(target).perform()
-    #         time.sleep(2)
-    #         action_chains.release().perform()
-    #         action_chains.key_up(Keys.ALT).perform()
-    #         action_chains.key_up(Keys.LEFT_ALT).perform()
-    #     else:
-    #         action_chains.click_and_hold(source_row).perform()
-    #         time.sleep(2)
-    #         action_chains.move_to_element(target).perform()
-    #         action_chains.release().perform()
-    #
-    #     time.sleep(5)
-    #     # TODO Change this to an implicit wait (polling)
-    #     WebDriverWait(driver, 5).until(EC.invisibility_of_element_located((By.CLASS_NAME, 'text-muted')))
-    #     files_page.goto()
-    #
-    #     origin_file = find_row_by_name(driver, provider, new_file)
-    #     destination_file = find_row_by_name(driver, 'osf', new_file)
-    #
-    #     if modifier_key == 'alt':
-    #         # test for copy
-    #         assert 'drag_this_file.txt' in origin_file.text
-    #         assert 'drag_this_file.txt' in destination_file.text
-    #     else:
-    #         # test for move
-    #         assert origin_file is None
-    #         assert 'drag_this_file.txt' in destination_file.text
-    #
-    #     try:
-    #         # Attempt to delete drag_this_file.txt in origin provider folder
-    #         osf_api.delete_file(session, metadata['data']['links']['delete'])
-    #     except:
-    #         print('No file to be deleted')
+    @pytest.mark.parametrize('provider, modifier_key, action', [
+        # ['s3', 'none', 'move'],
+        # ['s3', 'alt', 'copy'],
+        # ['box', 'none', 'move'],
+        # ['box', 'alt', 'copy'],
+        # ['dropbox', 'none', 'move'],
+        # ['dropbox', 'alt', 'copy'],
+        ['owncloud', 'none', 'move'],
+        ['owncloud', 'alt', 'copy']
+    ])
+    def test_dragon_drop(self, driver, default_project, session, provider, modifier_key, action):
+        node_id = default_project.id
 
-    @pytest.mark.parametrize('provider', ['dropbox'])
+        # connect addon to node, upload a single test file
+        node = osf_api.get_node(session, node_id=node_id)
+        if provider != 'osfstorage':
+            addon = osf_api.get_user_addon(session, provider)
+            addon_account_id = list(addon['data']['links']['accounts'])[0]
+            osf_api.connect_provider_root_to_node(session, provider, addon_account_id,
+                                                      node_id=node_id)
+        if modifier_key == 'alt':
+            new_file, metadata = osf_api.upload_fake_file(session=session, node=node, name='copy_file.txt',
+                                                          provider=provider)
+        else:
+            new_file, metadata = osf_api.upload_fake_file(session=session, node=node, name='move_file.txt',
+                                                          provider=provider)
+
+        files_page = FilesPage(driver, guid=node_id)
+        files_page.goto()
+
+        current_browser = driver.desired_capabilities.get('browserName')
+
+        # Find the row that contains the new file
+        source_row = find_row_by_name(driver, provider, new_file)
+
+        # Find the row with the OSF storage
+        for row in files_page.fangorn_addons:
+            if row.text == 'OSF Storage (United States)':
+                target = row
+                break
+
+        action_chains = ActionChains(driver)
+        action_chains.reset_actions()
+        if 'firefox' in current_browser:
+            # The sleeps in the following code block are needed for
+            # chrome's virtual keyboard to work properly
+            if modifier_key == 'alt':
+                action_chains.key_up(Keys.LEFT_ALT).perform()
+                action_chains.key_down(Keys.LEFT_ALT).perform()
+                action_chains.click_and_hold(source_row).perform()
+                time.sleep(1)
+
+                action_chains.reset_actions()
+                action_chains.move_to_element(target).perform()
+                time.sleep(1)
+
+                action_chains.reset_actions()
+                action_chains.key_up(Keys.LEFT_ALT).perform()
+                action_chains.key_down(Keys.LEFT_ALT).perform()
+                action_chains.key_up(Keys.ALT).perform()
+                action_chains.key_down(Keys.ALT).perform()
+                action_chains.release(target).perform()
+                time.sleep(1)
+
+                action_chains.reset_actions()
+                action_chains.key_up(Keys.LEFT_ALT).perform()
+                action_chains.key_up(Keys.ALT).perform()
+
+            else:
+                action_chains.click_and_hold(source_row).perform()
+                # Chrome -> will highlight multiple rows if you do not sleep here
+                time.sleep(1)
+                action_chains.move_to_element(target).perform()
+
+                action_chains.reset_actions()
+                action_chains.release(target).perform()
+        else:
+            if modifier_key == 'alt':
+                action_chains.key_down(Keys.LEFT_ALT)
+                action_chains.click_and_hold(source_row)
+                action_chains.move_to_element(target)
+                action_chains.release(target)
+                action_chains.key_up(Keys.LEFT_ALT)
+                action_chains.perform()
+            else:
+                action_chains.drag_and_drop(source_row, target).perform()
+
+        # Wait for 2 seconds for Copying message to show
+        WebDriverWait(driver, 2).until(EC.visibility_of_element_located((By.CLASS_NAME, 'text-muted')))
+        # Wait a maximum of 10 seconds for Copying message to resolve
+        WebDriverWait(driver, 10).until(EC.invisibility_of_element_located((By.CLASS_NAME, 'text-muted')))
+
+        files_page.goto()
+        origin_file = find_row_by_name(driver, provider, new_file)
+        destination_file = find_row_by_name(driver, 'osf', new_file)
+
+        if modifier_key == 'alt':
+            # test for copy
+            assert 'copy_file.txt' in origin_file.text
+            assert 'copy_file.txt' in destination_file.text
+            osf_api.delete_file(session, metadata['data']['links']['delete'])
+        else:
+            # test for move
+            assert origin_file is None
+            assert 'move_file.txt' in destination_file.text
+
+        try:
+            osf_api.delete_file(session['data']['links']['delete'].replace(provider, 'osf'))
+        except:
+            print('No file to be deleted')
+
+    @pytest.mark.parametrize('provider', ['s3'])
     def test_download_file(self, driver, default_project, session, provider):
         node_id = default_project.id
 
@@ -307,6 +344,8 @@ class TestFilesPage:
 
         files_page = FilesPage(driver, guid=node_id)
         files_page.goto()
+
+        current_browser = driver.desired_capabilities.get('browserName')
 
         row = find_row_by_name(driver, provider, new_file)
         row.click()

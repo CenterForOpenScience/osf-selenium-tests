@@ -33,7 +33,6 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
         chrome_options.add_argument('--headless')
         chrome_options.add_argument('--disable-gpu')
         chrome_options.add_argument('window-size=1200x600')
-        # chrome_options.set_headless = True
         driver = driver_cls(chrome_options=chrome_options)
     elif driver_name == 'Chrome' and not settings.HEADLESS:
         from selenium.webdriver.chrome.options import Options
@@ -41,14 +40,14 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
         chrome_options.add_experimental_option('w3c', False)
         driver = driver_cls(chrome_options=chrome_options)
     elif driver_name == 'Firefox' and not settings.HEADLESS:
-        global downloadDir
-        downloadDir = ''
+        global download_dir
+        download_dir = ''
 
         from selenium.webdriver import FirefoxProfile
         fp = FirefoxProfile()
         fp.set_preference('browser.download.folderList', 2)
         fp.set_preference('browser.download.manager.showWhenStarting', False)
-        fp.set_preference('browser.download.dir', downloadDir)
+        fp.set_preference('browser.download.dir', download_dir)
         fp.set_preference('browser.helperApps.neverAsk.saveToDisk',
                           'text/plain, application/octet-stream, application/binary, text/csv, application/csv, application/excel, text/comma-separated-values, text/xml, application/xml')
         driver = driver_cls(firefox_profile=fp)
