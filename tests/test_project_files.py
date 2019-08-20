@@ -17,19 +17,13 @@ from selenium.webdriver.support import expected_conditions as EC
 *** Next steps ***
 Update sleeps with implicit waits
     - Work w/Fitz
-    
 Downloads
     - Firefox - S3 still opens prompt
     - Click downloads button
     - Check for a 200 status
-    
-
 *** Josh Testing Notes ***
-Drag and Drop
-- Target add-on needs to be visible in the files widget
-Delete btn-danger
-- Modal must be in current window for test to pass
-- User cannot be in a separate window while test is running
+Create Dictionary
+- All add-ons should have at least 1 item
 Writeable addons (that work)
 - 'box', 'dropbox', 's3', 'owncloud'
 'googledrive' - MUST specify both folder_id and folder_path
@@ -99,7 +93,7 @@ def find_toolbar_button_by_name(driver, button_name):
 @pytest.mark.usefixtures('must_be_logged_in')
 class TestFilesPage:
 
-    @pytest.mark.parametrize('provider', ['box'])
+    @pytest.mark.parametrize('provider', ['dropbox', 'owncloud', 's3'])
     def test_rename_file(self, driver, default_project, session, provider):
         node_id = default_project.id
 
@@ -125,23 +119,25 @@ class TestFilesPage:
         for _ in range(len(new_file)):
             rename_text_box.send_keys(Keys.BACKSPACE)
 
-        new_name = 'Selenium Test File'
+        new_name = 'Successfully renamed.txt'
         rename_text_box.send_keys(new_name)
         rename_text_box.send_keys(Keys.RETURN)
-        # WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, 'tb-notify .alert-success')))
-        # WebDriverWait(driver, 2).until(EC.invisibility_of_element_located((By.CLASS_NAME, 'tb-notify .alert-success')))
-        time.sleep(5)
-        files_page.goto()
 
+        # Wait for 2 seconds for Rename message to show
+        WebDriverWait(driver, 2).until(EC.visibility_of_element_located((By.CLASS_NAME, 'text-muted')))
+        # Wait a maximum of 10 seconds for Rename message to resolve
+        WebDriverWait(driver, 10).until(EC.invisibility_of_element_located((By.CLASS_NAME, 'text-muted')))
+
+        files_page.goto()
         # test old file name does not exist
         old_file = find_row_by_name(driver, provider, 'foo.txt')
         assert old_file is None
 
         # test that new file name is present and visible
-        renamed_file = find_row_by_name(driver, provider, 'Selenium Test File')
-        assert 'Selenium Test File' in renamed_file.text
+        renamed_file = find_row_by_name(driver, provider, new_name)
+        assert new_name in renamed_file.text
 
-        osf_api.delete_file(session, metadata['data']['links']['delete'].replace('foo.txt', 'Selenium Test File'))
+        osf_api.delete_file(session, metadata['data']['links']['delete'].replace('foo.txt', new_name))
 
     def test_checkout_file(self, driver, default_project, session):
         node_id = default_project.id
@@ -183,7 +179,7 @@ class TestFilesPage:
 
         osf_api.delete_file(session, metadata['data']['links']['delete'])
 
-    @pytest.mark.parametrize('provider', ['dropbox'])
+    @pytest.mark.parametrize('provider', ['dropbox', 'owncloud', 's3'])
     def test_delete_file(self, driver, default_project, session, provider):
         node_id = default_project.id
 
@@ -211,18 +207,21 @@ class TestFilesPage:
 
         # Front End will show 'delete failed' message - still works as expected
         driver.find_element_by_css_selector('.btn-danger').click()
-        time.sleep(4)
+
+        # Wait for delete modal to resolve
+        WebDriverWait(driver, 5).until(EC.invisibility_of_element_located((By.CSS_SELECTOR, 'p[class="text-danger"]')))
 
         deleted_row = find_row_by_name(driver, provider, new_file)
         assert deleted_row is None
 
+
     @pytest.mark.parametrize('provider, modifier_key, action', [
-        # ['s3', 'none', 'move'],
-        # ['s3', 'alt', 'copy'],
-        # ['box', 'none', 'move'],
-        # ['box', 'alt', 'copy'],
-        # ['dropbox', 'none', 'move'],
-        # ['dropbox', 'alt', 'copy'],
+        ['s3', 'none', 'move'],
+        ['s3', 'alt', 'copy'],
+        ['box', 'none', 'move'],
+        ['box', 'alt', 'copy'],
+        ['dropbox', 'none', 'move'],
+        ['dropbox', 'alt', 'copy'],
         ['owncloud', 'none', 'move'],
         ['owncloud', 'alt', 'copy']
     ])
@@ -259,7 +258,7 @@ class TestFilesPage:
 
         action_chains = ActionChains(driver)
         action_chains.reset_actions()
-        if 'firefox' in current_browser:
+        if 'chrome' in current_browser:
             # The sleeps in the following code block are needed for
             # chrome's virtual keyboard to work properly
             if modifier_key == 'alt':
@@ -306,7 +305,7 @@ class TestFilesPage:
         # Wait for 2 seconds for Copying message to show
         WebDriverWait(driver, 2).until(EC.visibility_of_element_located((By.CLASS_NAME, 'text-muted')))
         # Wait a maximum of 10 seconds for Copying message to resolve
-        WebDriverWait(driver, 10).until(EC.invisibility_of_element_located((By.CLASS_NAME, 'text-muted')))
+        WebDriverWait(driver, 15).until(EC.invisibility_of_element_located((By.CLASS_NAME, 'text-muted')))
 
         files_page.goto()
         origin_file = find_row_by_name(driver, provider, new_file)
@@ -327,7 +326,7 @@ class TestFilesPage:
         except:
             print('No file to be deleted')
 
-    @pytest.mark.parametrize('provider', ['s3'])
+    @pytest.mark.parametrize('provider', ['dropbox', 'owncloud', 's3'])
     def test_download_file(self, driver, default_project, session, provider):
         node_id = default_project.id
 
@@ -345,12 +344,12 @@ class TestFilesPage:
         files_page = FilesPage(driver, guid=node_id)
         files_page.goto()
 
-        current_browser = driver.desired_capabilities.get('browserName')
-
         row = find_row_by_name(driver, provider, new_file)
         row.click()
         download_button = find_toolbar_button_by_name(driver, 'Download')
         download_button.click()
+        # WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, 'tb-notify alert-success')))
+        # WebDriverWait(driver, 2).until(EC.invisibility_of_element_located((By.CLASS_NAME, 'tb-notify alert-success')))
         time.sleep(7)
 
         # Negative test
