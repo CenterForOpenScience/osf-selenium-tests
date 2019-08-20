@@ -154,10 +154,13 @@ class TestFilesPage:
         row.click()
         checkout_button = find_toolbar_button_by_name(driver, 'Check out file')
         checkout_button.click()
-
         # Accept the confirmation modal
         driver.find_element_by_css_selector('.btn-warning').click()
-        time.sleep(4)
+
+        # Wait for delete modal to resolve
+        WebDriverWait(driver, 5).until(EC.invisibility_of_element_located((By.CSS_SELECTOR, '.btn-warning')))
+        # Wait for 3rd fangorn row to load
+        WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.CSS_SELECTOR, '#tb-tbody > div > div > div:nth-child(3)')))
 
         # Test that Check Out button is no longer present
         row = find_row_by_name(driver, 'osf', new_file)
@@ -169,7 +172,11 @@ class TestFilesPage:
         row.click()
         check_in_button = find_toolbar_button_by_name(driver, 'Check in file')
         check_in_button.click()
-        time.sleep(4)
+
+        # Wait for page to reload
+        WebDriverWait(driver, 2).until(EC.invisibility_of_element_located((By.CSS_SELECTOR, '#tb-tbody > div > div > div:nth-child(3)')))
+        # Wait for 3rd fangorn row to load
+        WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.CSS_SELECTOR, '#tb-tbody > div > div > div:nth-child(3)')))
 
         # Test that Check In button is no longer present
         row = find_row_by_name(driver, 'osf', new_file)
