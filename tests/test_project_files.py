@@ -1,9 +1,7 @@
 import pytest
 import time
-import ipdb
-# import markers
-# import settings
-import selenium.webdriver.remote.webdriver
+import markers
+import settings
 
 from api import osf_api
 from pages.project import FilesPage
@@ -12,25 +10,20 @@ from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.remote.file_detector import LocalFileDetector
 
 '''
-*** Next steps ***
-Update sleeps with implicit waits
-    - Work w/Fitz
-Downloads
-    - Firefox - S3 still opens prompt
-    - Click downloads button
-    - Check for a 200 status
 *** Josh Testing Notes ***
 Create Dictionary
-- All add-ons should have at least 1 item
+    - All add-ons should have at least 1 item
 Writeable addons (that work)
-- 'box', 'dropbox', 's3', 'owncloud'
-'googledrive' - MUST specify both folder_id and folder_path
-'github' - requested add-on not currently configurable via API
-'dataverse' - requested add-on not currently configurable via API
-'figshare' - has a weird file setup
+    - 'box', 'dropbox', 's3', 'owncloud'
+    Google Drive - MUST specify both folder_id and folder_path
+    Github - requested add-on not currently configurable via API
+    Dataverse - requested add-on not currently configurable via API
+    Figshare - has a weird file setup
 '''
+
 
 def format_provider_name(row):
     if row.text.startswith('Box:'):
@@ -90,10 +83,13 @@ def find_toolbar_button_by_name(driver, button_name):
     return
 
 
+@markers.dont_run_on_prod
 @pytest.mark.usefixtures('must_be_logged_in')
+@pytest.mark.skipif(settings.BUILD == 'edge',
+                    reason='Our actions prompt edge to ask "Would you like to navigate away from this page?"')
 class TestFilesPage:
 
-    @pytest.mark.parametrize('provider', ['dropbox', 'owncloud', 's3'])
+    @pytest.mark.parametrize('provider', ['box', 'dropbox', 'owncloud', 's3'])
     def test_rename_file(self, driver, default_project, session, provider):
         node_id = default_project.id
 
@@ -124,9 +120,9 @@ class TestFilesPage:
         rename_text_box.send_keys(Keys.RETURN)
 
         # Wait for 2 seconds for Rename message to show
-        WebDriverWait(driver, 2).until(EC.visibility_of_element_located((By.CLASS_NAME, 'text-muted')))
+        WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.CLASS_NAME, 'text-muted')))
         # Wait a maximum of 10 seconds for Rename message to resolve
-        WebDriverWait(driver, 10).until(EC.invisibility_of_element_located((By.CLASS_NAME, 'text-muted')))
+        WebDriverWait(driver, 20).until(EC.invisibility_of_element_located((By.CLASS_NAME, 'text-muted')))
 
         files_page.goto()
         # test old file name does not exist
@@ -139,6 +135,8 @@ class TestFilesPage:
 
         osf_api.delete_file(session, metadata['data']['links']['delete'].replace('foo.txt', new_name))
 
+    @markers.smoke_test
+    @markers.core_functionality
     def test_checkout_file(self, driver, default_project, session):
         node_id = default_project.id
         provider = 'osfstorage'
@@ -174,9 +172,9 @@ class TestFilesPage:
         check_in_button.click()
 
         # Wait for page to reload
-        WebDriverWait(driver, 2).until(EC.invisibility_of_element_located((By.CSS_SELECTOR, '#tb-tbody > div > div > div:nth-child(3)')))
+        WebDriverWait(driver, 5).until(EC.invisibility_of_element_located((By.CSS_SELECTOR, '#tb-tbody > div > div > div:nth-child(3)')))
         # Wait for 3rd fangorn row to load
-        WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.CSS_SELECTOR, '#tb-tbody > div > div > div:nth-child(3)')))
+        WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, '#tb-tbody > div > div > div:nth-child(3)')))
 
         # Test that Check In button is no longer present
         row = find_row_by_name(driver, 'osf', new_file)
@@ -186,7 +184,9 @@ class TestFilesPage:
 
         osf_api.delete_file(session, metadata['data']['links']['delete'])
 
-    @pytest.mark.parametrize('provider', ['dropbox', 'owncloud', 's3'])
+    @markers.smoke_test
+    @markers.core_functionality
+    @pytest.mark.parametrize('provider', ['box', 'dropbox', 'owncloud', 's3'])
     def test_delete_file(self, driver, default_project, session, provider):
         node_id = default_project.id
 
@@ -220,7 +220,6 @@ class TestFilesPage:
 
         deleted_row = find_row_by_name(driver, provider, new_file)
         assert deleted_row is None
-
 
     @pytest.mark.parametrize('provider, modifier_key, action', [
         ['s3', 'none', 'move'],
@@ -310,30 +309,32 @@ class TestFilesPage:
                 action_chains.drag_and_drop(source_row, target).perform()
 
         # Wait for 2 seconds for Copying message to show
-        WebDriverWait(driver, 2).until(EC.visibility_of_element_located((By.CLASS_NAME, 'text-muted')))
+        WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.CLASS_NAME, 'text-muted')))
         # Wait a maximum of 10 seconds for Copying message to resolve
-        WebDriverWait(driver, 15).until(EC.invisibility_of_element_located((By.CLASS_NAME, 'text-muted')))
+        WebDriverWait(driver, 20).until(EC.invisibility_of_element_located((By.CLASS_NAME, 'text-muted')))
 
         files_page.goto()
         origin_file = find_row_by_name(driver, provider, new_file)
         destination_file = find_row_by_name(driver, 'osf', new_file)
 
+        # ipdb.set_trace()
+
         if modifier_key == 'alt':
             # test for copy
             assert 'copy_file.txt' in origin_file.text
             assert 'copy_file.txt' in destination_file.text
-            osf_api.delete_file(session, metadata['data']['links']['delete'])
         else:
             # test for move
             assert origin_file is None
             assert 'move_file.txt' in destination_file.text
 
         try:
-            osf_api.delete_file(session['data']['links']['delete'].replace(provider, 'osf'))
+            osf_api.delete_file(session, metadata['data']['links']['delete'])
         except:
             print('No file to be deleted')
 
-    @pytest.mark.parametrize('provider', ['dropbox', 'owncloud', 's3'])
+    @pytest.mark.skipif(settings.DRIVER == 'remote', reason='File_Detector Class only ')
+    @pytest.mark.parametrize('provider', ['s3', 'dropbox', 'box', 'owncloud'])
     def test_download_file(self, driver, default_project, session, provider):
         node_id = default_project.id
 
@@ -355,9 +356,15 @@ class TestFilesPage:
         row.click()
         download_button = find_toolbar_button_by_name(driver, 'Download')
         download_button.click()
-        # WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CLASS_NAME, 'tb-notify alert-success')))
-        # WebDriverWait(driver, 2).until(EC.invisibility_of_element_located((By.CLASS_NAME, 'tb-notify alert-success')))
-        time.sleep(7)
+        time.sleep(5)
+
+        # windows_dir_path = 'C:/Users/hello/Desktop/images/person.jpg'
+        mac_dir_path = '/Users/joshuahernandez/Downloads/download_file.txt'
+
+        driver.file_detector = LocalFileDetector()
+        print('\n Directory Path: {}.'.format(mac_dir_path))
+        file_found = driver.file_detector.is_local_file(mac_dir_path)
+        print('\n File Found: {}'.format(file_found))
 
         # Negative test
         assert 'Could not retrieve file or directory' not in driver.find_element_by_xpath('/html/body').text
