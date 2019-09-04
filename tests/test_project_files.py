@@ -10,18 +10,15 @@ from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from selenium.webdriver.remote.file_detector import LocalFileDetector
 
 '''
 *** Josh Testing Notes ***
-Create Dictionary
-    - All add-ons should have at least 1 item
 Writeable addons (that work)
     - 'box', 'dropbox', 's3', 'owncloud'
     Google Drive - MUST specify both folder_id and folder_path
     Github - requested add-on not currently configurable via API
     Dataverse - requested add-on not currently configurable via API
-    Figshare - has a weird file setup
+    Figshare - has a non-conventional file setup not suited for normal file actions
 '''
 
 
@@ -317,8 +314,6 @@ class TestFilesPage:
         origin_file = find_row_by_name(driver, provider, new_file)
         destination_file = find_row_by_name(driver, 'osf', new_file)
 
-        # ipdb.set_trace()
-
         if modifier_key == 'alt':
             # test for copy
             assert 'copy_file.txt' in origin_file.text
@@ -356,17 +351,8 @@ class TestFilesPage:
         row.click()
         download_button = find_toolbar_button_by_name(driver, 'Download')
         download_button.click()
-        time.sleep(5)
-
-        # windows_dir_path = 'C:/Users/hello/Desktop/images/person.jpg'
-        mac_dir_path = '/Users/joshuahernandez/Downloads/download_file.txt'
-
-        driver.file_detector = LocalFileDetector()
-        print('\n Directory Path: {}.'.format(mac_dir_path))
-        file_found = driver.file_detector.is_local_file(mac_dir_path)
-        print('\n File Found: {}'.format(file_found))
+        time.sleep(3)
 
         # Negative test
         assert 'Could not retrieve file or directory' not in driver.find_element_by_xpath('/html/body').text
-
         osf_api.delete_file(session, metadata['data']['links']['delete'])

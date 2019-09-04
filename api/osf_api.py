@@ -2,8 +2,10 @@ import settings
 import json
 from pythosf import client
 
+
 def get_default_session():
     return client.Session(api_base_url=settings.API_DOMAIN, auth=(settings.USER_ONE, settings.USER_ONE_PASSWORD))
+
 
 def create_project(session, title='osf selenium test', tags=['qatest'], **kwargs):
     """Create a project for your current user through the OSF api.
@@ -15,6 +17,7 @@ def create_project(session, title='osf selenium test', tags=['qatest'], **kwargs
     node.create(title=title, tags=tags, **kwargs)
     return node
 
+
 def current_user(session=None):
     if not session:
         session = get_default_session()
@@ -22,8 +25,10 @@ def current_user(session=None):
     user.get()
     return user
 
+
 def get_node(session, node_id=settings.PREFERRED_NODE):
     return client.Node(session=session, id=node_id)
+
 
 def get_user_institutions(session, user=None):
     if not user:
@@ -35,12 +40,14 @@ def get_user_institutions(session, user=None):
         institutions.append(institution['attributes']['name'])
     return institutions
 
+
 def get_user_addon(session, provider, user=None):
     """Get list of accounts on the given provider that have already been connected by the user."""
     if not user:
         user = current_user(session)
     addon_url = '/v2/users/{}/addons/{}/'.format(user.id, provider)
     return session.get(addon_url)
+
 
 def upload_single_quickfile(session):
     """Upload a file to the current user's quickfiles if one is not already uploaded.
@@ -55,6 +62,7 @@ def upload_single_quickfile(session):
         upload_url = user.relationships.quickfiles['links']['upload']['href']
         return upload_fake_file(session, upload_url=upload_url)
 
+
 def get_all_institutions(session):
     url = '/v2/institutions/'
     data = session.get(url)
@@ -62,6 +70,7 @@ def get_all_institutions(session):
     for institution in data['data']:
         institutions.append(institution['attributes']['name'])
     return institutions
+
 
 def delete_all_user_projects(session, user=None):
     """Delete all of your user's projects that they have permission to delete
@@ -77,7 +86,9 @@ def delete_all_user_projects(session, user=None):
             n.get()
             n.delete()
 
-#TODO rename this to get_node_providers, and create new function that actually IS get_node_addons - note, this is confusing, talk to BrianG before we change this
+
+# TODO rename this to get_node_providers, and create new function that actually IS get_node_addons -
+#  note, this is confusing, talk to BrianG before we change this
 def get_node_addons(session, node_id):
     """Return a list of the names of all the addons connected to the given node.
     """
@@ -88,6 +99,7 @@ def get_node_addons(session, node_id):
         providers.append(provider['attributes']['provider'])
     return providers
 
+
 def waffled_pages(session):
     waffle_list = []
     url = '/v2/_waffle/'
@@ -96,6 +108,7 @@ def waffled_pages(session):
         if page['attributes']['active']:
             waffle_list.append(page['attributes']['name'])
     return waffle_list
+
 
 def get_existing_file(session, node_id=settings.PREFERRED_NODE):
     """Return the name of the first file in OSFStorage on a given node.
@@ -111,6 +124,7 @@ def get_existing_file(session, node_id=settings.PREFERRED_NODE):
     else:
         return upload_fake_file(session, node)
 
+
 def upload_fake_file(session, node=None, name='osf selenium test file for testing because its fake.txt', upload_url=None, provider='osfstorage'):
     """Upload an almost empty file to the given node. Return the file's name.
 
@@ -124,6 +138,7 @@ def upload_fake_file(session, node=None, name='osf selenium test file for testin
     metadata = session.put(url=upload_url, query_parameters={'kind': 'file', 'name': name}, raw_body={})
     return name, metadata
 
+
 def upload_fake_folder(session, name, node=None, upload_url=None, provider='osfstorage'):
     """Upload an empty folder to the given node. Return the folder's name and metadata.
     """
@@ -136,6 +151,7 @@ def upload_fake_folder(session, name, node=None, upload_url=None, provider='osfs
     metadata = session.put(url=upload_url, query_parameters={'kind': 'folder', 'name': name}, raw_body='')
 
     return name, metadata
+
 
 def delete_file(session, delete_url):
     """Delete a file.  A truly stupid method, caller must provide the delete url from the file
@@ -152,6 +168,7 @@ def get_providers_list(session=None, type='preprints'):
         session = get_default_session()
     url = '/v2/providers/' + type
     return session.get(url)['data']
+
 
 def connect_provider_root_to_node(session, provider, external_account_id,
                                   node_id=settings.PREFERRED_NODE):
