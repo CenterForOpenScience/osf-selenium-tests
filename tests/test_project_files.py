@@ -129,7 +129,6 @@ class TestFilesPage:
 
         osf_api.delete_file(session, metadata['data']['links']['delete'].replace('foo.txt', new_name))
 
-    @markers.smoke_test
     @markers.core_functionality
     def test_checkout_file(self, driver, default_project, session):
         node_id = default_project.id
@@ -178,7 +177,6 @@ class TestFilesPage:
 
         osf_api.delete_file(session, metadata['data']['links']['delete'])
 
-    @markers.smoke_test
     @markers.core_functionality
     @pytest.mark.parametrize('provider', ['box', 'dropbox', 'owncloud', 's3'])
     def test_delete_file(self, driver, default_project, session, provider):
@@ -361,7 +359,7 @@ TODO:
 - write an uploads test
 
 Addons this test does not cover, and reasons:
-    Google Drive - MUST specify both folder_id and folder_path
+    Google Drive - must specify both folder_id and folder_path
     Github - requested add-on not currently configurable via API
     Dataverse - requested add-on not currently configurable via API
     Figshare - has a non-conventional file setup not suited for normal file actions
