@@ -13,7 +13,7 @@ from selenium.webdriver.support import expected_conditions as EC
 
 '''
 *** NOTE ***
-For the test user running this test, the following addons must be manually 
+For the test user running this test, the following addons must be manually
 authorized in user settings, or else the test will fail to run:
     - 'box', 'dropbox', 's3', 'owncloud'
 '''
@@ -53,8 +53,8 @@ def create_dictionary(driver):
             fangorn_dictionary[key] = []
         elif data_level == '3':
             file_name = row.find_element_by_css_selector('.td-title .title-text')
-            # create sub-dictionary entries for each provider
-            # each sub-dictionary contains name of the row and the row object
+            # Create sub-dictionary entries for each provider
+            # Each sub-dictionary contains name of the row and the row object
             fangorn_dictionary[key].append({'file_name': file_name.text, 'row_object': row})
 
     return fangorn_dictionary
@@ -302,9 +302,9 @@ class TestFilesPage:
             else:
                 action_chains.drag_and_drop(source_row, target).perform()
 
-        # Wait for 2 seconds for Copying message to show
+        # Wait for 5 seconds for Copying message to show
         WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.CLASS_NAME, 'text-muted')))
-        # Wait a maximum of 10 seconds for Copying message to resolve
+        # Wait a maximum of 20 seconds for Copying message to resolve
         WebDriverWait(driver, 20).until(EC.invisibility_of_element_located((By.CLASS_NAME, 'text-muted')))
 
         files_page.goto()
@@ -348,6 +348,7 @@ class TestFilesPage:
         row.click()
         download_button = find_toolbar_button_by_name(driver, 'Download')
         download_button.click()
+        # Wait to see if error message appears -- for negative test
         time.sleep(3)
 
         # Negative test
@@ -355,6 +356,10 @@ class TestFilesPage:
         osf_api.delete_file(session, metadata['data']['links']['delete'])
 
 '''
+TODO:
+- improve downloads test to check for positive result
+- write an uploads test
+
 Addons this test does not cover, and reasons:
     Google Drive - MUST specify both folder_id and folder_path
     Github - requested add-on not currently configurable via API
