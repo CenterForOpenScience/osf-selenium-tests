@@ -71,7 +71,7 @@ def find_row_by_name(driver, provider, row_name):
     return
 
 
-# Click a button in the toolbar, just pass in the name
+# Click a button in the toolbar, just pass in the button name
 def find_toolbar_button_by_name(driver, button_name):
     file_action_buttons = driver.find_elements_by_css_selector('#folderRow .fangorn-toolbar-icon')
     for button in file_action_buttons:
