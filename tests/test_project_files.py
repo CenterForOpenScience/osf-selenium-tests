@@ -12,13 +12,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 '''
-*** Josh Testing Notes ***
-Writeable addons (that work)
+*** NOTE ***
+For the test user running this test, the following addons must be manually 
+authorized in user settings, or else the test will fail to run:
     - 'box', 'dropbox', 's3', 'owncloud'
-    Google Drive - MUST specify both folder_id and folder_path
-    Github - requested add-on not currently configurable via API
-    Dataverse - requested add-on not currently configurable via API
-    Figshare - has a non-conventional file setup not suited for normal file actions
 '''
 
 
@@ -90,7 +87,7 @@ class TestFilesPage:
     def test_rename_file(self, driver, default_project, session, provider):
         node_id = default_project.id
 
-        # connect addon to node, upload a single test file
+        # Connect addon to node, upload a single test file
         node = osf_api.get_node(session, node_id=node_id)
         if provider != 'osfstorage':
             addon = osf_api.get_user_addon(session, provider)
@@ -116,17 +113,17 @@ class TestFilesPage:
         rename_text_box.send_keys(new_name)
         rename_text_box.send_keys(Keys.RETURN)
 
-        # Wait for 2 seconds for Rename message to show
+        # Wait for 5 seconds for Rename message to show
         WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.CLASS_NAME, 'text-muted')))
-        # Wait a maximum of 10 seconds for Rename message to resolve
+        # Wait a maximum of 20 seconds for Rename message to resolve
         WebDriverWait(driver, 20).until(EC.invisibility_of_element_located((By.CLASS_NAME, 'text-muted')))
 
         files_page.goto()
-        # test old file name does not exist
+        # Test old file name does not exist
         old_file = find_row_by_name(driver, provider, 'foo.txt')
         assert old_file is None
 
-        # test that new file name is present and visible
+        # Test that new file name is present and visible
         renamed_file = find_row_by_name(driver, provider, new_name)
         assert new_name in renamed_file.text
 
@@ -138,7 +135,7 @@ class TestFilesPage:
         node_id = default_project.id
         provider = 'osfstorage'
 
-        # connect add-on to node, upload a single test file
+        # Connect add-on to node, upload a single test file
         node = osf_api.get_node(session, node_id=node_id)
         new_file, metadata = osf_api.upload_fake_file(session=session, node=node, name='checkout.txt',
                                                       provider=provider)
@@ -187,7 +184,7 @@ class TestFilesPage:
     def test_delete_file(self, driver, default_project, session, provider):
         node_id = default_project.id
 
-        # connect addon to node, upload a single test file
+        # Connect addon to node, upload a single test file
         node = osf_api.get_node(session, node_id=node_id)
         if provider != 'osfstorage':
             addon = osf_api.get_user_addon(session, provider)
@@ -206,7 +203,7 @@ class TestFilesPage:
         delete_button = find_toolbar_button_by_name(driver, 'Delete')
         delete_button.click()
 
-        # wait for the delete confirmation
+        # Wait for the delete confirmation
         files_page.delete_modal.present()
 
         # Front End will show 'delete failed' message - still works as expected
@@ -231,7 +228,7 @@ class TestFilesPage:
     def test_dragon_drop(self, driver, default_project, session, provider, modifier_key, action):
         node_id = default_project.id
 
-        # connect addon to node, upload a single test file
+        # Connect addon to node, upload a single test file
         node = osf_api.get_node(session, node_id=node_id)
         if provider != 'osfstorage':
             addon = osf_api.get_user_addon(session, provider)
@@ -263,7 +260,7 @@ class TestFilesPage:
         action_chains.reset_actions()
         if 'chrome' in current_browser:
             # The sleeps in the following code block are needed for
-            # chrome's virtual keyboard to work properly
+            # Chrome's virtual keyboard to work properly
             if modifier_key == 'alt':
                 action_chains.key_up(Keys.LEFT_ALT).perform()
                 action_chains.key_down(Keys.LEFT_ALT).perform()
@@ -315,11 +312,11 @@ class TestFilesPage:
         destination_file = find_row_by_name(driver, 'osf', new_file)
 
         if modifier_key == 'alt':
-            # test for copy
+            # Test for copy
             assert 'copy_file.txt' in origin_file.text
             assert 'copy_file.txt' in destination_file.text
         else:
-            # test for move
+            # Test for move
             assert origin_file is None
             assert 'move_file.txt' in destination_file.text
 
@@ -333,7 +330,7 @@ class TestFilesPage:
     def test_download_file(self, driver, default_project, session, provider):
         node_id = default_project.id
 
-        # connect addon to node, upload a single test file
+        # Connect addon to node, upload a single test file
         node = osf_api.get_node(session, node_id=node_id)
         if provider != 'osfstorage':
             addon = osf_api.get_user_addon(session, provider)
@@ -356,3 +353,11 @@ class TestFilesPage:
         # Negative test
         assert 'Could not retrieve file or directory' not in driver.find_element_by_xpath('/html/body').text
         osf_api.delete_file(session, metadata['data']['links']['delete'])
+
+'''
+Addons this test does not cover, and reasons:
+    Google Drive - MUST specify both folder_id and folder_path
+    Github - requested add-on not currently configurable via API
+    Dataverse - requested add-on not currently configurable via API
+    Figshare - has a non-conventional file setup not suited for normal file actions
+'''
