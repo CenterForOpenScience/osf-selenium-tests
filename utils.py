@@ -26,8 +26,8 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
         # DeprecationWarning: Please use FirefoxOptions to set browser profile
         from selenium.webdriver import FirefoxProfile
         ffp = FirefoxProfile()
-        ffp.set_preference("browser.download.folderList", 2)
-        ffp.set_preference("browser.download.dir", 'Users/Public/Downloads')
+        ffp.set_preference('browser.download.folderList', 2)
+        ffp.set_preference('browser.download.dir', 'Users/Public/Downloads')
         ffp.set_preference('browser.download.manager.showWhenStarting', False)
         ffp.set_preference('browser.helperApps.alwaysAsk.force', False)
         ffp.set_preference('browser.helperApps.neverAsk.saveToDisk',
@@ -56,7 +56,7 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
     elif driver_name == 'Firefox' and not settings.HEADLESS:
         from selenium.webdriver import FirefoxProfile
         ffp = FirefoxProfile()
-        ffp.set_preference("browser.download.folderList", 1)
+        ffp.set_preference('browser.download.folderList', 1)
         ffp.set_preference('browser.download.manager.showWhenStarting', False)
         ffp.set_preference('browser.helperApps.alwaysAsk.force', False)
         ffp.set_preference('browser.helperApps.neverAsk.saveToDisk',
