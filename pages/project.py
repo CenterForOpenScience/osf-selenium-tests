@@ -71,6 +71,7 @@ class ForksPage(GuidBasePage):
     # Group Locators
     listed_forks = GroupLocator(By.CSS_SELECTOR, '.list-group-item')
 
+
 class FilesPage(GuidBasePage):
     base_url = settings.OSF_HOME + '/{guid}/files/'
 
@@ -81,7 +82,8 @@ class FilesPage(GuidBasePage):
     file_action_buttons = GroupLocator(By.CSS_SELECTOR, '#folderRow .fangorn-toolbar-icon')
     delete_modal = Locator(By.CSS_SELECTOR, 'span.btn:nth-child(1)')
 
-'''Note that the class FilesPage in pages/project.py is used for test_project_files.py. 
-The class FileWidget in components/project.py is used for tests test_file_widget_loads 
-and test_addon_files_load in test_project.py. 
+
+'''Note that the class FilesPage in pages/project.py is used for test_project_files.py.
+The class FileWidget in components/project.py is used for tests test_file_widget_loads
+and test_addon_files_load in test_project.py.
 In the future, we may want to put all files tests in one place.'''

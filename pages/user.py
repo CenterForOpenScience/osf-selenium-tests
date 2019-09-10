@@ -48,7 +48,7 @@ class ProfileInformationPage(BaseUserSettingsPage):
 class AccountSettingsPage(BaseUserSettingsPage):
     url = settings.OSF_HOME + '/settings/account/'
 
-    identity = Locator(By.CSS_SELECTOR, '#connectedEmails')
+    identity = Locator(By.CSS_SELECTOR, 'div[data-analytics-scope="Connected emails panel"]')
 
 class ConfigureAddonsPage(BaseUserSettingsPage):
     url = settings.OSF_HOME + '/settings/addons/'
@@ -70,7 +70,7 @@ class DeveloperAppsPage(BaseUserSettingsPage):
 
     url = settings.OSF_HOME + '/settings/applications/'
 
-    identity = Locator(By.CSS_SELECTOR, '#applicationListPage')
+    identity = Locator(By.CSS_SELECTOR, 'div[data-analytics-scope="Developer apps"')
 
 class EmberPersonalAccessTokenPage(BaseUserSettingsPage):
     url = settings.OSF_HOME + '/settings/tokens/'
@@ -82,4 +82,4 @@ class PersonalAccessTokenPage(BaseUserSettingsPage):
 
     url = settings.OSF_HOME + '/settings/tokens/'
 
-    identity = Locator(By.CSS_SELECTOR, '#personalTokenListPage')
+    identity = Locator(By.CSS_SELECTOR, 'a[data-analytics-name="Personal access"]')
