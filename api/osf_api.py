@@ -139,20 +139,6 @@ def upload_fake_file(session, node=None, name='osf selenium test file for testin
     return name, metadata
 
 
-def upload_fake_folder(session, name, node=None, upload_url=None, provider='osfstorage'):
-    """Upload an empty folder to the given node. Return the folder's name and metadata.
-    """
-
-    if not upload_url:
-        if not node:
-            raise TypeError('Node must not be none when upload URL is not set.')
-        upload_url = '{}/v1/resources/{}/providers/{}/'.format(settings.FILE_DOMAIN, node.id, provider)
-
-    metadata = session.put(url=upload_url, query_parameters={'kind': 'folder', 'name': name}, raw_body='')
-
-    return name, metadata
-
-
 def delete_file(session, delete_url):
     """Delete a file.  A truly stupid method, caller must provide the delete url from the file
     metadata."""

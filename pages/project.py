@@ -74,17 +74,12 @@ class ForksPage(GuidBasePage):
 class FilesPage(GuidBasePage):
     base_url = settings.OSF_HOME + '/{guid}/files/'
 
-    #TODO loading_indicator lives in FileWidget, don't repeat it here...
     identity = Locator(By.CSS_SELECTOR, '#treeGrid')
-    loading_indicator = Locator(By.CSS_SELECTOR, '#treeGrid .ball-scale', settings.VERY_LONG_TIMEOUT)
     session = osf_api.get_default_session()
     fangorn_rows = GroupLocator(By.CSS_SELECTOR, '#tb-tbody .fg-file-links')
-    fangorn_folders = GroupLocator(By.CSS_SELECTOR, "i[class='fa fa-folder']")
     fangorn_addons = GroupLocator(By.CSS_SELECTOR, "div[data-level='2']")
-    first_file = Locator(By.CSS_SELECTOR, '#tb-tbody .td-title[data-id~="4"]')
     file_action_buttons = GroupLocator(By.CSS_SELECTOR, '#folderRow .fangorn-toolbar-icon')
     delete_modal = Locator(By.CSS_SELECTOR, 'span.btn:nth-child(1)')
-    checkout_modal = Locator(By.CSS_SELECTOR, 'a.btn:nth-child(2)')
 
-    """first_file -- looking for the 4th row ensures that the files have loaded (in our test there will only ever be 1 header row,
-    1 OSF Storage, and 1 additional addon in the widget, so the 4th row MUST be a file)"""
+'''This class FilesPage is used for both test_project.py and test_project_files.py'''
+'''For more locators, check FileWidget in components/project.py'''
