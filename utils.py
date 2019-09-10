@@ -4,11 +4,9 @@ from selenium import webdriver
 
 def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
     """Create and configure a WebDriver.
-
     Args:
         driver_name : Name of WebDriver to use
         desired_capabilities : Desired browser specs
-
     """
 
     try:
@@ -49,7 +47,6 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
         chrome_options.add_argument('--disable-gpu')
         chrome_options.add_argument('window-size=1200x600')
         driver = driver_cls(chrome_options=chrome_options)
-
     elif driver_name == 'Chrome' and not settings.HEADLESS:
         from selenium.webdriver.chrome.options import Options
         chrome_options = Options()
@@ -68,7 +65,6 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
         ffp.set_preference('browser.helperApps.neverAsk.saveToDisk',
                            'text/plain, application/octet-stream, application/binary, text/csv, application/csv, '
                            'application/excel, text/comma-separated-values, text/xml, application/xml')
-
         driver = driver_cls(firefox_profile=ffp)
     else:
         driver = driver_cls()

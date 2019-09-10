@@ -9,7 +9,7 @@ from base.locators import Locator, ComponentLocator
 
 
 class LandingPage(OSFBasePage):
-    identity = Locator(By.ID, 'home-hero', settings.LONG_TIMEOUT)
+    identity = Locator(By.CSS_SELECTOR, '._heroHeader_1qc5dv', settings.LONG_TIMEOUT)
 
     # Components
     navbar = ComponentLocator(EmberNavbar)
@@ -18,7 +18,7 @@ class LandingPage(OSFBasePage):
 class LegacyLandingPage(OSFBasePage):
     waffle_override = {'ember_home_page': LandingPage}
 
-    identity = Locator(By.ID, 'home-hero', settings.LONG_TIMEOUT)
+    identity = Locator(By.CSS_SELECTOR, '._heroHeader_1qc5dv')
 
 class RegisteredReportsLandingPage(OSFBasePage):
     url = settings.OSF_HOME + '/rr/'

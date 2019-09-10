@@ -10,6 +10,7 @@ ehthumbs.db
 Thumbs.db
 *.swp
 *~
+*.log
 
 # Python
 #######################
@@ -46,3 +47,4 @@ cover/
 variables.py
 .env
 .cache/
+geckodriver.log
