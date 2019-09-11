@@ -1,9 +1,11 @@
 import settings
-
+import json
 from pythosf import client
+
 
 def get_default_session():
     return client.Session(api_base_url=settings.API_DOMAIN, auth=(settings.USER_ONE, settings.USER_ONE_PASSWORD))
+
 
 def create_project(session, title='osf selenium test', tags=['qatest'], **kwargs):
     """Create a project for your current user through the OSF api.
@@ -15,6 +17,7 @@ def create_project(session, title='osf selenium test', tags=['qatest'], **kwargs
     node.create(title=title, tags=tags, **kwargs)
     return node
 
+
 def current_user(session=None):
     if not session:
         session = get_default_session()
@@ -22,8 +25,10 @@ def current_user(session=None):
     user.get()
     return user
 
+
 def get_node(session, node_id=settings.PREFERRED_NODE):
     return client.Node(session=session, id=node_id)
+
 
 def get_user_institutions(session, user=None):
     if not user:
@@ -34,6 +39,15 @@ def get_user_institutions(session, user=None):
     for institution in data['data']:
         institutions.append(institution['attributes']['name'])
     return institutions
+
+
+def get_user_addon(session, provider, user=None):
+    """Get list of accounts on the given provider that have already been connected by the user."""
+    if not user:
+        user = current_user(session)
+    addon_url = '/v2/users/{}/addons/{}/'.format(user.id, provider)
+    return session.get(addon_url)
+
 
 def upload_single_quickfile(session):
     """Upload a file to the current user's quickfiles if one is not already uploaded.
@@ -48,6 +62,7 @@ def upload_single_quickfile(session):
         upload_url = user.relationships.quickfiles['links']['upload']['href']
         return upload_fake_file(session, upload_url=upload_url)
 
+
 def get_all_institutions(session):
     url = '/v2/institutions/'
     data = session.get(url)
@@ -55,6 +70,7 @@ def get_all_institutions(session):
     for institution in data['data']:
         institutions.append(institution['attributes']['name'])
     return institutions
+
 
 def delete_all_user_projects(session, user=None):
     """Delete all of your user's projects that they have permission to delete
@@ -70,6 +86,9 @@ def delete_all_user_projects(session, user=None):
             n.get()
             n.delete()
 
+
+# TODO rename this to get_node_providers, and create new function that actually IS get_node_addons -
+#  note, this is confusing, talk to BrianG before we change this
 def get_node_addons(session, node_id):
     """Return a list of the names of all the addons connected to the given node.
     """
@@ -80,6 +99,7 @@ def get_node_addons(session, node_id):
         providers.append(provider['attributes']['provider'])
     return providers
 
+
 def waffled_pages(session):
     waffle_list = []
     url = '/v2/_waffle/'
@@ -88,6 +108,7 @@ def waffled_pages(session):
         if page['attributes']['active']:
             waffle_list.append(page['attributes']['name'])
     return waffle_list
+
 
 def get_existing_file(session, node_id=settings.PREFERRED_NODE):
     """Return the name of the first file in OSFStorage on a given node.
@@ -103,7 +124,8 @@ def get_existing_file(session, node_id=settings.PREFERRED_NODE):
     else:
         return upload_fake_file(session, node)
 
-def upload_fake_file(session, node=None, name='osf selenium test file for testing because its fake.txt', upload_url=None):
+
+def upload_fake_file(session, node=None, name='osf selenium test file for testing because its fake.txt', upload_url=None, provider='osfstorage'):
     """Upload an almost empty file to the given node. Return the file's name.
 
     Note: The default file has a very long name because it makes it easier to click a link to it.
@@ -111,10 +133,19 @@ def upload_fake_file(session, node=None, name='osf selenium test file for testin
     if not upload_url:
         if not node:
             raise TypeError('Node must not be none when upload URL is not set.')
-        upload_url = '{}/v1/resources/{}/providers/osfstorage/'.format(settings.FILE_DOMAIN, node.id)
+        upload_url = '{}/v1/resources/{}/providers/{}/'.format(settings.FILE_DOMAIN, node.id, provider)
 
-    session.put(url=upload_url, query_parameters={'kind': 'file', 'name': name}, raw_body={})
-    return name
+    metadata = session.put(url=upload_url, query_parameters={'kind': 'file', 'name': name}, raw_body={})
+    return name, metadata
+
+
+def delete_file(session, delete_url):
+    """Delete a file.  A truly stupid method, caller must provide the delete url from the file
+    metadata."""
+
+    # include `item_type=None` b/c pythosf doesn't set a default value for this.
+    return session.delete(url=delete_url, item_type=None)
+
 
 def get_providers_list(session=None, type='preprints'):
     """Return the providers list data. The default is the preprint providers list.
@@ -123,3 +154,50 @@ def get_providers_list(session=None, type='preprints'):
         session = get_default_session()
     url = '/v2/providers/' + type
     return session.get(url)['data']
+
+
+def connect_provider_root_to_node(session, provider, external_account_id,
+                                  node_id=settings.PREFERRED_NODE):
+    """Initialize the node<=>addon connection, add the given external_account_id, and configure it
+    to connect to the root folder of the provider."""
+
+    if not session:
+        session = get_default_session()
+
+    url = '/v2/nodes/{}/addons/{}/'.format(node_id, provider)
+
+    # Empty POST request "turns it on" (h/t @brianjgeiger). Addon must be configured with a PATCH
+    # afterwards.
+    # TODO: if box is already connected, will return 400.  Handle that?
+    session.post(url=url, item_type='node_addons')
+
+    # This is a workaround for a bug in pythosf v0.0.9 that breaks patch requests.
+    # If raw_body is not passed, the session code tries to automatically build the body, which
+    # breaks on `item_id`.  If you build the body yourself and pass it in, this bypasses the
+    # bug.  When the fix is released, switch to the commented-out block below this.
+    raw_payload = {
+        'data': {
+            'type': 'node_addons',
+            'id': provider,
+            'attributes': {
+                'external_account_id': external_account_id,
+                'enabled': True,
+            }
+        }
+    }
+    addon = session.patch(url=url, item_type='node_addons', item_id=provider,
+                          raw_body=json.dumps(raw_payload))
+    # payload = {
+    #     'external_account_id': external_account_id,
+    #     'enabled': True,
+    # }
+    # addon = session.patch(url=url, item_type='node_addons', item_id=provider,
+    #                      attributes=payload)
+
+    # Assume the root folder is the first (and only) folder returned.  Get its id and update
+    # the addon config
+    root_folder = session.get(url + 'folders/')['data'][0]['attributes']['folder_id']
+    raw_payload['data']['attributes']['folder_id'] = root_folder
+    addon = session.patch(url=url, item_type='node_addons', item_id=provider,
+                          raw_body=json.dumps(raw_payload))
+    return addon

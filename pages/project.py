@@ -2,6 +2,7 @@ import settings
 
 from selenium.webdriver.common.by import By
 
+from api import osf_api
 from components.project import FileWidget, LogWidget
 from components.dashboard import CreateProjectModal, CreateCollectionModal, DeleteCollectionModal, ProjectCreatedModal
 from pages.base import GuidBasePage, OSFBasePage
@@ -50,13 +51,39 @@ class MyProjectsPage(OSFBasePage):
     project_created_modal = ComponentLocator(ProjectCreatedModal)
 
 
-class InstitutionsLandingPage(OSFBasePage):
-
-    identity = Locator(By.CSS_SELECTOR, '#fileBrowser > div.db-header.row > div.db-buttonRow.col-xs-12.col-sm-4.col-lg-3 > div > input')
-
 class AnalyticsPage(GuidBasePage):
     base_url = settings.OSF_HOME + '/{guid}/analytics/'
 
     identity = Locator(By.CSS_SELECTOR, '._Counts_1mhar6')
     private_project_message = Locator(By.CSS_SELECTOR, '._PrivateProject_1mhar6')
     disabled_chart = Locator(By.CSS_SELECTOR, '._Chart_1hff7g _Blurred_1hff7g')
+
+
+class ForksPage(GuidBasePage):
+    base_url = settings.OSF_HOME + '/{guid}/forks/'
+
+    identity = Locator(By.CSS_SELECTOR, '._Forks_1xlord')
+    new_fork_button = Locator(By.CSS_SELECTOR, '._Forks__new-fork_1xlord .btn-success')
+    create_fork_modal_button = Locator(By.CSS_SELECTOR, '.modal-footer .btn-info')
+    cancel_modal_button = Locator(By.CSS_SELECTOR, '.modal-footer .btn-default')
+    info_toast = Locator(By.CSS_SELECTOR, '.toast-info')
+
+    # Group Locators
+    listed_forks = GroupLocator(By.CSS_SELECTOR, '.list-group-item')
+
+
+class FilesPage(GuidBasePage):
+    base_url = settings.OSF_HOME + '/{guid}/files/'
+
+    identity = Locator(By.CSS_SELECTOR, '#treeGrid')
+    session = osf_api.get_default_session()
+    fangorn_rows = GroupLocator(By.CSS_SELECTOR, '#tb-tbody .fg-file-links')
+    fangorn_addons = GroupLocator(By.CSS_SELECTOR, "div[data-level='2']")
+    file_action_buttons = GroupLocator(By.CSS_SELECTOR, '#folderRow .fangorn-toolbar-icon')
+    delete_modal = Locator(By.CSS_SELECTOR, 'span.btn:nth-child(1)')
+
+
+'''Note that the class FilesPage in pages/project.py is used for test_project_files.py.
+The class FileWidget in components/project.py is used for tests test_file_widget_loads
+and test_addon_files_load in test_project.py.
+In the future, we may want to put all files tests in one place.'''

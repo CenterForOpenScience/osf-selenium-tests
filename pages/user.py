@@ -40,7 +40,7 @@ class BaseUserSettingsPage(OSFBasePage):
 class ProfileInformationPage(BaseUserSettingsPage):
     url = settings.OSF_HOME + '/settings/'
 
-    identity = Locator(By.CSS_SELECTOR, '#profileSettings')
+    identity = Locator(By.CSS_SELECTOR, 'div[id="profileSettings"]')
     middle_name_input = Locator(By.CSS_SELECTOR, '#names > div > form > div:nth-child(5) > input')
     save_button = Locator(By.CSS_SELECTOR, '#names > div > form > div.p-t-lg.p-b-lg > button.btn.btn-success')
     update_success = Locator(By.CSS_SELECTOR, '.text-success')
@@ -48,7 +48,7 @@ class ProfileInformationPage(BaseUserSettingsPage):
 class AccountSettingsPage(BaseUserSettingsPage):
     url = settings.OSF_HOME + '/settings/account/'
 
-    identity = Locator(By.CSS_SELECTOR, '#connectedEmails')
+    identity = Locator(By.CSS_SELECTOR, 'div[data-analytics-scope="Connected emails panel"]')
 
 class ConfigureAddonsPage(BaseUserSettingsPage):
     url = settings.OSF_HOME + '/settings/addons/'
@@ -60,12 +60,26 @@ class NotificationsPage(BaseUserSettingsPage):
 
     identity = Locator(By.CSS_SELECTOR, '#notificationSettings')
 
-class DeveloperAppsPage(BaseUserSettingsPage):
+class EmberDeveloperAppsPage(BaseUserSettingsPage):
     url = settings.OSF_HOME + '/settings/applications/'
 
-    identity = Locator(By.CSS_SELECTOR, '#applicationListPage')
+    identity = Locator(By.CSS_SELECTOR, '[data-test-create-app-link]')
 
-class PersonalAccessTokenPage(BaseUserSettingsPage):
+class DeveloperAppsPage(BaseUserSettingsPage):
+    waffle_override = {'ember_user_settings_apps_page': EmberDeveloperAppsPage}
+
+    url = settings.OSF_HOME + '/settings/applications/'
+
+    identity = Locator(By.CSS_SELECTOR, 'div[data-analytics-scope="Developer apps"')
+
+class EmberPersonalAccessTokenPage(BaseUserSettingsPage):
     url = settings.OSF_HOME + '/settings/tokens/'
 
-    identity = Locator(By.CSS_SELECTOR, '#personalTokenListPage')
+    identity = Locator(By.CSS_SELECTOR, '[data-test-create-token-link]')
+
+class PersonalAccessTokenPage(BaseUserSettingsPage):
+    waffle_override = {'ember_user_settings_tokens_page': EmberPersonalAccessTokenPage}
+
+    url = settings.OSF_HOME + '/settings/tokens/'
+
+    identity = Locator(By.CSS_SELECTOR, 'a[data-analytics-name="Personal access"]')

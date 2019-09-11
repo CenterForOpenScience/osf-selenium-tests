@@ -1,6 +1,6 @@
 language: python
 python:
-  - '3.6'
+- '3.6'
 sudo: false
 env:
   global:
@@ -19,25 +19,27 @@ env:
   - secure: Hk6zGDMXfNgbrksYpbTOb26O24MhUmsH9C9vvsBGjiwpUubpjOzcWKoNZ40HPXjDUAPDW84tfGDiFr88gsfxIbcB6IoR9weuCI6RItQegHMXCxxSLnZgIOPoQbrl8IkiyDkLuej13yGdRYG5Q4HuGlVmvGluhxAa2J9+bkLdWbhxTJmRw9KMCfWJAcP3rI0EPkhfa+oqCbMZMZB1uwvYuMIrLK25PwI35e/NFuTInJ30QlSgLHdN4pP37f+FXxQW0ffxtEFdjIONb2ZwOXGPRWG2eW0s+w6S7oBwxRw0XQnwEG4PU700y0NNibsCFrXswkV4rSXZ+KebTXAzrCFefss8DV/AKQIRSv5tfqyGCycGlVPmqUBaTaSaXiZSEHEKmn7ZZq3STl6yJZnrsVSuQ0Cx4J2m06ZchBAL4cTDNy1FirTUoB/aRKEXpRweud5HrgVp9OdKTjUTfQLfbkqdB9MBUOUtxvgSJsbl1Ci4ikmT1fJp5YpqZmdK4nUnUV0yPTvelxHd+cEoRZVpu8293Vn8v/eAVFxYPotqToHzJYJFkUQPajqvtHN7yo+yPrsksaaNwYPnpY5DqiMv8X6tLf8Qcn0fbn32imMhAqaPdyUZ8rT+tM34BhzdiVHuf2yM56Hw1jUUrn2sm2OpYgkGPnbgTXCQD391LVdeJdrO6wQ=
   - secure: Ebmw6g99P65PAQgbPnx24wSME7I9NC6JcZ0greZuGyS5+WfjA2ga9T8FLNJ4NnSBUhypOwfL2E+pwL4+Wg0ezkqv0ruCtsvY+LjTphwKCWkYnmf5iYI+0RRi0cUucbHF8gcetMR8W1CKyvpnT1MZKxCS7EMJ1B7SIend/ShRRo6KKyzykUliQF6v+8aebjfp7zE9D/hsURu9UWDblM16KtsfmYCHVuYDvXfHovQq8oIXBM0YOn+sluZhnbmIzhToEGXbyMteTgEGWsCbHvQjf8v9GrvkyGLbH/jbLUXjDGpW8wx+dT5iTOWxrnLIopdixN2vuBQORX16soE4y82aTle3UFKWcCUJQToDS0lLPXaHzjSVIaMdq59gHNniTH7Kimp7I+VV6O2PjF+ae3ME5RIEvbnCqqFF8RNhBc0DGP7mEl0mcTfiFWDuwWM0Mlb889aHl10nKJWZ07fpe6HdqeSESHY9OOSGvlky2F3XlyN0Rg++kVaJUXPd2gxkQ6vhvH6SK2TNgc58CEC0Zj1iC2aQ2Op4xp05t1yA47IqGQ3kNGM4SJKLDYaUJLLfFpR+pxoiSgmRcSUpYzWhe+ZwO6uo1eYay7nhR7Q2nvHaumVvpCNXh33gdQ1PDPLVmUqEa3HEWvvKBXWQ1Mcbxmv1BygwrawrJXJBKBYAUVZ2brs=
   - secure: p4YHBqYM0LDI11n4jB6BApPw3KWN3WQY2P6v2HZPbSszAP3+yeB2ULYDjF2vhkFZP6apKPGlp0oeDqWHDFhJ2mx06xoMAUoj1WWkS18DTdepXjmkopeR6BFo6lR4b+ZeEAE35PeexWOsntERqlo9u8aJ23JUQ564ofdOgBAJIuZZo8ueFehbcDnNrnvC77jX4GTkhEh5Lwb7bz34Zg39mlIn8yLZG9yd93qrA1B6FX17n0fTBDbfbRrx10mPDLv9D9ErTXWskpllmhLS0hYAqE0Ygl0bkbdGA1zTuFcTXTa3RU+Sv1grQq6cXc/lVJA40qOPSqL80L0XLvr/W6+FcQAb8S2Y4Wan/CayXKruenNc08Vld7nR9o7yNR6GhqdD1VYK++uQOudqh+ZMAjuLt9U3r18o36RiJXsS5mSwqNN/UlYkBKEulcXGFogvAhCoA5Mhe+1MB9K/voHJAUpVADOylwFCqa2sbpJQj9l77jug2J8p6wP5nwbPW5x3c2T8cwZvfszNF1dUQy1ZgDBWimQXLTmkewwpKOkZJDJfaz2hnGP5yZhKyFE5gQ6GetkYQjwezmiEq6IOnCsrvtk17uQjONI5p2a2xP6CM3ln75G8ytI2fKRMu1Xz46Uh8/fQvvbIn5SnvhADIL0aB9qlVreQ9y6Y4vzmq2ZVaVbx8Ww=
-
+notifications:
+  flowdock:
+    secure: sif5bHBKyFmBQIIvuh3WLAN+V7cV6iPZHgaL9vZi1gaT44BnORRloZWZOWtCwA8MWepctzHorjhlRDmua+VDnQdy9wPPCH1uRSINw8PwEwkpesK1nhta78TbaCBmsM24qCbXJfFUYBZsNFv1pGuhLqgEy7Yn6Un/QUF3cXW60D3y/FdYCQ+yGtX9yz87Zsh0iyQemIE1IjnarbQne9+eJcCas+QpV9HGdjaBe3cUSId/ckIXc2jYbTm/tvIxc0E3H8+a27RgJGMCDYrVZxRq/9I8yHZOu4QVIwaF9NkkfcOgKHIoZWr8vQkXCbKEhoa8lJPdOA59QGdbNOdKjAyTjp8kCyqtYX6IvlhpVuHhB6YY5VpvSK7Q+K3fYUCit9UVC76yCW0gEk8OPus9AVqmNLwdqi6bBMLHGGPjlcog4aRDuJCNPDlwprPQ1K1hBjLtGwqZ7knTfCUzpKzHMfAvWxshW/6xYc9ZGmlzOr1OxmgIdB52RtYbVPqINM/Qr9bjGB7bqLrMFFmCvl+B8SOVgUTX1NZDnQ8R8WwJgNNxmY48rBA7yy9no4G6v92QRBn2pcfeJfrZGmcl6aQhybpDjDkJBMHFK2hj5dMf7qEBdFpe/OXBoHnkmw24xhnGdsfUogGQkHXmFQJMvOmwFWme64WhpVL4RH3E8T+dsfz1380=
 install:
-  - cd $PROJECT_DIR
-  - travis_retry pip install --upgrade pip
-  - travis_retry pip install invoke==0.13.0
-  - travis_retry invoke requirements
+- cd $PROJECT_DIR
+- travis_retry pip install --upgrade pip
+- travis_retry pip install invoke==0.13.0
+- travis_retry invoke requirements
 jobs:
   include:
-    - stage: "Prod smoke tests"
-      if: branch = master
-      env:
-        - DOMAIN='prod'
-        - PREFERRED_NODE='ucrdq'
-      script: invoke test_travis_on_prod
-    - if: branch != master
-      env: TEST_BUILD="chrome"
-    - if: branch != master
-      env: TEST_BUILD="firefox"
-    - if: branch != master
-      env: TEST_BUILD="edge"
+  - stage: Prod smoke tests
+    if: branch = master
+    env:
+    - DOMAIN='prod'
+    - PREFERRED_NODE='ucrdq'
+    script: invoke test_travis_on_prod
+  - if: branch != master
+    env: TEST_BUILD="chrome"
+  - if: branch != master
+    env: TEST_BUILD="firefox"
+  - if: branch != master
+    env: TEST_BUILD="edge"
 script:
-  - invoke test_travis_$TEST_BUILD
+- invoke test_travis_$TEST_BUILD
