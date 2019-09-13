@@ -1,6 +1,7 @@
 import pytest
 import markers
 import settings
+# import ipdb
 
 from api import osf_api
 from selenium.webdriver.support.ui import WebDriverWait
@@ -27,7 +28,6 @@ class TestPreprintWorkflow:
 
     @markers.dont_run_on_prod
     @markers.core_functionality
-    # @pytest.mark.skip('Update/run once NPD is finalized.')
     def test_create_preprint_from_landing(self, driver, landing_page, project_with_file):
 
         landing_page.add_preprint_button.click()
@@ -43,8 +43,11 @@ class TestPreprintWorkflow:
         submit_page.upload_select_file.click()
         submit_page.upload_file_save_continue.click()
 
+        # ipdb.set_trace()
         submit_page.basics_license_dropdown.click()
         submit_page.basics_universal_license.click()
+        submit_page.basics_tags_section.click()
+        submit_page.basics_tags_input.send_keys('selenium\r')
         submit_page.basics_abstract_input.click()
         submit_page.basics_abstract_input.send_keys('Center for Open Selenium')
         submit_page.basics_save_button.click()
@@ -57,17 +60,19 @@ class TestPreprintWorkflow:
         submit_page.authors_save_button.click()
 
         # Wait for Supplemental materials to show
+        submit_page.supplemental_create_new_project.click()
         submit_page.supplemental_save_button.click()
-
-        # submit_page.convert_existing_component_button.click()
-        # submit_page.continue_with_this_project_button.click()
-        # submit_page.upload_save_button.click()
 
         submit_page.create_preprint_button.click()
         submit_page.modal_create_preprint_button.click()
 
         preprint_detail = PreprintDetailPage(driver, verify=True)
         assert preprint_detail.title.text == project_with_file.title
+        # assert preprint_detail.abs
+        # assert supplemental_materials is not null
+        # assert authors are available
+        # assert tags are present
+        # assert disciplines is not none
 
     @markers.smoke_test
     @markers.core_functionality

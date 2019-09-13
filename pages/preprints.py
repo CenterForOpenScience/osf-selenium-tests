@@ -71,31 +71,24 @@ class PreprintSubmitPage(BasePreprintPage):
 
     basics_license_dropdown = Locator(By.CSS_SELECTOR, 'select[class="form-control"]', settings.LONG_TIMEOUT)
     basics_universal_license = Locator(By.CSS_SELECTOR, 'select[class="form-control"] > option:nth-child(3)')
+    basics_tags_section = Locator(By.CSS_SELECTOR, '#preprint-form-basics .tagsinput')
+    basics_tags_input = Locator(By.CSS_SELECTOR, '#preprint-form-basics .tagsinput input')
     basics_abstract_input = Locator(By.NAME, 'basicsAbstract')
     basics_save_button = Locator(By.CSS_SELECTOR, '#preprint-form-basics .btn-primary')
 
-    basics_tags_section = Locator(By.CSS_SELECTOR, '#preprint-form-basics .tagsinput')
-    basics_tags_input = Locator(By.CSS_SELECTOR, '#preprint-form-basics .tagsinput input')
-
-    discipline_help_text = Locator(By.CSS_SELECTOR, '#preprint-form-subjects .text-smaller', 5)
+    discipline_help_text = Locator(By.CSS_SELECTOR, '#preprint-form-subjects .text-smaller', settings.QUICK_TIMEOUT)
     first_discipline = Locator(By.CSS_SELECTOR, 'ul[role="listbox"] > li:nth-child(2)')
     discipline_save_button = Locator(By.CSS_SELECTOR, '#preprint-form-subjects .btn-primary')
 
-    authors_search_box = Locator(By.ID, 'author-search-box', 5)
+    authors_search_box = Locator(By.ID, 'author-search-box', settings.QUICK_TIMEOUT)
     authors_save_button = Locator(By.CSS_SELECTOR, '#preprint-form-authors .btn-primary')
 
     supplemental_help_text = Locator(By.CSS_SELECTOR, '#supplemental-materials .text-smaller', settings.QUICK_TIMEOUT)
+    supplemental_create_new_project = Locator(By.CSS_SELECTOR, 'div[class="start"] > div[class="row"] > div:nth-child(2)', settings.QUICK_TIMEOUT)
     supplemental_save_button = Locator(By.CSS_SELECTOR, '#supplemental-materials .btn-primary')
-
-    create_new_component_button = Locator(By.CSS_SELECTOR, '#convertExistingOrCreateComponent .fa-plus-circle')
-    convert_existing_component_button = Locator(By.CSS_SELECTOR, '#convertExistingOrCreateComponent .fa-cube')
-    continue_with_this_project_button = Locator(By.CSS_SELECTOR, '.upload-section-block .btn-success')
-    create_new_component = Locator(By.CSS_SELECTOR, '.upload-section-block .btn-default')
-    upload_save_button = Locator(By.CSS_SELECTOR, '.upload-section-block.ember-view.preprint-form-section.cp-Panel.cp-is-open > div > div > button')
 
     create_preprint_button = Locator(By.CSS_SELECTOR, '.preprint-submit-body .submit-section > div > button.btn.btn-success.btn-md.m-t-md.pull-right')
     modal_create_preprint_button = Locator(By.CSS_SELECTOR, '.modal-footer button.btn-success:nth-child(2)', settings.LONG_TIMEOUT)
-
 
 @pytest.mark.usefixtures('must_be_logged_in')
 class PreprintDiscoverPage(BasePreprintPage):
@@ -110,5 +103,8 @@ class PreprintDiscoverPage(BasePreprintPage):
 
 class PreprintDetailPage(GuidBasePage, BasePreprintPage):
     url_base = urljoin(settings.OSF_HOME, '{guid}')
+
     identity = Locator(By.ID, 'preprintTitle')
     title = Locator(By.ID, 'preprintTitle')
+
+    abstract_text = Locator(By.CSS_SELECTOR, '')
