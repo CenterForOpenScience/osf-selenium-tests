@@ -1,7 +1,6 @@
 import pytest
 import markers
 import settings
-# import ipdb
 
 from api import osf_api
 from selenium.webdriver.support.ui import WebDriverWait
@@ -33,6 +32,7 @@ class TestPreprintWorkflow:
         landing_page.add_preprint_button.click()
         submit_page = PreprintSubmitPage(driver, verify=True)
 
+        # Wait for select a service to show
         WebDriverWait(driver, 10).until(EC.visibility_of(submit_page.select_a_service_help_text))
         submit_page.select_a_service_save_button.click()
         submit_page.upload_from_existing_project_button.click()
@@ -43,7 +43,6 @@ class TestPreprintWorkflow:
         submit_page.upload_select_file.click()
         submit_page.upload_file_save_continue.click()
 
-        # ipdb.set_trace()
         submit_page.basics_license_dropdown.click()
         submit_page.basics_universal_license.click()
         submit_page.basics_tags_section.click()
@@ -66,13 +65,15 @@ class TestPreprintWorkflow:
         submit_page.create_preprint_button.click()
         submit_page.modal_create_preprint_button.click()
 
+        current_browser = driver.desired_capabilities.get('browserName')
+        if 'edge' in current_browser:
+            alert = driver.switch_to_alert()
+            alert.accept()
+
         preprint_detail = PreprintDetailPage(driver, verify=True)
+        WebDriverWait(driver, 10).until(EC.visibility_of(preprint_detail.title))
+
         assert preprint_detail.title.text == project_with_file.title
-        # assert preprint_detail.abs
-        # assert supplemental_materials is not null
-        # assert authors are available
-        # assert tags are present
-        # assert disciplines is not none
 
     @markers.smoke_test
     @markers.core_functionality

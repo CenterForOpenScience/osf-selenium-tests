@@ -70,7 +70,7 @@ class PreprintSubmitPage(BasePreprintPage):
     upload_file_save_continue = Locator(By.CSS_SELECTOR, 'div[class="p-t-xs pull-right"] > button[class="btn btn-primary"]')
 
     basics_license_dropdown = Locator(By.CSS_SELECTOR, 'select[class="form-control"]', settings.LONG_TIMEOUT)
-    basics_universal_license = Locator(By.CSS_SELECTOR, 'select[class="form-control"] > option:nth-child(3)')
+    basics_universal_license = Locator(By.CSS_SELECTOR, 'select[class="form-control"] > option:nth-child(3)', settings.QUICK_TIMEOUT)
     basics_tags_section = Locator(By.CSS_SELECTOR, '#preprint-form-basics .tagsinput')
     basics_tags_input = Locator(By.CSS_SELECTOR, '#preprint-form-basics .tagsinput input')
     basics_abstract_input = Locator(By.NAME, 'basicsAbstract')
@@ -104,7 +104,7 @@ class PreprintDiscoverPage(BasePreprintPage):
 class PreprintDetailPage(GuidBasePage, BasePreprintPage):
     url_base = urljoin(settings.OSF_HOME, '{guid}')
 
-    identity = Locator(By.ID, 'preprintTitle')
-    title = Locator(By.ID, 'preprintTitle')
+    identity = Locator(By.ID, 'preprintTitle', settings.LONG_TIMEOUT)
+    title = Locator(By.ID, 'preprintTitle', settings.LONG_TIMEOUT)
 
     abstract_text = Locator(By.CSS_SELECTOR, '')
