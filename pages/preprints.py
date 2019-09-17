@@ -58,14 +58,11 @@ class PreprintSubmitPage(BasePreprintPage):
     select_a_service_help_text = Locator(By.CSS_SELECTOR, 'dl[class="dl-horizontal dl-description"]')
     select_a_service_save_button = Locator(By.CSS_SELECTOR, '#preprint-form-server button.btn.btn-primary')
 
-    upload_new_preprint_button = Locator(By.CSS_SELECTOR, '#preprint-form-upload > div > div > div > div > div > div:nth-child(1) > button')
     upload_from_existing_project_button = Locator(By.XPATH, '//button[text()="Select from an existing OSF project"]')
     upload_project_selector = Locator(By.CSS_SELECTOR, 'span[class="ember-power-select-placeholder"]')
     upload_project_selector_input = Locator(By.CSS_SELECTOR, 'input[class="ember-power-select-search-input"]')
     upload_project_help_text = Locator(By.CSS_SELECTOR, '.ember-power-select-option--search-message')
     upload_project_selector_project = Locator(By.CSS_SELECTOR, '.ember-power-select-option')
-    upload_existing_project_new_file_button = Locator(By.CSS_SELECTOR, '#preprint-form-upload .fa-cloud-upload')
-    upload_existing_file_button = Locator(By.CSS_SELECTOR, '#preprint-form-upload .fa-th-list')
     upload_select_file = Locator(By.CSS_SELECTOR, '.file-browser-item > a:nth-child(2)')
     upload_file_save_continue = Locator(By.CSS_SELECTOR, 'div[class="p-t-xs pull-right"] > button[class="btn btn-primary"]')
 
@@ -106,5 +103,3 @@ class PreprintDetailPage(GuidBasePage, BasePreprintPage):
 
     identity = Locator(By.ID, 'preprintTitle', settings.LONG_TIMEOUT)
     title = Locator(By.ID, 'preprintTitle', settings.LONG_TIMEOUT)
-
-    abstract_text = Locator(By.CSS_SELECTOR, '')
