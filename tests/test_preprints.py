@@ -3,6 +3,8 @@ import markers
 import settings
 
 from api import osf_api
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 from pages.preprints import (
     PreprintLandingPage,
@@ -25,31 +27,52 @@ class TestPreprintWorkflow:
 
     @markers.dont_run_on_prod
     @markers.core_functionality
-    @pytest.mark.skip('Update/run once NPD is finalized.')
     def test_create_preprint_from_landing(self, driver, landing_page, project_with_file):
+
         landing_page.add_preprint_button.click()
         submit_page = PreprintSubmitPage(driver, verify=True)
+
+        # Wait for select a service to show
+        WebDriverWait(driver, 10).until(EC.visibility_of(submit_page.select_a_service_help_text))
         submit_page.select_a_service_save_button.click()
         submit_page.upload_from_existing_project_button.click()
         submit_page.upload_project_selector.click()
         submit_page.upload_project_help_text.here_then_gone()
         submit_page.upload_project_selector_project.click()
-        submit_page.upload_existing_file_button.click()
-        submit_page.upload_select_file.click()
-        submit_page.convert_existing_component_button.click()
-        submit_page.continue_with_this_project_button.click()
-        submit_page.upload_save_button.click()
 
+        submit_page.upload_select_file.click()
+        submit_page.upload_file_save_continue.click()
+
+        submit_page.basics_license_dropdown.click()
+        submit_page.basics_universal_license.click()
+        submit_page.basics_tags_section.click()
+        submit_page.basics_tags_input.send_keys('selenium\r')
+        submit_page.basics_abstract_input.click()
+        submit_page.basics_abstract_input.send_keys('Center for Open Selenium')
+        submit_page.basics_save_button.click()
+
+        # Wait for discipline help text
         submit_page.first_discipline.click()
         submit_page.discipline_save_button.click()
 
-        submit_page.basics_abstract_input.send_keys('Pull an abstract from somewhere. I dont need to have all this plain text in a test. Maybe create a dummy text file for almost everything')
-        submit_page.basics_tags_input.send_keys('qatest')
-        submit_page.basics_save_button.click()
+        # Wait for authors box to show
+        submit_page.authors_save_button.click()
+
+        # Wait for Supplemental materials to show
+        submit_page.supplemental_create_new_project.click()
+        submit_page.supplemental_save_button.click()
 
         submit_page.create_preprint_button.click()
         submit_page.modal_create_preprint_button.click()
+
+        current_browser = driver.desired_capabilities.get('browserName')
+        if 'edge' in current_browser:
+            alert = driver.switch_to_alert()
+            alert.accept()
+
         preprint_detail = PreprintDetailPage(driver, verify=True)
+        WebDriverWait(driver, 10).until(EC.visibility_of(preprint_detail.title))
+
         assert preprint_detail.title.text == project_with_file.title
 
     @markers.smoke_test
@@ -93,7 +116,6 @@ class TestBrandedProviders:
 
     @markers.smoke_test
     @markers.core_functionality
-    @pytest.mark.skipif(settings.BUILD == 'msie', reason='Sometimes IE discover page yields no results, see IN-438')
     @pytest.mark.skipif(not settings.PRODUCTION, reason='Cannot test on stagings as they share SHARE')
     def test_detail_page(self, driver, provider):
         """Test a preprint detail page by grabbing the first search result from the discover page.
