@@ -76,8 +76,7 @@ class PreprintSubmitPage(BasePreprintPage):
     first_discipline = Locator(By.CSS_SELECTOR, 'ul[role="listbox"] > li:nth-child(2)', settings.QUICK_TIMEOUT)
     discipline_save_button = Locator(By.CSS_SELECTOR, '#preprint-form-subjects .btn-primary')
 
-    authors_search_box = Locator(By.ID, 'author-search-box', settings.QUICK_TIMEOUT)
-    authors_save_button = Locator(By.CSS_SELECTOR, '#preprint-form-authors .btn-primary')
+    authors_save_button = Locator(By.CSS_SELECTOR, '#preprint-form-authors .btn-primary', settings.QUICK_TIMEOUT)
 
     supplemental_create_new_project = Locator(By.CSS_SELECTOR, 'div[class="start"] > div[class="row"] > div:nth-child(2)', settings.QUICK_TIMEOUT)
     supplemental_save_button = Locator(By.CSS_SELECTOR, '#supplemental-materials .btn-primary')
