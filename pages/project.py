@@ -36,13 +36,14 @@ class MyProjectsPage(OSFBasePage):
     identity = Locator(By.CSS_SELECTOR, '.col-xs-8 > h3:nth-child(1)')
     create_project_button = Locator(By.CSS_SELECTOR, '[data-target="#addProject"]')
     create_collection_button = Locator(By.CSS_SELECTOR, '[data-target="#addColl"]')
-    first_custom_collection = Locator(By.CSS_SELECTOR, 'li[data-index="3"] span')
-    first_collection_settings_button = Locator(By.CSS_SELECTOR, '.fa-ellipsis-v')
-    first_collection_remove_button = Locator(By.CSS_SELECTOR, '[data-target="#removeColl"]')
+    first_custom_collection = Locator(By.CSS_SELECTOR, 'li[data-index="4"] span', settings.QUICK_TIMEOUT)
+    first_collection_settings_button = Locator(By.CSS_SELECTOR, '.fa-ellipsis-v', settings.QUICK_TIMEOUT)
+    first_collection_remove_button = Locator(By.CSS_SELECTOR, '[data-target="#removeColl"]', settings.QUICK_TIMEOUT)
 
     # Group Locators
     personal_collections = GroupLocator(By.CSS_SELECTOR, '.acceptDrop .ui-droppable')
     projects = GroupLocator(By.CSS_SELECTOR, '#projectOrganizer .fa-cube')
+    first_project = Locator(By.CSS_SELECTOR, 'div[class="tb-tbody-inner"] > div:first-child > div:nth-child(2)')
 
     # Components
     create_collection_modal = ComponentLocator(CreateCollectionModal)
