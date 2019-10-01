@@ -44,6 +44,8 @@ class MyProjectsPage(OSFBasePage):
     personal_collections = GroupLocator(By.CSS_SELECTOR, '.acceptDrop .ui-droppable')
     projects = GroupLocator(By.CSS_SELECTOR, '#projectOrganizer .fa-cube')
     first_project = Locator(By.CSS_SELECTOR, 'div[class="tb-tbody-inner"] > div:first-child > div:nth-child(2)')
+    first_project_hyperlink = Locator(By.CSS_SELECTOR, 'div[data-rindex="1"] > div:first-child >'
+                                                       ' span:last-child > a:first-child')
 
     # Components
     create_collection_modal = ComponentLocator(CreateCollectionModal)

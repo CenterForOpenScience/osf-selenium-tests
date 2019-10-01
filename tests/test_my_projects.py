@@ -2,6 +2,7 @@ import pytest
 import markers
 import time
 
+from api import osf_api
 from selenium.webdriver import ActionChains
 from pages.project import MyProjectsPage, ProjectPage
 
@@ -28,7 +29,7 @@ class TestMyProjectsPage:
         project_page = ProjectPage(driver, verify=True)
         assert project_page.title.text == title, 'Project title incorrect.'
 
-    def test_custom_collection(self, driver, default_project, my_projects_page, fake):
+    def test_custom_collection(self, driver, session, default_project, my_projects_page, fake):
         current_browser = driver.desired_capabilities.get('browserName')
 
         # Create new custom collection
@@ -70,3 +71,7 @@ class TestMyProjectsPage:
         my_projects_page.delete_collection_modal.delete_button.click()
         time.sleep(1)
         assert not my_projects_page.first_custom_collection.present()
+
+        # ipdb.set_trace()
+        guid = my_projects_page.first_project_hyperlink.get_attribute('data-nodeid')
+        osf_api.delete_project(session, guid, None)

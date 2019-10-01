@@ -87,6 +87,19 @@ def delete_all_user_projects(session, user=None):
             n.delete()
 
 
+def delete_project(session, guid, user=None):
+    """Delete a single project. Simply pass in the guid
+    """
+    if not user:
+        user = current_user(session)
+    nodes_url = user.relationships.nodes['links']['related']['href']
+    data = session.get(nodes_url)
+    for node in data['data']:
+        if node['id'] == guid:
+            n = client.Node(id=node['id'], session=session)
+            n.get()
+            n.delete()
+
 # TODO rename this to get_node_providers, and create new function that actually IS get_node_addons -
 #  note, this is confusing, talk to BrianG before we change this
 def get_node_addons(session, node_id):
@@ -156,8 +169,10 @@ def get_providers_list(session=None, type='preprints'):
     return session.get(url)['data']
 
 
-def connect_provider_root_to_node(session, provider, external_account_id,
-                                  node_id=settings.PREFERRED_NODE):
+def connect_provider_root_to_node(
+    session, provider, external_account_id,
+    node_id=settings.PREFERRED_NODE,
+):
     """Initialize the node<=>addon connection, add the given external_account_id, and configure it
     to connect to the root folder of the provider."""
 
@@ -182,11 +197,13 @@ def connect_provider_root_to_node(session, provider, external_account_id,
             'attributes': {
                 'external_account_id': external_account_id,
                 'enabled': True,
-            }
-        }
+            },
+        },
     }
-    addon = session.patch(url=url, item_type='node_addons', item_id=provider,
-                          raw_body=json.dumps(raw_payload))
+    addon = session.patch(
+        url=url, item_type='node_addons', item_id=provider,
+        raw_body=json.dumps(raw_payload),
+    )
     # payload = {
     #     'external_account_id': external_account_id,
     #     'enabled': True,
@@ -198,6 +215,8 @@ def connect_provider_root_to_node(session, provider, external_account_id,
     # the addon config
     root_folder = session.get(url + 'folders/')['data'][0]['attributes']['folder_id']
     raw_payload['data']['attributes']['folder_id'] = root_folder
-    addon = session.patch(url=url, item_type='node_addons', item_id=provider,
-                          raw_body=json.dumps(raw_payload))
+    addon = session.patch(
+        url=url, item_type='node_addons', item_id=provider,
+        raw_body=json.dumps(raw_payload),
+    )
     return addon
