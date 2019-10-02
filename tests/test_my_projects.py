@@ -5,6 +5,9 @@ import time
 from api import osf_api
 from selenium.webdriver import ActionChains
 from pages.project import MyProjectsPage, ProjectPage
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 
 @pytest.fixture()
@@ -38,7 +41,8 @@ class TestMyProjectsPage:
         my_projects_page.create_collection_modal.name_input.click()
         my_projects_page.create_collection_modal.name_input.send_keys_deliberately(name)
         my_projects_page.create_collection_modal.add_button.click()
-        time.sleep(1)
+        # Wait until modal closes
+        WebDriverWait(driver, 5).until(EC.invisibility_of_element_located((By.CSS_SELECTOR, '#addColl .btn-success')))
         my_projects_page.reload()
         assert name in my_projects_page.first_custom_collection.text
 
@@ -57,21 +61,21 @@ class TestMyProjectsPage:
         action_chains.move_to_element(drop_collection.element).perform()
         action_chains.reset_actions()
 
-        print('Current Browser: {}'.format(current_browser))
+        # print('Current Browser: {}'.format(current_browser))
 
         if 'chrome' in current_browser:
             action_chains.release().perform()
-
-        time.sleep(1)
+        # Wait for created collection to have '(1)' in the name
+        WebDriverWait(driver, 5).until(EC.text_to_be_present_in_element((By.CSS_SELECTOR, 'li[data-index="4"] span'), '(1)'))
         assert '1' in my_projects_page.first_custom_collection.text
 
         # Delete the custom collection
         my_projects_page.first_collection_settings_button.click()
         my_projects_page.first_collection_remove_button.click()
         my_projects_page.delete_collection_modal.delete_button.click()
-        time.sleep(1)
+        # Wait for danger modal to close
+        WebDriverWait(driver, 5).until(EC.invisibility_of_element_located((By.CSS_SELECTOR, '#removeColl .btn-danger')))
         assert not my_projects_page.first_custom_collection.present()
 
-        # ipdb.set_trace()
         guid = my_projects_page.first_project_hyperlink.get_attribute('data-nodeid')
         osf_api.delete_project(session, guid, None)
