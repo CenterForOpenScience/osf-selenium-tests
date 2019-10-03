@@ -15,7 +15,7 @@ You'll need the webdriver of your choice and Python3.
 
 ##### Installing a webdriver:
 
-In order for Selenium to be able to control your local browser, you will need to install [drivers](https://seleniumhq.github.io/selenium/docs/api/py/#drivers) for any browsers in which you desire to run these tests. Start with a driver such as [GekoDriver](https://github.com/mozilla/geckodriver/releases) (firefox) or [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/downloads) (Note: it is not suggested you run these tests in Safari or IE).
+In order for Selenium to be able to control your local browser, you will need to install [drivers](https://seleniumhq.github.io/selenium/docs/api/py/#drivers) for any browsers in which you desire to run these tests. Start with a driver such as [GekoDriver](https://github.com/mozilla/geckodriver/releases) (firefox) or [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/downloads). (Note: IE is not supported. Safari is only partially supported -- running the tests in Safari is not recommended).
 
 Go to any of the driver links above, install the applicable driver for your system, and move the executable into your *PATH*, e. g., place it in */usr/bin* or */usr/local/bin*.
 
