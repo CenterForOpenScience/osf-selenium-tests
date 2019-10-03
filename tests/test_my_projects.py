@@ -9,6 +9,10 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
+''' TODO
+1 - Edge support
+2 - Restructure Test
+'''
 
 @pytest.fixture()
 def my_projects_page(driver):
@@ -55,15 +59,13 @@ class TestMyProjectsPage:
         action_chains.reset_actions()
         # drag_project is a wrapper - use .element to use the WebElement inside it
         action_chains.click_and_hold(drag_project.element).perform()
-        # Chrome -> will highlight multiple rows if you do not sleep here
+        # Chrome/Edge -> will highlight multiple rows if you do not sleep here
         time.sleep(1)
         # drop_collection is a wrapper - use .element to use the WebElement inside it
         action_chains.move_to_element(drop_collection.element).perform()
         action_chains.reset_actions()
 
-        # print('Current Browser: {}'.format(current_browser))
-
-        if 'chrome' in current_browser:
+        if 'chrome' or 'edge' in current_browser:
             action_chains.release().perform()
         # Wait for created collection to have '(1)' in the name
         WebDriverWait(driver, 5).until(EC.text_to_be_present_in_element((By.CSS_SELECTOR, 'li[data-index="4"] span'), '(1)'))
