@@ -65,7 +65,10 @@ class TestMyProjectsPage:
         action_chains = ActionChains(driver)
         # drag_project is a wrapper - use .element to use the WebElement inside it
         # drop_collection is a wrapper - use .element to use the WebElement inside it
-        if 'chrome' or 'Edge' in current_browser:
+        if 'firefox' in current_browser:
+            action_chains.drag_and_drop(drag_project.element, drop_collection.element)
+            action_chains.perform()
+        else:
             action_chains.click_and_hold(drag_project.element).perform()
             # Chrome -> will highlight multiple rows if you do not sleep here
             time.sleep(1)
@@ -75,10 +78,6 @@ class TestMyProjectsPage:
             action_chains.move_to_element(drop_collection.element).perform()
             action_chains.reset_actions()
             action_chains.release().perform()
-        elif 'firefox' in current_browser:
-            # TODO: Figure out why drag n drop performs 3 times
-            action_chains.drag_and_drop(drag_project.element, drop_collection.element)
-            action_chains.perform()
 
         # Wait for new collection to have '(1)' in the name
         WebDriverWait(driver, 5).until(EC.text_to_be_present_in_element((By.CSS_SELECTOR, 'li[data-index="4"] span'), '(1)'))
