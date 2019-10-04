@@ -100,15 +100,6 @@ def test_travis_firefox(ctx, numprocesses=None):
     test_module(ctx)
 
 @task
-def test_travis_msie(ctx, numprocesses=None):
-    """
-    Run tests on the latest Microsoft Internet Explorer
-    """
-    flake(ctx)
-    print('Testing modules in "{}" in MSIE'.format('tests'))
-    test_module(ctx)
-
-@task
 def test_travis_android(ctx, numprocesses=None):
     """
     Run tests on Android 7.0, Samsung Galaxy S8
