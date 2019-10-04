@@ -33,7 +33,7 @@ class RequestAccessPage(GuidBasePage):
 class MyProjectsPage(OSFBasePage):
     url = settings.OSF_HOME + '/myprojects/'
 
-    identity = Locator(By.CSS_SELECTOR, '.col-xs-8 > h3:nth-child(1)')
+    identity = Locator(By.CSS_SELECTOR, '.col-xs-8 > h3:nth-child(1)', settings.LONG_TIMEOUT)
     create_project_button = Locator(By.CSS_SELECTOR, '[data-target="#addProject"]')
     create_collection_button = Locator(By.CSS_SELECTOR, '[data-target="#addColl"]')
     first_custom_collection = Locator(By.CSS_SELECTOR, 'li[data-index="4"] span', settings.QUICK_TIMEOUT)
@@ -43,8 +43,8 @@ class MyProjectsPage(OSFBasePage):
     # Group Locators
     personal_collections = GroupLocator(By.CSS_SELECTOR, '.acceptDrop .ui-droppable')
     projects = GroupLocator(By.CSS_SELECTOR, '#projectOrganizer .fa-cube')
-    first_project = Locator(By.CSS_SELECTOR, 'div[class="tb-tbody-inner"] > div:first-child > div:nth-child(2)')
-    first_project_hyperlink = Locator(By.CSS_SELECTOR, 'div[data-rindex="1"] > div:first-child >'
+    first_project = Locator(By.CSS_SELECTOR, 'div[class="tb-tbody-inner"] > div:first-child > div:nth-child(1)')
+    first_project_hyperlink = Locator(By.CSS_SELECTOR, 'div[data-rindex="0"] > div:first-child >'
                                                        ' span:last-child > a:first-child')
 
     # Components
