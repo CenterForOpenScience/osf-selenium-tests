@@ -7,9 +7,10 @@ from selenium.webdriver.common.by import By
 
 
 class COSDonatePage(BasePage):
-    url = 'https://cos.io/about/donate-to-cos/'
+    url = 'https://cos.io/about/support-cos/'
 
-    page_heading = Locator(By.CSS_SELECTOR, 'body > div.page-container > div.container.margin-bottom-30.margin-top-50 > h1 > strong')
+    identity = Locator(By.CSS_SELECTOR, 'div[class="slide-wrapper-background"', settings.LONG_TIMEOUT)
+    page_heading = Locator(By.CSS_SELECTOR, 'div[class="banner-element"]')
 
     def verify(self):
         # TODO: Change this. This is bad

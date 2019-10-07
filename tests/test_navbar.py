@@ -138,14 +138,14 @@ class TestOSFHomeNavbarLoggedIn(NavbarTestLoggedInMixin):
         page.navbar.my_projects_link.click()
         assert MyProjectsPage(driver, verify=True)
 
-
-class TestPreprintsNavbar(NavbarTestLoggedOutMixin):
-
-    @pytest.fixture()
-    def page(self, driver):
-        page = PreprintLandingPage(driver)
-        page.goto()
-        return page
+# TODO: Complete this test after ENG-1103 is resolved
+# class TestPreprintsNavbar(NavbarTestLoggedOutMixin):
+#
+#     @pytest.fixture()
+#     def page(self, driver):
+#         page = PreprintLandingPage(driver)
+#         page.goto()
+#         return page
 
     # todo: add id to those html tags in ember osf to make the find_element possible
     # def test_search_link(self):
@@ -165,6 +165,7 @@ class TestPreprintsNavbar(NavbarTestLoggedOutMixin):
     # def test_sign_in_button(self):
     #     page.navbar.sign_in_button.click()
     #     assert 'login' in driver.current_url
+
 
 @pytest.mark.usefixtures('must_be_logged_in')
 class TestPreprintsNavbarLoggedIn(NavbarTestLoggedInMixin):
