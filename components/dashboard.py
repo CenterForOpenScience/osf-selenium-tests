@@ -21,7 +21,7 @@ class EmberCreateProjectModal(BaseElement):
         try:
             logo = self.modal.find_element_by_name(institution)
             return '0.25' not in logo.value_of_css_property('opacity')
-        except:
+        except Exception:
             raise ValueError('Institution logo for {} not present in modal'.format(institution))
 
 
@@ -75,14 +75,14 @@ class CreateProjectModal(BaseElement):
         try:
             logo = self.modal.find_element(By.NAME, institution)
             return '0.25' not in logo.value_of_css_property('opacity')
-        except:
+        except Exception:
             raise ValueError('Institution logo for {} not present in modal'.format(institution))
 
 
 class ProjectCreatedModal(BaseElement):
 
     go_to_project_href_link = Locator(By.XPATH, '//a[text()="Go to new project"]', settings.LONG_TIMEOUT)
-    keep_working_here_button = Locator(By.CSS_SELECTOR, '#addProjectFromHome > div > div > div > div.modal-footer > button')
+    keep_working_here_button = Locator(By.CSS_SELECTOR, 'button[data-dismiss="modal"]', settings.TIMEOUT)
 
 
 class CreateCollectionModal(BaseElement):
@@ -123,7 +123,7 @@ class ProjectList(BaseElement):
             element = self.driver.find_element(By.CSS_SELECTOR, selector)
             guid = element.get_attribute('href').strip('/')
             return guid
-        except:
+        except Exception:
             raise ValueError('Unable to find a project at position {}'.format(n))
 
     def get_list_length(self):
