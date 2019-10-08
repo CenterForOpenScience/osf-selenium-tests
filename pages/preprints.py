@@ -55,34 +55,34 @@ class PreprintSubmitPage(BasePreprintPage):
     url_addition = 'submit'
 
     identity = Locator(By.CLASS_NAME, 'preprint-submit-header')
+    select_a_service_help_text = Locator(By.CSS_SELECTOR, 'dl[class="dl-horizontal dl-description"]')
     select_a_service_save_button = Locator(By.CSS_SELECTOR, '#preprint-form-server button.btn.btn-primary')
 
-    upload_new_preprint_button = Locator(By.CSS_SELECTOR, '#preprint-form-upload > div > div > div > div > div > div:nth-child(1) > button')
-    upload_from_existing_project_button = Locator(By.CSS_SELECTOR, '#preprint-form-upload > div > div > div > div > div > div:nth-child(2) > button')
-    upload_project_selector = Locator(By.CSS_SELECTOR, '#preprint-form-upload .ember-power-select-placeholder')
-    upload_project_selector_input = Locator(By.CSS_SELECTOR, '#preprint-form-upload .ember-power-select-search-input')
+    upload_from_existing_project_button = Locator(By.XPATH, '//button[text()="Select from an existing OSF project"]')
+    upload_project_selector = Locator(By.CSS_SELECTOR, 'span[class="ember-power-select-placeholder"]')
+    upload_project_selector_input = Locator(By.CSS_SELECTOR, 'input[class="ember-power-select-search-input"]')
     upload_project_help_text = Locator(By.CSS_SELECTOR, '.ember-power-select-option--search-message')
     upload_project_selector_project = Locator(By.CSS_SELECTOR, '.ember-power-select-option')
-    upload_existing_project_new_file_button = Locator(By.CSS_SELECTOR, '#preprint-form-upload .fa-cloud-upload')
-    upload_existing_file_button = Locator(By.CSS_SELECTOR, '#preprint-form-upload .fa-th-list')
     upload_select_file = Locator(By.CSS_SELECTOR, '.file-browser-item > a:nth-child(2)')
-    create_new_component_button = Locator(By.CSS_SELECTOR, '#convertExistingOrCreateComponent .fa-plus-circle')
-    convert_existing_component_button = Locator(By.CSS_SELECTOR, '#convertExistingOrCreateComponent .fa-cube')
-    continue_with_this_project_button = Locator(By.CSS_SELECTOR, '.upload-section-block .btn-success')
-    create_new_component = Locator(By.CSS_SELECTOR, '.upload-section-block .btn-default')
-    upload_save_button = Locator(By.CSS_SELECTOR, '.upload-section-block.ember-view.preprint-form-section.cp-Panel.cp-is-open > div > div > button')
+    upload_file_save_continue = Locator(By.CSS_SELECTOR, 'div[class="p-t-xs pull-right"] > button[class="btn btn-primary"]')
 
-    first_discipline = Locator(By.XPATH, '/html/body/div[4]/div[4]/div/div/div/div[1]/section[3]/div/div/div[2]/div[1]/ul/li[1]')
-    discipline_save_button = Locator(By.CSS_SELECTOR, '#preprint-form-subjects .btn-primary')
-
+    basics_license_dropdown = Locator(By.CSS_SELECTOR, 'select[class="form-control"]', settings.LONG_TIMEOUT)
+    basics_universal_license = Locator(By.CSS_SELECTOR, 'select[class="form-control"] > option:nth-child(3)', settings.QUICK_TIMEOUT)
     basics_tags_section = Locator(By.CSS_SELECTOR, '#preprint-form-basics .tagsinput')
     basics_tags_input = Locator(By.CSS_SELECTOR, '#preprint-form-basics .tagsinput input')
     basics_abstract_input = Locator(By.NAME, 'basicsAbstract')
     basics_save_button = Locator(By.CSS_SELECTOR, '#preprint-form-basics .btn-primary')
 
+    first_discipline = Locator(By.CSS_SELECTOR, 'ul[role="listbox"] > li:nth-child(2)', settings.QUICK_TIMEOUT)
+    discipline_save_button = Locator(By.CSS_SELECTOR, '#preprint-form-subjects .btn-primary')
+
+    authors_save_button = Locator(By.CSS_SELECTOR, '#preprint-form-authors .btn-primary', settings.QUICK_TIMEOUT)
+
+    supplemental_create_new_project = Locator(By.CSS_SELECTOR, 'div[class="start"] > div[class="row"] > div:nth-child(2)', settings.QUICK_TIMEOUT)
+    supplemental_save_button = Locator(By.CSS_SELECTOR, '#supplemental-materials .btn-primary')
+
     create_preprint_button = Locator(By.CSS_SELECTOR, '.preprint-submit-body .submit-section > div > button.btn.btn-success.btn-md.m-t-md.pull-right')
     modal_create_preprint_button = Locator(By.CSS_SELECTOR, '.modal-footer button.btn-success:nth-child(2)', settings.LONG_TIMEOUT)
-
 
 @pytest.mark.usefixtures('must_be_logged_in')
 class PreprintDiscoverPage(BasePreprintPage):
@@ -97,5 +97,6 @@ class PreprintDiscoverPage(BasePreprintPage):
 
 class PreprintDetailPage(GuidBasePage, BasePreprintPage):
     url_base = urljoin(settings.OSF_HOME, '{guid}')
-    identity = Locator(By.ID, 'preprintTitle')
-    title = Locator(By.ID, 'preprintTitle')
+
+    identity = Locator(By.ID, 'preprintTitle', settings.LONG_TIMEOUT)
+    title = Locator(By.ID, 'preprintTitle', settings.LONG_TIMEOUT)
