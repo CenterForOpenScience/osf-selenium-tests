@@ -316,15 +316,13 @@ class TestFilesPage:
             # Test for copy
             assert 'copy' in origin_file.text
             assert 'copy' in destination_file.text
+
+            osf_api.delete_file(session, metadata['data']['links']['delete'])
+
         else:
             # Test for move
             assert origin_file is None
             assert 'move' in destination_file.text
-
-        try:
-            osf_api.delete_file(session, metadata['data']['links']['delete'])
-        except Exception:
-            print('No file to be deleted')
 
     @pytest.mark.skipif(settings.DRIVER == 'remote', reason='File_Detector Class only ')
     @pytest.mark.parametrize('provider', ['s3', 'dropbox', 'box', 'owncloud'])
