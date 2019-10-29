@@ -16,8 +16,8 @@ class UserProfilePage(GuidBasePage):
 
     #TODO: Reconsider using a component here (and using component locators correctly)
     identity = Locator(By.CLASS_NAME, 'profile-fullname', settings.LONG_TIMEOUT)
-    no_public_projects_text = Locator(By.CSS_SELECTOR, '#publicProjects .help-block', settings.QUICK_TIMEOUT)
-    no_public_components_text = Locator(By.CSS_SELECTOR, '#publicComponents .help-block', settings.QUICK_TIMEOUT)
+    no_public_projects_text = Locator(By.CSS_SELECTOR, '#publicProjects .help-block')
+    no_public_components_text = Locator(By.CSS_SELECTOR, '#publicComponents .help-block')
     edit_profile_link = Locator(By.CSS_SELECTOR, '#edit-profile-settings')
 
     #TODO: Seperate out by component if it becomes necessary
