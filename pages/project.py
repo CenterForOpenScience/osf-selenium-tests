@@ -66,6 +66,9 @@ class ForksPage(GuidBasePage):
     create_fork_modal_button = Locator(By.CSS_SELECTOR, '.modal-footer .btn-info')
     cancel_modal_button = Locator(By.CSS_SELECTOR, '.modal-footer .btn-default')
     info_toast = Locator(By.CSS_SELECTOR, '.toast-info')
+    fork_link = Locator(By.CSS_SELECTOR, 'a[data-analytics-name="Title"]')
+    fork_authors = Locator(By.CSS_SELECTOR, 'div[class="_NodeCard__authors_1i3kzz"]')
+    placeholder_text = Locator(By.CSS_SELECTOR, 'div[class="_Forks__placeholder_1xlord"]')
 
     # Group Locators
     listed_forks = GroupLocator(By.CSS_SELECTOR, '.list-group-item')

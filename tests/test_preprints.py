@@ -27,7 +27,7 @@ class TestPreprintWorkflow:
 
     @markers.dont_run_on_prod
     @markers.core_functionality
-    def test_create_preprint_from_landing(self, driver, landing_page, project_with_file):
+    def test_create_preprint_from_landing(self, session, driver, landing_page, project_with_file):
 
         landing_page.add_preprint_button.click()
         submit_page = PreprintSubmitPage(driver, verify=True)
@@ -74,6 +74,10 @@ class TestPreprintWorkflow:
         WebDriverWait(driver, 10).until(EC.visibility_of(preprint_detail.title))
 
         assert preprint_detail.title.text == project_with_file.title
+
+        # Delete supplemental project created during workflow
+        supplemental_guid = preprint_detail.supplemental_link.text[12:17]
+        osf_api.delete_project(session, supplemental_guid, None)
 
     @markers.smoke_test
     @markers.core_functionality
