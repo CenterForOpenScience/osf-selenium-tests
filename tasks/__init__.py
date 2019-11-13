@@ -43,7 +43,7 @@ def requirements(ctx, dev=False):
     ctx.run(cmd, echo=True)
 
 @task
-def test_module(ctx, module=None, numprocesses=1, params=['--reruns', '3']):
+def test_module(ctx, module=None, numprocesses=1, params=['--reruns', '0']):
     """Helper for running tests.
     """
     import pytest
@@ -52,7 +52,7 @@ def test_module(ctx, module=None, numprocesses=1, params=['--reruns', '3']):
         numprocesses = cpu_count()
     # NOTE: Subprocess to compensate for lack of thread safety in the httpretty module.
     # https://github.com/gabrielfalcao/HTTPretty/issues/209#issue-54090252
-    args = ['-s', '-v', 'tests/test_user.py']
+    args = ['-s', '-v']
     if numprocesses > 1:
         args += ['-n {}'.format(numprocesses), '--max-slave-restart=0']
 
