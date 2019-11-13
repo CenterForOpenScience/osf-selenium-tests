@@ -57,7 +57,7 @@ class TestMeetingsPage:
         meeting_name = meetings_page.top_meeting_link.text
         meetings_page.top_meeting_link.click()
         meeting_detail = MeetingDetailPage(driver, verify=True)
-        assert meeting_name == meeting_detail.meeting_title.text.strip()
+        assert meeting_name.strip() == meeting_detail.meeting_title.text.strip()
 
 
 class TestMeetingDetailPage:
@@ -77,7 +77,7 @@ class TestMeetingDetailPage:
         entry_title = meeting_detail_page.first_entry_link.text
         meeting_detail_page.first_entry_link.click()
         project_page = ProjectPage(driver, verify=True)
-        assert entry_title == project_page.title.text
+        assert entry_title.strip() == project_page.title.text
 
 # Future tests could include:
 # - click download button, confirm download count increases (this will have to be omitted in production test runs)
