@@ -5,6 +5,9 @@ import settings
 from api import osf_api
 from pages.project import ProjectPage, RequestAccessPage, AnalyticsPage, ForksPage
 from pages.login import LoginPage, login, logout
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 @pytest.fixture()
 def project_page(driver, default_project_page):
@@ -42,6 +45,7 @@ class TestProjectDetailPage:
     @markers.core_functionality
     def test_make_public(self, driver, project_page):
         # Set project to public
+        WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.XPATH, '//a[contains(text(), "Make Public")]')))
         project_page.make_public_link.click()
         project_page.confirm_privacy_change_link.click()
         assert project_page.make_private_link.present()
