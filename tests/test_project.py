@@ -1,7 +1,7 @@
 import pytest
-
 import markers
 import settings
+
 from api import osf_api
 from pages.project import ProjectPage, RequestAccessPage, AnalyticsPage, ForksPage
 from pages.login import LoginPage, login, logout
@@ -105,14 +105,21 @@ class TestForksPage:
 
     @markers.dont_run_on_prod
     @markers.core_functionality
-    def test_create_fork(self, must_be_logged_in, forks_page):
+    def test_create_fork(self, driver, session, must_be_logged_in, forks_page):
+        forks_page.placeholder_text.present()
         assert len(forks_page.listed_forks) == 0
         forks_page.new_fork_button.click()
         forks_page.create_fork_modal_button.click()
         forks_page.info_toast.present()
         forks_page.reload()
         forks_page.verify()
+        forks_page.fork_authors.present()
         assert len(forks_page.listed_forks) == 1
+
+        # Clean-up leftover fork
+        href = forks_page.fork_link.get_attribute('href')
+        fork_guid = href[20:]
+        osf_api.delete_project(session, fork_guid, None)
 
 
 class TestAnalyticsPage:

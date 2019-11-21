@@ -1,5 +1,6 @@
 import settings
 import json
+import os
 from pythosf import client
 
 
@@ -7,12 +8,14 @@ def get_default_session():
     return client.Session(api_base_url=settings.API_DOMAIN, auth=(settings.USER_ONE, settings.USER_ONE_PASSWORD))
 
 
-def create_project(session, title='osf selenium test', tags=['qatest'], **kwargs):
+def create_project(session, title='osf selenium test', tags=None, **kwargs):
     """Create a project for your current user through the OSF api.
 
     By default, projects will be given the `qatest` tag just in case deleting fails.
     If testing search, you will want to give the project no tags (or different tags).
     """
+    if tags is None:
+        tags = ['qatest', os.environ['PYTEST_CURRENT_TEST']]
     node = client.Node(session=session)
     node.create(title=title, tags=tags, **kwargs)
     return node
