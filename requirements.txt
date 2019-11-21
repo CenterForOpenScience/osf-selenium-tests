@@ -11,3 +11,4 @@ environs==3.0.0
 faker==0.9.0
 pytest-rerunfailures==4.1
 pre-commit==1.18.3
+ipdb==0.12.2
