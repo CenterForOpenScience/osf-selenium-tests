@@ -57,7 +57,7 @@ def must_be_logged_in(driver):
 def must_be_logged_in_as_user_two(driver):
     safe_login(driver, user=settings.USER_TWO, password=settings.USER_TWO_PASSWORD)
 
-@pytest.fixture(scope='session')
+@pytest.fixture(scope='class')
 def delete_user_projects_at_setup(session):
     osf_api.delete_all_user_projects(session=session)
 
