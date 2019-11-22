@@ -1,8 +1,9 @@
 import settings
 import json
 import os
+import logging
 from pythosf import client
-
+logger = logging.getLogger(__name__)
 
 def get_default_session():
     return client.Session(api_base_url=settings.API_DOMAIN, auth=(settings.USER_ONE, settings.USER_ONE_PASSWORD))
@@ -83,12 +84,17 @@ def delete_all_user_projects(session, user=None):
         user = current_user(session)
     nodes_url = user.relationships.nodes['links']['related']['href']
     data = session.get(nodes_url)
+    nodes_seen = []
     for node in data['data']:
         if node['id'] != settings.PREFERRED_NODE:
             n = client.Node(id=node['id'], session=session)
-            n.get()
-            n.delete()
-
+            try:
+                n.get()
+                n.delete()
+            except Exception as exc:
+                logger.error('Trying to delete {} have already seen {}'.format(node['id'], nodes_seen))
+                raise exc
+            nodes_seen.append(node['id'])
 
 def delete_project(session, guid, user=None):
     """Delete a single project. Simply pass in the guid

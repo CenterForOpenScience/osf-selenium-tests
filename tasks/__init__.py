@@ -52,7 +52,7 @@ def test_module(ctx, module=None, numprocesses=1, params=['--reruns', '0']):
         numprocesses = cpu_count()
     # NOTE: Subprocess to compensate for lack of thread safety in the httpretty module.
     # https://github.com/gabrielfalcao/HTTPretty/issues/209#issue-54090252
-    args = ['-s', '-v', 'tests/test_project_files.py']
+    args = ['-s', '-v', 'tests/test_dashboard.py::TestProjectList']
     if numprocesses > 1:
         args += ['-n {}'.format(numprocesses), '--max-slave-restart=0']
 
