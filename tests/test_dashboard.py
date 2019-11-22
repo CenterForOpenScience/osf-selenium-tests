@@ -1,6 +1,7 @@
 import pytest
 import markers
 import settings
+import time
 
 from api import osf_api
 from pages.project import ProjectPage
@@ -109,6 +110,7 @@ class TestProjectList:
 
         assert 'selected' in project_list.sort_date_dsc_button.get_attribute('class')
         assert 'not-selected' in project_list.sort_date_asc_button.get_attribute('class')
+        time.sleep(1)
         assert project_three.id in project_list.get_nth_project_link(1)
         assert project_two.id in project_list.get_nth_project_link(2)
         assert project_one.id in project_list.get_nth_project_link(3)
@@ -116,6 +118,7 @@ class TestProjectList:
         project_list.sort_date_asc_button.click()
         assert 'selected' in project_list.sort_date_asc_button.get_attribute('class')
         assert 'not-selected' in project_list.sort_date_dsc_button.get_attribute('class')
+        time.sleep(1)
         assert project_one.id in project_list.get_nth_project_link(1)
         assert project_two.id in project_list.get_nth_project_link(2)
         assert project_three.id in project_list.get_nth_project_link(3)
@@ -123,6 +126,7 @@ class TestProjectList:
         project_list.sort_title_asc_button.click()
         assert 'selected' in project_list.sort_title_asc_button.get_attribute('class')
         assert 'not-selected' in project_list.sort_title_dsc_button.get_attribute('class')
+        time.sleep(1)
         assert project_one.id in project_list.get_nth_project_link(1)
         assert project_three.id in project_list.get_nth_project_link(2)
         assert project_two.id in project_list.get_nth_project_link(3)
@@ -130,6 +134,7 @@ class TestProjectList:
         project_list.sort_title_dsc_button.click()
         assert 'selected' in project_list.sort_title_dsc_button.get_attribute('class')
         assert 'not-selected' in project_list.sort_title_asc_button.get_attribute('class')
+        time.sleep(1)
         assert project_two.id in project_list.get_nth_project_link(1)
         assert project_three.id in project_list.get_nth_project_link(2)
         assert project_one.id in project_list.get_nth_project_link(3)
