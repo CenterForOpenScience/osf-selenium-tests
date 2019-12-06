@@ -85,7 +85,7 @@ def delete_all_user_projects(session, user=None):
     if not user:
         user = current_user(session)
     nodes_url = user.relationships.nodes['links']['related']['href']
-    for _ in range(1):
+    for _ in range(3):
         try:
             data = session.get(nodes_url)
         except requests.exceptions.HTTPError as exc:
