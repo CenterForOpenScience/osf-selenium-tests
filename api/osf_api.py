@@ -2,6 +2,8 @@ import settings
 import json
 import os
 import logging
+import requests
+
 from pythosf import client
 logger = logging.getLogger(__name__)
 
@@ -83,7 +85,20 @@ def delete_all_user_projects(session, user=None):
     if not user:
         user = current_user(session)
     nodes_url = user.relationships.nodes['links']['related']['href']
-    data = session.get(nodes_url)
+    for _ in range(1):
+        try:
+            data = session.get(nodes_url)
+        except requests.exceptions.HTTPError as exc:
+            if exc.response.status_code == 502:
+                logger.warning('502 Exception caught. Re-trying test')
+                continue
+            raise exc
+        else:
+            break
+    else:
+        logger.info('Max tries attempted')
+        raise Exception('API not responding. Giving up.')
+
     nodes_seen = []
     for node in data['data']:
         if node['id'] != settings.PREFERRED_NODE:
@@ -95,6 +110,7 @@ def delete_all_user_projects(session, user=None):
                 logger.error('Trying to delete {} have already seen {}'.format(node['id'], nodes_seen))
                 raise exc
             nodes_seen.append(node['id'])
+
 
 def delete_project(session, guid, user=None):
     """Delete a single project. Simply pass in the guid
