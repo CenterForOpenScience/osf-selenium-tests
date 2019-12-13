@@ -125,3 +125,27 @@ def test_travis_on_prod(ctx, numprocesses=None):
     flake(ctx)
     print('Testing modules in "{}" in Chrome'.format('tests'))
     test_module(ctx, module=['-m','smoke_test'])
+
+@task
+def test_travis_failures_only_chrome(ctx, numprocesses=None):
+    """
+    Run tests on the latest Chrome
+    """
+    print('Testing modules in "{}" in Chrome'.format('tests'))
+    test_module(ctx, params=['--lf'])
+
+@task
+def test_travis_failures_only_edge(ctx, numprocesses=None):
+    """
+    Run tests on the latest Edge
+    """
+    print('Testing modules in "{}" in Edge'.format('tests'))
+    test_module(ctx, params=['--lf'])
+
+@task
+def test_travis_failures_only_firefox(ctx, numprocesses=None):
+    """
+    Run tests on the latest Firefox
+    """
+    print('Testing modules in "{}" in Firefox'.format('tests'))
+    test_module(ctx, params=['--lf'])
