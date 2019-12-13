@@ -132,7 +132,7 @@ def test_travis_failures_only_chrome(ctx, numprocesses=None):
     Run tests on the latest Chrome
     """
     print('Testing modules in "{}" in Chrome'.format('tests'))
-    test_module(ctx, params=['--lf'])
+    test_module(ctx, params=['--last-failed', '--last-failed-no-failures', 'none'])
 
 @task
 def test_travis_failures_only_edge(ctx, numprocesses=None):
@@ -140,7 +140,7 @@ def test_travis_failures_only_edge(ctx, numprocesses=None):
     Run tests on the latest Edge
     """
     print('Testing modules in "{}" in Edge'.format('tests'))
-    test_module(ctx, params=['--lf'])
+    test_module(ctx, params=['--last-failed', '--last-failed-no-failures', 'none'])
 
 @task
 def test_travis_failures_only_firefox(ctx, numprocesses=None):
@@ -148,4 +148,4 @@ def test_travis_failures_only_firefox(ctx, numprocesses=None):
     Run tests on the latest Firefox
     """
     print('Testing modules in "{}" in Firefox'.format('tests'))
-    test_module(ctx, params=['--lf'])
+    test_module(ctx, params=['--last-failed', '--last-failed-no-failures', 'none'])
