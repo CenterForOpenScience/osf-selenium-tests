@@ -1,6 +1,7 @@
 import pytest
 import markers
 import settings
+import random
 
 from api import osf_api
 from pages import user
@@ -86,6 +87,9 @@ class TestUserSettings:
 
     @markers.core_functionality
     def test_change_middle_name(self, profile_settings_page, fake):
+        random_number = random.randint(0, 1)
+        if random_number == 1:
+            pytest.fail("Congratulations! You've failed.")
         new_name = fake.name()
         assert profile_settings_page.middle_name_input.get_attribute('value') != new_name
         profile_settings_page.middle_name_input.clear()
