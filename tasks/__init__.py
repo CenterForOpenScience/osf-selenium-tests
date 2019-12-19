@@ -74,60 +74,6 @@ def test_module(ctx, module=None, numprocesses=1, params=['--reruns', '1']):
     sys.exit(retcode)
 
 @task
-def test_travis_safari(ctx, numprocesses=None):
-    """
-    Run tests on the latest Safari
-    """
-    flake(ctx)
-    print('Testing modules in "{}" in Safari'.format('tests'))
-    test_module(ctx)
-
-@task
-def test_travis_chrome(ctx, numprocesses=None):
-    """
-    Run tests on the latest Chrome
-    """
-    flake(ctx)
-    print('Testing modules in "{}" in Chrome'.format('tests'))
-    test_module(ctx)
-
-@task
-def test_travis_edge(ctx, numprocesses=None):
-    """
-    Run tests on the latest Edge
-    """
-    flake(ctx)
-    print('Testing modules in "{}" in Edge'.format('tests'))
-    test_module(ctx)
-
-@task
-def test_travis_firefox(ctx, numprocesses=None):
-    """
-    Run tests on the latest Firefox
-    """
-    flake(ctx)
-    print('Testing modules in "{}" in Firefox'.format('tests'))
-    test_module(ctx)
-
-@task
-def test_travis_android(ctx, numprocesses=None):
-    """
-    Run tests on Android 7.0, Samsung Galaxy S8
-    """
-    flake(ctx)
-    print('Testing modules in "{}" in android'.format('tests'))
-    test_module(ctx)
-
-@task
-def test_travis_ios(ctx, numprocesses=None):
-    """
-    Run tests on ios 10.0, iPhone 7
-    """
-    flake(ctx)
-    print('Testing modules in "{}" on ios'.format('tests'))
-    test_module(ctx)
-
-@task
 def test_travis_on_prod(ctx, numprocesses=None):
     """
     Runs targeted prod smoke tests on the latest Chrome
@@ -135,30 +81,6 @@ def test_travis_on_prod(ctx, numprocesses=None):
     flake(ctx)
     print('Testing modules in "{}" in Chrome'.format('tests'))
     test_module(ctx, module=['-m','smoke_test'])
-
-@task
-def test_travis_failures_only_chrome(ctx, numprocesses=None):
-    """
-    Run tests on the latest Chrome
-    """
-    print('Testing modules in "{}" in Chrome'.format('tests'))
-    test_module(ctx, params=['--last-failed', '--last-failed-no-failures', 'none'])
-
-@task
-def test_travis_failures_only_edge(ctx, numprocesses=None):
-    """
-    Run tests on the latest Edge
-    """
-    print('Testing modules in "{}" in Edge'.format('tests'))
-    test_module(ctx, params=['--last-failed', '--last-failed-no-failures', 'none'])
-
-@task
-def test_travis_failures_only_firefox(ctx, numprocesses=None):
-    """
-    Run tests on the latest Firefox
-    """
-    print('Testing modules in "{}" in Firefox'.format('tests'))
-    test_module(ctx, params=['--last-failed', '--last-failed-no-failures', 'none'])
 
 @task
 def test_travis_part_one(ctx, numprocesses=None):
