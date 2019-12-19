@@ -15,7 +15,6 @@ logging.getLogger('invoke').setLevel(logging.CRITICAL)
 
 HERE = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 BIN_PATH = os.path.dirname(sys.executable)
-
 bin_prefix = lambda cmd: os.path.join(BIN_PATH, cmd)
 MAX_TRAVIS_RETRIES = int(os.getenv('MAX_TRAVIS_RETRIES', 3))
 
@@ -45,23 +44,15 @@ def requirements(ctx, dev=False):
     ctx.run(cmd, echo=True)
 
 @task
-def test_module_wo_exit(ctx, module=None, numprocesses=1, params=None):
+def test_module_wo_exit(ctx, module=None, params=None):
     """Helper for running tests.
     """
     import pytest
-    if not numprocesses:
-        from multiprocessing import cpu_count
-        numprocesses = cpu_count()
-    # NOTE: Subprocess to compensate for lack of thread safety in the httpretty module.
-    # https://github.com/gabrielfalcao/HTTPretty/issues/209#issue-54090252
 
     if params is None:
         params = []
 
     args = ['-s', '-v', '--tb=short']
-    if numprocesses > 1:
-        args += ['-n {}'.format(numprocesses), '--max-slave-restart=0']
-
     for e in [module, params]:
         if e:
             args.extend([e] if isinstance(e, str) else e)
@@ -71,14 +62,14 @@ def test_module_wo_exit(ctx, module=None, numprocesses=1, params=None):
     return retcode
 
 @task
-def test_module(ctx, module=None, numprocesses=1, params=None):
+def test_module(ctx, module=None, params=None):
     """Helper for running tests.
     """
-    retcode = test_module_wo_exit(ctx, module, numprocesses, params)
+    retcode = test_module_wo_exit(ctx, module, params)
     sys.exit(retcode)
 
 @task
-def test_travis_on_prod(ctx, numprocesses=None):
+def test_travis_on_prod(ctx):
     """
     Runs targeted prod smoke tests on the latest Chrome
     """
@@ -87,7 +78,7 @@ def test_travis_on_prod(ctx, numprocesses=None):
     test_module(ctx, module=['-m','smoke_test'])
 
 @task
-def test_travis_part_one(ctx, numprocesses=None):
+def test_travis_part_one(ctx):
     """Run first group of tests on the browser defined by TEST_BUILD."""
     flake(ctx)
 
@@ -115,7 +106,7 @@ def test_travis_part_one(ctx, numprocesses=None):
     sys.exit(retcode)
 
 @task
-def test_travis_part_two(ctx, numprocesses=None):
+def test_travis_part_two(ctx):
     """Run second group of tests on the browser defined by TEST_BUILD."""
     flake(ctx)
 
