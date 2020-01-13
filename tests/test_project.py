@@ -25,7 +25,7 @@ class TestProjectDetailPage:
 
     @markers.smoke_test
     @markers.core_functionality
-    def test_change_title(self, project_page, fake, driver):
+    def test_change_title(self, project_page, fake):
 
         new_title = fake.sentence(nb_words=4)
         assert project_page.title.text != new_title

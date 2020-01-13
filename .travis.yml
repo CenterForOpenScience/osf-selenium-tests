@@ -42,4 +42,4 @@ jobs:
   - if: branch != master
     env: TEST_BUILD="edge"
 script:
-- invoke test_travis_$TEST_BUILD || invoke test_travis_failures_only_$TEST_BUILD || invoke test_travis_failures_only_$TEST_BUILD || invoke test_travis_failures_only_$TEST_BUILD
+- invoke test_travis_$TEST_BUILD
