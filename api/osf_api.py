@@ -99,7 +99,7 @@ def delete_all_user_projects(session, user=None):
         logger.info('Max tries attempted')
         raise Exception('API not responding. Giving up.')
 
-    nodes_seen = []
+    nodes_failed = []
     for node in data['data']:
         if node['id'] != settings.PREFERRED_NODE:
             n = client.Node(id=node['id'], session=session)
@@ -107,9 +107,17 @@ def delete_all_user_projects(session, user=None):
                 n.get()
                 n.delete()
             except Exception as exc:
-                logger.error('Trying to delete {} have already seen {}'.format(node['id'], nodes_seen))
-                raise exc
-            nodes_seen.append(node['id'])
+                nodes_failed.append((node['id'], exc))
+                continue
+
+    if nodes_failed:
+        error_message_list = []
+        for error_tuple in nodes_failed:
+            # Position [0] of error_tuple contains node_id
+            # Position [1] of error_tuple contains the exception
+            error_message = "node '{}' errored with exception: '{}'".format(error_tuple[0], error_tuple[1])
+            error_message_list.append(error_message)
+        logger.error('\n'.join(error_message_list))
 
 
 def delete_project(session, guid, user=None):
