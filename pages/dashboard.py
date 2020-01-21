@@ -41,7 +41,7 @@ class DashboardPage(BaseDashboardPage):
     navbar = ComponentLocator(EmberNavbar)
     create_project_modal = ComponentLocator(components.EmberCreateProjectModal)
     project_created_modal = ComponentLocator(components.EmberProjectCreatedModal)
-    project_list = ComponentLocator(components.EmberProjectList)
+    project_list = ComponentLocator(components.EmberProjectList, settings.LONG_TIMEOUT)
 
 
 class LegacyDashboardPage(BaseDashboardPage):

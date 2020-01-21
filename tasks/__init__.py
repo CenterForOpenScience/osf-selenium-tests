@@ -43,7 +43,7 @@ def requirements(ctx, dev=False):
     ctx.run(cmd, echo=True)
 
 @task
-def test_module(ctx, module=None, numprocesses=1, params=['--reruns', '0']):
+def test_module(ctx, module=None, numprocesses=1, params=['--reruns', '1']):
     """Helper for running tests.
     """
     import pytest
@@ -52,7 +52,7 @@ def test_module(ctx, module=None, numprocesses=1, params=['--reruns', '0']):
         numprocesses = cpu_count()
     # NOTE: Subprocess to compensate for lack of thread safety in the httpretty module.
     # https://github.com/gabrielfalcao/HTTPretty/issues/209#issue-54090252
-    args = ['-s', '-v']
+    args = ['-s', '-v', '--tb=short']
     if numprocesses > 1:
         args += ['-n {}'.format(numprocesses), '--max-slave-restart=0']
 
@@ -125,3 +125,27 @@ def test_travis_on_prod(ctx, numprocesses=None):
     flake(ctx)
     print('Testing modules in "{}" in Chrome'.format('tests'))
     test_module(ctx, module=['-m','smoke_test'])
+
+@task
+def test_travis_failures_only_chrome(ctx, numprocesses=None):
+    """
+    Run tests on the latest Chrome
+    """
+    print('Testing modules in "{}" in Chrome'.format('tests'))
+    test_module(ctx, params=['--last-failed', '--last-failed-no-failures', 'none'])
+
+@task
+def test_travis_failures_only_edge(ctx, numprocesses=None):
+    """
+    Run tests on the latest Edge
+    """
+    print('Testing modules in "{}" in Edge'.format('tests'))
+    test_module(ctx, params=['--last-failed', '--last-failed-no-failures', 'none'])
+
+@task
+def test_travis_failures_only_firefox(ctx, numprocesses=None):
+    """
+    Run tests on the latest Firefox
+    """
+    print('Testing modules in "{}" in Firefox'.format('tests'))
+    test_module(ctx, params=['--last-failed', '--last-failed-no-failures', 'none'])

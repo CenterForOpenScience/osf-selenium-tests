@@ -1,6 +1,7 @@
 import pytest
 import markers
 import settings
+import logging
 
 from api import osf_api
 from selenium.webdriver.support.ui import WebDriverWait
@@ -12,6 +13,8 @@ from pages.preprints import (
     PreprintDetailPage,
     PreprintDiscoverPage,
 )
+
+logger = logging.getLogger(__name__)
 
 
 @pytest.fixture

@@ -1,8 +1,11 @@
 import settings
 import json
 import os
-from pythosf import client
+import logging
+import requests
 
+from pythosf import client
+logger = logging.getLogger(__name__)
 
 def get_default_session():
     return client.Session(api_base_url=settings.API_DOMAIN, auth=(settings.USER_ONE, settings.USER_ONE_PASSWORD))
@@ -82,12 +85,39 @@ def delete_all_user_projects(session, user=None):
     if not user:
         user = current_user(session)
     nodes_url = user.relationships.nodes['links']['related']['href']
-    data = session.get(nodes_url)
+    for _ in range(3):
+        try:
+            data = session.get(nodes_url)
+        except requests.exceptions.HTTPError as exc:
+            if exc.response.status_code == 502:
+                logger.warning('502 Exception caught. Re-trying test')
+                continue
+            raise exc
+        else:
+            break
+    else:
+        logger.info('Max tries attempted')
+        raise Exception('API not responding. Giving up.')
+
+    nodes_failed = []
     for node in data['data']:
         if node['id'] != settings.PREFERRED_NODE:
             n = client.Node(id=node['id'], session=session)
-            n.get()
-            n.delete()
+            try:
+                n.get()
+                n.delete()
+            except Exception as exc:
+                nodes_failed.append((node['id'], exc))
+                continue
+
+    if nodes_failed:
+        error_message_list = []
+        for error_tuple in nodes_failed:
+            # Position [0] of error_tuple contains node_id
+            # Position [1] of error_tuple contains the exception
+            error_message = "node '{}' errored with exception: '{}'".format(error_tuple[0], error_tuple[1])
+            error_message_list.append(error_message)
+        logger.error('\n'.join(error_message_list))
 
 
 def delete_project(session, guid, user=None):
