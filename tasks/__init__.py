@@ -7,6 +7,7 @@ commands, run ``$ invoke --list``.
 
 import os
 import sys
+import glob
 import logging
 from invoke import task
 
@@ -80,53 +81,40 @@ def test_travis_on_prod(ctx):
 @task
 def test_travis_part_one(ctx):
     """Run first group of tests on the browser defined by TEST_BUILD."""
-    flake(ctx)
-
-    part_one_files = ['test_dashboard.py', 'test_institutions.py', 'test_landing.py',
-                      'test_login.py', 'test_meetings.py', 'test_my_projects.py',
-                      'test_navbar.py']
-    part_one_file_names = ['tests/{}'.format(x) for x in part_one_files]
-
-    print('Testing part one modules in "/test/" in {}'.format(os.environ['TEST_BUILD']))
-    retcode = test_module_wo_exit(ctx, params=part_one_file_names)
-
-    # retcodes: http://doc.pytest.org/en/latest/usage.html#possible-exit-codes
-    if retcode != 1:
-        sys.exit(retcode)
-
-    part_one_file_names = ['--last-failed', '--last-failed-no-failures', 'none'] + part_one_file_names
-
-    for i in range(1, MAX_TRAVIS_RETRIES+1):
-        print('Retesting part one failures, iteration {}, in "/test/" '
-              'in {}'.format(i, os.environ['TEST_BUILD']))
-        retcode = test_module_wo_exit(ctx, params=part_one_file_names)
-        if retcode != 1:
-            break
-
-    sys.exit(retcode)
+    all_test_files = glob.glob('tests/test_*.py')
+    all_test_files.sort()
+    midpoint = len(all_test_files) // 2
+    file_list = all_test_files[:midpoint]
+    test_travis_with_retries(ctx, 'part one', file_list)
 
 @task
 def test_travis_part_two(ctx):
     """Run second group of tests on the browser defined by TEST_BUILD."""
+    all_test_files = glob.glob('tests/test_*.py')
+    all_test_files.sort()
+    midpoint = len(all_test_files) // 2
+    file_list = all_test_files[midpoint:]
+    test_travis_with_retries(ctx, 'part two', file_list)
+
+@task
+def test_travis_with_retries(ctx, partition_name, file_list):
+    """Run group of tests on the browser defined by TEST_BUILD."""
     flake(ctx)
 
-    part_two_files = ['test_preprints.py', 'test_project.py', 'test_project_files.py',
-                      'test_quickfiles.py', 'test_register.py', 'test_registries.py',
-                      'test_search.py', 'test_user.py']
-    part_two_file_names = ['tests/{}'.format(x) for x in part_two_files]
-
-    print('Testing part one modules in "/test/" in {}'.format(os.environ['TEST_BUILD']))
-    retcode = test_module_wo_exit(ctx, params=part_two_file_names)
+    print('Testing {} modules in "/tests/" in {}'.format(partition_name, os.environ['TEST_BUILD']))
+    print('File list for {} is: {}'.format(partition_name, file_list))
+    retcode = test_module_wo_exit(ctx, params=file_list)
 
     if retcode != 1:
         sys.exit(retcode)
 
-    part_two_file_names = ['--last-failed', '--last-failed-no-failures', 'none'] + part_two_file_names
+    file_list = ['--last-failed', '--last-failed-no-failures', 'none'] + file_list
 
     for i in range(1, MAX_TRAVIS_RETRIES+1):
-        print('Retesting part two failures, iteration {}, in "/test/" '
-              'in {}'.format(i, os.environ['TEST_BUILD']))
-        retcode = test_module_wo_exit(ctx, params=part_two_file_names)
+        print('Retesting {} failures, iteration {}, in "/test/" '
+              'in {}'.format(partition_name, i, os.environ['TEST_BUILD']))
+        retcode = test_module_wo_exit(ctx, params=file_list)
+
         if retcode != 1:
             break
 
