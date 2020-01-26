@@ -81,8 +81,7 @@ def test_travis_on_prod(ctx):
 @task
 def test_travis_part_one(ctx):
     """Run first group of tests on the browser defined by TEST_BUILD."""
-    all_test_files = glob.glob('tests/test_*.py')
-    all_test_files.sort()
+    all_test_files = _get_test_file_list()
     midpoint = len(all_test_files) // 2
     file_list = all_test_files[:midpoint]
     test_travis_with_retries(ctx, 'part one', file_list)
@@ -90,11 +89,15 @@ def test_travis_part_one(ctx):
 @task
 def test_travis_part_two(ctx):
     """Run second group of tests on the browser defined by TEST_BUILD."""
-    all_test_files = glob.glob('tests/test_*.py')
-    all_test_files.sort()
+    all_test_files = _get_test_file_list()
     midpoint = len(all_test_files) // 2
     file_list = all_test_files[midpoint:]
     test_travis_with_retries(ctx, 'part two', file_list)
+
+def _get_test_file_list():
+    all_test_files = glob.glob('tests/test_*.py')
+    all_test_files.sort()
+    return all_test_files
 
 @task
 def test_travis_with_retries(ctx, partition_name, file_list):
