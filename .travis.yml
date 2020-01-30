@@ -6,9 +6,9 @@ env:
   global:
   - PROJECT_DIR="$PWD"
   - DRIVER="Remote"
-  - USE_CHROME=1
-  - USE_EDGE=0
-  - USE_FIREFOX=1
+  - USE_CHROME=true
+  - USE_FIREFOX=true
+  - USE_EDGE=false
   - secure: AFWAM5i9hRx5rgZR/kY3/CNY2ycBe+ZqkOn5LhnpHgZdg6YFnvyYjh3pRWo6eMsbMlltA6viUFXW15IzMbpbaxmiRMmjR7paAnF0fCMuCEu428al7Uy4L/b9TB1Hswq46i1zWNd+OsCI0HYDZK8qih6OnYPzUpDpaoeld9iB3z7Be0f4jHLZDL0Lvz/gTi6JKSNG7Q8FZ0cUCQrTfvyHJiyhdtJYGYrQWeJ+mTvgBVogRBCeaZ5FN6eZMrpzQgX2CaawVH8IxxrjDCQ45blrT2y0pH7F8x6LvrbDOkrOpQ6HjAlATqFfnb1fpLTcgaH93R3QB3HoTjy5giaGniSIpSZ+c5nNBShxpilm6HSjsFIYVaCbuQQwbBZVwOj16px9NAGWl75pkXmf6tPLnE41/vPF2cOiM6L/TDNOT/Ol5nccoWpSLUNJbBPLN6CHXetrSyUHJZiUTcXhdl6jKKbOcbhgwDUFvst+pdva7qiSm9fB4OXqdyJsO4l46QHEGBCTSussJz3UU+ByCBZeRUjuSHdQQLL9XLlP6iCsRz9SD+0lLSQ/5YfcQs/2r7wPvhz9l7kumlIphxKp+Ga843G/dpj2Miny3j/+BWiITcSHXNmybM/vdIKgZq25NVh5Hug/lmx3iwcDVFs4JuF4C+jraj5KtZX0Jvzx26sbR/u6EJk=
   - secure: neG5lhBeHGMU+Ui2A1jKLMwRzRKq9yHN1ve5rVEObuV5RLfgUz6oKGlKF/L4hlDseyZk/kCd9vkTdEnKkq+5sEao35wflXf+wXP9t3jk3+9xujFLUH7otYDrkhg+QkVeCTqGI3tbr2qeT6dJw9YoaEJOncgcPx8Kd3t9JHex54RmoVmF8c5ritgm7JU85Szso8TCF9p99Os1yiin6hVRUhbT5ZmehS0xGP3X737JyvzwNw5BIgIYTejymaIejd91NwgV9uZkuDTwzRx4vPpMgeoCpFCjO81v94tIlMvykCWEwKysYuAuggm/h77Hj7HzlE/1nPTgttPjsqoEs2wDCh5JmpWoVLYIhVmAYUgiHWVXdGyWuBHbLP4QSqP4+8V/l2+pblt68FmJq4VZ9OnCLzVDbAXGMtm6DNWBOUHm/vsToDIXi7EcEZuMndfaR3ymP0PZLj8ZSgpINVcXHsamEpMs/PmYcZlvrSOo9SlZDQ1DsXRDuFQa+fn1oYmVtErTt/WNrtRbNyNIU5AHgXxiZhgAgIK6a9llM/GaNN8AKlkoBwTS+mlCdm7THC6CbABtaRmGaXCrGzPiw+YzGwKtcuukoUyr/8bPdEyKb08KA/qSOO8BrDIF+M+3L5k6ALECK+WQzcXyFXO/yjk/S4tzQr4lySODfuav1UEHvvtCiJs=
   - secure: Pa6wPOL751d+C2rEBCl+lLUopVq1aF/W2c7QRqxuXVMVbqcSMCRp9SzdJ24iRYPAkNs45DHBHdWkFUPER2195RmxnYh1+aJIFEQxp0BW+Nu8GCJQlzuqaWylJpLTEYZb+UNFu9Lh1WlhypLPgg4kNZxoq1wuK20SRXJlZZUvveGcMjOTNkb0pmgMB+IXEsnp70u8i7Qc+bPpHcY96J2LMlx1QIfYA9vA2HfdQf2Jsk5jGUjgYiMgjFpN3/76gQyQS+xwh7q7VKNDdvR6o8wbsekGkqutAvPFELHWUcgsRU4BcYZPmUmLQl3sXhxhXfnEaGbTu6rHn9vzhijDD9/EB+PzOAKmiWRBEcktCY6nvouaGmAf92C4bGG2tLB55d4GsyvbjczJyKocM9YRMNLaAT6g3lMbqUCBetJR5EvvV46Hng023HayboSuihL40XupYw4EcMe0+++pYELOQuRuUmaAM2ZaOIPx+DQkJhnzylM500Lz1fNWyLzNFqL4KdGt90lmzwAoNhRDOHiXZnEBES0wIrlWyL/sQSz4iiCPwF+IqSNfeejbYA0Xo3C25yxFGMN7MSgm3H9w1BgFnvghtJYtZWwTX7JBd22L3ybUaVNxo6NOBqIGSsU8Io7wW/xONkdRaMpKjsFuUhxl1uT15gMDNAYSw4b1+D5ubvsFVl0=
@@ -49,7 +49,7 @@ jobs:
     script: invoke test_travis_part_one
   -  # stage part one
     # if: branch != master AND env(USE_EDGE)
-    if: branch != master
+    if: branch != master AND env(USE_EDGE)
     env: TEST_BUILD='edge'
     script: invoke test_travis_part_one
   - stage: Staging tests part two
