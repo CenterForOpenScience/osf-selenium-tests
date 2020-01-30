@@ -44,7 +44,7 @@ jobs:
     script: invoke test_travis_part_one
   -  # stage part one
     # if: branch != master AND env(USE_FIREFOX)
-    if: branch != master
+    if: branch = master
     env: TEST_BUILD='firefox'
     script: invoke test_travis_part_one
   -  # stage part one
