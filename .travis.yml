@@ -3,6 +3,10 @@ python:
 - '3.6'
 os: linux
 env:
+  jobs:
+  - TEST_BUILD=chrome
+  - TEST_BUILD=firefox
+  - TEST_BUILD=edge
   global:
   - PROJECT_DIR="$PWD"
   - DRIVER="Remote"
@@ -36,17 +40,13 @@ jobs:
     - PREFERRED_NODE='ucrdq'
     script: invoke test_travis_on_prod
   - stage: Staging tests part one
-    if: branch != master AND env(SKIP_CHROME) IS blank
-    env: TEST_BUILD='chrome'
+    if: branch != master AND env(TEST_BUILD) = 'chrome'
     script: invoke test_travis_part_one
   -  # stage part one
-    if: branch != master AND env(SKIP_FIREFOX) IS blank
-    # if: branch != master
-    env: TEST_BUILD='firefox'
+    if: branch != master AND env(TEST_BUILD) = 'firefox'
     script: invoke test_travis_part_one
   -  # stage part one
-    if: branch != master AND env(SKIP_EDGE) IS blank
-    env: TEST_BUILD='edge'
+    if: branch != master AND env(TEST_BUILD) = 'edge'
     script: invoke test_travis_part_one
   - stage: Staging tests part two
     if: branch != master AND env(USE_CHROME)
