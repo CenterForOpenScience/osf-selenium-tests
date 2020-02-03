@@ -49,14 +49,14 @@ jobs:
     env: TEST_BUILD='edge'
     script: invoke test_travis_part_one
   - stage: Staging tests part two
-    if: branch != master AND env(USE_CHROME)
+    if: branch != master AND env(SKIP_CHROME) IS blank
     env: TEST_BUILD='chrome'
     script: invoke test_travis_part_two
   -  # stage part two
-    if: branch != master AND env(USE_FIREFOX)
+    if: branch != master AND env(SKIP_FIREFOX) IS blank
     env: TEST_BUILD='firefox'
     script: invoke test_travis_part_two
   -  # stage part two
-    if: branch != master AND env(USE_EDGE)
+    if: branch != master AND env(SKIP_EDGE) IS blank
     env: TEST_BUILD='edge'
     script: invoke test_travis_part_two
