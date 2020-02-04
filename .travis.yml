@@ -35,11 +35,23 @@ jobs:
     - DOMAIN='prod'
     - PREFERRED_NODE='ucrdq'
     script: invoke test_travis_on_prod
-  - if: branch != master
-    env: TEST_BUILD="chrome"
-  - if: branch != master
-    env: TEST_BUILD="firefox"
-  - if: branch != master
-    env: TEST_BUILD="edge"
-script:
-- invoke test_travis_$TEST_BUILD
+  - stage: Staging tests part one
+    if: branch != master
+    env: TEST_BUILD='chrome'
+    script: invoke test_travis_part_one
+  -  # stage part one
+    env: TEST_BUILD='firefox'
+    script: invoke test_travis_part_one
+  -  # stage part one
+    env: TEST_BUILD='edge'
+    script: invoke test_travis_part_one
+  - stage: Staging tests part two
+    if: branch != master
+    env: TEST_BUILD='chrome'
+    script: invoke test_travis_part_two
+  -  # stage part two
+    env: TEST_BUILD='firefox'
+    script: invoke test_travis_part_two
+  -  # stage part two
+    env: TEST_BUILD='edge'
+    script: invoke test_travis_part_two
