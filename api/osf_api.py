@@ -133,6 +133,21 @@ def delete_project(session, guid, user=None):
             n.get()
             n.delete()
 
+
+def get_custom_collections(session, user=None):
+    if not user:
+        user = current_user(session)
+
+    collections_url = 'https://api.test.osf.io/v2/collections/'
+    data = session.get(collections_url)
+
+    collections = []
+    for collection in data['data']:
+        collections.append(collection['attributes']['title'])
+
+    print('\n{}'.format(collections))
+
+
 # TODO rename this to get_node_providers, and create new function that actually IS get_node_addons -
 #  note, this is confusing, talk to BrianG before we change this
 def get_node_addons(session, node_id):

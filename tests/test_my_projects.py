@@ -91,3 +91,7 @@ class TestMyProjectsPage:
         # Wait for danger modal to close
         WebDriverWait(driver, 5).until(EC.invisibility_of_element_located((By.CSS_SELECTOR, '#removeColl .btn-danger')))
         assert not my_projects_page.first_custom_collection.present()
+
+    def test_bulk_delete(self, driver, session):
+        osf_api.get_custom_collections(session, None)
+        assert True
