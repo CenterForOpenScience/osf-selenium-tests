@@ -7,6 +7,7 @@ import requests
 from pythosf import client
 logger = logging.getLogger(__name__)
 
+
 def get_default_session():
     return client.Session(api_base_url=settings.API_DOMAIN, auth=(settings.USER_ONE, settings.USER_ONE_PASSWORD))
 
@@ -134,18 +135,20 @@ def delete_project(session, guid, user=None):
             n.delete()
 
 
-def get_custom_collections(session, user=None):
+def delete_custom_collections(session, user=None):
     if not user:
         user = current_user(session)
 
+    # TODO: create this url using client.py
+    collection_self_url = ''
     collections_url = 'https://api.test.osf.io/v2/collections/'
+
     data = session.get(collections_url)
 
-    collections = []
     for collection in data['data']:
-        collections.append(collection['attributes']['title'])
-
-    print('\n{}'.format(collections))
+        if not collection['attributes']['bookmarks']:
+            collection_self_url = collections_url + collection['id']
+            requests.delete(collection_self_url, auth=session.auth)
 
 
 # TODO rename this to get_node_providers, and create new function that actually IS get_node_addons -
