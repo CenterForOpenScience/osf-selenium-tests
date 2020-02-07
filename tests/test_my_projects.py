@@ -93,5 +93,5 @@ class TestMyProjectsPage:
         assert not my_projects_page.first_custom_collection.present()
 
     def test_bulk_delete(self, driver, session):
-        osf_api.delete_custom_collections(session, None)
+        osf_api.delete_custom_collections(session)
         assert True

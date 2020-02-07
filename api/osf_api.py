@@ -135,14 +135,8 @@ def delete_project(session, guid, user=None):
             n.delete()
 
 
-def delete_custom_collections(session, user=None):
-    if not user:
-        user = current_user(session)
-
-    # TODO: create this url using client.py
-    collection_self_url = ''
-    collections_url = 'https://api.test.osf.io/v2/collections/'
-
+def delete_custom_collections(session):
+    collections_url = '{}/v2/collections/'.format(session.api_base_url)
     data = session.get(collections_url)
 
     for collection in data['data']:
