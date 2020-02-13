@@ -135,6 +135,16 @@ def delete_project(session, guid, user=None):
             n.delete()
 
 
+def create_custom_collection(session):
+    collections_url = '{}/v2/collections/'.format(session.api_base_url)
+
+    payload = {
+        'title': 'Selenium API Custom Collection',
+    }
+
+    session.post(collections_url, item_type='collections', attributes=payload)
+
+
 def delete_custom_collections(session):
     collections_url = '{}/v2/collections/'.format(session.api_base_url)
     data = session.get(collections_url)

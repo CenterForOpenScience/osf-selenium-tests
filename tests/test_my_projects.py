@@ -42,8 +42,10 @@ class TestMyProjectsPage:
         assert project_page.title.text == title, 'Project title incorrect.'
         osf_api.delete_project(session, guid, None)
 
-    def test_custom_collection(self, driver, session, default_project, my_projects_page, fake):
+    def test_create_custom_collection(self, driver, session, default_project, my_projects_page, fake):
         current_browser = driver.desired_capabilities.get('browserName')
+
+        osf_api.delete_custom_collections(session)
 
         # Create new custom collection
         name = fake.sentence(nb_words=2, variable_nb_words=False)
@@ -83,6 +85,16 @@ class TestMyProjectsPage:
         WebDriverWait(driver, 5).until(EC.text_to_be_present_in_element((By.CSS_SELECTOR, 'li[data-index="4"] span'), '(1)'))
         assert '1' in my_projects_page.first_custom_collection.text
 
+        osf_api.delete_custom_collections(session)
+
+    def test_delete_custom_collection(self, session, driver, my_projects_page):
+        # API Setup
+        osf_api.delete_custom_collections(session)
+        osf_api.create_custom_collection(session)
+
+        my_projects_page.goto()
+        assert my_projects_page.first_custom_collection.text
+
         # Delete the custom collection
         my_projects_page.first_collection_settings_button.click()
         my_projects_page.first_collection_remove_button.click()
@@ -91,7 +103,3 @@ class TestMyProjectsPage:
         # Wait for danger modal to close
         WebDriverWait(driver, 5).until(EC.invisibility_of_element_located((By.CSS_SELECTOR, '#removeColl .btn-danger')))
         assert not my_projects_page.first_custom_collection.present()
-
-    def test_bulk_delete(self, driver, session):
-        osf_api.delete_custom_collections(session)
-        assert True
