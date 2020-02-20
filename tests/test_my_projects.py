@@ -19,7 +19,8 @@ def my_projects_page(driver):
 
 @pytest.mark.usefixtures('must_be_logged_in')
 class TestMyProjectsPage:
-
+    """ Custom collections must implement a PRE-delete setup to start in a clean state.
+    """
     @markers.dont_run_on_prod
     @markers.core_functionality
     def test_create_new_project(self, driver, session, my_projects_page, fake):
@@ -84,8 +85,6 @@ class TestMyProjectsPage:
         # Wait for new collection to have '(1)' in the name
         WebDriverWait(driver, 5).until(EC.text_to_be_present_in_element((By.CSS_SELECTOR, 'li[data-index="4"] span'), '(1)'))
         assert '1' in my_projects_page.first_custom_collection.text
-
-        osf_api.delete_custom_collections(session)
 
     def test_delete_custom_collection(self, session, driver, my_projects_page):
         # API Setup

@@ -136,6 +136,8 @@ def delete_project(session, guid, user=None):
 
 
 def create_custom_collection(session):
+    """Create a new custom collection. You can modify the title of the collection here as well.
+    """
     collections_url = '{}/v2/collections/'.format(session.api_base_url)
 
     payload = {
@@ -146,13 +148,15 @@ def create_custom_collection(session):
 
 
 def delete_custom_collections(session):
+    """Delete all custom collections for the current user.
+    """
     collections_url = '{}/v2/collections/'.format(session.api_base_url)
     data = session.get(collections_url)
 
     for collection in data['data']:
         if not collection['attributes']['bookmarks']:
             collection_self_url = collections_url + collection['id']
-            requests.delete(collection_self_url, auth=session.auth)
+            session.delete(url=collection_self_url, item_type=None)
 
 
 # TODO rename this to get_node_providers, and create new function that actually IS get_node_addons -
