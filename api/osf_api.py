@@ -7,6 +7,7 @@ import requests
 from pythosf import client
 logger = logging.getLogger(__name__)
 
+
 def get_default_session():
     return client.Session(api_base_url=settings.API_DOMAIN, auth=(settings.USER_ONE, settings.USER_ONE_PASSWORD))
 
@@ -132,6 +133,31 @@ def delete_project(session, guid, user=None):
             n = client.Node(id=node['id'], session=session)
             n.get()
             n.delete()
+
+
+def create_custom_collection(session):
+    """Create a new custom collection. You can modify the title of the collection here as well.
+    """
+    collections_url = '{}/v2/collections/'.format(session.api_base_url)
+
+    payload = {
+        'title': 'Selenium API Custom Collection',
+    }
+
+    session.post(collections_url, item_type='collections', attributes=payload)
+
+
+def delete_custom_collections(session):
+    """Delete all custom collections for the current user.
+    """
+    collections_url = '{}/v2/collections/'.format(session.api_base_url)
+    data = session.get(collections_url)
+
+    for collection in data['data']:
+        if not collection['attributes']['bookmarks']:
+            collection_self_url = collections_url + collection['id']
+            session.delete(url=collection_self_url, item_type=None)
+
 
 # TODO rename this to get_node_providers, and create new function that actually IS get_node_addons -
 #  note, this is confusing, talk to BrianG before we change this
