@@ -211,6 +211,19 @@ def upload_fake_file(session, node=None, name='osf selenium test file for testin
     return name, metadata
 
 
+def delete_addon_files(session, provider, guid):
+    """Delete all files for the given addon.
+    """
+    files_url = '{}/v2/nodes/{}/files/{}/'.format(session.api_base_url, guid, provider)
+
+    data = session.get(url=files_url)
+
+    for file in data['data']:
+        if file['attributes']['kind'] == 'file':
+            delete_url = file['links']['delete']
+            delete_file(session, delete_url)
+
+
 def delete_file(session, delete_url):
     """Delete a file.  A truly stupid method, caller must provide the delete url from the file
     metadata."""

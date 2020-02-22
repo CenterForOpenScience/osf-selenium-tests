@@ -81,6 +81,7 @@ def find_current_browser(driver):
     current_browser = driver.desired_capabilities.get('browserName')
     return current_browser
 
+
 @markers.dont_run_on_prod
 @pytest.mark.usefixtures('must_be_logged_in')
 @pytest.mark.skipif(settings.BUILD == 'edge',
@@ -89,49 +90,54 @@ class TestFilesPage:
 
     @pytest.mark.parametrize('provider', ['box', 'dropbox', 'owncloud', 's3'])
     def test_rename_file(self, driver, default_project, session, provider):
-        node_id = default_project.id
+        try:
+            node_id = default_project.id
 
-        # Connect addon to node, upload a single test file
-        node = osf_api.get_node(session, node_id=node_id)
-        if provider != 'osfstorage':
-            addon = osf_api.get_user_addon(session, provider)
-            addon_account_id = list(addon['data']['links']['accounts'])[0]
-            osf_api.connect_provider_root_to_node(session, provider, addon_account_id, node_id=node_id)
+            # Connect addon to node, upload a single test file
+            node = osf_api.get_node(session, node_id=node_id)
+            if provider != 'osfstorage':
+                addon = osf_api.get_user_addon(session, provider)
+                addon_account_id = list(addon['data']['links']['accounts'])[0]
+                osf_api.connect_provider_root_to_node(session, provider, addon_account_id, node_id=node_id)
 
-        file_name = 'rename_' + find_current_browser(driver) + '_' + provider + '.txt'
-        new_file, metadata = osf_api.upload_fake_file(session=session, node=node, name=file_name, provider=provider)
+            file_name = 'rename_' + find_current_browser(driver) + '_' + provider + '.txt'
+            new_file, metadata = osf_api.upload_fake_file(session=session, node=node, name=file_name, provider=provider)
 
-        files_page = FilesPage(driver, guid=node_id)
-        files_page.goto()
+            files_page = FilesPage(driver, guid=node_id)
+            files_page.goto()
 
-        row = find_row_by_name(driver, provider, new_file)
-        row.click()
-        rename_button = find_toolbar_button_by_name(driver, 'Rename')
-        rename_button.click()
-        rename_text_box = driver.find_element_by_id('renameInput')
+            row = find_row_by_name(driver, provider, new_file)
+            row.click()
+            rename_button = find_toolbar_button_by_name(driver, 'Rename')
+            rename_button.click()
+            rename_text_box = driver.find_element_by_id('renameInput')
 
-        for _ in range(len(new_file)):
-            rename_text_box.send_keys(Keys.BACKSPACE)
+            for _ in range(len(new_file)):
+                rename_text_box.send_keys(Keys.BACKSPACE)
 
-        new_name = find_current_browser(driver) + '_' + provider + '_renamed.txt'
-        rename_text_box.send_keys(new_name)
-        rename_text_box.send_keys(Keys.RETURN)
+            new_name = find_current_browser(driver) + '_' + provider + '_renamed.txt'
+            rename_text_box.send_keys(new_name)
+            rename_text_box.send_keys(Keys.RETURN)
 
-        # Wait for 5 seconds for Rename message to show
-        WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.CLASS_NAME, 'text-muted')))
-        # Wait a maximum of 20 seconds for Rename message to resolve
-        WebDriverWait(driver, 20).until(EC.invisibility_of_element_located((By.CLASS_NAME, 'text-muted')))
+            # Wait for 5 seconds for Rename message to show
+            WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.CLASS_NAME, 'text-muted')))
+            # Wait a maximum of 20 seconds for Rename message to resolve
+            WebDriverWait(driver, 20).until(EC.invisibility_of_element_located((By.CLASS_NAME, 'text-muted')))
 
-        files_page.goto()
-        # Test old file name does not exist
-        old_file = find_row_by_name(driver, provider, file_name)
-        assert old_file is None
+            files_page.goto()
+            # Test old file name does not exist
+            old_file = find_row_by_name(driver, provider, file_name)
+            assert old_file is None
 
-        # Test that new file name is present and visible
-        renamed_file = find_row_by_name(driver, provider, new_name)
-        assert new_name in renamed_file.text
+            # Test that new file name is present and visible
+            renamed_file = find_row_by_name(driver, provider, new_name)
+            assert new_name in renamed_file.text
 
-        osf_api.delete_file(session, metadata['data']['links']['delete'].replace(file_name, new_name))
+        except FileNotFoundError:
+            print('An error occurred during rename test!')
+#
+        finally:
+            osf_api.delete_addon_files(session, provider, guid=node_id)
 
     @markers.core_functionality
     def test_checkout_file(self, driver, default_project, session):
