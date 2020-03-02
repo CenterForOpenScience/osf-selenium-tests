@@ -235,7 +235,6 @@ def get_provider_status(provider):
     if allow_submissions:
         return True
     else:
-        print('(Allow submissions: {}) '.format(allow_submissions), end='')
         return False
 
 
