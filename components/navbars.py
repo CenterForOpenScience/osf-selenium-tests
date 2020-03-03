@@ -7,10 +7,10 @@ from selenium.webdriver.common.by import By
 
 class Navbar(BaseElement):
     service_dropdown = Locator(By.CSS_SELECTOR, '.fa-caret-down')
-    home_link = Locator(By.CSS_SELECTOR, '#navbarScope > div > div.navbar-header > div.dropdown.primary-nav.open > ul > li:nth-child(1) > a')
-    preprints_link = Locator(By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(2) > a')
-    registries_link = Locator(By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(3) > a')
-    meetings_link = Locator(By.CSS_SELECTOR, '#navbarScope > div.container > div.navbar-header > div.dropdown > ul > li:nth-child(4) > a')
+    home_link = Locator(By.CSS_SELECTOR, '.service-dropdown [data-analytics-name="HOME"]')
+    preprints_link = Locator(By.CSS_SELECTOR, 'a[data-analytics-name="PREPRINTS"]')
+    registries_link = Locator(By.CSS_SELECTOR, 'a[data-analytics-name="REGISTRIES"]')
+    meetings_link = Locator(By.CSS_SELECTOR, 'a[data-analytics-name="MEETINGS"]')
     search_link = Locator(By.XPATH, '//a[text()="Search"]')
     support_link = Locator(By.XPATH, '//a[text()="Support"]')
     donate_link = Locator(By.ID, 'navbar-donate')

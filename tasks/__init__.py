@@ -94,6 +94,7 @@ def test_travis_part_two(ctx):
     file_list = all_test_files[midpoint:]
     test_travis_with_retries(ctx, 'part two', file_list)
 
+
 def _get_test_file_list():
     all_test_files = glob.glob('tests/test_*.py')
     all_test_files.sort()
