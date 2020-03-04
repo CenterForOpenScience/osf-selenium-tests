@@ -23,7 +23,7 @@ def landing_page(driver):
     landing_page.goto()
     return landing_page
 
-#TODO: Add checking for missing translations
+# TODO: Add checking for missing translations
 @pytest.mark.usefixtures('must_be_logged_in')
 @pytest.mark.usefixtures('delete_user_projects_at_setup')
 class TestPreprintWorkflow:
@@ -97,6 +97,7 @@ def providers():
     """
     return osf_api.get_providers_list()
 
+
 @pytest.fixture(scope='session')
 def custom_providers():
     """Return the API data of all preprint providers with custom domains.
@@ -119,7 +120,14 @@ class TestBrandedProviders:
 
     @pytest.mark.usefixtures('must_be_logged_in')
     def test_submit_page_loads(self, driver, provider):
-        PreprintSubmitPage(driver, provider=provider).goto()
+        allow_submissions = osf_api.get_provider_status(provider)
+        if allow_submissions:
+            PreprintSubmitPage(driver, provider=provider).goto()
+        else:
+            landing_page = PreprintLandingPage(driver, provider=provider)
+            landing_page.goto()
+            assert 'submit' not in landing_page.submit_navbar.text
+            assert not landing_page.submit_button.present()
 
     @markers.smoke_test
     @markers.core_functionality
