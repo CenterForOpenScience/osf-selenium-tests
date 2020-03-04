@@ -228,14 +228,10 @@ def get_providers_list(session=None, type='preprints'):
     return session.get(url)['data']
 
 
-def get_provider_status(provider):
+def get_provider_submission_status(provider):
     """Return the boolean attribute `allow_submissions` from the dictionary object (provider)
     """
-    allow_submissions = provider['attributes']['allow_submissions']
-    if allow_submissions:
-        return True
-    else:
-        return False
+    return provider['attributes']['allow_submissions']
 
 
 def connect_provider_root_to_node(

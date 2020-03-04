@@ -120,7 +120,7 @@ class TestBrandedProviders:
 
     @pytest.mark.usefixtures('must_be_logged_in')
     def test_submit_page_loads(self, driver, provider):
-        allow_submissions = osf_api.get_provider_status(provider)
+        allow_submissions = osf_api.get_provider_submission_status(provider)
         if allow_submissions:
             PreprintSubmitPage(driver, provider=provider).goto()
         else:
