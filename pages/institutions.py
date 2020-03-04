@@ -9,12 +9,13 @@ from components.navbars import EmberNavbar
 class InstitutionsLandingPage(OSFBasePage):
     url = settings.OSF_HOME + '/institutions/'
 
-    identity = Locator(By.CSS_SELECTOR, '._Institutions__header-logo_1ycvu9')
+    #TODO fix insitution typo
+    identity = Locator(By.CSS_SELECTOR, 'div[data-test-insitutions-header]')
 
     search_bar = Locator(By.CSS_SELECTOR, '.ember-text-field')
 
     # Group Locators
-    institution_list = GroupLocator(By.CSS_SELECTOR, '._Institutions__table__item_1ycvu9 span')
+    institution_list = GroupLocator(By.CSS_SELECTOR, 'span[data-test-institution-name]')
 
     #TODO: add institutional navbar
     navbar = ComponentLocator(EmberNavbar)

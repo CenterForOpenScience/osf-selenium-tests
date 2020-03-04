@@ -36,6 +36,7 @@ nosetests.xml
 .idea
 .hg
 .hgignore
+.pytest_cache
 env/
 mathenv
 cover/

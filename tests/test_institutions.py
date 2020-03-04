@@ -1,5 +1,4 @@
 import pytest
-
 import markers
 import settings
 from pages.institutions import InstitutionsLandingPage, InstitutionBrandedPage

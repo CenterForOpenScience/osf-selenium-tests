@@ -7,6 +7,9 @@ from pages.project import ProjectPage
 from pages.meetings import MeetingsPage
 from pages.preprints import PreprintLandingPage
 from pages.dashboard import DashboardPage
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 @pytest.fixture()
 def dashboard_page(driver, must_be_logged_in):
@@ -52,7 +55,6 @@ class TestDashboardPage:
         assert create_project_modal.template_dropdown.absent()
 
         create_project_modal.cancel_button.click()
-
         assert create_project_modal.modal.absent()
 
     @markers.smoke_test
@@ -100,7 +102,7 @@ class TestProjectList:
         yield project_three
         project_three.delete()
 
-    def test_project_sorting(self, dashboard_page, project_one, project_two, project_three):
+    def test_project_sorting(self, driver, dashboard_page, project_one, project_two, project_three):
         dashboard_page.reload()
 
         project_list = dashboard_page.project_list
@@ -109,6 +111,7 @@ class TestProjectList:
 
         assert 'selected' in project_list.sort_date_dsc_button.get_attribute('class')
         assert 'not-selected' in project_list.sort_date_asc_button.get_attribute('class')
+        WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'div[data-test-dashboard-item]')))
         assert project_three.id in project_list.get_nth_project_link(1)
         assert project_two.id in project_list.get_nth_project_link(2)
         assert project_one.id in project_list.get_nth_project_link(3)
@@ -116,6 +119,7 @@ class TestProjectList:
         project_list.sort_date_asc_button.click()
         assert 'selected' in project_list.sort_date_asc_button.get_attribute('class')
         assert 'not-selected' in project_list.sort_date_dsc_button.get_attribute('class')
+        WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'div[data-test-dashboard-item]')))
         assert project_one.id in project_list.get_nth_project_link(1)
         assert project_two.id in project_list.get_nth_project_link(2)
         assert project_three.id in project_list.get_nth_project_link(3)
@@ -123,6 +127,7 @@ class TestProjectList:
         project_list.sort_title_asc_button.click()
         assert 'selected' in project_list.sort_title_asc_button.get_attribute('class')
         assert 'not-selected' in project_list.sort_title_dsc_button.get_attribute('class')
+        WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'div[data-test-dashboard-item]')))
         assert project_one.id in project_list.get_nth_project_link(1)
         assert project_three.id in project_list.get_nth_project_link(2)
         assert project_two.id in project_list.get_nth_project_link(3)
@@ -130,18 +135,21 @@ class TestProjectList:
         project_list.sort_title_dsc_button.click()
         assert 'selected' in project_list.sort_title_dsc_button.get_attribute('class')
         assert 'not-selected' in project_list.sort_title_asc_button.get_attribute('class')
+        WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'div[data-test-dashboard-item]')))
         assert project_two.id in project_list.get_nth_project_link(1)
         assert project_three.id in project_list.get_nth_project_link(2)
         assert project_one.id in project_list.get_nth_project_link(3)
 
     #TODO: Update this test to use more complex characters
     @markers.core_functionality
-    def test_project_quick_search(self, dashboard_page, project_one, project_two, project_three):
+    def test_project_quick_search(self, driver, dashboard_page, project_one, project_two, project_three):
         dashboard_page.reload()
 
         project_list = dashboard_page.project_list
         project_list.search_input.clear()
         project_list.search_input.send_keys('&&aaaa')
+
+        WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'div[data-test-dashboard-item]')))
         assert project_list.get_list_length() == 3
 
         project_list.search_input.send_keys('a')
