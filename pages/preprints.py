@@ -49,8 +49,7 @@ class PreprintLandingPage(BasePreprintPage):
     identity = Locator(By.CSS_SELECTOR, '.ember-application .preprint-header', settings.LONG_TIMEOUT)
     add_preprint_button = Locator(By.CLASS_NAME, 'preprint-submit-button', settings.LONG_TIMEOUT)
     search_button = Locator(By.CSS_SELECTOR, '.preprint-search .btn-default')
-    submit_navbar = Locator(By.CSS_SELECTOR, '.branded-nav > :nth-child(2)')
-    submit_button = Locator(By.CSS_SELECTOR, '.btn.btn-success')
+
 
 class PreprintSubmitPage(BasePreprintPage):
     url_addition = 'submit'
