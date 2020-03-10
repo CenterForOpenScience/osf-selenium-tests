@@ -211,17 +211,19 @@ def upload_fake_file(session, node=None, name='osf selenium test file for testin
     return name, metadata
 
 
-def delete_addon_files(session, provider, guid):
+def delete_addon_files(session, provider, current_browser, guid):
     """Delete all files for the given addon.
     """
     files_url = '{}/v2/nodes/{}/files/{}/'.format(session.api_base_url, guid, provider)
 
-    data = session.get(url=files_url)
+    data = session.get(url=files_url, query_parameters={'page[size]': 20})
 
     for file in data['data']:
         if file['attributes']['kind'] == 'file':
             delete_url = file['links']['delete']
-            delete_file(session, delete_url)
+            file_name = file['attributes']['name']
+            if current_browser in file_name:
+                delete_file(session, delete_url)
 
 
 def delete_file(session, delete_url):

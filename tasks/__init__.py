@@ -24,13 +24,16 @@ MAX_TRAVIS_RETRIES = int(os.getenv('MAX_TRAVIS_RETRIES', 3))
 def flake(ctx):
     ctx.run('flake8 .', echo=True)
 
+
 @task(aliases=['autopep8'])
 def autopep(ctx):
     ctx.run('autopep8 .', echo=True)
 
+
 @task
 def clean(ctx, verbose=False):
     ctx.run('find . -name "*.pyc" -delete', echo=True)
+
 
 @task(aliases=['req'])
 def requirements(ctx, dev=False):

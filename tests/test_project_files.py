@@ -87,22 +87,26 @@ def find_current_browser(driver):
 @pytest.mark.skipif(settings.BUILD == 'edge',
                     reason='Our actions prompt edge to ask "Would you like to navigate away from this page?"')
 class TestFilesPage:
+    """ We want to wrap all of our tests with try/finally so we can delete leftover files after failures.
+    Decorators did not work here because we would need to pull out node_id from each test.
+    """
 
     @pytest.mark.parametrize('provider', ['box', 'dropbox', 'owncloud', 's3'])
     def test_rename_file(self, driver, default_project, session, provider):
+        current_browser = find_current_browser(driver)
+        node_id = default_project.id
+
+        # Connect addon to node, upload a single test file
+        node = osf_api.get_node(session, node_id=node_id)
+        if provider != 'osfstorage':
+            addon = osf_api.get_user_addon(session, provider)
+            addon_account_id = list(addon['data']['links']['accounts'])[0]
+            osf_api.connect_provider_root_to_node(session, provider, addon_account_id, node_id=node_id)
+
+        file_name = 'rename_' + current_browser + '_' + provider + '.txt'
+        new_file, metadata = osf_api.upload_fake_file(session=session, node=node, name=file_name, provider=provider)
+
         try:
-            node_id = default_project.id
-
-            # Connect addon to node, upload a single test file
-            node = osf_api.get_node(session, node_id=node_id)
-            if provider != 'osfstorage':
-                addon = osf_api.get_user_addon(session, provider)
-                addon_account_id = list(addon['data']['links']['accounts'])[0]
-                osf_api.connect_provider_root_to_node(session, provider, addon_account_id, node_id=node_id)
-
-            file_name = 'rename_' + find_current_browser(driver) + '_' + provider + '.txt'
-            new_file, metadata = osf_api.upload_fake_file(session=session, node=node, name=file_name, provider=provider)
-
             files_page = FilesPage(driver, guid=node_id)
             files_page.goto()
 
@@ -115,7 +119,7 @@ class TestFilesPage:
             for _ in range(len(new_file)):
                 rename_text_box.send_keys(Keys.BACKSPACE)
 
-            new_name = find_current_browser(driver) + '_' + provider + '_renamed.txt'
+            new_name = current_browser + '_' + provider + '_renamed.txt'
             rename_text_box.send_keys(new_name)
             rename_text_box.send_keys(Keys.RETURN)
 
@@ -133,23 +137,21 @@ class TestFilesPage:
             renamed_file = find_row_by_name(driver, provider, new_name)
             assert new_name in renamed_file.text
 
-        except FileNotFoundError:
-            print('An error occurred during rename test!')
-
         finally:
-            osf_api.delete_addon_files(session, provider, guid=node_id)
+            osf_api.delete_addon_files(session, provider, current_browser, guid=node_id)
 
     @markers.core_functionality
     def test_checkout_file(self, driver, default_project, session):
+        current_browser = driver.desired_capabilities.get('browserName')
+        node_id = default_project.id
+        provider = 'osfstorage'
+
+        # Connect add-on to node, upload a single test file
+        node = osf_api.get_node(session, node_id=node_id)
+        file_name = 'checkout_' + find_current_browser(driver) + '.txt'
+        new_file, metadata = osf_api.upload_fake_file(session=session, node=node, name=file_name, provider=provider)
+
         try:
-            node_id = default_project.id
-            provider = 'osfstorage'
-
-            # Connect add-on to node, upload a single test file
-            node = osf_api.get_node(session, node_id=node_id)
-            file_name = 'checkout_' + find_current_browser(driver) + '.txt'
-            new_file, metadata = osf_api.upload_fake_file(session=session, node=node, name=file_name, provider=provider)
-
             files_page = FilesPage(driver, guid=node_id)
             files_page.goto()
 
@@ -187,28 +189,26 @@ class TestFilesPage:
             check_in_button = find_toolbar_button_by_name(driver, 'Check in file')
             assert check_in_button is None
 
-        except FileNotFoundError:
-            print('An error occurred during rename test!')
-
         finally:
-            osf_api.delete_addon_files(session, provider, guid=node_id)
+            osf_api.delete_addon_files(session, provider, current_browser, guid=node_id)
 
     @markers.core_functionality
     @pytest.mark.parametrize('provider', ['box', 'dropbox', 'owncloud', 's3'])
     def test_delete_file(self, driver, default_project, session, provider):
+        current_browser = driver.desired_capabilities.get('browserName')
+        node_id = default_project.id
+
+        # Connect addon to node, upload a single test file
+        node = osf_api.get_node(session, node_id=node_id)
+        if provider != 'osfstorage':
+            addon = osf_api.get_user_addon(session, provider)
+            addon_account_id = list(addon['data']['links']['accounts'])[0]
+            osf_api.connect_provider_root_to_node(session, provider, addon_account_id, node_id=node_id)
+
+        file_name = 'delete_' + current_browser + '_' + provider + '.txt'
+        new_file, metadata = osf_api.upload_fake_file(session=session, node=node, name=file_name, provider=provider)
+
         try:
-            node_id = default_project.id
-
-            # Connect addon to node, upload a single test file
-            node = osf_api.get_node(session, node_id=node_id)
-            if provider != 'osfstorage':
-                addon = osf_api.get_user_addon(session, provider)
-                addon_account_id = list(addon['data']['links']['accounts'])[0]
-                osf_api.connect_provider_root_to_node(session, provider, addon_account_id, node_id=node_id)
-
-            file_name = 'delete_' + find_current_browser(driver) + '_' + provider + '.txt'
-            new_file, metadata = osf_api.upload_fake_file(session=session, node=node, name=file_name, provider=provider)
-
             files_page = FilesPage(driver, guid=node_id)
             files_page.goto()
 
@@ -229,11 +229,8 @@ class TestFilesPage:
             deleted_row = find_row_by_name(driver, provider, new_file)
             assert deleted_row is None
 
-        except FileNotFoundError:
-            print('An error occurred during rename test!')
-
         finally:
-            osf_api.delete_addon_files(session, provider, guid=node_id)
+            osf_api.delete_addon_files(session, provider, current_browser, guid=node_id)
 
     @pytest.mark.parametrize('provider, modifier_key, action', [
         ['s3', 'none', 'move'],
@@ -246,26 +243,25 @@ class TestFilesPage:
         ['owncloud', 'alt', 'copy']
     ])
     def test_dragon_drop(self, driver, default_project, session, provider, modifier_key, action):
+        current_browser = driver.desired_capabilities.get('browserName')
+        node_id = default_project.id
+
+        # Connect addon to node, upload a single test file
+        node = osf_api.get_node(session, node_id=node_id)
+        if provider != 'osfstorage':
+            addon = osf_api.get_user_addon(session, provider)
+            addon_account_id = list(addon['data']['links']['accounts'])[0]
+            osf_api.connect_provider_root_to_node(session, provider, addon_account_id, node_id=node_id)
+        if modifier_key == 'alt':
+            file_name = 'copy_' + find_current_browser(driver) + '_' + provider + '.txt'
+            new_file, metadata = osf_api.upload_fake_file(session=session, node=node, name=file_name, provider=provider)
+        else:
+            file_name = 'move_' + current_browser + '_' + provider + '.txt'
+            new_file, metadata = osf_api.upload_fake_file(session=session, node=node, name=file_name, provider=provider)
+
         try:
-            node_id = default_project.id
-
-            # Connect addon to node, upload a single test file
-            node = osf_api.get_node(session, node_id=node_id)
-            if provider != 'osfstorage':
-                addon = osf_api.get_user_addon(session, provider)
-                addon_account_id = list(addon['data']['links']['accounts'])[0]
-                osf_api.connect_provider_root_to_node(session, provider, addon_account_id, node_id=node_id)
-            if modifier_key == 'alt':
-                file_name = 'copy_' + find_current_browser(driver) + '_' + provider + '.txt'
-                new_file, metadata = osf_api.upload_fake_file(session=session, node=node, name=file_name, provider=provider)
-            else:
-                file_name = 'move_' + find_current_browser(driver) + '_' + provider + '.txt'
-                new_file, metadata = osf_api.upload_fake_file(session=session, node=node, name=file_name, provider=provider)
-
             files_page = FilesPage(driver, guid=node_id)
             files_page.goto()
-
-            current_browser = driver.desired_capabilities.get('browserName')
 
             # Find the row that contains the new file
             source_row = find_row_by_name(driver, provider, new_file)
@@ -342,28 +338,27 @@ class TestFilesPage:
                 # Test for move
                 assert origin_file is None
                 assert 'move' in destination_file.text
-        except FileNotFoundError:
-            print('An error occurred during rename test!')
 
         finally:
-            osf_api.delete_addon_files(session, provider, guid=node_id)
+            osf_api.delete_addon_files(session, provider, current_browser, guid=node_id)
 
     @pytest.mark.skipif(settings.DRIVER == 'remote', reason='File_Detector Class only ')
     @pytest.mark.parametrize('provider', ['s3', 'dropbox', 'box', 'owncloud'])
     def test_download_file(self, driver, default_project, session, provider):
+        current_browser = driver.desired_capabilities.get('browserName')
+        node_id = default_project.id
+
+        # Connect addon to node, upload a single test file
+        node = osf_api.get_node(session, node_id=node_id)
+        if provider != 'osfstorage':
+            addon = osf_api.get_user_addon(session, provider)
+            addon_account_id = list(addon['data']['links']['accounts'])[0]
+            osf_api.connect_provider_root_to_node(session, provider, addon_account_id, node_id=node_id)
+
+        file_name = 'download_' + current_browser + '_' + provider + '.txt'
+        new_file, metadata = osf_api.upload_fake_file(session=session, node=node, name=file_name, provider=provider)
+
         try:
-            node_id = default_project.id
-
-            # Connect addon to node, upload a single test file
-            node = osf_api.get_node(session, node_id=node_id)
-            if provider != 'osfstorage':
-                addon = osf_api.get_user_addon(session, provider)
-                addon_account_id = list(addon['data']['links']['accounts'])[0]
-                osf_api.connect_provider_root_to_node(session, provider, addon_account_id, node_id=node_id)
-
-            file_name = 'download_' + find_current_browser(driver) + '_' + provider + '.txt'
-            new_file, metadata = osf_api.upload_fake_file(session=session, node=node, name=file_name, provider=provider)
-
             files_page = FilesPage(driver, guid=node_id)
             files_page.goto()
 
@@ -377,11 +372,8 @@ class TestFilesPage:
             # Negative test
             assert 'Could not retrieve file or directory' not in driver.find_element_by_xpath('/html/body').text
 
-        except FileNotFoundError:
-            print('An error occurred during rename test!')
-
         finally:
-            osf_api.delete_addon_files(session, provider, guid=node_id)
+            osf_api.delete_addon_files(session, provider, current_browser, guid=node_id)
 
 
 '''
