@@ -15,6 +15,12 @@
 
 
 
+## Reviewer's Actions
+`git fetch <remote> pull/<PR_number>/head:<branch_name>`
+
+Run this test using
+`tests/<name_of_test>.py -s -v`
+
 ## Testing Changes Moving Forward
 
 
