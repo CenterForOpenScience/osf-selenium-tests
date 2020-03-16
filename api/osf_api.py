@@ -57,18 +57,16 @@ def get_user_addon(session, provider, user=None):
 
 
 def upload_single_quickfile(session):
+
     """Upload a file to the current user's quickfiles if one is not already uploaded.
     Return the name of the file or none if one wasn't uploaded.
-
-    Note: Currently using v2.0 of the API. Certain lines will need to be changed on update.
-    TODO: Make this more general.
     """
     user = current_user(session)
     quickfiles_url = user.relationships.quickfiles['links']['related']['href']
+
     if session.get(quickfiles_url)['links']['meta']['total'] < 1:
         upload_url = user.relationships.quickfiles['links']['upload']['href']
         return upload_fake_file(session, upload_url=upload_url)
-
 
 def get_all_institutions(session):
     url = '/v2/institutions/'
@@ -197,10 +195,11 @@ def get_existing_file(session, node_id=settings.PREFERRED_NODE):
         return upload_fake_file(session, node)
 
 
-def upload_fake_file(session, node=None, name='osf selenium test file for testing because its fake.txt', upload_url=None, provider='osfstorage'):
+def upload_fake_file(session, node=None, name='osf selenium test file for testing because its fake.txt', upload_url=None, provider='osfstorage', quickfile=False):
     """Upload an almost empty file to the given node. Return the file's name.
 
     Note: The default file has a very long name because it makes it easier to click a link to it.
+    Quickfiles Note: "/?create_guid=1" must be added via api BEFORE viewing on the front end. See ENG-1351 for more info
     """
     if not upload_url:
         if not node:
@@ -208,6 +207,13 @@ def upload_fake_file(session, node=None, name='osf selenium test file for testin
         upload_url = '{}/v1/resources/{}/providers/{}/'.format(settings.FILE_DOMAIN, node.id, provider)
 
     metadata = session.put(url=upload_url, query_parameters={'kind': 'file', 'name': name}, raw_body={})
+
+    if quickfile:
+        # create_guid param is tied to the GET request so we can't use query_parameters={'create_guid': 1} here
+        quickfile_path = metadata['data']['attributes']['path']
+        info_link = '/v2/files{}/?create_guid=1'.format(quickfile_path)
+        session.get(info_link)
+
     return name, metadata
 
 

@@ -101,6 +101,7 @@ class AnothersQuickfilesMixin:
 
         # assert anothers_quickfiles.download_as_zip_button.absent()
 
+
 @markers.dont_run_on_prod
 class TestQuickfilesLoggedOut(AnothersQuickfilesMixin):
 
@@ -108,6 +109,7 @@ class TestQuickfilesLoggedOut(AnothersQuickfilesMixin):
     def anothers_quickfiles(self, quickfiles_page):
         quickfiles_page.goto()
         return quickfiles_page
+
 
 @markers.dont_run_on_prod
 class TestQuickfilesAsDifferentUser(AnothersQuickfilesMixin):
