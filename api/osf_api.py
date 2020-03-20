@@ -266,6 +266,14 @@ def get_provider_submission_status(provider):
     return provider['attributes']['allow_submissions']
 
 
+def get_providers_total(provider_name, session):
+    """ Return the total number of preprints for a given service provider.
+        Note: Reformat provider names to all lowercase and remove white spaces.
+    """
+    provider_url = '/v2/providers/preprints/{}/preprints/'.format(provider_name.lower().replace(' ', ''))
+    return session.get(provider_url)['links']['meta']['total']
+
+
 def connect_provider_root_to_node(
     session, provider, external_account_id,
     node_id=settings.PREFERRED_NODE,
