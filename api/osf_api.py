@@ -57,16 +57,27 @@ def get_user_addon(session, provider, user=None):
 
 
 def upload_single_quickfile(session):
-
-    """Upload a file to the current user's quickfiles if one is not already uploaded.
-    Return the name of the file or none if one wasn't uploaded.
+    """Upload a new quickfile. Delete existing quickfiles first.
+    Note: Currently using v2.0 of the API. Certain lines will need to be changed on update.
+    TODO: Make this more general.
     """
+
     user = current_user(session)
     quickfiles_url = user.relationships.quickfiles['links']['related']['href']
+    delete_all_quickfiles(session, quickfiles_url)
 
-    if session.get(quickfiles_url)['links']['meta']['total'] < 1:
-        upload_url = user.relationships.quickfiles['links']['upload']['href']
-        return upload_fake_file(session, upload_url=upload_url)
+    upload_url = user.relationships.quickfiles['links']['upload']['href']
+    return upload_fake_file(session, upload_url=upload_url, quickfile=True)
+
+
+def delete_all_quickfiles(session, quickfiles_url):
+    """ Delete all quickfiles. Just pass in the quickfiles url for the currently logged in user.
+    """
+
+    for quickfile in session.get(quickfiles_url)['data']:
+        delete_url = quickfile['links']['delete']
+        delete_file(session, delete_url)
+
 
 def get_all_institutions(session):
     url = '/v2/institutions/'
