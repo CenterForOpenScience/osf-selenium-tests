@@ -132,13 +132,18 @@ class TestBrandedProviders:
     @markers.smoke_test
     @markers.core_functionality
     @pytest.mark.skipif(not settings.PRODUCTION, reason='Cannot test on stagings as they share SHARE')
-    def test_detail_page(self, driver, provider):
+    def test_detail_page(self, session, driver, provider):
         """Test a preprint detail page by grabbing the first search result from the discover page.
         """
         discover_page = PreprintDiscoverPage(driver, provider=provider)
         discover_page.goto()
+        discover_page.verify()
         discover_page.loading_indicator.here_then_gone()
-        search_results = discover_page.search_results
-        assert search_results
-        search_results[0].click()
-        PreprintDetailPage(driver, verify=True)
+
+        if osf_api.get_providers_total(provider['attributes']['name'], session=session):
+            search_results = discover_page.search_results
+            assert search_results
+            search_results[0].click()
+            PreprintDetailPage(driver, verify=True)
+        else:
+            assert discover_page.no_results
