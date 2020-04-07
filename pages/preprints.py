@@ -52,6 +52,7 @@ class PreprintLandingPage(BasePreprintPage):
     submit_navbar = Locator(By.CSS_SELECTOR, '.branded-nav > :nth-child(2)')
     submit_button = Locator(By.CSS_SELECTOR, '.btn.btn-success')
 
+
 class PreprintSubmitPage(BasePreprintPage):
     url_addition = 'submit'
 
@@ -85,6 +86,7 @@ class PreprintSubmitPage(BasePreprintPage):
     create_preprint_button = Locator(By.CSS_SELECTOR, '.preprint-submit-body .submit-section > div > button.btn.btn-success.btn-md.m-t-md.pull-right')
     modal_create_preprint_button = Locator(By.CSS_SELECTOR, '.modal-footer button.btn-success:nth-child(2)', settings.LONG_TIMEOUT)
 
+
 @pytest.mark.usefixtures('must_be_logged_in')
 class PreprintDiscoverPage(BasePreprintPage):
     url_addition = 'discover'
@@ -94,6 +96,7 @@ class PreprintDiscoverPage(BasePreprintPage):
 
     # Group Locators
     search_results = GroupLocator(By.CSS_SELECTOR, '.search-result h4 > a')
+    no_results = GroupLocator(By.CSS_SELECTOR, '.search-results-section .text-muted')
 
 
 class PreprintDetailPage(GuidBasePage, BasePreprintPage):
