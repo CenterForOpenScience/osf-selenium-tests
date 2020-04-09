@@ -17,6 +17,7 @@ def my_projects_page(driver):
     return my_projects_page
 
 
+@pytest.mark.skip(reason='Skip this test until bug ticket ENG-1737 is resolved')
 @pytest.mark.usefixtures('must_be_logged_in')
 class TestMyProjectsPage:
     """ Custom collections must implement a PRE-delete setup to start in a clean state.
