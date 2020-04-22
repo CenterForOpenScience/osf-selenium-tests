@@ -33,7 +33,7 @@ jobs:
     if: branch = master
     env:
     - DOMAIN='prod'
-    - PREFERRED_NODE='ucrdq'
+    - PREFERRED_NODE='ra4bf'
     script: invoke test_travis_on_prod
   - stage: Staging tests part one
     if: branch != master

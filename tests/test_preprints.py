@@ -23,13 +23,14 @@ def landing_page(driver):
     landing_page.goto()
     return landing_page
 
+
 # TODO: Add checking for missing translations
 @pytest.mark.usefixtures('must_be_logged_in')
-@pytest.mark.usefixtures('delete_user_projects_at_setup')
 class TestPreprintWorkflow:
 
     @markers.dont_run_on_prod
     @markers.core_functionality
+    @pytest.mark.usefixtures('delete_user_projects_at_setup')
     def test_create_preprint_from_landing(self, session, driver, landing_page, project_with_file):
 
         landing_page.add_preprint_button.click()
