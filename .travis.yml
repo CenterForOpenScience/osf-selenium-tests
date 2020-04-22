@@ -40,9 +40,11 @@ jobs:
     env: TEST_BUILD='chrome'
     script: invoke test_travis_part_one
   -  # stage part one
+    if: branch != master
     env: TEST_BUILD='firefox'
     script: invoke test_travis_part_one
   -  # stage part one
+    if: branch != master
     env: TEST_BUILD='edge'
     script: invoke test_travis_part_one
   - stage: Staging tests part two
@@ -50,8 +52,10 @@ jobs:
     env: TEST_BUILD='chrome'
     script: invoke test_travis_part_two
   -  # stage part two
+    if: branch != master
     env: TEST_BUILD='firefox'
     script: invoke test_travis_part_two
   -  # stage part two
+    if: branch != master
     env: TEST_BUILD='edge'
     script: invoke test_travis_part_two
