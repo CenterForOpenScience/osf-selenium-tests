@@ -35,6 +35,8 @@ jobs:
     - DOMAIN='prod'
     - PREFERRED_NODE='ra4bf'
     - TEST_BUILD='firefox'
+    - FIREFOX_USER=
+    - FIREFOX_PASSWORD=
     script: invoke test_travis_on_prod
   - stage: Prod smoke tests (Edge)
     if: branch = master
