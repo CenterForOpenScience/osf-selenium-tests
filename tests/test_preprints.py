@@ -62,6 +62,9 @@ class TestPreprintWorkflow:
         # Wait for authors box to show
         submit_page.authors_save_button.click()
 
+        submit_page.conflict_of_interest.click()
+        submit_page.coi_save_button.click()
+
         # Wait for Supplemental materials to show
         submit_page.supplemental_create_new_project.click()
         submit_page.supplemental_save_button.click()
