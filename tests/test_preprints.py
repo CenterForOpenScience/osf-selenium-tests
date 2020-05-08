@@ -73,11 +73,6 @@ class TestPreprintWorkflow:
         submit_page.create_preprint_button.click()
         submit_page.modal_create_preprint_button.click()
 
-        current_browser = driver.desired_capabilities.get('browserName')
-        if 'edge' in current_browser:
-            alert = driver.switch_to_alert()
-            alert.accept()
-
         preprint_detail = PreprintDetailPage(driver, verify=True)
         WebDriverWait(driver, 10).until(EC.visibility_of(preprint_detail.title))
 
