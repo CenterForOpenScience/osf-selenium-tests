@@ -107,4 +107,4 @@ class PreprintDetailPage(GuidBasePage, BasePreprintPage):
 
     identity = Locator(By.ID, 'preprintTitle', settings.LONG_TIMEOUT)
     title = Locator(By.ID, 'preprintTitle', settings.LONG_TIMEOUT)
-    supplemental_link = Locator(By.CSS_SELECTOR, 'h6[class="detail-header-info"] > div:last-child > a:last-child')
+    view_page = Locator(By.ID, 'view-page')

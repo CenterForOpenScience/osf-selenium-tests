@@ -2,6 +2,7 @@ import pytest
 import markers
 import settings
 import logging
+import re
 
 from api import osf_api
 from selenium.webdriver.support.ui import WebDriverWait
@@ -81,9 +82,11 @@ class TestPreprintWorkflow:
         WebDriverWait(driver, 10).until(EC.visibility_of(preprint_detail.title))
 
         assert preprint_detail.title.text == project_with_file.title
+        match = re.search(r'Supplemental Materials\s+test\.osf\.io/([a-z0-9]{5})', preprint_detail.view_page.text)
+        assert match is not None
 
         # Delete supplemental project created during workflow
-        supplemental_guid = preprint_detail.supplemental_link.text[12:17]
+        supplemental_guid = match.group(1)
         osf_api.delete_project(session, supplemental_guid, None)
 
     @markers.smoke_test
