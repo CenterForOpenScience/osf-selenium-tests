@@ -2,6 +2,7 @@ import pytest
 import markers
 import settings
 import logging
+import re
 
 from api import osf_api
 from selenium.webdriver.support.ui import WebDriverWait
@@ -62,6 +63,9 @@ class TestPreprintWorkflow:
         # Wait for authors box to show
         submit_page.authors_save_button.click()
 
+        submit_page.conflict_of_interest.click()
+        submit_page.coi_save_button.click()
+
         # Wait for Supplemental materials to show
         submit_page.supplemental_create_new_project.click()
         submit_page.supplemental_save_button.click()
@@ -69,18 +73,15 @@ class TestPreprintWorkflow:
         submit_page.create_preprint_button.click()
         submit_page.modal_create_preprint_button.click()
 
-        current_browser = driver.desired_capabilities.get('browserName')
-        if 'edge' in current_browser:
-            alert = driver.switch_to_alert()
-            alert.accept()
-
         preprint_detail = PreprintDetailPage(driver, verify=True)
         WebDriverWait(driver, 10).until(EC.visibility_of(preprint_detail.title))
 
         assert preprint_detail.title.text == project_with_file.title
+        match = re.search(r'Supplemental Materials\s+test\.osf\.io/([a-z0-9]{5})', preprint_detail.view_page.text)
+        assert match is not None
 
         # Delete supplemental project created during workflow
-        supplemental_guid = preprint_detail.supplemental_link.text[12:17]
+        supplemental_guid = match.group(1)
         osf_api.delete_project(session, supplemental_guid, None)
 
     @markers.smoke_test

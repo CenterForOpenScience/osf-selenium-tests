@@ -80,6 +80,9 @@ class PreprintSubmitPage(BasePreprintPage):
 
     authors_save_button = Locator(By.CSS_SELECTOR, '#preprint-form-authors .btn-primary', settings.QUICK_TIMEOUT)
 
+    conflict_of_interest = Locator(By.ID, 'coiNo', settings.QUICK_TIMEOUT)
+    coi_save_button = Locator(By.CSS_SELECTOR, '#author-coi-assertion .btn-primary')
+
     supplemental_create_new_project = Locator(By.CSS_SELECTOR, 'div[class="start"] > div[class="row"] > div:nth-child(2)', settings.QUICK_TIMEOUT)
     supplemental_save_button = Locator(By.CSS_SELECTOR, '#supplemental-materials .btn-primary')
 
@@ -104,4 +107,4 @@ class PreprintDetailPage(GuidBasePage, BasePreprintPage):
 
     identity = Locator(By.ID, 'preprintTitle', settings.LONG_TIMEOUT)
     title = Locator(By.ID, 'preprintTitle', settings.LONG_TIMEOUT)
-    supplemental_link = Locator(By.CSS_SELECTOR, 'h6[class="detail-header-info"] > div:last-child > a:last-child')
+    view_page = Locator(By.ID, 'view-page')
