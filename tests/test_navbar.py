@@ -118,7 +118,8 @@ class TestOSFHomeNavbar(NavbarTestLoggedOutMixin):
 
     def test_donate_link(self, page, driver):
         page.navbar.donate_link.click()
-        COSDonatePage(driver, verify=True)
+        donate_page = COSDonatePage(driver, verify=False)
+        assert driver.current_url == donate_page.url
 
     def test_sign_in_button(self, page, driver):
         page.navbar.sign_in_button.click()
@@ -199,7 +200,8 @@ class TestMeetingsNavbar(NavbarTestLoggedOutMixin):
 
     def test_donate_link(self, page, driver):
         page.navbar.donate_link.click()
-        COSDonatePage(driver, verify=True)
+        donate_page = COSDonatePage(driver, verify=False)
+        assert driver.current_url == donate_page.url
 
     def test_sign_in_button(self, page, driver):
         page.navbar.sign_in_button.click()
