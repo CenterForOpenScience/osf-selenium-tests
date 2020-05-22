@@ -120,6 +120,8 @@ class TestOSFHomeNavbar(NavbarTestLoggedOutMixin):
         page.navbar.donate_link.click()
         donate_page = COSDonatePage(driver, verify=False)
         assert driver.current_url == donate_page.url
+        assert driver.find_element_by_xpath('//meta[@name="cos:id" and @content="donate-page"]').get_attribute('name') == 'cos:id'
+        assert driver.find_element_by_xpath('//meta[@name="cos:id" and @content="donate-page"]').get_attribute('content') == 'donate-page'
 
     def test_sign_in_button(self, page, driver):
         page.navbar.sign_in_button.click()
@@ -202,6 +204,8 @@ class TestMeetingsNavbar(NavbarTestLoggedOutMixin):
         page.navbar.donate_link.click()
         donate_page = COSDonatePage(driver, verify=False)
         assert driver.current_url == donate_page.url
+        assert driver.find_element_by_xpath('//meta[@name="cos:id" and @content="donate-page"]').get_attribute('name') == 'cos:id'
+        assert driver.find_element_by_xpath('//meta[@name="cos:id" and @content="donate-page"]').get_attribute('content') == 'donate-page'
 
     def test_sign_in_button(self, page, driver):
         page.navbar.sign_in_button.click()
