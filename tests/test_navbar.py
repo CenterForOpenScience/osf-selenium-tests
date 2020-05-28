@@ -118,7 +118,8 @@ class TestOSFHomeNavbar(NavbarTestLoggedOutMixin):
 
     def test_donate_link(self, page, driver):
         page.navbar.donate_link.click()
-        COSDonatePage(driver, verify=True)
+        donate_page = COSDonatePage(driver, verify=False)
+        assert_donate_page(driver, donate_page)
 
     def test_sign_in_button(self, page, driver):
         page.navbar.sign_in_button.click()
@@ -199,7 +200,8 @@ class TestMeetingsNavbar(NavbarTestLoggedOutMixin):
 
     def test_donate_link(self, page, driver):
         page.navbar.donate_link.click()
-        COSDonatePage(driver, verify=True)
+        donate_page = COSDonatePage(driver, verify=False)
+        assert_donate_page(driver, donate_page)
 
     def test_sign_in_button(self, page, driver):
         page.navbar.sign_in_button.click()
@@ -252,3 +254,13 @@ class TestRegistriesNavbarLoggedIn(NavbarTestLoggedInMixin):
         page = RegistriesLandingPage(driver)
         page.goto()
         return page
+
+
+def assert_donate_page(driver, donate_page):
+    # locators.py does not currently support invisible elements as identity
+    # https://github.com/cos-qa/osf-selenium-tests/blob/b7f3f21376b7d6f751993cdcffea9262856263e3/base/locators.py#L151
+    meta_tag = driver.find_element_by_xpath('//meta[@name="cos:id" and @content="donate-page"]')
+
+    assert driver.current_url == donate_page.url
+    assert meta_tag.get_attribute('name') == 'cos:id'
+    assert meta_tag.get_attribute('content') == 'donate-page'

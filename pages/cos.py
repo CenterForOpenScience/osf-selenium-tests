@@ -6,7 +6,8 @@ from selenium.webdriver.common.by import By
 
 
 class COSDonatePage(BasePage):
-    url = 'https://cos.io/about/support-cos/'
+    url = 'https://www.cos.io/support'
 
-    identity = Locator(By.CSS_SELECTOR, 'div[class="slide-wrapper-background"]', settings.LONG_TIMEOUT)
-    page_heading = Locator(By.CSS_SELECTOR, 'div[class="banner-element"]')
+    # This meta tag is unique to the donate page but cannot be verified as a 'visible' locator
+    # See https://github.com/cos-qa/osf-selenium-tests/blob/b7f3f21376b7d6f751993cdcffea9262856263e3/base/locators.py#L157-L163
+    identity = Locator(By.XPATH, '//meta[@name="cos:id" and @content="donate-page"]', settings.LONG_TIMEOUT)
