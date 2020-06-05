@@ -79,7 +79,7 @@ def test_travis_on_prod(ctx):
     """
     flake(ctx)
     print('>>> Testing modules in "{}" in Chrome'.format('tests'))
-    test_module(ctx, module=['-m','smoke_test'])
+    test_module(ctx, module=['-m','smoke_test'], params=['tests/test_project.py'])
 
 @task
 def test_travis_part_one(ctx):
