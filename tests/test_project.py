@@ -1,3 +1,4 @@
+import os
 import pytest
 import markers
 import settings
@@ -12,6 +13,10 @@ from selenium.webdriver.support import expected_conditions as EC
 @pytest.fixture()
 def project_page(driver, default_project_page):
     default_project_page.goto()
+    if os.environ.get('DRIVER', 'meow') == 'Chrome':
+        print(" ==== DUMPING CHROME LOGS")
+        for entry in driver.get_log('browser'):
+            print(entry)
     return default_project_page
 
 @pytest.fixture()
