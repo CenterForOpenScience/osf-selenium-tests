@@ -97,10 +97,10 @@ CUSTOM_INSTITUTION_DOMAINS = domains[DOMAIN]['custom_institution_domains']
 
 # Browser capabilities for browserstack testing
 caps = {
-    'chrome': {'browser': 'Chrome', 'os': 'Windows', 'os_version': '10', 'resolution': '2048x1536'},
+    'chrome': {'browser': 'Chrome', 'os': 'Windows', 'os_version': '10', 'resolution': '2048x1536', 'browserstack.networkLogs': 'true'},
     'edge': {'browser': 'Edge', 'os': 'Windows', 'os_version': '10', 'resolution': '2048x1536'},
     'firefox': {'browser': 'Firefox', 'os': 'Windows', 'os_version': '10', 'resolution': '2048x1536'},
-    'browserstack': {'networkLogs': True, 'console': 'errors'},
+    'browserstack': {'console': 'errors'},
 }
 
 BUILD = DRIVER
