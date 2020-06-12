@@ -100,7 +100,7 @@ caps = {
     'chrome': {'browser': 'Chrome', 'os': 'Windows', 'os_version': '10', 'resolution': '2048x1536'},
     'edge': {'browser': 'Edge', 'os': 'Windows', 'os_version': '10', 'resolution': '2048x1536'},
     'firefox': {'browser': 'Firefox', 'os': 'Windows', 'os_version': '10', 'resolution': '2048x1536'},
-    'browserstack': {'networkLogs': 'true', 'console': 'errors'},
+    'browserstack': {'networkLogs': True, 'console': 'errors'},
 }
 
 BUILD = DRIVER
