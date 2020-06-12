@@ -103,6 +103,8 @@ caps = {
         'os_version': '10',
         'resolution': '2048x1536',
         'browserstack.networkLogs': 'true',
+        'browserstack.debug': 'true',
+        'browserstack.console': 'warnings',
     },
     'edge': {
         'browser': 'Edge',
@@ -110,6 +112,8 @@ caps = {
         'os_version': '10',
         'resolution': '2048x1536',
         'browserstack.networkLogs': 'true',
+        'browserstack.debug': 'true',
+        'browserstack.console': 'warnings',
     },
     'firefox': {
         'browser': 'Firefox',
@@ -117,8 +121,9 @@ caps = {
         'os_version': '10',
         'resolution': '2048x1536',
         'browserstack.networkLogs': 'true',
+        'browserstack.debug': 'true',
+        'browserstack.console': 'warnings',
     },
-    'browserstack': {'console': 'warnings'},
 }
 
 BUILD = DRIVER
