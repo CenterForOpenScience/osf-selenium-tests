@@ -90,7 +90,11 @@ class OSFBasePage(BasePage):
     def error_handling(self):
         # If we've got an error message here from osf, grab it
         if self.error_heading:
-            raise HttpError(self.error_heading.get_attribute('data-http-status-code'))
+            try:
+                message = self.error_heading.get_attribute('data-http-status-code')
+            except:
+                message = self.error_heading
+            raise HttpError(message)
 
     def is_logged_in(self):
         return self.navbar.is_logged_in()
