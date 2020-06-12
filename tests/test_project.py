@@ -66,7 +66,6 @@ class TestProjectDetailPage:
         project_page_with_file.file_widget.loading_indicator.here_then_gone()
         assert project_page_with_file.file_widget.component_and_file_titles[3]
 
-    @markers.smoke_test
     @pytest.mark.skipif(not settings.PREFERRED_NODE, reason='Only run this test if addons are set up on a specific node.')
     def test_addon_files_load(self, project_page, session, driver):
         """This test is very fragile and makes assumptions about your setup.
@@ -90,7 +89,6 @@ class TestProjectDetailPage:
 @pytest.mark.usefixtures('must_be_logged_in_as_user_two')
 class TestProjectDetailAsNonContributor:
 
-    @markers.smoke_test
     @markers.core_functionality
     def test_is_private(self, driver, default_project_page):
         # Verify that a non contributor on a private project gets the request access page
