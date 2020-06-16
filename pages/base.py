@@ -104,7 +104,7 @@ class OSFBasePage(BasePage):
 
 
 class GuidBasePage(OSFBasePage):
-    base_url = urllib.parse.urljoin(settings.OSF_HOME, '{guid}')
+    base_url = urllib.parse.urljoin(settings.OSF_HOME, '{guid}', '/')
     guid = ''
 
     def __init__(self, driver, verify=False, guid='', domain=settings.OSF_HOME):
