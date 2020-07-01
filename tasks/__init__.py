@@ -79,7 +79,7 @@ def test_travis_on_prod(ctx):
     """
     flake(ctx)
     print('>>> Testing modules in "{}" in Chrome'.format('tests'))
-    test_module(ctx, module=['-m','smoke_test'])
+    test_travis_with_retries(ctx, 'Master', _get_test_file_list(), module=['-m', 'smoke_test'])
 
 @task
 def test_travis_part_one(ctx):
@@ -104,13 +104,13 @@ def _get_test_file_list():
     return all_test_files
 
 @task
-def test_travis_with_retries(ctx, partition_name, file_list):
+def test_travis_with_retries(ctx, partition_name, file_list, module=None):
     """Run group of tests on the browser defined by TEST_BUILD."""
     flake(ctx)
 
     print('>>> Testing {} modules in "/tests/" in {}'.format(partition_name, os.environ['TEST_BUILD']))
     print('>>> File list for {} is: {}'.format(partition_name, file_list))
-    retcode = test_module_wo_exit(ctx, params=file_list)
+    retcode = test_module_wo_exit(ctx, params=file_list, module=module)
 
     if retcode != 1:
         sys.exit(retcode)
@@ -120,7 +120,7 @@ def test_travis_with_retries(ctx, partition_name, file_list):
     for i in range(1, MAX_TRAVIS_RETRIES+1):
         print('>>> Retesting {} failures, iteration {}, in "/test/" '
               'in {}'.format(partition_name, i, os.environ['TEST_BUILD']))
-        retcode = test_module_wo_exit(ctx, params=file_list)
+        retcode = test_module_wo_exit(ctx, params=file_list, module=module)
 
         if retcode != 1:
             break
