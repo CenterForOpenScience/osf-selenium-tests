@@ -70,10 +70,10 @@ class PreprintSubmitPage(BasePreprintPage):
 
     # Author Assertions
     public_available_button = Locator(By.ID, 'hasDataLinksAvailable', settings.QUICK_TIMEOUT)
-    public_data_input = Locator(By.CSS_SELECTOR, 'div[data-test-multiple-textbox-index] > input')
+    public_data_input = Locator(By.CSS_SELECTOR, '[data-test-multiple-textbox-index] > input')
     preregistration_no_button = Locator(By.ID, 'hasPreregLinksNo')
     preregistration_input = Locator(By.NAME, 'whyNoPrereg')
-    save_author_assertions = Locator(By.CSS_SELECTOR, 'button[data-test-author-assertions-continue]')
+    save_author_assertions = Locator(By.CSS_SELECTOR, '[data-test-author-assertions-continue]')
 
     basics_license_dropdown = Locator(By.CSS_SELECTOR, 'select[class="form-control"]', settings.LONG_TIMEOUT)
     basics_universal_license = Locator(By.CSS_SELECTOR, 'select[class="form-control"] > option:nth-child(3)', settings.QUICK_TIMEOUT)
@@ -88,7 +88,7 @@ class PreprintSubmitPage(BasePreprintPage):
     authors_save_button = Locator(By.CSS_SELECTOR, '#preprint-form-authors .btn-primary', settings.QUICK_TIMEOUT)
 
     conflict_of_interest = Locator(By.ID, 'coiNo', settings.QUICK_TIMEOUT)
-    coi_save_button = Locator(By.CSS_SELECTOR, '#author-coi-assertion .btn-primary')
+    coi_save_button = Locator(By.CSS_SELECTOR, '[data-test-coi-continue]')
 
     supplemental_create_new_project = Locator(By.CSS_SELECTOR, 'div[class="start"] > div[class="row"] > div:nth-child(2)', settings.QUICK_TIMEOUT)
     supplemental_save_button = Locator(By.CSS_SELECTOR, '#supplemental-materials .btn-primary')
