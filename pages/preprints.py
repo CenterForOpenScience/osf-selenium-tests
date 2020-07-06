@@ -68,6 +68,13 @@ class PreprintSubmitPage(BasePreprintPage):
     upload_select_file = Locator(By.CSS_SELECTOR, '.file-browser-item > a:nth-child(2)')
     upload_file_save_continue = Locator(By.CSS_SELECTOR, 'div[class="p-t-xs pull-right"] > button[class="btn btn-primary"]')
 
+    # Author Assertions
+    public_available_button = Locator(By.ID, 'hasDataLinksAvailable', settings.QUICK_TIMEOUT)
+    public_data_input = Locator(By.CSS_SELECTOR, 'div[data-test-multiple-textbox-index] > input')
+    preregistration_no_button = Locator(By.ID, 'hasPreregLinksNo')
+    preregistration_input = Locator(By.NAME, 'whyNoPrereg')
+    save_author_assertions = Locator(By.CSS_SELECTOR, 'button[data-test-author-assertions-continue]')
+
     basics_license_dropdown = Locator(By.CSS_SELECTOR, 'select[class="form-control"]', settings.LONG_TIMEOUT)
     basics_universal_license = Locator(By.CSS_SELECTOR, 'select[class="form-control"] > option:nth-child(3)', settings.QUICK_TIMEOUT)
     basics_tags_section = Locator(By.CSS_SELECTOR, '#preprint-form-basics .tagsinput')
