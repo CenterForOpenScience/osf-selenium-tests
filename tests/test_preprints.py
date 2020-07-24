@@ -17,6 +17,9 @@ from pages.preprints import (
 
 logger = logging.getLogger(__name__)
 
+def find_current_browser(driver):
+    current_browser = driver.desired_capabilities.get('browserName')
+    return current_browser
 
 @pytest.fixture
 def landing_page(driver):
@@ -138,6 +141,11 @@ class TestBrandedProviders:
         """Test a preprint detail page by grabbing the first search result from the discover page.
         """
         discover_page = PreprintDiscoverPage(driver, provider=provider)
+
+        # This fails only in firefox because of selenium incompatibilities with right-left languages
+        if 'firefox' in find_current_browser(driver) and 'arabixiv' in provider['id']:
+            discover_page.url_addition += '?q=Analysis'
+
         discover_page.goto()
         discover_page.verify()
         discover_page.loading_indicator.here_then_gone()
