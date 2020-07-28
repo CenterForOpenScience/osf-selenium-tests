@@ -5,6 +5,7 @@ import settings
 
 from api import osf_api
 from pages.project import FilesPage
+from utils import find_current_browser
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver import ActionChains
 from selenium.webdriver.common.by import By
@@ -75,11 +76,6 @@ def find_toolbar_button_by_name(driver, button_name):
         if button.text == button_name:
             return button
     return
-
-
-def find_current_browser(driver):
-    current_browser = driver.desired_capabilities.get('browserName')
-    return current_browser
 
 
 @markers.dont_run_on_prod

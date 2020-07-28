@@ -5,6 +5,7 @@ import logging
 import re
 
 from api import osf_api
+from utils import find_current_browser
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
@@ -16,10 +17,6 @@ from pages.preprints import (
 )
 
 logger = logging.getLogger(__name__)
-
-def find_current_browser(driver):
-    current_browser = driver.desired_capabilities.get('browserName')
-    return current_browser
 
 @pytest.fixture
 def landing_page(driver):
