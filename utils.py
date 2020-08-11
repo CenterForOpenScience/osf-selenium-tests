@@ -71,3 +71,8 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
 
     driver.maximize_window()
     return driver
+
+
+def find_current_browser(driver):
+    current_browser = driver.desired_capabilities.get('browserName')
+    return current_browser

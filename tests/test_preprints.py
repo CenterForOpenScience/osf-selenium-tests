@@ -5,6 +5,7 @@ import logging
 import re
 
 from api import osf_api
+from utils import find_current_browser
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
@@ -16,7 +17,6 @@ from pages.preprints import (
 )
 
 logger = logging.getLogger(__name__)
-
 
 @pytest.fixture
 def landing_page(driver):
@@ -138,6 +138,11 @@ class TestBrandedProviders:
         """Test a preprint detail page by grabbing the first search result from the discover page.
         """
         discover_page = PreprintDiscoverPage(driver, provider=provider)
+
+        # This fails only in firefox because of selenium incompatibilities with right-left languages
+        if 'firefox' in find_current_browser(driver) and 'arabixiv' in provider['id']:
+            discover_page.url_addition += '?q=Analysis'
+
         discover_page.goto()
         discover_page.verify()
         discover_page.loading_indicator.here_then_gone()
