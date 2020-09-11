@@ -48,6 +48,15 @@ class TestPreprintWorkflow:
         submit_page.upload_select_file.click()
         submit_page.upload_file_save_continue.click()
 
+        # Author assertions
+        submit_page.public_available_button.click()
+        submit_page.public_data_input.click()
+        submit_page.public_data_input.send_keys_deliberately('https://osf.io/')
+        submit_page.preregistration_no_button.click()
+        submit_page.preregistration_input.click()
+        submit_page.preregistration_input.send_keys_deliberately('QA Testing')
+        submit_page.save_author_assertions.click()
+
         submit_page.basics_license_dropdown.click()
         submit_page.basics_universal_license.click()
         submit_page.basics_tags_section.click()
