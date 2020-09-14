@@ -18,7 +18,8 @@ class RegistriesLandingPage(BaseRegistriesPage):
     url = settings.OSF_HOME + '/registries'
 
     identity = Locator(By.CSS_SELECTOR, '._RegistriesHeader_3zbd8x', settings.LONG_TIMEOUT)
-    search_button = Locator(By.CSS_SELECTOR, '[data-test-search-button]')
+    search_box = Locator(By.ID, 'search')
+
 
 class RegistriesDiscoverPage(BaseRegistriesPage):
     url = settings.OSF_HOME + '/registries/discover'
