@@ -26,6 +26,7 @@ class RegistriesDiscoverPage(BaseRegistriesPage):
 
     identity = Locator(By.CSS_SELECTOR, '[data-test-share-logo]')
     loading_indicator = Locator(By.CSS_SELECTOR, '.ball-scale')
+    osf_filter = Locator(By.CSS_SELECTOR, '[data-test-source-filter-id$="OSF Registries"]')
 
     # Group Locators
     search_results = GroupLocator(By.CSS_SELECTOR, '._RegistriesSearchResult__Title_1wvii8')

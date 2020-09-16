@@ -31,6 +31,11 @@ class TestRegistriesDiscoverPage:
         discover_page.loading_indicator.here_then_gone()
         search_results = discover_page.search_results
         assert search_results
+
+        discover_page.scroll_into_view(discover_page.osf_filter.element)
+        discover_page.osf_filter.click()
+        discover_page.loading_indicator.here_then_gone()
+
         target_registration = discover_page.get_first_non_withdrawn_registration()
         target_registration_title = target_registration.text
         target_registration.click()
