@@ -14,6 +14,7 @@ class BaseRegistriesPage(OSFBasePage):
     # Components
     navbar = ComponentLocator(RegistriesNavbar)
 
+
 class RegistriesLandingPage(BaseRegistriesPage):
     url = settings.OSF_HOME + '/registries'
 
@@ -37,6 +38,7 @@ class RegistriesDiscoverPage(BaseRegistriesPage):
                 result.find_element_by_class_name('label-default')
             except NoSuchElementException:
                 return result.find_element_by_css_selector('[data-test-result-title-id]')
+
 
 class RegistrationDetailPage(GuidBasePage):
     identity = Locator(By.CSS_SELECTOR, '[data-test-registration-title]')

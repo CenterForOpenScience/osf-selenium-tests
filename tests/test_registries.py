@@ -7,11 +7,13 @@ from pages.registries import (
     RegistrationDetailPage
 )
 
+
 @pytest.fixture
 def landing_page(driver):
     landing_page = RegistriesLandingPage(driver)
     landing_page.goto()
     return landing_page
+
 
 class TestRegistriesDiscoverPage:
     @markers.smoke_test
