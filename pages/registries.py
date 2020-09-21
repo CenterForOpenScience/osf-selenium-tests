@@ -14,17 +14,20 @@ class BaseRegistriesPage(OSFBasePage):
     # Components
     navbar = ComponentLocator(RegistriesNavbar)
 
+
 class RegistriesLandingPage(BaseRegistriesPage):
     url = settings.OSF_HOME + '/registries'
 
     identity = Locator(By.CSS_SELECTOR, '._RegistriesHeader_3zbd8x', settings.LONG_TIMEOUT)
-    search_button = Locator(By.CSS_SELECTOR, '[data-test-search-button]')
+    search_box = Locator(By.ID, 'search')
+
 
 class RegistriesDiscoverPage(BaseRegistriesPage):
     url = settings.OSF_HOME + '/registries/discover'
 
     identity = Locator(By.CSS_SELECTOR, '[data-test-share-logo]')
     loading_indicator = Locator(By.CSS_SELECTOR, '.ball-scale')
+    osf_filter = Locator(By.CSS_SELECTOR, '[data-test-source-filter-id$="OSF Registries"]')
 
     # Group Locators
     search_results = GroupLocator(By.CSS_SELECTOR, '._RegistriesSearchResult__Title_1wvii8')
@@ -35,6 +38,7 @@ class RegistriesDiscoverPage(BaseRegistriesPage):
                 result.find_element_by_class_name('label-default')
             except NoSuchElementException:
                 return result.find_element_by_css_selector('[data-test-result-title-id]')
+
 
 class RegistrationDetailPage(GuidBasePage):
     identity = Locator(By.CSS_SELECTOR, '[data-test-registration-title]')
