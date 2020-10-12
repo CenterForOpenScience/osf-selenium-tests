@@ -1,6 +1,8 @@
 import pytest
 import markers
 
+from selenium.webdriver.common.keys import Keys
+
 from pages.registries import (
     RegistriesLandingPage,
     RegistriesDiscoverPage,
@@ -19,7 +21,8 @@ class TestRegistriesDiscoverPage:
     @markers.smoke_test
     @markers.core_functionality
     def test_search_results_exist(self, driver, landing_page):
-        landing_page.search_box.send_keys_deliberately('QA Test\n')
+        landing_page.search_box.send_keys_deliberately('QA Test')
+        landing_page.search_box.send_keys(Keys.ENTER)
         discover_page = RegistriesDiscoverPage(driver, verify=True)
         discover_page.loading_indicator.here_then_gone()
         assert len(discover_page.search_results) > 0
