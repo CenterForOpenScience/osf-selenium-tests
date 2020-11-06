@@ -20,7 +20,7 @@ class TestLoginWorkflow:
         assert len(institutional_login_page.dropdown_options) > 1
 
     @markers.core_functionality
-    def test__orcid_login(self, driver):
+    def test_orcid_login(self, driver):
         """Check that you arrive on the orcid login page.
         """
         login_page = LoginPage(driver)
