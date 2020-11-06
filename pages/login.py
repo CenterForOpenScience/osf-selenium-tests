@@ -42,12 +42,6 @@ class InstitutionalLoginPage(BasePage):
     dropdown_options = GroupLocator(By.CSS_SELECTOR, '#institution-form-select option')
 
 
-class OrcidLoginPage(BasePage):
-    """This is an external page. We shouldn't test this page directly.
-    """
-    identity = Locator(By.CSS_SELECTOR, '#switch-to-register-form')
-
-
 def login(driver, user=settings.USER_ONE, password=settings.USER_ONE_PASSWORD):
     login_page = LoginPage(driver)
     login_page.goto()
