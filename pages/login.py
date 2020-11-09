@@ -38,14 +38,7 @@ class InstitutionalLoginPage(BasePage):
     url = settings.OSF_HOME + '/login?campaign=institution'
 
     identity = Locator(By.CSS_SELECTOR, '#institution-form-select')
-
     dropdown_options = GroupLocator(By.CSS_SELECTOR, '#institution-form-select option')
-
-
-class OrcidLoginPage(BasePage):
-    """This is an external page. We shouldn't test this page directly.
-    """
-    identity = Locator(By.CSS_SELECTOR, '#switch-to-register-form')
 
 
 def login(driver, user=settings.USER_ONE, password=settings.USER_ONE_PASSWORD):
@@ -53,12 +46,14 @@ def login(driver, user=settings.USER_ONE, password=settings.USER_ONE_PASSWORD):
     login_page.goto()
     login_page.submit_login(user, password)
 
+
 def safe_login(driver, user=settings.USER_ONE, password=settings.USER_ONE_PASSWORD):
     """Raise a LoginError if login fails.
     """
     login(driver, user=user, password=password)
     if not OSFBasePage(driver).is_logged_in():
         raise LoginError('Login failed')
+
 
 def logout(driver):
     """Log the user out.
