@@ -1,5 +1,5 @@
 invoke==0.15.0
-selenium==3.6.0
+selenium==3.141.0
 pytest==3.5.0
 flake8==2.4.0
 flake8-quotes==0.3.0
