@@ -1,5 +1,8 @@
 import pytest
 import time
+
+from selenium.common.exceptions import TimeoutException
+
 import markers
 import settings
 
@@ -316,8 +319,13 @@ class TestFilesPage:
 
             # Wait for 5 seconds for Copying message to show
             WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.CLASS_NAME, 'text-muted')))
-            # Wait a maximum of 20 seconds for Copying message to resolve
-            WebDriverWait(driver, 20).until(EC.invisibility_of_element_located((By.CLASS_NAME, 'text-muted')))
+
+            try:
+                # Wait a maximum of 30 seconds for Copying message to resolve
+                WebDriverWait(driver, 30).until(EC.invisibility_of_element_located((By.CLASS_NAME, 'text-muted')))
+            except TimeoutException:
+                # Reload the page and continue test
+                pass
 
             files_page.goto()
             origin_file = find_row_by_name(driver, provider, new_file)
