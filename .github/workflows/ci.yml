@@ -29,6 +29,12 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
+      - id: cache-python-deps
+        uses: actions/cache@v2
+        with:
+          name: cached_py_deps_{{ matrix.python-version }}
+          path: /usr/local/lib/python{{ matrix.python-version }}
+          restore-keys: cached_py_deps_
       - name: install dependencies
         run: |
           pip install --upgrade pip
@@ -43,6 +49,12 @@ jobs:
     strategy:
       max-parallel: 1
     steps:
+      - id: cache-python-deps
+        uses: actions/cache@v2
+        with:
+          name: cached_py_deps_{{ matrix.python-version }}
+          path: /usr/local/lib/python{{ matrix.python-version }}
+          restore-keys: cached_py_deps_
       - name: Flake away
         run: |
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
@@ -56,6 +68,12 @@ jobs:
       matrix:
         browser: [chrome, firefox, edge]
     steps:
+      - id: cache-python-deps
+        uses: actions/cache@v2
+        with:
+          name: cached_py_deps_{{ matrix.python-version }}
+          path: /usr/local/lib/python{{ matrix.python-version }}
+          restore-keys: cached_py_deps_
       - name: run smoke tests
         if: ${{ github.ref == 'master' }}
         env:
@@ -75,6 +93,12 @@ jobs:
         browser: [chrome, firefox, edge]
         partition: [one, two]
     steps:
+      - id: cache-python-deps
+        uses: actions/cache@v2
+        with:
+          name: cached_py_deps_{{ matrix.python-version }}
+          path: /usr/local/lib/python{{ matrix.python-version }}
+          restore-keys: cached_py_deps_
       - name: run staging tests
         if: ${{ github.ref != 'master' }}
         env:
