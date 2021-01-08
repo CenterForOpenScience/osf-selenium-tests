@@ -49,7 +49,7 @@ jobs:
         browser: [chrome, firefox, -edge]
     steps:
       - name: run smoke tests
-        if: branch == master
+        if: ${{ github.ref == 'master' }}
         env:
           DOMAIN: prod
           PREFERRED_NODE: ra4bf
@@ -68,7 +68,7 @@ jobs:
         partition: [one, two]
     steps:
       - name: run staging tests
-        if: branch != master
+        if: ${{ github.ref != 'master' }}
         env:
           TEST_BUILD: ${{ matrix.browser }}
         run: |
