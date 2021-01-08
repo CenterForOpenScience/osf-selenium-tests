@@ -1,0 +1,38 @@
+name: osf-selenium-tests CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - develop
+      - master
+      - 'release/*'
+      - 'hotfix/*'
+
+env:
+  PROJECT_DIR: "$PWD"
+  DRIVER: "Remote"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, 'skip ci')"
+    strategy:
+      matrix:
+        python-version: [3.6]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: install dependencies
+        run: |
+          cd $PROJECT_DIR
+          pip install --upgrade pip
+          pip install invoke==0.13.0
+          pip install flake8
+          invoke requirements
+      - name: Lint with flake8
+        run: |
+          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
