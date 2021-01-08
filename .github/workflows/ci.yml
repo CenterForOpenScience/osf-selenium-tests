@@ -32,7 +32,7 @@ jobs:
       - id: cache-python-deps
         uses: actions/cache@v2
         with:
-          name: cached_py_deps_{{ matrix.python-version }}
+          key: cached_py_deps_{{ matrix.python-version }}
           path: /usr/local/lib/python{{ matrix.python-version }}
           restore-keys: cached_py_deps_
       - name: install dependencies
@@ -52,7 +52,7 @@ jobs:
       - id: cache-python-deps
         uses: actions/cache@v2
         with:
-          name: cached_py_deps_{{ matrix.python-version }}
+          key: cached_py_deps_{{ matrix.python-version }}
           path: /usr/local/lib/python{{ matrix.python-version }}
           restore-keys: cached_py_deps_
       - name: Flake away
@@ -71,7 +71,7 @@ jobs:
       - id: cache-python-deps
         uses: actions/cache@v2
         with:
-          name: cached_py_deps_{{ matrix.python-version }}
+          key: cached_py_deps_{{ matrix.python-version }}
           path: /usr/local/lib/python{{ matrix.python-version }}
           restore-keys: cached_py_deps_
       - name: run smoke tests
@@ -96,7 +96,7 @@ jobs:
       - id: cache-python-deps
         uses: actions/cache@v2
         with:
-          name: cached_py_deps_{{ matrix.python-version }}
+          key: cached_py_deps_{{ matrix.python-version }}
           path: /usr/local/lib/python{{ matrix.python-version }}
           restore-keys: cached_py_deps_
       - name: run staging tests
