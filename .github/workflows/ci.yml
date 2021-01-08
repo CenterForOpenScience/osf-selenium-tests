@@ -14,6 +14,7 @@ on:
 
 env:
   DRIVER: "Remote"
+  DOMAIN: test
 
 jobs:
   build:
@@ -37,3 +38,36 @@ jobs:
       - name: Lint with flake8
         run: |
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
+
+  smoke_test:
+    name: Prod smoke tests (${{ matrix.browser }})
+    needs: build
+    strategy:
+      max-parallel: 1  # run in series
+      matrix:
+        browser: [chrome, firefox, -edge]
+    steps:
+      - name: run smoke tests
+        if: branch == master
+        env:
+          DOMAIN: prod
+          PREFERRED_NODE: ra4bf
+          TEST_BUILD: ${{ matrix.browser }}
+        run: |
+          invoke test_travis_on_prod
+
+  staging_test:
+    name: Staging tests (${{ matrix.browser }}) part ${{ matrix.partition }}
+    needs: build
+    strategy:
+      max-parallel: 1  # run in series
+      matrix:
+        browser: [chrome, firefox, -edge]
+        partition: [one, two]
+    steps:
+      - name: run staging tests
+        if: branch != master
+        env:
+          TEST_BUILD: ${{ matrix.browser }}
+        run: |
+          invoke test_travis_on_prod_part_${{ matrix.partition }}
