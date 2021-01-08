@@ -17,6 +17,7 @@ env:
   DOMAIN: test
 
 jobs:
+
   build:
     runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, 'skip ci')"
@@ -49,7 +50,7 @@ jobs:
   lint:
     name: Lint selenium code
     needs: build
-    runs-on: ubuntu-test
+    runs-on: ubuntu-latest
     strategy:
       max-parallel: 1
     steps:
