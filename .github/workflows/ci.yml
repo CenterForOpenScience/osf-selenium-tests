@@ -46,7 +46,7 @@ jobs:
     strategy:
       max-parallel: 1  # run in series
       matrix:
-        browser: [chrome, firefox, -edge]
+        browser: [chrome, firefox, edge]
     steps:
       - name: run smoke tests
         if: ${{ github.ref == 'master' }}
@@ -64,7 +64,7 @@ jobs:
     strategy:
       max-parallel: 1  # run in series
       matrix:
-        browser: [chrome, firefox, -edge]
+        browser: [chrome, firefox, edge]
         partition: [one, two]
     steps:
       - name: run staging tests
