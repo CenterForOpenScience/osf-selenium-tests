@@ -37,7 +37,7 @@ jobs:
           restore-keys: cached_py_deps_
       - name: install dependencies
         run: |
-          pip install --upgrade pip
+          python -m pip install --upgrade pip
           pip install invoke==0.13.0
           pip install flake8
           invoke requirements
