@@ -49,7 +49,7 @@ jobs:
 
   lint:
     name: Lint selenium code
-    needs: build
+    # needs: build
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 1
@@ -84,7 +84,7 @@ jobs:
   smoke_test:
     name: Prod smoke tests (${{ matrix.browser }})
     if: ${{ github.ref == 'master' }}
-    needs: build
+    # needs: build
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 1  # run in series
@@ -119,7 +119,7 @@ jobs:
   staging_test:
     name: Staging tests (${{ matrix.browser }}) part ${{ matrix.partition }}
     if: ${{ github.ref != 'master' }}
-    needs: build
+    # needs: build
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 1  # run in series
