@@ -85,12 +85,12 @@ jobs:
       matrix:
         browser: [chrome, firefox, edge]
     steps:
-      - id: cache-python-deps
-        uses: actions/cache@v2
-        with:
-          key: cached_py_deps_{{ matrix.python-version }}
-          path: /usr/local/lib/python{{ matrix.python-version }}
-          restore-keys: cached_py_deps_
+      # - id: cache-python-deps
+      #   uses: actions/cache@v2
+      #   with:
+      #     key: cached_py_deps_{{ matrix.python-version }}
+      #     path: /usr/local/lib/python{{ matrix.python-version }}
+      #     restore-keys: cached_py_deps_
       - name: run smoke tests
         env:
           DOMAIN: prod
@@ -110,14 +110,14 @@ jobs:
         browser: [chrome, firefox, edge]
         partition: [one, two]
     steps:
-      - id: cache-python-deps
-        uses: actions/cache@v2
-        with:
-          key: cached_py_deps_{{ matrix.python-version }}
-          path: /usr/local/lib/python{{ matrix.python-version }}
-          restore-keys: cached_py_deps_
+      # - id: cache-python-deps
+      #   uses: actions/cache@v2
+      #   with:
+      #     key: cached_py_deps_{{ matrix.python-version }}
+      #     path: /usr/local/lib/python{{ matrix.python-version }}
+      #     restore-keys: cached_py_deps_
       - name: run staging tests
         env:
           TEST_BUILD: ${{ matrix.browser }}
         run: |
-          invoke test_travis_on_prod_part_${{ matrix.partition }}
+          invoke test_travis_part_${{ matrix.partition }}
