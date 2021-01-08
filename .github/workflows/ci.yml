@@ -35,7 +35,15 @@ jobs:
           pip install invoke==0.13.0
           pip install flake8
           invoke requirements
-      - name: Lint with flake8
+
+  lint:
+    name: Lint selenium code
+    needs: build
+    runs-on: ubuntu-test
+    strategy:
+      max-parallel: 1
+    steps:
+      - name: Flake away
         run: |
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
 
