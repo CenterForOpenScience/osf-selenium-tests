@@ -69,6 +69,10 @@ jobs:
       matrix:
         python-version: [3.6]
     steps:
+      - name: echo Domain
+        run: echo "Domain is > ${DOMAIN}"
+      - name: echo Driver
+        run: echo "Driver is > ${DRIVER}"
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
