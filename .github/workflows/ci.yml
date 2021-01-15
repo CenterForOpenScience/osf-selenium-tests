@@ -44,11 +44,13 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
       - name: Cache pip
+        id: pip-cache-step
         uses: actions/cache@v2
         with:
           path: ${{ env.pythonLocation }}
           key: ${{ env.pythonLocation }}-${{ hashFiles('requirements.txt') }}
       - name: install dependencies
+        if: steps.pip-cache-step.outputs.cache-hit != 'true'
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
@@ -68,21 +70,6 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      # - name: Cache pip
-      #   uses: actions/cache@v2
-      #   with:
-      #     # This path is specific to Ubuntu
-      #     path: ~/.cache/pip
-      #     # Look to see if there is a cache hit for the corresponding requirements file
-      #     key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}-moo
-      #     restore-keys: |
-      #       ${{ runner.os }}-pip-
-      #       ${{ runner.os }}-
-      # - name: install dependencies
-      #   run: |
-      #     python -m pip install --upgrade pip
-      #     pip install -r requirements.txt
-      #     invoke requirements
       - name: Cache pip
         uses: actions/cache@v2
         with:
@@ -107,22 +94,6 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.6
-      # - name: Cache pip
-      #   id: pip-cache-step
-      #   uses: actions/cache@v2
-      #   with:
-      #     # This path is specific to Ubuntu
-      #     path: ~/.cache/pip
-      #     # Look to see if there is a cache hit for the corresponding requirements file
-      #     key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-pip-
-      #       ${{ runner.os }}-
-      # - name: install dependencies
-      #   run: |
-      #     python -m pip install --upgrade pip
-      #     pip install -r requirements.txt
-      #     invoke requirements
       - name: Cache pip
         uses: actions/cache@v2
         with:
@@ -152,22 +123,6 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: 3.6
-      # - name: Cache pip
-      #   id: pip-cache-step
-      #   uses: actions/cache@v2
-      #   with:
-      #     # This path is specific to Ubuntu
-      #     path: ~/.cache/pip
-      #     # Look to see if there is a cache hit for the corresponding requirements file
-      #     key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
-      #     restore-keys: |
-      #       ${{ runner.os }}-pip-
-      #       ${{ runner.os }}-
-      # - name: install dependencies
-      #   run: |
-      #     python -m pip install --upgrade pip
-      #     pip install -r requirements.txt
-      #     invoke requirements
       - name: Cache pip
         uses: actions/cache@v2
         with:
