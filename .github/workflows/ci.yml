@@ -15,6 +15,19 @@ on:
 env:
   DRIVER: "Remote"
   DOMAIN: test
+  NEW_USER_EMAIL: ${{ secrets.NEW_USER_EMAIL }}
+  BSTACK_USER: ${{ secrets.BROWSERSTACK_USERNAME }}
+  BSTACK_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+  CHROME_USER: ${{ secrets.CHROME_USER }}
+  CHROME_USER_TOKEN: ${{ secrets.CHROME_USER_TOKEN }}
+  EDGE_USER: ${{ secrets.EDGE_USER }}
+  EDGE_USER_TOKEN: ${{ secrets.EDGE_USER_TOKEN }}
+  FIREFOX_USER: ${{ secrets.FIREFOX_USER }}
+  FIREFOX_USER_TOKEN: ${{ secrets.FIREFOX_USER_TOKEN }}
+  USER_ONE: ${{ secrets.USER_ONE }}
+  USER_ONE_PASSWORD: ${{ secrets.USER_ONE_PASSWORD }}
+  USER_TWO: ${{ secrets.USER_TWO }}
+  USER_TWO_PASSWORD: ${{ secrets.USER_TWO_PASSWORD }}
 
 jobs:
 
@@ -40,10 +53,10 @@ jobs:
       #     restore-keys: |
       #       ${{ runner.os }}-pip-
       #       ${{ runner.os }}-
-      - name: Get pip cache dir
-        id: pip-cache
-        run: |
-          echo "::set-output name=dir::$(pip cache dir)"
+      # - name: Get pip cache dir
+      #   id: pip-cache
+      #   run: |
+      #     echo "::set-output name=dir::$(pip cache dir)"
       - name: pip cache
         id: pip-cache-step
         uses: actions/cache@v2
@@ -53,7 +66,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
       - name: install dependencies
-        if: steps.pip-cache-step.outputs.cache-hit != 'true'
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
@@ -88,10 +100,10 @@ jobs:
       #     restore-keys: |
       #       ${{ runner.os }}-pip-
       #       ${{ runner.os }}-
-      - name: Get pip cache dir
-        id: pip-cache
-        run: |
-          echo "::set-output name=dir::$(pip cache dir)"
+      # - name: Get pip cache dir
+      #   id: pip-cache
+      #   run: |
+      #     echo "::set-output name=dir::$(pip cache dir)"
       - name: pip cache
         id: pip-cache-step
         uses: actions/cache@v2
@@ -101,7 +113,6 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
       - name: install dependencies
-        if: steps.pip-cache-step.outputs.cache-hit != 'true'
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
@@ -141,12 +152,11 @@ jobs:
           # This path is specific to Ubuntu
           path: ~/.cache/pip
           # Look to see if there is a cache hit for the corresponding requirements file
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}-moo
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
             ${{ runner.os }}-
       - name: install dependencies
-        if: steps.pip-cache-step.outputs.cache-hit != 'true'
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
@@ -188,12 +198,11 @@ jobs:
           # This path is specific to Ubuntu
           path: ~/.cache/pip
           # Look to see if there is a cache hit for the corresponding requirements file
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}-moo
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
             ${{ runner.os }}-
       - name: install dependencies
-        if: steps.pip-cache-step.outputs.cache-hit != 'true'
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
@@ -201,18 +210,5 @@ jobs:
       - name: run staging tests
         env:
           TEST_BUILD: ${{ matrix.browser }}
-          NEW_USER_EMAIL: ${{ secrets.NEW_USER_EMAIL }}
-          BSTACK_USER: ${{ secrets.BROWSERSTACK_USERNAME }}
-          BSTACK_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-          CHROME_USER: ${{ secrets.CHROME_USER }}
-          CHROME_USER_TOKEN: ${{ secrets.CHROME_USER_TOKEN }}
-          EDGE_USER: ${{ secrets.EDGE_USER }}
-          EDGE_USER_TOKEN: ${{ secrets.EDGE_USER_TOKEN }}
-          FIREFOX_USER: ${{ secrets.FIREFOX_USER }}
-          FIREFOX_USER_TOKEN: ${{ secrets.FIREFOX_USER_TOKEN }}
-          USER_ONE: ${{ secrets.USER_ONE }}
-          USER_ONE_PASSWORD: ${{ secrets.USER_ONE_PASSWORD }}
-          USER_TWO: ${{ secrets.USER_TWO }}
-          USER_TWO_PASSWORD: ${{ secrets.USER_TWO_PASSWORD }}
         run: |
           invoke test_travis_part_${{ matrix.partition }}
