@@ -53,6 +53,7 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pip-
       - name: install dependencies
+        if: steps.pip-cache-step.output.hits != 'true'
         run: |
           python -m pip install --upgrade pip
           python -m pip install invoke==0.13.0
@@ -189,7 +190,6 @@ jobs:
             ${{ runner.os }}-pip-
             ${{ runner.os }}-
       - name: install dependencies
-        if: steps.pip-cache-step.output.hits != 'true'
         run: |
           python -m pip install --upgrade pip
           pip install invoke==0.13.0
