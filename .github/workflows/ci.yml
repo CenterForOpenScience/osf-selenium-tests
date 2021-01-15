@@ -108,15 +108,13 @@ jobs:
           invoke test_travis_on_prod
 
   staging_test:
-    name: Staging tests (${{ matrix.browser }}) part ${{ matrix.partition }}
+    name: Staging tests (${{ matrix.browser }})
     if: ${{ github.ref != 'master' }}
     needs: build
     runs-on: ubuntu-latest
     strategy:
-      max-parallel: 1  # run in series
       matrix:
         browser: [chrome, firefox, edge]
-        partition: [one, two]
     steps:
       - uses: actions/checkout@v2
       - name: Set up Python 3.6
@@ -128,8 +126,13 @@ jobs:
         with:
           path: ${{ env.pythonLocation }}
           key: ${{ env.pythonLocation }}-${{ hashFiles('requirements.txt') }}
-      - name: run staging tests
+      - name: run staging tests, part one
         env:
           TEST_BUILD: ${{ matrix.browser }}
         run: |
-          invoke test_travis_part_${{ matrix.partition }}
+          invoke test_travis_part_one
+      - name: run staging tests, part two
+        env:
+          TEST_BUILD: ${{ matrix.browser }}
+        run: |
+          invoke test_travis_part_two
