@@ -43,38 +43,21 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      # - name: Cache pip
-      #   uses: actions/cache@v2
-      #   with:
-      #     # This path is specific to Ubuntu
-      #     path: ~/.cache/pip
-      #     # Look to see if there is a cache hit for the corresponding requirements file
-      #     key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}-moo
-      #     restore-keys: |
-      #       ${{ runner.os }}-pip-
-      #       ${{ runner.os }}-
-      # - name: Get pip cache dir
-      #   id: pip-cache
-      #   run: |
-      #     echo "::set-output name=dir::$(pip cache dir)"
-      - name: pip cache
-        id: pip-cache-step
+      - name: Cache pip
         uses: actions/cache@v2
         with:
+          # This path is specific to Ubuntu
           path: ~/.cache/pip
+          # Look to see if there is a cache hit for the corresponding requirements file
           key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
           restore-keys: |
             ${{ runner.os }}-pip-
+            ${{ runner.os }}-
       - name: install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           invoke requirements
-      # - name: install dependencies incorrectly
-      #   run: |
-      #     python -m compileall /usr/local/lib/python3.6
-      #     mkdir ~/python3.6-cache
-      #     cp -Rf -p /usr/local/lib/python3.6/* ~/python3.6-cache/
 
   lint:
     name: Lint selenium code
@@ -90,36 +73,21 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: ${{ matrix.python-version }}
-      # - name: Cache pip
-      #   uses: actions/cache@v2
-      #   with:
-      #     # This path is specific to Ubuntu
-      #     path: ~/.cache/pip
-      #     # Look to see if there is a cache hit for the corresponding requirements file
-      #     key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}-moo
-      #     restore-keys: |
-      #       ${{ runner.os }}-pip-
-      #       ${{ runner.os }}-
-      # - name: Get pip cache dir
-      #   id: pip-cache
-      #   run: |
-      #     echo "::set-output name=dir::$(pip cache dir)"
-      - name: pip cache
-        id: pip-cache-step
+      - name: Cache pip
         uses: actions/cache@v2
         with:
+          # This path is specific to Ubuntu
           path: ~/.cache/pip
-          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}
+          # Look to see if there is a cache hit for the corresponding requirements file
+          key: ${{ runner.os }}-pip-${{ hashFiles('requirements.txt') }}-moo
           restore-keys: |
             ${{ runner.os }}-pip-
+            ${{ runner.os }}-
       - name: install dependencies
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           invoke requirements
-      # - name: install dependencies incorrectly
-      #   run: |
-      #     cp -Rr -p ~/python3.6-cache/* /usr/local/lib/python3.6/
       - name: Flake away
         run: |
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
@@ -134,12 +102,6 @@ jobs:
       matrix:
         browser: [chrome, firefox, edge]
     steps:
-      # - id: cache-python-deps
-      #   uses: actions/cache@v2
-      #   with:
-      #     key: cached_py_deps_{{ matrix.python-version }}
-      #     path: /usr/local/lib/python{{ matrix.python-version }}
-      #     restore-keys: cached_py_deps_
       - uses: actions/checkout@v2
       - name: Set up Python 3.6
         uses: actions/setup-python@v2
@@ -180,12 +142,6 @@ jobs:
         browser: [chrome, firefox, edge]
         partition: [one, two]
     steps:
-      # - id: cache-python-deps
-      #   uses: actions/cache@v2
-      #   with:
-      #     key: cached_py_deps_{{ matrix.python-version }}
-      #     path: /usr/local/lib/python{{ matrix.python-version }}
-      #     restore-keys: cached_py_deps_
       - uses: actions/checkout@v2
       - name: Set up Python 3.6
         uses: actions/setup-python@v2
