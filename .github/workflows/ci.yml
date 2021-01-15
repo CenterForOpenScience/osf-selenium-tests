@@ -40,7 +40,7 @@ jobs:
       #     restore-keys: |
       #       ${{ runner.os }}-pip-
       #       ${{ runner.os }}-
-      - name: Cache pip
+      - name: Cache built python deps
         uses: actions/cache@v2
         with:
           # This path is specific to Ubuntu
@@ -56,9 +56,11 @@ jobs:
           python -m pip install invoke==0.13.0
           python -m pip install flake8
           invoke requirements
-          python -m compileall /usr/local/lib/python3.6
-          mkdir ~/python3.6-cache
-          cp -Rf -p /usr/local/lib/python3.6/* ~/python3.6-cache/
+      # - name: install dependencies incorrectly
+      #   run: |
+      #     python -m compileall /usr/local/lib/python3.6
+      #     mkdir ~/python3.6-cache
+      #     cp -Rf -p /usr/local/lib/python3.6/* ~/python3.6-cache/
 
   lint:
     name: Lint selenium code
@@ -84,7 +86,7 @@ jobs:
       #     restore-keys: |
       #       ${{ runner.os }}-pip-
       #       ${{ runner.os }}-
-      - name: Cache pip
+      - name: Cache built python deps
         uses: actions/cache@v2
         with:
           # This path is specific to Ubuntu
@@ -96,7 +98,13 @@ jobs:
             ${{ runner.os }}-
       - name: install dependencies
         run: |
-          cp -Rr -p ~/python3.6-cache/* /usr/local/lib/python3.6/
+          python -m pip install --upgrade pip
+          pip install invoke==0.13.0
+          pip install flake8
+          invoke requirements
+      # - name: install dependencies incorrectly
+      #   run: |
+      #     cp -Rr -p ~/python3.6-cache/* /usr/local/lib/python3.6/
       - name: Flake away
         run: |
           flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
