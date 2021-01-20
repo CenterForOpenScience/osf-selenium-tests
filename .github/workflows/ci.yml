@@ -2,7 +2,10 @@ name: osf-selenium-tests CI
 
 on:
   schedule:
-      - cron: '0,30 * * * *'
+    - cron: '0,30 * * * *'
+    branches:
+      - develop
+      - master
   pull_request:
   push:
     branches:
