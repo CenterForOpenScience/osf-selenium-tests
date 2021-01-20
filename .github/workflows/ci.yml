@@ -3,7 +3,7 @@ name: osf-selenium-tests CI
 on:
   schedule:
     branches:
-      - 'feature/github-actions-josh'
+      - feature/github-actions-josh
     - cron: '0,30 * * * *'
   pull_request:
   push:
