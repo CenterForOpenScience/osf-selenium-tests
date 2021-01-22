@@ -1,4 +1,4 @@
-name: selenium_staging_tests.yml
+name: Selenium Staging Tests
 
 on:
   schedule:

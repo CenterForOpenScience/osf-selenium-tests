@@ -1,4 +1,4 @@
-name: production_smoke_tests.yml
+name: Production Smoke Tests
 
 on:
   schedule:
