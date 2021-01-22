@@ -3,20 +3,13 @@ name: osf-selenium-tests CI
 on:
   schedule:
     - cron: '*/15 * * * *'
-#  pull_request:
-#  push:
-#    branches:
-#      - develop
-#      - master
-#      - 'release/*'
-#      - 'hotfix/*'
-#      - 'feature/*'
+
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
 env:
   DRIVER: "Remote"
-  DOMAIN: test
+  DOMAIN: prod
   NEW_USER_EMAIL: ${{ secrets.NEW_USER_EMAIL }}
   BSTACK_USER: ${{ secrets.BROWSERSTACK_USERNAME }}
   BSTACK_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
@@ -62,32 +55,8 @@ jobs:
           pip install -r requirements.txt
           invoke requirements
 
-  lint:
-    name: Lint selenium code
-    needs: build
-    runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 1
-      matrix:
-        python-version: [3.6]
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Cache pip
-        uses: actions/cache@v2
-        with:
-          path: ${{ env.pythonLocation }}
-          key: ${{ env.pythonLocation }}-${{ hashFiles('requirements.txt') }}
-      - name: Flake away
-        run: |
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-
   smoke_test:
     name: Prod smoke tests (${{ matrix.browser }})
-    if: ${{ github.ref == 'master' }}
     needs: build
     runs-on: ubuntu-latest
     strategy:
@@ -107,38 +76,7 @@ jobs:
           key: ${{ env.pythonLocation }}-${{ hashFiles('requirements.txt') }}
       - name: run smoke tests
         env:
-          DOMAIN: prod
           PREFERRED_NODE: ra4bf
           TEST_BUILD: ${{ matrix.browser }}
         run: |
           invoke test_travis_on_prod
-
-  staging_test:
-    name: Staging tests (${{ matrix.browser }})
-    if: ${{ github.ref != 'master' }}
-    needs: build
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        browser: [chrome, firefox, edge]
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python 3.6
-        uses: actions/setup-python@v2
-        with:
-          python-version: 3.6
-      - name: Cache pip
-        uses: actions/cache@v2
-        with:
-          path: ${{ env.pythonLocation }}
-          key: ${{ env.pythonLocation }}-${{ hashFiles('requirements.txt') }}
-      - name: run staging tests, part one
-        env:
-          TEST_BUILD: ${{ matrix.browser }}
-        run: |
-          invoke test_travis_part_one
-      - name: run staging tests, part two
-        env:
-          TEST_BUILD: ${{ matrix.browser }}
-        run: |
-          invoke test_travis_part_two

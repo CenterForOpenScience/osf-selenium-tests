@@ -1,13 +1,6 @@
-# This is a basic workflow to help you get started with Actions
-name: osf-selenium-tests CD
+name: osf-selenium-tests CI
 
-# Controls when the action will run.
 on:
-  # Triggers the workflow on push or pull request events but only for the feature/github-actions-josh branch
-  push:
-    branches: [ feature/github-actions-josh ]
-#  pull_request:
-#    branches: [ feature/github-actions-josh ]
   schedule:
     - cron: '*/15 * * * *'
 
@@ -16,7 +9,7 @@ on:
 
 env:
   DRIVER: "Remote"
-  DOMAIN: prod
+  DOMAIN: test
   NEW_USER_EMAIL: ${{ secrets.NEW_USER_EMAIL }}
   BSTACK_USER: ${{ secrets.BROWSERSTACK_USERNAME }}
   BSTACK_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
@@ -31,8 +24,8 @@ env:
   USER_TWO: ${{ secrets.USER_TWO }}
   USER_TWO_PASSWORD: ${{ secrets.USER_TWO_PASSWORD }}
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
+
   build:
     runs-on: ubuntu-latest
     if: "!contains(github.event.head_commit.message, 'skip ci')"
@@ -62,35 +55,11 @@ jobs:
           pip install -r requirements.txt
           invoke requirements
 
-  lint:
-    name: Lint selenium code
+  staging_test:
+    name: Staging tests (${{ matrix.browser }})
     needs: build
     runs-on: ubuntu-latest
     strategy:
-      max-parallel: 1
-      matrix:
-        python-version: [3.6]
-    steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
-        with:
-          python-version: ${{ matrix.python-version }}
-      - name: Cache pip
-        uses: actions/cache@v2
-        with:
-          path: ${{ env.pythonLocation }}
-          key: ${{ env.pythonLocation }}-${{ hashFiles('requirements.txt') }}
-      - name: Flake away
-        run: |
-          flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
-
-  smoke_test:
-    name: Prod smoke tests (${{ matrix.browser }})
-    needs: build
-    runs-on: ubuntu-latest
-    strategy:
-      max-parallel: 1  # run in series
       matrix:
         browser: [chrome, firefox, edge]
     steps:
@@ -104,9 +73,13 @@ jobs:
         with:
           path: ${{ env.pythonLocation }}
           key: ${{ env.pythonLocation }}-${{ hashFiles('requirements.txt') }}
-      - name: run smoke tests
+      - name: run staging tests, part one
         env:
-          PREFERRED_NODE: ra4bf
           TEST_BUILD: ${{ matrix.browser }}
         run: |
-          invoke test_travis_on_prod
+          invoke test_travis_part_one
+      - name: run staging tests, part two
+        env:
+          TEST_BUILD: ${{ matrix.browser }}
+        run: |
+          invoke test_travis_part_two
