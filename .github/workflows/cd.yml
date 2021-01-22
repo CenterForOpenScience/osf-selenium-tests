@@ -4,8 +4,8 @@ name: osf-selenium-tests CD
 # Controls when the action will run.
 on:
   # Triggers the workflow on push or pull request events but only for the develop branch
-#  push:
-#    branches: [ feature/github-actions-josh ]
+  push:
+    branches: [ feature/github-actions-josh ]
 #  pull_request:
 #    branches: [ feature/github-actions-josh ]
   schedule:
