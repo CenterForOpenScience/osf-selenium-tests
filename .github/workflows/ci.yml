@@ -3,14 +3,14 @@ name: osf-selenium-tests CI
 on:
   schedule:
     - cron: '*/15 * * * *'
-  pull_request:
-  push:
-    branches:
-      - develop
-      - master
-      - 'release/*'
-      - 'hotfix/*'
-      - 'feature/*'
+#  pull_request:
+#  push:
+#    branches:
+#      - develop
+#      - master
+#      - 'release/*'
+#      - 'hotfix/*'
+#      - 'feature/*'
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
