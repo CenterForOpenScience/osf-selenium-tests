@@ -1,4 +1,4 @@
-name: osf-selenium-tests CI
+name: production_smoke_tests.yml
 
 on:
   schedule:

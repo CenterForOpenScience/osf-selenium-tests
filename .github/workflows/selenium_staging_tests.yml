@@ -1,4 +1,4 @@
-name: osf-selenium-tests CI
+name: selenium_staging_tests.yml
 
 on:
   schedule:
