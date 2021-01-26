@@ -1,0 +1,83 @@
+name: Selenium Staging Tests
+
+on:
+  schedule:
+    # 5am UTC = Midnight EST
+    - cron: '0 5 * * *'
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+env:
+  DRIVER: "Remote"
+  DOMAIN: test
+  NEW_USER_EMAIL: ${{ secrets.NEW_USER_EMAIL }}
+  BSTACK_USER: ${{ secrets.BROWSERSTACK_USERNAME }}
+  BSTACK_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
+  CHROME_USER: ${{ secrets.CHROME_USER }}
+  CHROME_USER_TOKEN: ${{ secrets.CHROME_USER_TOKEN }}
+  EDGE_USER: ${{ secrets.EDGE_USER }}
+  EDGE_USER_TOKEN: ${{ secrets.EDGE_USER_TOKEN }}
+  FIREFOX_USER: ${{ secrets.FIREFOX_USER }}
+  FIREFOX_USER_TOKEN: ${{ secrets.FIREFOX_USER_TOKEN }}
+  USER_ONE: ${{ secrets.USER_ONE }}
+  USER_ONE_PASSWORD: ${{ secrets.USER_ONE_PASSWORD }}
+  USER_TWO: ${{ secrets.USER_TWO }}
+  USER_TWO_PASSWORD: ${{ secrets.USER_TWO_PASSWORD }}
+
+jobs:
+
+  build:
+    runs-on: ubuntu-latest
+    if: "!contains(github.event.head_commit.message, 'skip ci')"
+    strategy:
+      matrix:
+        python-version: [3.6]
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Cache pip
+        id: pip-cache-step
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.pythonLocation }}
+          key: ${{ env.pythonLocation }}-${{ hashFiles('requirements.txt') }}
+      - name: install dependencies
+        if: steps.pip-cache-step.outputs.cache-hit != 'true'
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          invoke requirements
+
+  staging_test:
+    name: Staging tests (${{ matrix.browser }})
+    needs: build
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        browser: [chrome, firefox, edge]
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.6
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.6
+      - name: Cache pip
+        uses: actions/cache@v2
+        with:
+          path: ${{ env.pythonLocation }}
+          key: ${{ env.pythonLocation }}-${{ hashFiles('requirements.txt') }}
+      - name: run staging tests, part one
+        env:
+          TEST_BUILD: ${{ matrix.browser }}
+        run: |
+          invoke test_travis_part_one
+      - name: run staging tests, part two
+        env:
+          TEST_BUILD: ${{ matrix.browser }}
+        run: |
+          invoke test_travis_part_two
