@@ -2,7 +2,8 @@ name: Selenium Staging Tests
 
 on:
   schedule:
-    - cron: '*/15 * * * *'
+    # 5am UTC = Midnight EST
+    - cron: '0 5 * * *'
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -35,8 +36,6 @@ jobs:
     steps:
       - name: Git checkout
         uses: actions/checkout@v2
-        with:
-          ref: feature/github-actions-josh
       - uses: actions/checkout@v2
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
