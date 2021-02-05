@@ -14,12 +14,6 @@ env:
   NEW_USER_EMAIL: ${{ secrets.NEW_USER_EMAIL }}
   BSTACK_USER: ${{ secrets.BROWSERSTACK_USERNAME }}
   BSTACK_KEY: ${{ secrets.BROWSERSTACK_ACCESS_KEY }}
-  CHROME_USER: ${{ secrets.CHROME_USER }}
-  CHROME_USER_TOKEN: ${{ secrets.CHROME_USER_TOKEN }}
-  EDGE_USER: ${{ secrets.EDGE_USER }}
-  EDGE_USER_TOKEN: ${{ secrets.EDGE_USER_TOKEN }}
-  FIREFOX_USER: ${{ secrets.FIREFOX_USER }}
-  FIREFOX_USER_TOKEN: ${{ secrets.FIREFOX_USER_TOKEN }}
   USER_ONE: ${{ secrets.USER_ONE }}
   USER_ONE_PASSWORD: ${{ secrets.USER_ONE_PASSWORD }}
   USER_TWO: ${{ secrets.USER_TWO }}
