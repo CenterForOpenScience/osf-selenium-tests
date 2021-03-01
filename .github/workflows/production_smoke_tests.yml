@@ -52,6 +52,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       max-parallel: 1  # run in series
       matrix:
         browser: [chrome, firefox, edge]
