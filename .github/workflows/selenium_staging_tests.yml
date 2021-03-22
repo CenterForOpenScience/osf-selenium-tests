@@ -28,7 +28,9 @@ env:
 jobs:
 
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
+    env:
+      GHA_DISTRO: ubuntu-20.04
     if: "!contains(github.event.head_commit.message, 'skip ci')"
     strategy:
       matrix:
@@ -45,7 +47,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ env.pythonLocation }}
-          key: ${{ env.pythonLocation }}-${{ hashFiles('requirements.txt') }}
+          key: ${{ env.GHA_DISTRO }}-${{ env.pythonLocation }}-${{ hashFiles('requirements.txt') }}
       - name: install dependencies
         if: steps.pip-cache-step.outputs.cache-hit != 'true'
         run: |
@@ -56,7 +58,9 @@ jobs:
   staging_test:
     name: Staging tests (${{ matrix.browser }})
     needs: build
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
+    env:
+      GHA_DISTRO: ubuntu-20.04
     strategy:
       fail-fast: false
       max-parallel: 1  # run in series
@@ -72,7 +76,7 @@ jobs:
         uses: actions/cache@v2
         with:
           path: ${{ env.pythonLocation }}
-          key: ${{ env.pythonLocation }}-${{ hashFiles('requirements.txt') }}
+          key: ${{ env.GHA_DISTRO }}-${{ env.pythonLocation }}-${{ hashFiles('requirements.txt') }}
       - name: run staging tests, part one
         env:
           TEST_BUILD: ${{ matrix.browser }}
