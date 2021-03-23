@@ -16,7 +16,8 @@ class SignUpForm(BaseElement):
 
     def click_recaptcha(self):
         self.driver.switch_to.frame(self.driver.find_element_by_tag_name('iframe'))
-        Locator(By.CSS_SELECTOR, '.recaptcha-checkbox-checkmark').get_element(self.driver, 'capcha').click()
+        #only click the captcha checkbox if it isn't already checked
+        if Locator(By.ID, 'recaptcha-anchor').get_element(self.driver, 'recaptcha-anchor').get_attribute('aria-checked') == 'false':
+            Locator(By.CSS_SELECTOR, '.recaptcha-checkbox-border').get_element(self.driver, 'capcha').click()
         self.driver.switch_to.default_content()
-        #TODO: Replace with an expected condition that checks if aria-checked="true"
         sleep(2)

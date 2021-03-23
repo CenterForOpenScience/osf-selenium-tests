@@ -15,6 +15,8 @@ class TestLandingPage(CreateUserMixin):
 
     @pytest.fixture()
     def page(self, landing_page):
+        #Need to actually click the Sign Up button on the navbar to get to the sign up form
+        landing_page.navbar.sign_up_button.click()
         return landing_page
 
 
