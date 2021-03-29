@@ -1,7 +1,6 @@
 import pytest
 import markers
 
-from tests.generic import CreateUserMixin
 from pages.landing import LandingPage, RegisteredReportsLandingPage
 
 @pytest.fixture()
@@ -11,11 +10,17 @@ def landing_page(driver):
     return landing_page
 
 
-class TestLandingPage(CreateUserMixin):
+class TestHomeLandingPage:
 
     @pytest.fixture()
     def page(self, landing_page):
         return landing_page
+
+    @markers.core_functionality
+    def test_landing_page(self, driver):
+        LandingPage(driver, verify=True)
+
+    #TO DO: Come back later and add other tests for elements on OSF Home page - see ENG-826
 
 
 class TestRegisteredReportsLandingPage:
