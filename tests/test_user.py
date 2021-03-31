@@ -4,6 +4,9 @@ import settings
 
 from api import osf_api
 from pages import user
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 @pytest.fixture()
 def quickfile(session):
@@ -85,7 +88,7 @@ class TestUserSettings:
         settings_page.goto()
 
     @markers.core_functionality
-    def test_change_middle_name(self, profile_settings_page, fake):
+    def test_change_middle_name(self, driver, profile_settings_page, fake):
         new_name = fake.name()
         assert profile_settings_page.middle_name_input.get_attribute('value') != new_name
         profile_settings_page.middle_name_input.clear()
@@ -93,4 +96,4 @@ class TestUserSettings:
         profile_settings_page.save_button.click()
         profile_settings_page.update_success.here_then_gone()
         profile_settings_page.reload()
-        assert profile_settings_page.middle_name_input.get_attribute('value') == new_name
+        assert WebDriverWait(driver, 10).until(EC.text_to_be_present_in_element_value((By.CSS_SELECTOR, '#names > div > form > div:nth-child(5) > input'), new_name))
