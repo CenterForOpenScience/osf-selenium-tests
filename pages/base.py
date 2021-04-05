@@ -6,7 +6,7 @@ from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.common.by import By
 
-from components.navbars import HomeNavbar
+from components.navbars import EmberNavbar
 from base.locators import BaseElement, ComponentLocator
 from base.exceptions import HttpError, PageException
 
@@ -73,7 +73,7 @@ class OSFBasePage(BasePage):
     Note: All pages must have a unique identity or overwrite `verify`
     """
     url = settings.OSF_HOME
-    navbar = ComponentLocator(HomeNavbar)
+    navbar = ComponentLocator(EmberNavbar)
 
     def __init__(self, driver, verify=False):
         super().__init__(driver, verify)

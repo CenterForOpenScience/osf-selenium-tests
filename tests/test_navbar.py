@@ -10,12 +10,12 @@ from pages.meetings import MeetingsPage
 from pages.register import RegisterPage
 from pages.project import MyProjectsPage
 from pages.dashboard import DashboardPage
-from pages.registries import RegistriesLandingPage
+from pages.registries import RegistriesLandingPage, RegistrationAddNewPage
 from pages.user import UserProfilePage, ProfileInformationPage
-from pages.preprints import PreprintLandingPage, PreprintSubmitPage
+from pages.preprints import PreprintLandingPage, PreprintSubmitPage, PreprintDiscoverPage
+from pages.quickfiles import QuickfilesPage
+from pages.institutions import InstitutionsLandingPage
 
-
-# TODO: Test Navbar from all services including reviews and such - they might not have the same navbar always
 
 class NavbarTestLoggedOutMixin:
     """Mixin used to inject generic tests
@@ -44,6 +44,20 @@ class NavbarTestLoggedOutMixin:
         page.navbar.meetings_link.click()
         MeetingsPage(driver, verify=True)
 
+    def test_institutions_dropdown_link(self, page, driver):
+        page.navbar.service_dropdown.click()
+        page.navbar.institutions_link.click()
+        InstitutionsLandingPage(driver, verify=True)
+
+    def test_donate_link(self, page, driver):
+        page.navbar.donate_link.click()
+        donate_page = COSDonatePage(driver, verify=False)
+        assert_donate_page(driver, donate_page)
+
+    def test_sign_in_button(self, page, driver):
+        page.navbar.sign_in_button.click()
+        LoginPage(driver, verify=True)
+
     def test_sign_up_button(self, driver, page):
         page.navbar.sign_up_button.click()
         RegisterPage(driver, verify=True)
@@ -52,7 +66,6 @@ class NavbarTestLoggedOutMixin:
         assert page.navbar.user_dropdown.absent()
 
 
-# Class used to inject generic tests
 class NavbarTestLoggedInMixin:
     """Mixin used to inject generic tests
     """
@@ -89,6 +102,8 @@ class NavbarTestLoggedInMixin:
         login(driver)
 
 
+@markers.smoke_test
+@markers.core_functionality
 class TestOSFHomeNavbar(NavbarTestLoggedOutMixin):
 
     @pytest.fixture()
@@ -97,38 +112,22 @@ class TestOSFHomeNavbar(NavbarTestLoggedOutMixin):
         page.goto()
         return page
 
-    @markers.smoke_test
-    @markers.core_functionality
     def test_my_projects_link_not_present(self, page):
-        """Used as a core test to make sure the landing page loads.
-        """
         assert page.navbar.my_projects_link.absent()
 
     def test_search_link(self, driver, page):
         page.navbar.search_link.click()
         assert SearchPage(driver, verify=True)
 
-    @markers.smoke_test
-    @markers.core_functionality
     def test_support_link(self, page, driver):
-        """Used as a core test to make sure the support page loads.
-        """
         page.navbar.support_link.click()
         assert SupportPage(driver, verify=True)
 
-    def test_donate_link(self, page, driver):
-        page.navbar.donate_link.click()
-        donate_page = COSDonatePage(driver, verify=False)
-        assert_donate_page(driver, donate_page)
 
-    def test_sign_in_button(self, page, driver):
-        page.navbar.sign_in_button.click()
-        LoginPage(driver, verify=True)
-
-
+@markers.smoke_test
+@markers.core_functionality
 class TestOSFHomeNavbarLoggedIn(NavbarTestLoggedInMixin):
 
-    # Profile settings page
     @pytest.fixture()
     def page(self, driver, must_be_logged_in):
         page = DashboardPage(driver)
@@ -139,35 +138,38 @@ class TestOSFHomeNavbarLoggedIn(NavbarTestLoggedInMixin):
         page.navbar.my_projects_link.click()
         assert MyProjectsPage(driver, verify=True)
 
-# TODO: Complete this test after ENG-1103 is resolved
-# class TestPreprintsNavbar(NavbarTestLoggedOutMixin):
-#
-#     @pytest.fixture()
-#     def page(self, driver):
-#         page = PreprintLandingPage(driver)
-#         page.goto()
-#         return page
-
-    # todo: add id to those html tags in ember osf to make the find_element possible
-    # def test_search_link(self):
-    #     page.navbar.search_link.click()
-    #     search_url = settings.OSF_HOME + '/search/'
-    #     assert driver.current_url == search_url
-    #
-    # def test_support_link(self):
-    #     page.navbar.support_link.click()
-    #     support_url = settings.OSF_HOME + '/support/'
-    #     assert driver.current_url == support_url
-    #
-    # def test_donate_link(self):
-    #     page.navbar.donate_link.click()
-    #     assert 'cos.io/donate-to-cos' in driver.current_url
-    #
-    # def test_sign_in_button(self):
-    #     page.navbar.sign_in_button.click()
-    #     assert 'login' in driver.current_url
+    def test_my_quick_files_link(self, page, driver):
+        page.navbar.my_quick_files_link.click()
+        QuickfilesPage(driver, verify=True)
 
 
+@markers.smoke_test
+@markers.core_functionality
+class TestPreprintsNavbar(NavbarTestLoggedOutMixin):
+
+    @pytest.fixture()
+    def page(self, driver):
+        page = PreprintLandingPage(driver)
+        page.goto()
+        return page
+
+    def test_search_link(self, page, driver):
+        page.navbar.search_link.click()
+        assert PreprintDiscoverPage(driver, verify=True)
+    
+    def test_support_link(self, page, driver):
+        page.navbar.support_link.click()
+        support_url = 'https://help.osf.io/hc/en-us/categories/360001530554-Preprints'
+        assert driver.current_url == support_url
+    
+    def test_sign_up_button(self, page, driver):
+        page.navbar.sign_up_button.click()
+        #Sign Up button takes you to a more specific OSF Preprints sign up page
+        assert 'campaign=osf-preprints' in driver.current_url
+
+
+@markers.smoke_test
+@markers.core_functionality
 @pytest.mark.usefixtures('must_be_logged_in')
 class TestPreprintsNavbarLoggedIn(NavbarTestLoggedInMixin):
 
@@ -181,7 +183,57 @@ class TestPreprintsNavbarLoggedIn(NavbarTestLoggedInMixin):
         page.navbar.add_a_preprint_link.click()
         PreprintSubmitPage(driver, verify=True)
 
+    def test_my_preprints_link(self, page, driver):
+        page.navbar.my_preprints_link.click()
+        #My Preprints link actually navigates to My Preprints section of My Projects page
+        assert 'myprojects/#preprints' in driver.current_url
 
+
+@markers.smoke_test
+@markers.core_functionality
+class TestRegistriesNavbar(NavbarTestLoggedOutMixin):
+
+    @pytest.fixture()
+    def page(self, driver):
+        page = RegistriesLandingPage(driver)
+        page.goto()
+        return page
+
+    def test_help_link(self, page, driver):
+        page.navbar.help_link.click()
+        help_url = 'https://help.osf.io/hc/en-us/categories/360001550953'
+        assert driver.current_url == help_url
+    
+    #In the Registries navbar there is no Sign Up button, instead it is a Join link
+    def test_sign_up_button(self, page, driver):
+        page.navbar.join_link.click()
+        #Join link takes you to a more specific OSF Registries sign up page
+        assert 'campaign=osf-registries' in driver.current_url
+
+    #In the Registries navbar there is no Sign In button, instead it is a Login link
+    def test_sign_in_button(self, page, driver):
+        page.navbar.login_link.click()
+        LoginPage(driver, verify=True)
+
+
+@markers.smoke_test
+@markers.core_functionality
+@pytest.mark.usefixtures('must_be_logged_in')
+class TestRegistriesNavbarLoggedIn(NavbarTestLoggedInMixin):
+
+    @pytest.fixture()
+    def page(self, driver):
+        page = RegistriesLandingPage(driver)
+        page.goto()
+        return page
+
+    def test_add_new_link(self, page, driver):
+        page.navbar.add_new_link.click()
+        RegistrationAddNewPage(driver, verify=True)
+
+
+@markers.smoke_test
+@markers.core_functionality
 class TestMeetingsNavbar(NavbarTestLoggedOutMixin):
 
     @pytest.fixture()
@@ -192,22 +244,15 @@ class TestMeetingsNavbar(NavbarTestLoggedOutMixin):
 
     def test_support_link(self, page, driver):
         page.navbar.support_link.click()
-        assert '360001550933' in driver.current_url or 'support' in driver.current_url
+        SupportPage(driver, verify=True)
 
         # For future use
         # support_url = 'https://openscience.zendesk.com/hc/en-us/categories/360001550933'
         # assert driver.current_url == support_url
 
-    def test_donate_link(self, page, driver):
-        page.navbar.donate_link.click()
-        donate_page = COSDonatePage(driver, verify=False)
-        assert_donate_page(driver, donate_page)
 
-    def test_sign_in_button(self, page, driver):
-        page.navbar.sign_in_button.click()
-        assert 'login' in driver.current_url
-
-
+@markers.smoke_test
+@markers.core_functionality
 @pytest.mark.usefixtures('must_be_logged_in')
 class TestMeetingsNavbarLoggedIn(NavbarTestLoggedInMixin):
 
@@ -217,43 +262,48 @@ class TestMeetingsNavbarLoggedIn(NavbarTestLoggedInMixin):
         page.goto()
         return page
 
+    def test_my_projects_link(self, page, driver):
+        page.navbar.my_projects_link.click()
+        assert MyProjectsPage(driver, verify=True)
 
-class TestRegistriesNavbar(NavbarTestLoggedOutMixin):
+    def test_my_quick_files_link(self, page, driver):
+        page.navbar.my_quick_files_link.click()
+        QuickfilesPage(driver, verify=True)
+
+
+@markers.smoke_test
+@markers.core_functionality
+class TestInstitutionsNavbar(NavbarTestLoggedOutMixin):
 
     @pytest.fixture()
     def page(self, driver):
-        page = RegistriesLandingPage(driver)
+        page = InstitutionsLandingPage(driver)
         page.goto()
         return page
 
-    # todo: add id to those html tags in ember osf to make the find_element possible
-    # def test_search_link(self):
-    #     page.navbar.search_link.click()
-    #     search_url = settings.OSF_HOME + '/search/'
-    #     assert driver.current_url == search_url
-    #
-    # def test_support_link(self):
-    #     page.navbar.support_link.click()
-    #     support_url = settings.OSF_HOME + '/support/'
-    #     assert driver.current_url == support_url
-    #
-    # def test_donate_link(self):
-    #     page.navbar.donate_link.click()
-    #     assert 'cos.io/donate-to-cos' in driver.current_url
-    #
-    # def test_sign_in_button(self):
-    #     page.navbar.sign_in_button.click()
-    #     assert 'login' in driver.current_url
+    def test_support_link(self, page, driver):
+        page.navbar.support_link.click()
+        SupportPage(driver, verify=True)
 
 
+@markers.smoke_test
+@markers.core_functionality
 @pytest.mark.usefixtures('must_be_logged_in')
-class TestRegistriesNavbarLoggedIn(NavbarTestLoggedInMixin):
+class TestInstitutionsNavbarLoggedIn(NavbarTestLoggedInMixin):
 
     @pytest.fixture()
     def page(self, driver):
-        page = RegistriesLandingPage(driver)
+        page = InstitutionsLandingPage(driver)
         page.goto()
         return page
+
+    def test_my_projects_link(self, page, driver):
+        page.navbar.my_projects_link.click()
+        assert MyProjectsPage(driver, verify=True)
+
+    def test_my_quick_files_link(self, page, driver):
+        page.navbar.my_quick_files_link.click()
+        QuickfilesPage(driver, verify=True)
 
 
 def assert_donate_page(driver, donate_page):
