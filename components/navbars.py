@@ -12,9 +12,12 @@ class Navbar(BaseElement):
     registries_link = Locator(By.CSS_SELECTOR, 'a[data-analytics-name="REGISTRIES"]')
     meetings_link = Locator(By.CSS_SELECTOR, 'a[data-analytics-name="MEETINGS"]')
     institutions_link = Locator(By.CSS_SELECTOR, 'a[data-analytics-name="INSTITUTIONS"]')
-    search_link = Locator(By.XPATH, '//a[text()="Search"]')
-    support_link = Locator(By.XPATH, '//a[text()="Support"]')
+    
+    search_link = Locator(By.CSS_SELECTOR, '[data-test-nav-search-link]')
+    support_link = Locator(By.CSS_SELECTOR, '[data-test-nav-support-link]')
     donate_link = Locator(By.ID, 'navbar-donate')
+    sign_up_button = Locator(By.CSS_SELECTOR, '[data-test-ad-sign-up-button]')
+    sign_in_button = Locator(By.CSS_SELECTOR, '[data-test-sign-in-button]')
 
     # Preprints Locators
     user_dropdown = Locator(By.CSS_SELECTOR, 'ul.navbar-nav > li:nth-child(6) > a')
@@ -22,8 +25,6 @@ class Navbar(BaseElement):
     user_dropdown_support = Locator(By.CSS_SELECTOR, 'ul.dropdown-menu-right > li:nth-child(2)')
     user_dropdown_settings = Locator(By.CSS_SELECTOR, 'ul.dropdown-menu-right > li:nth-child(3)')
     logout_link = Locator(By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(4) > a')
-    sign_up_button = Locator(By.XPATH, '//a[text()="Sign Up"]')
-    sign_in_button = Locator(By.XPATH, '//a[text()="Sign In"]')
     current_service = Locator(By.CSS_SELECTOR, '#navbarScope .current-service > strong')
 
     def verify(self):
@@ -42,7 +43,7 @@ class AbstractLegacyEmberNavbar(Navbar):
 
 
 class HomeNavbar(Navbar):
-    my_projects_link = Locator(By.XPATH, '//a[text()="My Projects"]')
+    my_projects_link = Locator(By.CSS_SELECTOR, '[data-test-nav-my-projects-link]')
     my_quick_files_link = Locator(By.CSS_SELECTOR, '[data-test-nav-quickfiles-link]')
 
     def verify(self):
@@ -56,7 +57,7 @@ class EmberNavbar(HomeNavbar):
     user_dropdown_settings = Locator(By.CSS_SELECTOR, 'a[data-analytics-name="Settings"]')
     logout_link = Locator(By.CSS_SELECTOR, '[data-test-ad-logout]')
     sign_in_button = Locator(By.CSS_SELECTOR, '.btn-top-login')
-    donate_link = Locator(By.XPATH, '//a[text()="Donate"]')
+    donate_link = Locator(By.CSS_SELECTOR, '[data-test-nav-donate-link]')
 
 
 class PreprintsNavbar(EmberNavbar):
