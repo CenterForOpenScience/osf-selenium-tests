@@ -14,6 +14,7 @@ from pages.registries import RegistriesLandingPage
 from pages.user import UserProfilePage, ProfileInformationPage
 from pages.preprints import PreprintLandingPage, PreprintSubmitPage
 from pages.quickfiles import QuickfilesPage
+from pages.institutions import InstitutionsLandingPage
 
 
 # TODO: Test Navbar from all services including reviews and such - they might not have the same navbar always
@@ -44,6 +45,11 @@ class NavbarTestLoggedOutMixin:
         page.navbar.service_dropdown.click()
         page.navbar.meetings_link.click()
         MeetingsPage(driver, verify=True)
+
+    def test_institutions_dropdown_link(self, page, driver):
+        page.navbar.service_dropdown.click()
+        page.navbar.institutions_link.click()
+        InstitutionsLandingPage(driver, verify=True)     
 
     def test_sign_up_button(self, driver, page):
         page.navbar.sign_up_button.click()
@@ -260,6 +266,41 @@ class TestRegistriesNavbarLoggedIn(NavbarTestLoggedInMixin):
         page = RegistriesLandingPage(driver)
         page.goto()
         return page
+
+
+class TestInstitutionsNavbar(NavbarTestLoggedOutMixin):
+
+    @pytest.fixture()
+    def page(self, driver):
+        page = InstitutionsLandingPage(driver)
+        page.goto()
+        return page
+
+    def test_search_link(self, driver, page):
+        page.navbar.search_link.click()
+        SearchPage(driver, verify=True)     
+
+    def test_support_link(self, page, driver):
+        page.navbar.support_link.click()
+        SupportPage(driver, verify=True)
+
+
+@pytest.mark.usefixtures('must_be_logged_in')
+class TestInstitutionsNavbarLoggedIn(NavbarTestLoggedInMixin):
+
+    @pytest.fixture()
+    def page(self, driver):
+        page = InstitutionsLandingPage(driver)
+        page.goto()
+        return page
+
+    def test_my_projects_link(self, page, driver):
+        page.navbar.my_projects_link.click()
+        assert MyProjectsPage(driver, verify=True)
+
+    def test_my_quick_files_link(self, page, driver):
+        page.navbar.my_quick_files_link.click()
+        QuickfilesPage(driver, verify=True)
 
 
 def assert_donate_page(driver, donate_page):

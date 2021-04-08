@@ -11,6 +11,7 @@ class Navbar(BaseElement):
     preprints_link = Locator(By.CSS_SELECTOR, 'a[data-analytics-name="PREPRINTS"]')
     registries_link = Locator(By.CSS_SELECTOR, 'a[data-analytics-name="REGISTRIES"]')
     meetings_link = Locator(By.CSS_SELECTOR, 'a[data-analytics-name="MEETINGS"]')
+    institutions_link = Locator(By.CSS_SELECTOR, 'a[data-analytics-name="INSTITUTIONS"]')
     search_link = Locator(By.XPATH, '//a[text()="Search"]')
     support_link = Locator(By.XPATH, '//a[text()="Support"]')
     donate_link = Locator(By.ID, 'navbar-donate')
@@ -78,6 +79,7 @@ class RegistriesNavbar(EmberNavbar):
     preprints_link = Locator(By.CSS_SELECTOR, 'ul._ServiceDropdownMenu_nar5mu > li:nth-child(2) > a')
     registries_link = Locator(By.CSS_SELECTOR, 'ul._ServiceDropdownMenu_nar5mu > li:nth-child(3) > a')
     meetings_link = Locator(By.CSS_SELECTOR, 'ul._ServiceDropdownMenu_nar5mu > li:nth-child(4) > a')
+    institutions_link = Locator(By.CSS_SELECTOR, 'ul._ServiceDropdownMenu_nar5mu > li:nth-child(5) > a')
     sign_up_button = Locator(By.CSS_SELECTOR, 'a[data-test-join')
 
     def verify(self):
@@ -88,3 +90,10 @@ class MeetingsNavbar(EmberNavbar):
 
     def verify(self):
         return self.current_service.text == 'MEETINGS'
+
+
+class InstitutionsNavbar(EmberNavbar):
+
+    def verify(self):
+        return self.current_service.text == 'INSTITUTIONS'
+

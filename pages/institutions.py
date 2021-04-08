@@ -4,7 +4,7 @@ from selenium.webdriver.common.by import By
 
 from base.locators import Locator, ComponentLocator, GroupLocator
 from pages.base import OSFBasePage
-from components.navbars import EmberNavbar
+from components.navbars import InstitutionsNavbar
 
 class InstitutionsLandingPage(OSFBasePage):
     url = settings.OSF_HOME + '/institutions/'
@@ -18,7 +18,7 @@ class InstitutionsLandingPage(OSFBasePage):
     institution_list = GroupLocator(By.CSS_SELECTOR, 'span[data-test-institution-name]')
 
     #TODO: add institutional navbar
-    navbar = ComponentLocator(EmberNavbar)
+    navbar = ComponentLocator(InstitutionsNavbar)
 
 class InstitutionBrandedPage(OSFBasePage):
 
