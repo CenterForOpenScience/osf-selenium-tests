@@ -241,24 +241,26 @@ class TestRegistriesNavbar(NavbarTestLoggedOutMixin):
         page.goto()
         return page
 
-    # todo: add id to those html tags in ember osf to make the find_element possible
-    # def test_search_link(self):
-    #     page.navbar.search_link.click()
-    #     search_url = settings.OSF_HOME + '/search/'
-    #     assert driver.current_url == search_url
-    #
-    # def test_support_link(self):
-    #     page.navbar.support_link.click()
-    #     support_url = settings.OSF_HOME + '/support/'
-    #     assert driver.current_url == support_url
-    #
-    # def test_donate_link(self):
-    #     page.navbar.donate_link.click()
-    #     assert 'cos.io/donate-to-cos' in driver.current_url
-    #
-    # def test_sign_in_button(self):
-    #     page.navbar.sign_in_button.click()
-    #     assert 'login' in driver.current_url
+    def test_help_link(self, page, driver):
+        page.navbar.help_link.click()
+        help_url = 'https://help.osf.io/hc/en-us/categories/360001550953'
+        assert driver.current_url == help_url
+    
+    def test_donate_link(self, page, driver):
+        page.navbar.donate_link.click()
+        donate_page = COSDonatePage(driver, verify=False)
+        assert_donate_page(driver, donate_page)
+
+    #In the Registries navbar there is no Sign Up button, instead it is a Join link
+    def test_sign_up_button(self, page, driver):
+        page.navbar.join_link.click()
+        #Join link takes you to a more specific OSF Registries sign up page
+        assert 'campaign=osf-registries' in driver.current_url
+
+    #In the Registries navbar there is no Sign In button, instead it is a Login link
+    def test_sign_in_button(self, page, driver):
+        page.navbar.login_link.click()
+        LoginPage(driver, verify=True)
 
 
 @pytest.mark.usefixtures('must_be_logged_in')
