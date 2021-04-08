@@ -17,8 +17,6 @@ from pages.quickfiles import QuickfilesPage
 from pages.institutions import InstitutionsLandingPage
 
 
-# TODO: Test Navbar from all services including reviews and such - they might not have the same navbar always
-
 class NavbarTestLoggedOutMixin:
     """Mixin used to inject generic tests
     """
@@ -51,6 +49,15 @@ class NavbarTestLoggedOutMixin:
         page.navbar.institutions_link.click()
         InstitutionsLandingPage(driver, verify=True)     
 
+    def test_donate_link(self, page, driver):
+        page.navbar.donate_link.click()
+        donate_page = COSDonatePage(driver, verify=False)
+        assert_donate_page(driver, donate_page)
+
+    def test_sign_in_button(self, page, driver):
+        page.navbar.sign_in_button.click()
+        LoginPage(driver, verify=True)     
+
     def test_sign_up_button(self, driver, page):
         page.navbar.sign_up_button.click()
         RegisterPage(driver, verify=True)
@@ -59,7 +66,6 @@ class NavbarTestLoggedOutMixin:
         assert page.navbar.user_dropdown.absent()
 
 
-# Class used to inject generic tests
 class NavbarTestLoggedInMixin:
     """Mixin used to inject generic tests
     """
@@ -123,19 +129,9 @@ class TestOSFHomeNavbar(NavbarTestLoggedOutMixin):
         page.navbar.support_link.click()
         assert SupportPage(driver, verify=True)
 
-    def test_donate_link(self, page, driver):
-        page.navbar.donate_link.click()
-        donate_page = COSDonatePage(driver, verify=False)
-        assert_donate_page(driver, donate_page)
-
-    def test_sign_in_button(self, page, driver):
-        page.navbar.sign_in_button.click()
-        LoginPage(driver, verify=True)
-
 
 class TestOSFHomeNavbarLoggedIn(NavbarTestLoggedInMixin):
 
-    # Profile settings page
     @pytest.fixture()
     def page(self, driver, must_be_logged_in):
         page = DashboardPage(driver)
@@ -167,20 +163,11 @@ class TestPreprintsNavbar(NavbarTestLoggedOutMixin):
         page.navbar.support_link.click()
         support_url = 'https://help.osf.io/hc/en-us/categories/360001530554-Preprints'
         assert driver.current_url == support_url
-    
-    def test_donate_link(self, page, driver):
-        page.navbar.donate_link.click()
-        donate_page = COSDonatePage(driver, verify=False)
-        assert_donate_page(driver, donate_page)
 
     def test_sign_up_button(self, page, driver):
         page.navbar.sign_up_button.click()
         #Sign Up button takes you to a more specific OSF Preprints sign up page
         assert 'campaign=osf-preprints' in driver.current_url
-
-    def test_sign_in_button(self, page, driver):
-        page.navbar.sign_in_button.click()
-        LoginPage(driver, verify=True)
 
 
 @pytest.mark.usefixtures('must_be_logged_in')
@@ -214,11 +201,6 @@ class TestRegistriesNavbar(NavbarTestLoggedOutMixin):
         page.navbar.help_link.click()
         help_url = 'https://help.osf.io/hc/en-us/categories/360001550953'
         assert driver.current_url == help_url
-    
-    def test_donate_link(self, page, driver):
-        page.navbar.donate_link.click()
-        donate_page = COSDonatePage(driver, verify=False)
-        assert_donate_page(driver, donate_page)
 
     #In the Registries navbar there is no Sign Up button, instead it is a Join link
     def test_sign_up_button(self, page, driver):
@@ -254,6 +236,10 @@ class TestMeetingsNavbar(NavbarTestLoggedOutMixin):
         page.goto()
         return page
 
+    def test_search_link(self, driver, page):
+        page.navbar.search_link.click()
+        SearchPage(driver, verify=True)    
+
     def test_support_link(self, page, driver):
         page.navbar.support_link.click()
         assert '360001550933' in driver.current_url or 'support' in driver.current_url
@@ -261,15 +247,6 @@ class TestMeetingsNavbar(NavbarTestLoggedOutMixin):
         # For future use
         # support_url = 'https://openscience.zendesk.com/hc/en-us/categories/360001550933'
         # assert driver.current_url == support_url
-
-    def test_donate_link(self, page, driver):
-        page.navbar.donate_link.click()
-        donate_page = COSDonatePage(driver, verify=False)
-        assert_donate_page(driver, donate_page)
-
-    def test_sign_in_button(self, page, driver):
-        page.navbar.sign_in_button.click()
-        assert 'login' in driver.current_url
 
 
 @pytest.mark.usefixtures('must_be_logged_in')
@@ -280,6 +257,14 @@ class TestMeetingsNavbarLoggedIn(NavbarTestLoggedInMixin):
         page = MeetingsPage(driver)
         page.goto()
         return page
+
+    def test_my_projects_link(self, page, driver):
+        page.navbar.my_projects_link.click()
+        assert MyProjectsPage(driver, verify=True)
+
+    def test_my_quick_files_link(self, page, driver):
+        page.navbar.my_quick_files_link.click()
+        QuickfilesPage(driver, verify=True)    
 
 
 class TestInstitutionsNavbar(NavbarTestLoggedOutMixin):
