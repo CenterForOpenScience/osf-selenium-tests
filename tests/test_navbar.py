@@ -13,6 +13,7 @@ from pages.dashboard import DashboardPage
 from pages.registries import RegistriesLandingPage
 from pages.user import UserProfilePage, ProfileInformationPage
 from pages.preprints import PreprintLandingPage, PreprintSubmitPage
+from pages.quickfiles import QuickfilesPage
 
 
 # TODO: Test Navbar from all services including reviews and such - they might not have the same navbar always
@@ -138,6 +139,11 @@ class TestOSFHomeNavbarLoggedIn(NavbarTestLoggedInMixin):
     def test_my_projects_link(self, page, driver):
         page.navbar.my_projects_link.click()
         assert MyProjectsPage(driver, verify=True)
+
+    def test_my_quick_files_link(self, page, driver):
+        page.navbar.my_quick_files_link.click()
+        QuickfilesPage(driver, verify=True)
+
 
 # TODO: Complete this test after ENG-1103 is resolved
 # class TestPreprintsNavbar(NavbarTestLoggedOutMixin):

@@ -42,6 +42,7 @@ class AbstractLegacyEmberNavbar(Navbar):
 
 class HomeNavbar(Navbar):
     my_projects_link = Locator(By.XPATH, '//a[text()="My Projects"]')
+    my_quick_files_link = Locator(By.CSS_SELECTOR, '[data-test-nav-quickfiles-link]')
 
     def verify(self):
         return self.current_service.text == 'HOME'
