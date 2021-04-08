@@ -42,3 +42,8 @@ class RegistriesDiscoverPage(BaseRegistriesPage):
 
 class RegistrationDetailPage(GuidBasePage):
     identity = Locator(By.CSS_SELECTOR, '[data-test-registration-title]')
+
+
+class RegistrationAddNewPage(BaseRegistriesPage):
+    url = settings.OSF_HOME + '/registries/osf/new'
+    identity = Locator(By.CLASS_NAME, 'Application__page', settings.LONG_TIMEOUT)

@@ -10,7 +10,7 @@ from pages.meetings import MeetingsPage
 from pages.register import RegisterPage
 from pages.project import MyProjectsPage
 from pages.dashboard import DashboardPage
-from pages.registries import RegistriesLandingPage
+from pages.registries import RegistriesLandingPage, RegistrationAddNewPage
 from pages.user import UserProfilePage, ProfileInformationPage
 from pages.preprints import PreprintLandingPage, PreprintSubmitPage, PreprintDiscoverPage
 from pages.quickfiles import QuickfilesPage
@@ -272,6 +272,10 @@ class TestRegistriesNavbarLoggedIn(NavbarTestLoggedInMixin):
         page.goto()
         return page
 
+    def test_add_new_link(self, page, driver):
+        page.navbar.add_new_link.click()
+        RegistrationAddNewPage(driver, verify=True)
+        
 
 class TestInstitutionsNavbar(NavbarTestLoggedOutMixin):
 
