@@ -202,42 +202,6 @@ class TestPreprintsNavbarLoggedIn(NavbarTestLoggedInMixin):
         assert 'myprojects/#preprints' in driver.current_url
 
 
-class TestMeetingsNavbar(NavbarTestLoggedOutMixin):
-
-    @pytest.fixture()
-    def page(self, driver):
-        page = MeetingsPage(driver)
-        page.goto()
-        return page
-
-    def test_support_link(self, page, driver):
-        page.navbar.support_link.click()
-        assert '360001550933' in driver.current_url or 'support' in driver.current_url
-
-        # For future use
-        # support_url = 'https://openscience.zendesk.com/hc/en-us/categories/360001550933'
-        # assert driver.current_url == support_url
-
-    def test_donate_link(self, page, driver):
-        page.navbar.donate_link.click()
-        donate_page = COSDonatePage(driver, verify=False)
-        assert_donate_page(driver, donate_page)
-
-    def test_sign_in_button(self, page, driver):
-        page.navbar.sign_in_button.click()
-        assert 'login' in driver.current_url
-
-
-@pytest.mark.usefixtures('must_be_logged_in')
-class TestMeetingsNavbarLoggedIn(NavbarTestLoggedInMixin):
-
-    @pytest.fixture()
-    def page(self, driver):
-        page = MeetingsPage(driver)
-        page.goto()
-        return page
-
-
 class TestRegistriesNavbar(NavbarTestLoggedOutMixin):
 
     @pytest.fixture()
@@ -281,6 +245,42 @@ class TestRegistriesNavbarLoggedIn(NavbarTestLoggedInMixin):
         page.navbar.add_new_link.click()
         RegistrationAddNewPage(driver, verify=True)
         
+
+class TestMeetingsNavbar(NavbarTestLoggedOutMixin):
+
+    @pytest.fixture()
+    def page(self, driver):
+        page = MeetingsPage(driver)
+        page.goto()
+        return page
+
+    def test_support_link(self, page, driver):
+        page.navbar.support_link.click()
+        assert '360001550933' in driver.current_url or 'support' in driver.current_url
+
+        # For future use
+        # support_url = 'https://openscience.zendesk.com/hc/en-us/categories/360001550933'
+        # assert driver.current_url == support_url
+
+    def test_donate_link(self, page, driver):
+        page.navbar.donate_link.click()
+        donate_page = COSDonatePage(driver, verify=False)
+        assert_donate_page(driver, donate_page)
+
+    def test_sign_in_button(self, page, driver):
+        page.navbar.sign_in_button.click()
+        assert 'login' in driver.current_url
+
+
+@pytest.mark.usefixtures('must_be_logged_in')
+class TestMeetingsNavbarLoggedIn(NavbarTestLoggedInMixin):
+
+    @pytest.fixture()
+    def page(self, driver):
+        page = MeetingsPage(driver)
+        page.goto()
+        return page
+
 
 class TestInstitutionsNavbar(NavbarTestLoggedOutMixin):
 
