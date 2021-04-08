@@ -196,6 +196,11 @@ class TestPreprintsNavbarLoggedIn(NavbarTestLoggedInMixin):
         page.navbar.add_a_preprint_link.click()
         PreprintSubmitPage(driver, verify=True)
 
+    def test_my_preprints_link(self, page, driver):
+        page.navbar.my_preprints_link.click()
+        #My Preprints link actually navigates to My Preprints section of My Projects page
+        assert 'myprojects/#preprints' in driver.current_url
+
 
 class TestMeetingsNavbar(NavbarTestLoggedOutMixin):
 
