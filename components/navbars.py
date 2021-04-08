@@ -59,9 +59,27 @@ class EmberNavbar(HomeNavbar):
     donate_link = Locator(By.XPATH, '//a[text()="Donate"]')
 
 
-class PreprintsNavbar(AbstractLegacyEmberNavbar):
+class PreprintsNavbar(EmberNavbar):
     title = Locator(By.CSS_SELECTOR, '.navbar-title')
+
+    home_link = Locator(By.CSS_SELECTOR, 'ul.dropdown-menu.service-dropdown > li:nth-child(1) > a')
+    preprints_link = Locator(By.CSS_SELECTOR, 'ul.dropdown-menu.service-dropdown > li:nth-child(2) > a')
+    registries_link = Locator(By.CSS_SELECTOR, 'ul.dropdown-menu.service-dropdown > li:nth-child(3) > a')
+    meetings_link = Locator(By.CSS_SELECTOR, 'ul.dropdown-menu.service-dropdown > li:nth-child(4) > a')
+    institutions_link = Locator(By.CSS_SELECTOR, 'ul.dropdown-menu.service-dropdown > li:nth-child(5) > a')
+
+    my_preprints_link = Locator(By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-child(6) > a')
     add_a_preprint_link = Locator(By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-child(5) > a')
+    search_link = Locator(By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-child(4) > a')
+    support_link = Locator(By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-child(3) > a')
+    donate_link = Locator(By.CSS_SELECTOR, '#secondary-navigation > ul > li.navbar-donate-button')
+    sign_up_button = Locator(By.CSS_SELECTOR, 'a.btn-success:nth-child(1)')
+    sign_in_button = Locator(By.CSS_SELECTOR, '.btn-top-login')
+
+    user_dropdown_profile = Locator(By.CSS_SELECTOR, 'ul.dropdown-menu-right > li:nth-child(1)')
+    user_dropdown_support = Locator(By.CSS_SELECTOR, 'ul.dropdown-menu-right > li:nth-child(2)')
+    user_dropdown_settings = Locator(By.CSS_SELECTOR, 'ul.dropdown-menu-right > li:nth-child(3)')
+    logout_link = Locator(By.CSS_SELECTOR, '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(4) > a')
 
     def verify(self):
         return self.current_service.text == 'PREPRINTS'
