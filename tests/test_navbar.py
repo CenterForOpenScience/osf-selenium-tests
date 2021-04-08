@@ -102,6 +102,8 @@ class NavbarTestLoggedInMixin:
         login(driver)
 
 
+@markers.smoke_test
+@markers.core_functionality
 class TestOSFHomeNavbar(NavbarTestLoggedOutMixin):
 
     @pytest.fixture()
@@ -110,26 +112,20 @@ class TestOSFHomeNavbar(NavbarTestLoggedOutMixin):
         page.goto()
         return page
 
-    @markers.smoke_test
-    @markers.core_functionality
     def test_my_projects_link_not_present(self, page):
-        """Used as a core test to make sure the landing page loads.
-        """
         assert page.navbar.my_projects_link.absent()
 
     def test_search_link(self, driver, page):
         page.navbar.search_link.click()
         assert SearchPage(driver, verify=True)
 
-    @markers.smoke_test
-    @markers.core_functionality
     def test_support_link(self, page, driver):
-        """Used as a core test to make sure the support page loads.
-        """
         page.navbar.support_link.click()
         assert SupportPage(driver, verify=True)
 
 
+@markers.smoke_test
+@markers.core_functionality
 class TestOSFHomeNavbarLoggedIn(NavbarTestLoggedInMixin):
 
     @pytest.fixture()
@@ -147,6 +143,8 @@ class TestOSFHomeNavbarLoggedIn(NavbarTestLoggedInMixin):
         QuickfilesPage(driver, verify=True)
 
 
+@markers.smoke_test
+@markers.core_functionality
 class TestPreprintsNavbar(NavbarTestLoggedOutMixin):
 
     @pytest.fixture()
@@ -170,6 +168,8 @@ class TestPreprintsNavbar(NavbarTestLoggedOutMixin):
         assert 'campaign=osf-preprints' in driver.current_url
 
 
+@markers.smoke_test
+@markers.core_functionality
 @pytest.mark.usefixtures('must_be_logged_in')
 class TestPreprintsNavbarLoggedIn(NavbarTestLoggedInMixin):
 
@@ -189,6 +189,8 @@ class TestPreprintsNavbarLoggedIn(NavbarTestLoggedInMixin):
         assert 'myprojects/#preprints' in driver.current_url
 
 
+@markers.smoke_test
+@markers.core_functionality
 class TestRegistriesNavbar(NavbarTestLoggedOutMixin):
 
     @pytest.fixture()
@@ -214,6 +216,8 @@ class TestRegistriesNavbar(NavbarTestLoggedOutMixin):
         LoginPage(driver, verify=True)
 
 
+@markers.smoke_test
+@markers.core_functionality
 @pytest.mark.usefixtures('must_be_logged_in')
 class TestRegistriesNavbarLoggedIn(NavbarTestLoggedInMixin):
 
@@ -228,6 +232,8 @@ class TestRegistriesNavbarLoggedIn(NavbarTestLoggedInMixin):
         RegistrationAddNewPage(driver, verify=True)
         
 
+@markers.smoke_test
+@markers.core_functionality
 class TestMeetingsNavbar(NavbarTestLoggedOutMixin):
 
     @pytest.fixture()
@@ -249,6 +255,8 @@ class TestMeetingsNavbar(NavbarTestLoggedOutMixin):
         # assert driver.current_url == support_url
 
 
+@markers.smoke_test
+@markers.core_functionality
 @pytest.mark.usefixtures('must_be_logged_in')
 class TestMeetingsNavbarLoggedIn(NavbarTestLoggedInMixin):
 
@@ -267,6 +275,8 @@ class TestMeetingsNavbarLoggedIn(NavbarTestLoggedInMixin):
         QuickfilesPage(driver, verify=True)    
 
 
+@markers.smoke_test
+@markers.core_functionality
 class TestInstitutionsNavbar(NavbarTestLoggedOutMixin):
 
     @pytest.fixture()
@@ -284,6 +294,8 @@ class TestInstitutionsNavbar(NavbarTestLoggedOutMixin):
         SupportPage(driver, verify=True)
 
 
+@markers.smoke_test
+@markers.core_functionality
 @pytest.mark.usefixtures('must_be_logged_in')
 class TestInstitutionsNavbarLoggedIn(NavbarTestLoggedInMixin):
 
