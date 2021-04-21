@@ -104,7 +104,7 @@ class NavbarTestLoggedInMixin:
 
 @markers.smoke_test
 @markers.core_functionality
-class TestOSFHomeNavbar(NavbarTestLoggedOutMixin):
+class TestOSFHomeNavbarLoggedOut(NavbarTestLoggedOutMixin):
 
     @pytest.fixture()
     def page(self, driver):
@@ -145,7 +145,7 @@ class TestOSFHomeNavbarLoggedIn(NavbarTestLoggedInMixin):
 
 @markers.smoke_test
 @markers.core_functionality
-class TestPreprintsNavbar(NavbarTestLoggedOutMixin):
+class TestPreprintsNavbarLoggedOut(NavbarTestLoggedOutMixin):
 
     @pytest.fixture()
     def page(self, driver):
@@ -191,7 +191,7 @@ class TestPreprintsNavbarLoggedIn(NavbarTestLoggedInMixin):
 
 @markers.smoke_test
 @markers.core_functionality
-class TestRegistriesNavbar(NavbarTestLoggedOutMixin):
+class TestRegistriesNavbarLoggedOut(NavbarTestLoggedOutMixin):
 
     @pytest.fixture()
     def page(self, driver):
@@ -234,7 +234,7 @@ class TestRegistriesNavbarLoggedIn(NavbarTestLoggedInMixin):
 
 @markers.smoke_test
 @markers.core_functionality
-class TestMeetingsNavbar(NavbarTestLoggedOutMixin):
+class TestMeetingsNavbarLoggedOut(NavbarTestLoggedOutMixin):
 
     @pytest.fixture()
     def page(self, driver):
@@ -277,7 +277,7 @@ class TestMeetingsNavbarLoggedIn(NavbarTestLoggedInMixin):
 
 @markers.smoke_test
 @markers.core_functionality
-class TestInstitutionsNavbar(NavbarTestLoggedOutMixin):
+class TestInstitutionsNavbarLoggedOut(NavbarTestLoggedOutMixin):
 
     @pytest.fixture()
     def page(self, driver):
