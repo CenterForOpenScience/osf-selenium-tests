@@ -93,10 +93,10 @@ class RegistriesNavbar(EmberNavbar):
     meetings_link = Locator(By.CSS_SELECTOR, 'ul._ServiceDropdownMenu_nar5mu > li:nth-child(4) > a')
     institutions_link = Locator(By.CSS_SELECTOR, 'ul._ServiceDropdownMenu_nar5mu > li:nth-child(5) > a')
 
-    help_link = Locator(By.CSS_SELECTOR, 'a[data-test-help')
-    donate_link = Locator(By.CSS_SELECTOR, 'a[data-test-donate')      
-    join_link = Locator(By.CSS_SELECTOR, 'a[data-test-join')
-    login_link = Locator(By.CSS_SELECTOR, 'a[data-test-login')
+    help_link = Locator(By.CSS_SELECTOR, 'a[data-test-help]')
+    donate_link = Locator(By.CSS_SELECTOR, 'a[data-test-donate]')
+    join_link = Locator(By.CSS_SELECTOR, 'a[data-test-join]')
+    login_link = Locator(By.CSS_SELECTOR, 'a[data-test-login]')
 
     # For Registries Only -> This clicks the gravatar image. (Same effect)
     user_dropdown = Locator(By.CSS_SELECTOR, 'img[data-test-gravatar]')
@@ -104,7 +104,7 @@ class RegistriesNavbar(EmberNavbar):
     user_dropdown_support = Locator(By.CSS_SELECTOR, 'ul.dropdown-menu-right > li:nth-child(2) > a')
     user_dropdown_settings = Locator(By.CSS_SELECTOR, 'a[data-analytics-name="Settings"]')
 
-    add_new_link = Locator(By.CSS_SELECTOR, 'a[data-test-add-new-button')
+    add_new_link = Locator(By.CSS_SELECTOR, 'a[data-test-add-new-button]')
 
     def verify(self):
         return self.current_service.text == 'REGISTRIES'
