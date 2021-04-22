@@ -9,6 +9,7 @@ from utils import find_current_browser
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.select import Select
+from selenium.webdriver.common.by import By
 
 from pages.preprints import (
     PreprintLandingPage,
@@ -49,24 +50,37 @@ class TestPreprintWorkflow:
         submit_page.upload_select_file.click()
         submit_page.upload_file_save_continue.click()
 
-        # Author assertions
+        # Author Assertions section:
+        # Note: We can't use the submit_page.save_author_assertions object here, because it is disabled and any time we use
+        # an object defined in pages/preprints.py it uses get_web_element() in the Locator class.  Within get_web_element() the
+        # element_to_be_clickable method is used, and this method will always fail for disabled objects.  So in this instance
+        # we have to get the button object using the driver.find_element method while it is disabled.  After the button becomes
+        # enabled (i.e. after required data has been provided) then we can use the submit_page.save_author_assertions object to
+        # check the disabled property.  See implementation below.
+        assert driver.find_element(By.CSS_SELECTOR, '[data-test-author-assertions-continue]').get_property('disabled')
+        assert submit_page.public_data_input.absent()
         submit_page.public_available_button.click()
+        assert submit_page.public_data_input.present()
         submit_page.public_data_input.click()
         submit_page.public_data_input.send_keys_deliberately('https://osf.io/')
-        #Need to scroll down since the Preregistration radio buttons are obscured by the Dev mode warning in test environments
+        # Need to scroll down since the Preregistration radio buttons are obscured by the Dev mode warning in test environments
         currentYPos = driver.execute_script('return window.scrollY;')
         driver.execute_script("window.scrollTo(0, arguments[0])", currentYPos + 200)
+        assert submit_page.preregistration_input.absent()
         submit_page.preregistration_no_button.click()
+        assert submit_page.preregistration_input.present()
         submit_page.preregistration_input.click()
         submit_page.preregistration_input.send_keys_deliberately('QA Testing')
+        # Save button is now enabled so we can use the object as defined in pages/preprints.py
+        assert submit_page.save_author_assertions.is_enabled()
         submit_page.save_author_assertions.click()
 
         submit_page.basics_license_dropdown.click()
-        #The order of the options in the license dropdown is not consistent across test environments, so we can't use the 
+        # The order of the options in the license dropdown is not consistent across test environments, so we can't use the 
         # basics_universal_license element as defined in pages/preprints.py since it uses its index position (3rd option in list)
         licenseSelect = Select(submit_page.basics_license_dropdown)
         licenseSelect.select_by_visible_text('CC0 1.0 Universal')
-        #Need to scroll down since the Keyword/tags section is obscured by the Dev mode warning in the test environments
+        # Need to scroll down since the Keyword/tags section is obscured by the Dev mode warning in the test environments
         currentYPos = driver.execute_script('return window.scrollY;')
         driver.execute_script("window.scrollTo(0, arguments[0])", currentYPos + 200)
         submit_page.basics_tags_section.click()
@@ -82,7 +96,12 @@ class TestPreprintWorkflow:
         # Wait for authors box to show
         submit_page.authors_save_button.click()
 
-        submit_page.conflict_of_interest.click()
+        # Conflict of Interest section:
+        assert driver.find_element(By.CSS_SELECTOR, '[data-test-coi-continue]').get_property('disabled')
+        assert submit_page.no_coi_text_box.absent()
+        submit_page.conflict_of_interest_no.click()
+        assert submit_page.no_coi_text_box.present()
+        assert submit_page.coi_save_button.is_enabled()
         submit_page.coi_save_button.click()
 
         # Wait for Supplemental materials to show
@@ -136,7 +155,7 @@ class TestBrandedProviders:
     def test_landing_page_loads(self, driver, provider):
         PreprintLandingPage(driver, provider=provider).goto()
         if provider['attributes']['domain_redirect_enabled']:
-            #Make sure the landing page url matches the expected domian
+            # Make sure the landing page url matches the expected domian
             assert driver.current_url == provider['attributes']['domain']
         else:
             assert 'osf.io/preprints/' in driver.current_url
@@ -156,7 +175,7 @@ class TestBrandedProviders:
             assert not landing_page.submit_button.present()
 
 
-#The following class only runs in Production for Branded Providers that have a Custom Domain
+# The following class only runs in Production for Branded Providers that have a Custom Domain
 @markers.smoke_test
 @markers.core_functionality
 @pytest.mark.skipif(not settings.PRODUCTION, reason='Cannot test on stagings as they share SHARE')
