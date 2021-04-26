@@ -47,7 +47,7 @@ class NavbarTestLoggedOutMixin:
     def test_institutions_dropdown_link(self, page, driver):
         page.navbar.service_dropdown.click()
         page.navbar.institutions_link.click()
-        InstitutionsLandingPage(driver, verify=True)     
+        InstitutionsLandingPage(driver, verify=True)
 
     def test_donate_link(self, page, driver):
         page.navbar.donate_link.click()
@@ -56,7 +56,7 @@ class NavbarTestLoggedOutMixin:
 
     def test_sign_in_button(self, page, driver):
         page.navbar.sign_in_button.click()
-        LoginPage(driver, verify=True)     
+        LoginPage(driver, verify=True)
 
     def test_sign_up_button(self, driver, page):
         page.navbar.sign_up_button.click()
@@ -156,7 +156,7 @@ class TestPreprintsNavbarLoggedOut(NavbarTestLoggedOutMixin):
     def test_search_link(self, page, driver):
         page.navbar.search_link.click()
         PreprintDiscoverPage(driver, verify=True)
-    
+
     def test_support_link(self, page, driver):
         page.navbar.support_link.click()
         support_url = 'https://help.osf.io/hc/en-us/categories/360001530554-Preprints'
@@ -230,7 +230,7 @@ class TestRegistriesNavbarLoggedIn(NavbarTestLoggedInMixin):
     def test_add_new_link(self, page, driver):
         page.navbar.add_new_link.click()
         RegistrationAddNewPage(driver, verify=True)
-        
+
 
 @markers.smoke_test
 @markers.core_functionality
@@ -244,7 +244,7 @@ class TestMeetingsNavbarLoggedOut(NavbarTestLoggedOutMixin):
 
     def test_search_link(self, driver, page):
         page.navbar.search_link.click()
-        SearchPage(driver, verify=True)    
+        SearchPage(driver, verify=True)
 
     def test_support_link(self, page, driver):
         page.navbar.support_link.click()
@@ -272,7 +272,7 @@ class TestMeetingsNavbarLoggedIn(NavbarTestLoggedInMixin):
 
     def test_my_quick_files_link(self, page, driver):
         page.navbar.my_quick_files_link.click()
-        QuickfilesPage(driver, verify=True)    
+        QuickfilesPage(driver, verify=True)
 
 
 @markers.smoke_test
@@ -287,7 +287,7 @@ class TestInstitutionsNavbarLoggedOut(NavbarTestLoggedOutMixin):
 
     def test_search_link(self, driver, page):
         page.navbar.search_link.click()
-        SearchPage(driver, verify=True)     
+        SearchPage(driver, verify=True)
 
     def test_support_link(self, page, driver):
         page.navbar.support_link.click()
