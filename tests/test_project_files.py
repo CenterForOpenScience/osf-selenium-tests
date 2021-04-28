@@ -15,12 +15,12 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-'''
+"""
 *** NOTE ***
 For the test user running this test, the following addons must be manually
 authorized in user settings, or else the test will fail to run:
     - 'box', 'dropbox', 's3', 'owncloud'
-'''
+"""
 
 
 def format_provider_name(row):
@@ -380,7 +380,7 @@ class TestFilesPage:
             osf_api.delete_addon_files(session, provider, current_browser, guid=node_id)
 
 
-'''
+"""
 TODO:
 - improve downloads test to check for positive result
 - write an uploads test
@@ -390,4 +390,4 @@ Addons this test does not cover, and reasons:
     Github - requested add-on not currently configurable via API
     Dataverse - requested add-on not currently configurable via API
     Figshare - has a non-conventional file setup not suited for normal file actions
-'''
+"""
