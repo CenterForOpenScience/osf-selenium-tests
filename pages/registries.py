@@ -25,8 +25,8 @@ class RegistriesLandingPage(BaseRegistriesPage):
 class RegistriesDiscoverPage(BaseRegistriesPage):
     url = settings.OSF_HOME + '/registries/discover'
 
-    identity = Locator(By.CSS_SELECTOR, '[data-test-share-logo]')
-    loading_indicator = Locator(By.CSS_SELECTOR, '.ball-scale')
+    identity = Locator(By.CSS_SELECTOR, 'div[data-analytics-scope="Registries Discover page"]')
+    loading_indicator = Locator(By.CSS_SELECTOR, '.ball-scale', settings.LONG_TIMEOUT)
     osf_filter = Locator(By.CSS_SELECTOR, '[data-test-source-filter-id$="OSF Registries"]')
 
     # Group Locators
