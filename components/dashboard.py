@@ -13,7 +13,7 @@ class EmberCreateProjectModal(BaseElement):
     title_input = Locator(By.CSS_SELECTOR, '._NewProject__label_fz56y2 input')
     select_all_link = Locator(By.XPATH, '//button[text()="Select all"]')
     remove_all_link = Locator(By.XPATH, '//button[text()="Remove all"]')
-    more_arrow = Locator(By.CLASS_NAME, 'fa')
+    more_arrow = Locator(By.CSS_SELECTOR, 'button[data-analytics-name="Toggle more"]')
     description_input = Locator(By.CLASS_NAME, 'project-desc')
     template_dropdown = Locator(By.CLASS_NAME, 'ember-power-select-placeholder')
 
