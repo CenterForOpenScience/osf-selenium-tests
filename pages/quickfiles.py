@@ -27,12 +27,12 @@ class QuickfilesPage(BaseQuickfilesPage, GuidBasePage):
     loading_indicator = Locator(By.CSS_SELECTOR, '.ball-scale')
     upload_button = Locator(By.CSS_SELECTOR, '.dz-upload-button')
     share_button = Locator(By.CSS_SELECTOR, '.btn .fa-share-alt')
-    view_button = Locator(By.CSS_SELECTOR, '.btn .fa-file-o')
+    view_button = Locator(By.CSS_SELECTOR, '[data-test-view-button]')
     help_button = Locator(By.CSS_SELECTOR, '.btn .fa-info')
     filter_button = Locator(By.CSS_SELECTOR, '.btn .fa-search')
-    rename_button = Locator(By.CSS_SELECTOR, '.btn .fa-pencil')
-    delete_button = Locator(By.CSS_SELECTOR, '.btn .fa-trash')
-    move_button = Locator(By.CSS_SELECTOR, '.btn .fa-level-up')
+    rename_button = Locator(By.CSS_SELECTOR, '[data-test-rename-file-button]')
+    delete_button = Locator(By.CSS_SELECTOR, '[data-test-delete-file-button]')
+    move_button = Locator(By.CSS_SELECTOR, '[data-test-move-button]')
 
     # Group Locators
     files = GroupLocator(By.CSS_SELECTOR, '._file-browser-item_1v8xgw')
