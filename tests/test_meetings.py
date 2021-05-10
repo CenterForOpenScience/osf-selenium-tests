@@ -3,7 +3,9 @@ import markers
 
 from pages.project import ProjectPage
 from pages.meetings import MeetingsPage, MeetingDetailPage
-
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
 
 @pytest.fixture
 def meetings_page(driver):
@@ -14,8 +16,13 @@ def meetings_page(driver):
 
 class TestMeetingsPage:
 
-    def test_meetings_landing(self, meetings_page):
+    def test_meetings_landing(self, meetings_page, driver):
         assert meetings_page.register_text.absent()
+        # Need to scroll down since the Register button is obscured by the Dev mode warning in staging environments
+        # Targeting the text about the conference minimum to scroll to since it is under the Register button and so
+        # the scroll should put the Register button in the middle of the page.
+        conference_text = driver.find_element_by_css_selector('[data-test-meetings-list-min-5]')
+        meetings_page.scroll_into_view(conference_text)
         meetings_page.register_button.click()
         assert meetings_page.register_text.present()
 
@@ -75,6 +82,12 @@ class TestMeetingDetailPage:
 
         assert meeting_detail_page.entry_download_button.present()
         entry_title = meeting_detail_page.first_entry_link.text
+        # Need to scroll down since the first entry link is obscured by the Dev mode warning in staging environments
+        # and need to use second project entry to scroll to since scrolling to first entry sometimes still leaves it
+        # partially obscured in some environments (stage 1).
+        WebDriverWait(driver, 5).until(EC.element_to_be_clickable((By.CSS_SELECTOR, 'li.list-group-item:nth-child(2)')))
+        second_entry = driver.find_element_by_css_selector('li.list-group-item:nth-child(2) > div:nth-child(2)')
+        meeting_detail_page.scroll_into_view(second_entry)
         meeting_detail_page.first_entry_link.click()
         project_page = ProjectPage(driver, verify=True)
         assert entry_title.strip() == project_page.title.text
