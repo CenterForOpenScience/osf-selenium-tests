@@ -38,6 +38,22 @@ class BasePage(BaseElement):
         else:
             self.check_page()
 
+    def goto_with_reload(self):
+        """An extension of the goto method above to be used in instances where the first attempt
+        to load a page takes too long or hangs.  This can often happen while running remotely using
+        BrowserStack.  If the first attempt at goto fails then we want to refresh the page and try
+        to load the page again.  This method serves as a workaround solution to issues that we are
+        having while running the nightly Selenium test suites in BrowserStack.  It does not replace
+        the existing goto method that is called by most of the Selenium tests.  This method will
+        only be called by tests that experience page loading timeout issues in BrowserStack.
+        (ex: test_navbar.py)
+        """
+        try:
+            self.goto()
+        except PageException:
+            self.reload()
+            self.goto()
+
     def check_page(self):
         if not self.verify():
             # handle any specific kind of error before go to page exception

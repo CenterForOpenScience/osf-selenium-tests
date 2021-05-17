@@ -109,7 +109,7 @@ class TestOSFHomeNavbarLoggedOut(NavbarTestLoggedOutMixin):
     @pytest.fixture()
     def page(self, driver):
         page = LandingPage(driver)
-        page.goto()
+        page.goto_with_reload()
         return page
 
     def test_my_projects_link_not_present(self, page):
@@ -131,7 +131,7 @@ class TestOSFHomeNavbarLoggedIn(NavbarTestLoggedInMixin):
     @pytest.fixture()
     def page(self, driver, must_be_logged_in):
         page = DashboardPage(driver)
-        page.goto()
+        page.goto_with_reload()
         return page
 
     def test_my_projects_link(self, page, driver):
@@ -150,7 +150,7 @@ class TestPreprintsNavbarLoggedOut(NavbarTestLoggedOutMixin):
     @pytest.fixture()
     def page(self, driver):
         page = PreprintLandingPage(driver)
-        page.goto()
+        page.goto_with_reload()
         return page
 
     def test_search_link(self, page, driver):
@@ -176,7 +176,7 @@ class TestPreprintsNavbarLoggedIn(NavbarTestLoggedInMixin):
     @pytest.fixture()
     def page(self, driver):
         page = PreprintLandingPage(driver)
-        page.goto()
+        page.goto_with_reload()
         return page
 
     def test_add_a_preprint_link(self, page, driver):
@@ -196,7 +196,7 @@ class TestRegistriesNavbarLoggedOut(NavbarTestLoggedOutMixin):
     @pytest.fixture()
     def page(self, driver):
         page = RegistriesLandingPage(driver)
-        page.goto()
+        page.goto_with_reload()
         return page
 
     def test_help_link(self, page, driver):
@@ -224,7 +224,7 @@ class TestRegistriesNavbarLoggedIn(NavbarTestLoggedInMixin):
     @pytest.fixture()
     def page(self, driver):
         page = RegistriesLandingPage(driver)
-        page.goto()
+        page.goto_with_reload()
         return page
 
     def test_add_new_link(self, page, driver):
@@ -239,7 +239,7 @@ class TestMeetingsNavbarLoggedOut(NavbarTestLoggedOutMixin):
     @pytest.fixture()
     def page(self, driver):
         page = MeetingsPage(driver)
-        page.goto()
+        page.goto_with_reload()
         return page
 
     def test_search_link(self, driver, page):
@@ -263,7 +263,7 @@ class TestMeetingsNavbarLoggedIn(NavbarTestLoggedInMixin):
     @pytest.fixture()
     def page(self, driver):
         page = MeetingsPage(driver)
-        page.goto()
+        page.goto_with_reload()
         return page
 
     def test_my_projects_link(self, page, driver):
@@ -282,7 +282,7 @@ class TestInstitutionsNavbarLoggedOut(NavbarTestLoggedOutMixin):
     @pytest.fixture()
     def page(self, driver):
         page = InstitutionsLandingPage(driver)
-        page.goto()
+        page.goto_with_reload()
         return page
 
     def test_search_link(self, driver, page):
@@ -302,7 +302,7 @@ class TestInstitutionsNavbarLoggedIn(NavbarTestLoggedInMixin):
     @pytest.fixture()
     def page(self, driver):
         page = InstitutionsLandingPage(driver)
-        page.goto()
+        page.goto_with_reload()
         return page
 
     def test_my_projects_link(self, page, driver):
