@@ -10,14 +10,13 @@ class InstitutionsLandingPage(OSFBasePage):
     url = settings.OSF_HOME + '/institutions/'
 
     #TODO fix insitution typo
-    identity = Locator(By.CSS_SELECTOR, 'div[data-test-insitutions-header]')
+    identity = Locator(By.CSS_SELECTOR, 'div[data-test-insitutions-header]', settings.VERY_LONG_TIMEOUT)
 
     search_bar = Locator(By.CSS_SELECTOR, '.ember-text-field')
 
     # Group Locators
     institution_list = GroupLocator(By.CSS_SELECTOR, 'span[data-test-institution-name]')
 
-    #TODO: add institutional navbar
     navbar = ComponentLocator(InstitutionsNavbar)
 
 class InstitutionBrandedPage(OSFBasePage):
