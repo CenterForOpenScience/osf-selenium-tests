@@ -8,6 +8,7 @@ from api import osf_api
 from utils import find_current_browser
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.select import Select
 
 from pages.preprints import (
     PreprintLandingPage,
@@ -52,13 +53,20 @@ class TestPreprintWorkflow:
         submit_page.public_available_button.click()
         submit_page.public_data_input.click()
         submit_page.public_data_input.send_keys_deliberately('https://osf.io/')
+        # Need to scroll down since the Preregistration radio buttons are obscured by the Dev mode warning in test environments
+        submit_page.scroll_into_view(submit_page.preregistration_no_button.element)
         submit_page.preregistration_no_button.click()
         submit_page.preregistration_input.click()
         submit_page.preregistration_input.send_keys_deliberately('QA Testing')
         submit_page.save_author_assertions.click()
 
         submit_page.basics_license_dropdown.click()
-        submit_page.basics_universal_license.click()
+        # The order of the options in the license dropdown is not consistent across test environments. So we have to select
+        # by the actual text value instead of by relative position (i.e. 3rd option in listbox).
+        licenseSelect = Select(submit_page.basics_license_dropdown)
+        licenseSelect.select_by_visible_text('CC0 1.0 Universal')
+        # Need to scroll down since the Keyword/tags section is obscured by the Dev mode warning in the test environments
+        submit_page.scroll_into_view(submit_page.basics_tags_section.element)
         submit_page.basics_tags_section.click()
         submit_page.basics_tags_input.send_keys('selenium\r')
         submit_page.basics_abstract_input.click()
@@ -86,11 +94,11 @@ class TestPreprintWorkflow:
         WebDriverWait(driver, 10).until(EC.visibility_of(preprint_detail.title))
 
         assert preprint_detail.title.text == project_with_file.title
-        match = re.search(r'Supplemental Materials\s+test\.osf\.io/([a-z0-9]{5})', preprint_detail.view_page.text)
+        match = re.search(r'Supplemental Materials\s+([a-z0-9]{4,8})\.osf\.io/([a-z0-9]{5})', preprint_detail.view_page.text)
         assert match is not None
 
         # Delete supplemental project created during workflow
-        supplemental_guid = match.group(1)
+        supplemental_guid = match.group(2)
         osf_api.delete_project(session, supplemental_guid, None)
 
     @markers.smoke_test
