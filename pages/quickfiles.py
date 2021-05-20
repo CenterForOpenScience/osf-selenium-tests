@@ -23,20 +23,20 @@ class QuickfilesPage(BaseQuickfilesPage, GuidBasePage):
         super().__init__(driver, verify, guid)
 
     # TODO: Add download buttons back in when you have a way to distingish them
-    identity = Locator(By.CSS_SELECTOR, '#quickfiles-dropzone')
+    identity = Locator(By.ID, 'quickfiles-dropzone')
     loading_indicator = Locator(By.CSS_SELECTOR, '.ball-scale')
-    upload_button = Locator(By.CSS_SELECTOR, '.dz-upload-button')
-    share_button = Locator(By.CSS_SELECTOR, '.btn .fa-share-alt')
+    upload_button = Locator(By.CSS_SELECTOR, 'button[data-analytics-name="Upload"]')
+    share_button = Locator(By.CSS_SELECTOR, '[data-test-share-dialog-button]')
     view_button = Locator(By.CSS_SELECTOR, '[data-test-view-button]')
-    help_button = Locator(By.CSS_SELECTOR, '.btn .fa-info')
-    filter_button = Locator(By.CSS_SELECTOR, '.btn .fa-search')
+    help_button = Locator(By.CSS_SELECTOR, '[data-test-info-button]')
+    filter_button = Locator(By.CSS_SELECTOR, '[data-test-filter-button]')
     rename_button = Locator(By.CSS_SELECTOR, '[data-test-rename-file-button]')
     delete_button = Locator(By.CSS_SELECTOR, '[data-test-delete-file-button]')
     move_button = Locator(By.CSS_SELECTOR, '[data-test-move-button]')
 
     # Group Locators
     files = GroupLocator(By.CSS_SELECTOR, '._file-browser-item_1v8xgw')
-    file_titles = GroupLocator(By.CSS_SELECTOR, '._file-browser-item_1v8xgw a')
+    file_titles = GroupLocator(By.CSS_SELECTOR, '[data-test-file-item-link]')
 
 
 class QuickfileDetailPage(BaseQuickfilesPage, GuidBasePage):
