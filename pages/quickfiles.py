@@ -22,11 +22,12 @@ class QuickfilesPage(BaseQuickfilesPage, GuidBasePage):
     def __init__(self, driver, verify=False, guid=user.id):
         super().__init__(driver, verify, guid)
 
-    # TODO: Add download buttons back in when you have a way to distingish them
     identity = Locator(By.ID, 'quickfiles-dropzone')
     loading_indicator = Locator(By.CSS_SELECTOR, '.ball-scale')
     upload_button = Locator(By.CSS_SELECTOR, 'button[data-analytics-name="Upload"]')
     share_button = Locator(By.CSS_SELECTOR, '[data-test-share-dialog-button]')
+    download_button = Locator(By.CSS_SELECTOR, '[data-test-download-button]')
+    download_as_zip_button = Locator(By.CSS_SELECTOR, '[data-test-download-zip-button]')
     view_button = Locator(By.CSS_SELECTOR, '[data-test-view-button]')
     help_button = Locator(By.CSS_SELECTOR, '[data-test-info-button]')
     filter_button = Locator(By.CSS_SELECTOR, '[data-test-filter-button]')

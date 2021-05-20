@@ -30,10 +30,10 @@ class TestQuickfilesLoggedIn:
         assert my_quickfiles.upload_button.present()
         assert my_quickfiles.filter_button.present()
         assert my_quickfiles.help_button.present()
-        # assert my_quickfiles.download_as_zip_button.present()
+        assert my_quickfiles.download_as_zip_button.present()
 
         assert my_quickfiles.share_button.absent()
-        # assert my_quickfiles.download_button.absent()
+        assert my_quickfiles.download_button.absent()
         assert my_quickfiles.view_button.absent()
         assert my_quickfiles.move_button.absent()
         assert my_quickfiles.delete_button.absent()
@@ -45,7 +45,7 @@ class TestQuickfilesLoggedIn:
         # Check expected buttons when file is selected
         assert my_quickfiles.upload_button.present()
         assert my_quickfiles.share_button.present()
-        # assert my_quickfiles.download_button.present()
+        assert my_quickfiles.download_button.present()
         assert my_quickfiles.view_button.present()
         assert my_quickfiles.move_button.present()
         assert my_quickfiles.delete_button.present()
@@ -53,7 +53,7 @@ class TestQuickfilesLoggedIn:
         assert my_quickfiles.filter_button.present()
         assert my_quickfiles.help_button.present()
 
-        # assert my_quickfiles.download_as_zip_button.absent()
+        assert my_quickfiles.download_as_zip_button.absent()
 
 
 @markers.dont_run_on_prod
@@ -74,11 +74,11 @@ class AnothersQuickfilesMixin:
         # Check expected buttons when file is not selected
         assert anothers_quickfiles.filter_button.present()
         assert anothers_quickfiles.help_button.present()
-        # assert anothers_quickfiles.download_as_zip_button.present()
+        assert anothers_quickfiles.download_as_zip_button.present()
 
         assert anothers_quickfiles.upload_button.absent()
         assert anothers_quickfiles.share_button.absent()
-        # assert anothers_quickfiles.download_button.absent()
+        assert anothers_quickfiles.download_button.absent()
         assert anothers_quickfiles.view_button.absent()
         assert anothers_quickfiles.move_button.absent()
         assert anothers_quickfiles.delete_button.absent()
@@ -91,7 +91,7 @@ class AnothersQuickfilesMixin:
         assert anothers_quickfiles.filter_button.present()
         assert anothers_quickfiles.help_button.present()
         assert anothers_quickfiles.share_button.present()
-        # assert anothers_quickfiles.download_button.present()
+        assert anothers_quickfiles.download_button.present()
         assert anothers_quickfiles.view_button.present()
 
         assert anothers_quickfiles.upload_button.absent()
@@ -99,7 +99,7 @@ class AnothersQuickfilesMixin:
         assert anothers_quickfiles.delete_button.absent()
         assert anothers_quickfiles.rename_button.absent()
 
-        # assert anothers_quickfiles.download_as_zip_button.absent()
+        assert anothers_quickfiles.download_as_zip_button.absent()
 
 
 @markers.dont_run_on_prod
