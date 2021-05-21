@@ -41,4 +41,12 @@ class QuickfilesPage(BaseQuickfilesPage, GuidBasePage):
 
 
 class QuickfileDetailPage(BaseQuickfilesPage, GuidBasePage):
-    identity = Locator(By.CSS_SELECTOR, '._TitleBar_1628nl')
+    identity = Locator(By.CSS_SELECTOR, 'div[data-analytics-scope="File detail"]')
+
+    delete_button = Locator(By.CSS_SELECTOR, '[data-test-delete-button]')
+    download_button = Locator(By.CSS_SELECTOR, '[data-test-download-button]')
+    share_button = Locator(By.CSS_SELECTOR, '[data-test-share-button]')
+    view_button = Locator(By.CSS_SELECTOR, 'button[data-analytics-name="View"]')
+    edit_button = Locator(By.CSS_SELECTOR, 'button[data-analytics-name="Edit"]')
+    revisions_button = Locator(By.CSS_SELECTOR, '[data-test-revisions-tab]')
+    filter_button = Locator(By.CSS_SELECTOR, '[data-test-filter-button]')

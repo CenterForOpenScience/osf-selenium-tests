@@ -23,7 +23,16 @@ class TestQuickfilesLoggedIn:
     def test_quickfile_exists(self, driver, my_quickfiles):
         my_quickfiles.loading_indicator.here_then_gone()
         my_quickfiles.file_titles[0].click()
-        QuickfileDetailPage(driver, verify=True)
+        quickfileDetail = QuickfileDetailPage(driver, verify=True)
+
+        # verify expected buttons on Quickfiles Detail page
+        assert quickfileDetail.delete_button.present()
+        assert quickfileDetail.download_button.present()
+        assert quickfileDetail.share_button.present()
+        assert quickfileDetail.view_button.present()
+        assert quickfileDetail.edit_button.present()
+        assert quickfileDetail.revisions_button.present()
+        assert quickfileDetail.filter_button.present()
 
     def test_expected_buttons(self, my_quickfiles):
         # Check expected buttons when file is not selected
@@ -68,7 +77,16 @@ class AnothersQuickfilesMixin:
     def test_quickfile_exists(self, driver, anothers_quickfiles):
         anothers_quickfiles.loading_indicator.here_then_gone()
         anothers_quickfiles.file_titles[0].click()
-        QuickfileDetailPage(driver, verify=True)
+        quickfileDetail = QuickfileDetailPage(driver, verify=True)
+
+        # verify expected buttons on Quickfiles Detail page
+        assert quickfileDetail.delete_button.absent()
+        assert quickfileDetail.download_button.present()
+        assert quickfileDetail.share_button.present()
+        assert quickfileDetail.view_button.present()
+        assert quickfileDetail.edit_button.absent()
+        assert quickfileDetail.revisions_button.present()
+        assert quickfileDetail.filter_button.present()
 
     def test_expected_buttons(self, anothers_quickfiles):
         # Check expected buttons when file is not selected
