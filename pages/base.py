@@ -94,19 +94,19 @@ class OSFBasePage(BasePage):
     def __init__(self, driver, verify=False):
         super().__init__(driver, verify)
 
-    @property
-    def error_heading(self):
+    def find_error_heading_element(self):
         try:
             error_head = self.driver.find_element(By.CSS_SELECTOR, 'h2#error')
         except NoSuchElementException:
             return None
         else:
-            return error_head.text
+            return error_head
 
     def error_handling(self):
         # If we've got an error message here from osf, grab it
-        if self.error_heading:
-            raise HttpError(self.error_heading.get_attribute('data-http-status-code'))
+        error_heading = self.find_error_heading_element()
+        if error_heading:
+            raise HttpError(error_heading.get_attribute('data-http-status-code'))
 
     def is_logged_in(self):
         return self.navbar.is_logged_in()
