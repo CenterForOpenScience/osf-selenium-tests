@@ -1,3 +1,4 @@
+import pytest
 import markers
 
 from pages.login import LoginPage, InstitutionalLoginPage
@@ -5,26 +6,28 @@ from pages.login import LoginPage, InstitutionalLoginPage
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 
+@pytest.fixture
+def login_page(driver):
+    login_page = LoginPage(driver)
+    login_page.goto()
+    return login_page
+
 
 class TestLoginWorkflow:
 
     @markers.core_functionality
-    def test_institutional_login(self, driver):
+    def test_institutional_login(self, driver, login_page):
         """Check that you arrive on the institutional login page and the institution dropdown is populated.
         We can't actually test institutional login.
         """
-        login_page = LoginPage(driver)
-        login_page.goto()
         login_page.institutional_login_button.click()
         institutional_login_page = InstitutionalLoginPage(driver, verify=True)
         assert len(institutional_login_page.dropdown_options) > 1
 
     @markers.core_functionality
-    def test_orcid_login(self, driver):
+    def test_orcid_login(self, driver, login_page):
         """Check that you arrive on the orcid login page.
         """
-        login_page = LoginPage(driver)
-        login_page.goto()
         login_page.orcid_login_button.click()
 
         # If user is logged out of ORCID, ORCID's Oauth service will use
