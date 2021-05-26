@@ -1,7 +1,9 @@
 import pytest
 import markers
 
-from pages.login import LoginPage, InstitutionalLoginPage
+from pages.login import LoginPage, InstitutionalLoginPage, ForgotPasswordPage
+from pages.landing import LandingPage
+from pages.register import RegisterPage
 
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
@@ -36,3 +38,35 @@ class TestLoginWorkflow:
 
         # Oauth will redirect to callback url with "error" if anything goes wrong
         assert 'error' not in driver.current_url
+
+    def test_osf_home_link(self, driver, login_page):
+        login_page.osf_home_link.click()
+        assert LandingPage(driver, verify=True)
+
+    def test_sign_up_button(self, driver, login_page):
+        login_page.sign_up_button.click()
+        assert RegisterPage(driver, verify=True)
+
+    def test_reset_password_link(self, driver, login_page):
+        login_page.reset_password_link.click()
+        assert ForgotPasswordPage(driver, verify=True)
+
+    def test_need_help_link(self, driver, login_page):
+        login_page.need_help_link.click()
+        assert driver.current_url == 'https://help.osf.io/hc/en-us/articles/360019737194-Sign-in-to-OSF'
+
+    def test_cos_footer_link(self, driver, login_page):
+        login_page.cos_footer_link.click()
+        assert driver.current_url == 'https://www.cos.io/'
+
+    def test_terms_of_use_footer_link(self, driver, login_page):
+        login_page.terms_of_use_footer_link.click()
+        assert driver.current_url == 'https://github.com/CenterForOpenScience/cos.io/blob/master/TERMS_OF_USE.md'
+
+    def test_privacy_policy_footer_link(self, driver, login_page):
+        login_page.privacy_policy_footer_link.click()
+        assert driver.current_url == 'https://github.com/CenterForOpenScience/cos.io/blob/master/PRIVACY_POLICY.md'
+
+    def test_status_footer_link(self, driver, login_page):
+        login_page.status_footer_link.click()
+        assert driver.current_url == 'https://status.cos.io/'

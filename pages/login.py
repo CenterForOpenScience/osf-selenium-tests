@@ -16,6 +16,14 @@ class LoginPage(BasePage):
     remember_me_checkbox = Locator(By.ID, 'rememberMe')
     institutional_login_button = Locator(By.ID, 'instnLogin')
     orcid_login_button = Locator(By.ID, 'orcidlogin')
+    osf_home_link = Locator(By.CSS_SELECTOR, '.navbar-link')
+    sign_up_button = Locator(By.ID, 'osfRegister')
+    reset_password_link = Locator(By.CSS_SELECTOR, 'span.cas-field-float-right > a:nth-child(1)')
+    need_help_link = Locator(By.CSS_SELECTOR, 'span.cas-field-float-right > a:nth-child(3)')
+    cos_footer_link = Locator(By.CSS_SELECTOR, '#copyright > a:nth-child(2)')
+    terms_of_use_footer_link = Locator(By.CSS_SELECTOR, '#copyright > a:nth-child(3)')
+    privacy_policy_footer_link = Locator(By.CSS_SELECTOR, '#copyright > a:nth-child(4)')
+    status_footer_link = Locator(By.CSS_SELECTOR, '#copyright > a:nth-child(5)')
 
     if 'localhost:5000' in settings.OSF_HOME:
         submit_button = Locator(By.ID, 'submit')
@@ -39,6 +47,12 @@ class InstitutionalLoginPage(BasePage):
 
     identity = Locator(By.CSS_SELECTOR, '#institutionSelect')
     dropdown_options = GroupLocator(By.CSS_SELECTOR, '#institutionSelect option')
+
+
+class ForgotPasswordPage(BasePage):
+    url = settings.OSF_HOME + '/forgotpassword/'
+
+    identity = Locator(By.ID, 'forgotPasswordForm')
 
 
 def login(driver, user=settings.USER_ONE, password=settings.USER_ONE_PASSWORD):
