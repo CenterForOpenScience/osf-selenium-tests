@@ -46,6 +46,18 @@ class InstitutionalLoginPage(BasePage):
     url = settings.OSF_HOME + '/login?campaign=institution'
 
     identity = Locator(By.CSS_SELECTOR, '#institutionSelect')
+    institution_dropdown = Locator(By.ID, 'institutionSelect')
+    sign_in_button = Locator(By.ID, 'institutionSubmit')
+    osf_home_link = Locator(By.CSS_SELECTOR, '.navbar-link')
+    sign_up_button = Locator(By.ID, 'osfRegister')
+    cant_find_institution_link = Locator(By.CSS_SELECTOR, '#content > div > section > section:nth-child(5) > span > a')
+    need_help_link = Locator(By.CSS_SELECTOR, '#content > div > section > section:nth-child(8) > span > a')
+    sign_in_with_osf_link = Locator(By.CSS_SELECTOR, '#content > div > section > section:nth-child(9) > span > a')
+    cos_footer_link = Locator(By.CSS_SELECTOR, '#copyright > a:nth-child(2)')
+    terms_of_use_footer_link = Locator(By.CSS_SELECTOR, '#copyright > a:nth-child(3)')
+    privacy_policy_footer_link = Locator(By.CSS_SELECTOR, '#copyright > a:nth-child(4)')
+    status_footer_link = Locator(By.CSS_SELECTOR, '#copyright > a:nth-child(5)')
+
     dropdown_options = GroupLocator(By.CSS_SELECTOR, '#institutionSelect option')
 
 
@@ -53,6 +65,12 @@ class ForgotPasswordPage(BasePage):
     url = settings.OSF_HOME + '/forgotpassword/'
 
     identity = Locator(By.ID, 'forgotPasswordForm')
+
+
+class UnsupportedInstitutionLoginPage(BasePage):
+    url = settings.OSF_HOME + '/login?campaign=unsupportedinstitution'
+
+    identity = Locator(By.ID, 'osfUnsupportedInstitutionLogin')
 
 
 def login(driver, user=settings.USER_ONE, password=settings.USER_ONE_PASSWORD):
