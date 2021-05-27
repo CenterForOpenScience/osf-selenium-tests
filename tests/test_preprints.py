@@ -127,12 +127,17 @@ def custom_providers():
 
 class TestBrandedProviders:
 
-    @pytest.fixture(params=custom_providers(), ids=[prov['id'] for prov in custom_providers()])
+    @pytest.fixture(params=providers(), ids=[prov['id'] for prov in providers()])
     def provider(self, request):
         return request.param
 
     def test_landing_page_loads(self, driver, provider):
         PreprintLandingPage(driver, provider=provider).goto()
+        if provider['attributes']['domain_redirect_enabled']:
+            # Make sure the landing page url matches the expected domian
+            assert driver.current_url == provider['attributes']['domain']
+        else:
+            assert 'osf.io/preprints/' in driver.current_url
 
     def test_discover_page_loads(self, driver, provider):
         PreprintDiscoverPage(driver, provider=provider).goto()
@@ -148,9 +153,18 @@ class TestBrandedProviders:
             assert 'submit' not in landing_page.submit_navbar.text
             assert not landing_page.submit_button.present()
 
-    @markers.smoke_test
-    @markers.core_functionality
-    @pytest.mark.skipif(not settings.PRODUCTION, reason='Cannot test on stagings as they share SHARE')
+
+@markers.smoke_test
+@markers.core_functionality
+@pytest.mark.skipif(not settings.PRODUCTION, reason='Cannot test on stagings as they share SHARE')
+class TestCustomDomainsInProd:
+    """This class only runs in Production for Branded Providers that have a Custom Domain
+    """
+
+    @pytest.fixture(params=custom_providers(), ids=[prov['id'] for prov in custom_providers()])
+    def provider(self, request):
+        return request.param
+
     def test_detail_page(self, session, driver, provider):
         """Test a preprint detail page by grabbing the first search result from the discover page.
         """
