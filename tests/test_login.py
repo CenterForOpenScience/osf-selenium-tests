@@ -1,9 +1,16 @@
 import pytest
 import markers
+import settings
 
-from pages.login import LoginPage, InstitutionalLoginPage, ForgotPasswordPage, UnsupportedInstitutionLoginPage
 from pages.landing import LandingPage
 from pages.register import RegisterPage
+from pages.login import (
+    LoginPage,
+    InstitutionalLoginPage,
+    ForgotPasswordPage,
+    UnsupportedInstitutionLoginPage,
+    GenericCASPage,
+)
 
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -72,6 +79,30 @@ class TestLoginWorkflow:
     def test_status_footer_link(self, driver, login_page):
         login_page.status_footer_link.click()
         assert driver.current_url == 'https://status.cos.io/'
+
+
+class TestGenericPages:
+    """Generic pages have no service in the login/logout url. Typically users should not be able to access
+    these pages through the standard authentication workflow. The tests in this class manually manipulate the
+    urls used in order to get to these pages so that we can verify that they do function just in case they
+    are ever needed.
+    """
+
+    def test_generic_logged_in_page(self, driver, must_be_logged_in):
+        """Test the generic CAS logged in page by manually navigating to a CAS page without a service in the url
+        """
+        driver.get(settings.CAS_DOMAIN + '/login')
+        logged_in_page = GenericCASPage(driver, verify=True)
+        assert logged_in_page.auto_redirect_message.text == "Auto-redirection didn't happen ..."
+        assert logged_in_page.status_message.text == 'Login successful'
+
+    def test_generic_logged_out_page(self, driver):
+        """Test the generic CAS logged out page by manually navigating to a CAS page without a service in the url
+        """
+        driver.get(settings.CAS_DOMAIN + '/logout')
+        logged_out_page = GenericCASPage(driver, verify=True)
+        assert logged_out_page.auto_redirect_message.text == "Auto-redirection didn't happen ..."
+        assert logged_out_page.status_message.text == 'Logout successful'
 
 
 class TestInstitutionLoginPage:

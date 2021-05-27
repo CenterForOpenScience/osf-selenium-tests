@@ -73,6 +73,14 @@ class UnsupportedInstitutionLoginPage(BasePage):
     identity = Locator(By.ID, 'osfUnsupportedInstitutionLogin')
 
 
+class GenericCASPage(BasePage):
+    url = settings.CAS_DOMAIN
+
+    identity = Locator(By.CLASS_NAME, 'login-error-card')
+    auto_redirect_message = Locator(By.CSS_SELECTOR, '#content > div > section > section.text-without-mdi.text-center.text-bold.text-large.margin-large-vertical.title')
+    status_message = Locator(By.CSS_SELECTOR, '#content > div > section > section.card-message > h2')
+
+
 def login(driver, user=settings.USER_ONE, password=settings.USER_ONE_PASSWORD):
     login_page = LoginPage(driver)
     login_page.goto()
