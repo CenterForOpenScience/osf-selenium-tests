@@ -76,7 +76,6 @@ class PreprintSubmitPage(BasePreprintPage):
     save_author_assertions = Locator(By.CSS_SELECTOR, '[data-test-author-assertions-continue]')
 
     basics_license_dropdown = Locator(By.CSS_SELECTOR, 'select[class="form-control"]', settings.LONG_TIMEOUT)
-    basics_universal_license = Locator(By.CSS_SELECTOR, 'select[class="form-control"] > option:nth-child(3)', settings.QUICK_TIMEOUT)
     basics_tags_section = Locator(By.CSS_SELECTOR, '#preprint-form-basics .tagsinput')
     basics_tags_input = Locator(By.CSS_SELECTOR, '#preprint-form-basics .tagsinput input')
     basics_abstract_input = Locator(By.NAME, 'basicsAbstract')
