@@ -30,7 +30,7 @@ class DashboardPage(BaseDashboardPage):
     create_project_button = Locator(By.CSS_SELECTOR, '[data-test-create-project-modal-button]', settings.LONG_TIMEOUT)
     view_meetings_button = Locator(By.XPATH, '//a[text()="View meetings"]')
     view_preprints_button = Locator(By.XPATH, '//a[text()="View preprints"]')
-    first_popular_project_entry = Locator(By.CSS_SELECTOR, '._NoteworthyProject__item_ko80g1', settings.LONG_TIMEOUT)
+    first_noteworthy_project = Locator(By.CSS_SELECTOR, '[data-test-noteworthy-project]', settings.LONG_TIMEOUT)
     institutions_carousel_left_arrow = Locator(By.CSS_SELECTOR, '._InstitutionCarousel__control_16pdz4.carousel-control._left_16pdz4')
     institutions_carousel_right_arrow = Locator(By.CSS_SELECTOR, '._InstitutionCarousel__control_16pdz4.carousel-control._right_16pdz4')
 
