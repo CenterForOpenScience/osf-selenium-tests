@@ -29,6 +29,12 @@ class TestProjectDetailPage:
 
         new_title = fake.sentence(nb_words=4)
         assert project_page.title.text != new_title
+        # In some cases (especially with Chrome) the test steps are executed faster than the web page is
+        # really ready for them.  In this particular case the test clicks the title of the project which
+        # is supposed to then produce an input box in which you can change the title.  If the click is
+        # performed before the page is ready, then there is no input box and the test fails.  So we need
+        # to provide a little extra time.  We can do this by waiting on the log widget to load.
+        project_page.log_widget.loading_indicator.here_then_gone()
         project_page.title.click()
         project_page.title_input.clear()
         project_page.title_input.send_keys(new_title)
@@ -122,8 +128,7 @@ class TestForksPage:
         assert len(forks_page.listed_forks) == 1
 
         # Clean-up leftover fork
-        href = forks_page.fork_link.get_attribute('href')
-        fork_guid = href[20:]
+        fork_guid = forks_page.fork_link.get_attribute('data-test-node-title')
         osf_api.delete_project(session, fork_guid, None)
 
 
