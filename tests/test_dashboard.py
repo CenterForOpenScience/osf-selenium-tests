@@ -66,10 +66,16 @@ class TestDashboardPage:
         page_institution_names = [i.get_property('name') for i in page_institutions]
         assert set(page_institution_names) == set(api_institution_names)
 
+    # There is some setup involved (not a waffle flag) with getting projects to display in the New and noteworthy
+    # section. Currently this only works in the Stage 1 and Stage 3 environments.
     @pytest.mark.skipif(settings.STAGE2 or settings.TEST, reason='No new and noteworthy node on stage2 or test')
+    @markers.smoke_test
     @markers.core_functionality
     def test_new_and_noteworthy(self, dashboard_page):
-        assert dashboard_page.first_popular_project_entry.present()
+        assert dashboard_page.first_noteworthy_project.present()
+
+    # TODO: Maybe add a test to verify Most popular section if/when we ever figure out how a project becomes
+    # Most Popular
 
     def test_meetings_link(self, driver, dashboard_page):
         dashboard_page.view_meetings_button.click()
