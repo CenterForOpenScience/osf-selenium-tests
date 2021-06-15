@@ -12,6 +12,7 @@ class LoginPage(BasePage):
     identity = Locator(By.ID, 'loginForm', settings.LONG_TIMEOUT)
     username_input = Locator(By.ID, 'username')
     password_input = Locator(By.ID, 'password')
+    login_error_message = Locator(By.CLASS_NAME, 'login-error-inline')
     submit_button = Locator(By.NAME, 'submit')
     remember_me_checkbox = Locator(By.ID, 'rememberMe')
     institutional_login_button = Locator(By.ID, 'instnLogin')
@@ -77,6 +78,7 @@ class GenericCASPage(BasePage):
     url = settings.CAS_DOMAIN
 
     identity = Locator(By.CLASS_NAME, 'login-error-card')
+    navbar_brand = Locator(By.CLASS_NAME, 'cas-brand-text')
     auto_redirect_message = Locator(By.CSS_SELECTOR, '#content > div > section > section.text-without-mdi.text-center.text-bold.text-large.margin-large-vertical.title')
     status_message = Locator(By.CSS_SELECTOR, '#content > div > section > section.card-message > h2')
 
