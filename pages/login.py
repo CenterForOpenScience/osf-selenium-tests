@@ -43,6 +43,17 @@ class LoginPage(BasePage):
         self.submit_button.click()
 
 
+class Login2FAPage(BasePage):
+
+    identity = Locator(By.ID, 'totploginForm')
+    username_input = Locator(By.ID, 'username')
+    oneTimePassword_input = Locator(By.ID, 'oneTimePassword')
+    login_error_message = Locator(By.CLASS_NAME, 'login-error-inline')
+    verify_button = Locator(By.NAME, 'submit')
+    cancel_link = Locator(By.LINK_TEXT, 'Cancel')
+    need_help_link = Locator(By.LINK_TEXT, 'Need help signing in?')
+
+
 class InstitutionalLoginPage(BasePage):
     url = settings.OSF_HOME + '/login?campaign=institution'
 
