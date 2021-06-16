@@ -54,6 +54,16 @@ class Login2FAPage(BasePage):
     need_help_link = Locator(By.LINK_TEXT, 'Need help signing in?')
 
 
+class LoginToSPage(BasePage):
+
+    identity = Locator(By.ID, 'tosloginForm')
+    terms_of_use_link = Locator(By.LINK_TEXT, 'Terms of Use')
+    privacy_policy_link = Locator(By.LINK_TEXT, 'Privacy Policy')
+    tos_checkbox = Locator(By.ID, 'termsOfServiceChecked')
+    continue_button = Locator(By.ID, 'primarySubmitButton')
+    cancel_link = Locator(By.LINK_TEXT, 'Cancel and go back to OSF')
+
+
 class InstitutionalLoginPage(BasePage):
     url = settings.OSF_HOME + '/login?campaign=institution'
 

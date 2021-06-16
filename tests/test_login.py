@@ -7,6 +7,7 @@ from pages.register import RegisterPage
 from pages.login import (
     LoginPage,
     Login2FAPage,
+    LoginToSPage,
     InstitutionalLoginPage,
     ForgotPasswordPage,
     UnsupportedInstitutionLoginPage,
@@ -112,6 +113,41 @@ class Test2FAPage:
         two_factor_page = Login2FAPage(driver, verify=True)
         two_factor_page.need_help_link.click()
         assert 'https://help.osf.io' and 'Enable-or-Disable-Two-Factor-Authentication' in driver.current_url
+
+
+class TestToSPage:
+    """This test logs in as a user that has not accepted the OSF Terms of Service and verifies that after entering
+    their login credentials as normal the user is then directed to a Terms of Service acceptance page. The test
+    verifies the various elements on this page, but it does not complete the acceptance of the terms of service
+    since that would spoil the user setup data for future test runs.
+    """
+
+    def test_continue_button_disabled(self, driver):
+        login(driver, user=settings.CAS_TOS_USER, password=settings.CAS_TOS_USER_PASSWORD)
+        tos_page = LoginToSPage(driver, verify=True)
+        # verify that at first the Continue button is disabled and then becomes enabled after checking the checkbox
+        assert driver.find_element(By.ID, 'primarySubmitButton').get_property('disabled')
+        tos_page.tos_checkbox.click()
+        assert tos_page.continue_button.is_enabled()
+
+    def test_terms_of_use_link(self, driver):
+        login(driver, user=settings.CAS_TOS_USER, password=settings.CAS_TOS_USER_PASSWORD)
+        tos_page = LoginToSPage(driver, verify=True)
+        tos_page.terms_of_use_link.click()
+        assert driver.current_url == 'https://github.com/CenterForOpenScience/cos.io/blob/master/TERMS_OF_USE.md'
+
+    def test_privacy_policy_link(self, driver):
+        login(driver, user=settings.CAS_TOS_USER, password=settings.CAS_TOS_USER_PASSWORD)
+        tos_page = LoginToSPage(driver, verify=True)
+        tos_page.privacy_policy_link.click()
+        assert driver.current_url == 'https://github.com/CenterForOpenScience/cos.io/blob/master/PRIVACY_POLICY.md'
+
+    def test_cancel_tos_link(self, driver):
+        login(driver, user=settings.CAS_TOS_USER, password=settings.CAS_TOS_USER_PASSWORD)
+        tos_page = LoginToSPage(driver, verify=True)
+        # click the Cancel link and verify that you are redirected back to the OSF home page
+        tos_page.cancel_link.click()
+        assert LandingPage(driver, verify=True)
 
 
 class TestGenericPages:
