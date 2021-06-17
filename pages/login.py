@@ -104,6 +104,15 @@ class GenericCASPage(BasePage):
     status_message = Locator(By.CSS_SELECTOR, '#content > div > section > section.card-message > h2')
 
 
+class CASAuthorizationPage(BasePage):
+    url = settings.CAS_DOMAIN + '/oauth2/authorize'
+
+    identity = Locator(By.CLASS_NAME, 'login-section')
+    navbar_brand = Locator(By.CLASS_NAME, 'cas-brand-text')
+    status_message = Locator(By.CSS_SELECTOR, '#content > div > section > section.card-message > h2')
+    allow_button = Locator(By.ID, 'allow')
+
+
 def login(driver, user=settings.USER_ONE, password=settings.USER_ONE_PASSWORD):
     login_page = LoginPage(driver)
     login_page.goto()

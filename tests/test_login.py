@@ -1,6 +1,7 @@
 import pytest
 import markers
 import settings
+import requests
 
 from pages.landing import LandingPage
 from pages.register import RegisterPage
@@ -12,6 +13,7 @@ from pages.login import (
     ForgotPasswordPage,
     UnsupportedInstitutionLoginPage,
     GenericCASPage,
+    CASAuthorizationPage,
     login,
 )
 
@@ -84,6 +86,7 @@ class TestLoginPage:
         assert driver.current_url == 'https://status.cos.io/'
 
 
+@markers.dont_run_on_prod
 class Test2FAPage:
     """This test logs in as a user with 2 Factor Authentication enabled and verifies that after entering their
     login credentials as normal the user is then directed to a 2 Factor Authentication page. The test verifies the
@@ -115,6 +118,7 @@ class Test2FAPage:
         assert 'https://help.osf.io' and 'Enable-or-Disable-Two-Factor-Authentication' in driver.current_url
 
 
+@markers.dont_run_on_prod
 class TestToSPage:
     """This test logs in as a user that has not accepted the OSF Terms of Service and verifies that after entering
     their login credentials as normal the user is then directed to a Terms of Service acceptance page. The test
@@ -300,3 +304,119 @@ class TestInstitutionLoginPage:
     def test_status_footer_link(self, driver, institution_login_page):
         institution_login_page.status_footer_link.click()
         assert driver.current_url == 'https://status.cos.io/'
+
+
+@markers.dont_run_on_prod
+class TestOauthAPI:
+
+    def test_authorization_online(self, driver, must_be_logged_in):
+        client_id = settings.DEVAPP_CLIENT_ID
+        client_secret = settings.DEVAPP_CLIENT_SECRET
+        redirect_uri = 'https://www.google.com/'
+        requested_scope = 'osf.nodes.metadata_read osf.nodes.access_read osf.nodes.data_read'
+        authorization_url = settings.CAS_DOMAIN + '/oauth2/authorize?response_type=code&client_id=' + client_id + '&redirect_uri=' + redirect_uri + '&scope=' + requested_scope + '&access_type=online'
+        # navigate to the authorization url in the browser
+        driver.get(authorization_url)
+        authorization_page = CASAuthorizationPage(driver, verify=True)
+        assert authorization_page.navbar_brand.text == 'OSF HOME'
+        assert authorization_page.status_message.text == 'Approve or deny authorization'
+        # click allow button to redirect to callback url with authorization code
+        authorization_page.allow_button.click()
+        callback_url = driver.current_url
+        # parse out authorization code from callback url
+        authorization_code = callback_url.partition('?code=')[2]
+        token_url = settings.CAS_DOMAIN + '/oauth2/token'
+        # set the body parameters for the POST including the authorization code
+        body_params = {'code': authorization_code, 'grant_type': 'authorization_code', 'client_id': client_id, 'client_secret': client_secret, 'redirect_uri': redirect_uri}
+        r = requests.post(token_url, data=body_params)
+        assert r.status_code == 200
+        # get the access token from the response
+        access_token = r.json()['access_token']
+        # use the access token to check profile
+        profile_url = settings.CAS_DOMAIN + '/oauth2/profile'
+        headers = {'Authorization': 'Bearer ' + access_token}
+        r = requests.get(profile_url, headers=headers)
+        # verify the profile response
+        assert r.status_code == 200
+        assert r.json()['scope'] == requested_scope.split()  # response has a comma separated list while the scopes in authorization url are separated by spaces
+        assert r.json()['service'] == redirect_uri
+        assert r.json()['attributes']['oauthClientId'] == client_id
+        # lastly we want to revoke the access token
+        revoke_url = settings.CAS_DOMAIN + '/oauth2/revoke'
+        # set the body parameters for the POST with the access token to be revoked
+        body_params = {'token': access_token}
+        r = requests.post(revoke_url, data=body_params)
+        # verify revoke status code returns 204 if revoke was successful
+        assert r.status_code == 204
+        # now try profile again with access code and verify that access code has been successfully revoked
+        headers = {'Authorization': 'Bearer ' + access_token}
+        r = requests.get(profile_url, headers=headers)
+        assert r.status_code == 401
+        assert r.json()['error'] == 'expired_accessToken'
+
+    def test_authorization_offline(self, driver, must_be_logged_in):
+        client_id = settings.DEVAPP_CLIENT_ID
+        client_secret = settings.DEVAPP_CLIENT_SECRET
+        redirect_uri = 'https://www.google.com/'
+        requested_scope = 'osf.full_write osf.users.profile_write'
+        authorization_url = settings.CAS_DOMAIN + '/oauth2/authorize?response_type=code&client_id=' + client_id + '&redirect_uri=' + redirect_uri + '&scope=' + requested_scope + '&access_type=offline&approval_prompt=force'
+        # navigate to the authorization url in the browser
+        driver.get(authorization_url)
+        authorization_page = CASAuthorizationPage(driver, verify=True)
+        assert authorization_page.navbar_brand.text == 'OSF HOME'
+        assert authorization_page.status_message.text == 'Approve or deny authorization'
+        # click allow button to redirect to callback url with authorization code
+        authorization_page.allow_button.click()
+        callback_url = driver.current_url
+        # parse out authorization code from callback url
+        authorization_code = callback_url.partition('?code=')[2]
+        # set the body parameters for the POST including the authorization code
+        body_params = {'code': authorization_code, 'grant_type': 'authorization_code', 'client_id': client_id, 'client_secret': client_secret, 'redirect_uri': redirect_uri}
+        token_url = settings.CAS_DOMAIN + '/oauth2/token'
+        r = requests.post(token_url, data=body_params)
+        assert r.status_code == 200
+        # get the access token from the response
+        access_token = r.json()['access_token']
+        # since it is an offline request there will also be a Refresh token
+        refresh_token = r.json()['refresh_token']
+        # use the access token to get profile
+        profile_url = settings.CAS_DOMAIN + '/oauth2/profile'
+        headers = {'Authorization': 'Bearer ' + access_token}
+        r = requests.get(profile_url, headers=headers)
+        # verify the profile response
+        assert r.status_code == 200
+        assert r.json()['scope'] == requested_scope.split()  # response has a comma separated list while the scopes in authorization url are separated by spaces
+        assert r.json()['service'] == redirect_uri
+        assert r.json()['attributes']['oauthClientId'] == client_id
+        # now use the refresh token from above to request another access token
+        body_params_refresh = {'refresh_token': refresh_token, 'grant_type': 'refresh_token', 'client_id': client_id, 'client_secret': client_secret, 'redirect_uri': redirect_uri}
+        token_url = settings.CAS_DOMAIN + '/oauth2/token'
+        r = requests.post(token_url, data=body_params_refresh)
+        assert r.status_code == 200
+        # next get the access token returned from the refresh token response and use it to again get profile
+        access_token_refresh = r.json()['access_token']
+        profile_url = settings.CAS_DOMAIN + '/oauth2/profile'
+        headers = {'Authorization': 'Bearer ' + access_token_refresh}
+        r = requests.get(profile_url, headers=headers)
+        # again verify the profile response
+        assert r.status_code == 200
+        assert r.json()['scope'] == requested_scope.split()  # response has a comma separated list while the scopes in authorization url are separated by spaces
+        assert r.json()['service'] == client_id
+        assert r.json()['attributes']['oauthClientId'] == client_id
+        # lastly we want to revoke the refresh token
+        revoke_url = settings.CAS_DOMAIN + '/oauth2/revoke'
+        # set the body parameters for the POST with the refresh token to be revoked
+        body_params = {'token': refresh_token}
+        r = requests.post(revoke_url, data=body_params)
+        # verify revoke status code returns 204 if revoke was successful
+        assert r.status_code == 204
+        # now try profile again with access code that was granted from refresh token and verify that access code has also been successfully revoked
+        headers = {'Authorization': 'Bearer ' + access_token_refresh}
+        r = requests.get(profile_url, headers=headers)
+        assert r.status_code == 401
+        assert r.json()['error'] == 'expired_accessToken'
+        # also check profile on original access code, it should also be revoked
+        headers = {'Authorization': 'Bearer ' + access_token}
+        r = requests.get(profile_url, headers=headers)
+        assert r.status_code == 401
+        assert r.json()['error'] == 'expired_accessToken'
