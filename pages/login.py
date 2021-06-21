@@ -19,12 +19,12 @@ class LoginPage(BasePage):
     orcid_login_button = Locator(By.ID, 'orcidlogin')
     osf_home_link = Locator(By.CSS_SELECTOR, '.navbar-link')
     sign_up_button = Locator(By.ID, 'osfRegister')
-    reset_password_link = Locator(By.CSS_SELECTOR, 'span.cas-field-float-right > a:nth-child(1)')
-    need_help_link = Locator(By.CSS_SELECTOR, 'span.cas-field-float-right > a:nth-child(3)')
-    cos_footer_link = Locator(By.CSS_SELECTOR, '#copyright > a:nth-child(2)')
-    terms_of_use_footer_link = Locator(By.CSS_SELECTOR, '#copyright > a:nth-child(3)')
-    privacy_policy_footer_link = Locator(By.CSS_SELECTOR, '#copyright > a:nth-child(4)')
-    status_footer_link = Locator(By.CSS_SELECTOR, '#copyright > a:nth-child(5)')
+    reset_password_link = Locator(By.LINK_TEXT, 'Reset password')
+    need_help_link = Locator(By.LINK_TEXT, 'Need help signing in?')
+    cos_footer_link = Locator(By.LINK_TEXT, 'Center for Open Science')
+    terms_of_use_footer_link = Locator(By.LINK_TEXT, 'Terms of Use')
+    privacy_policy_footer_link = Locator(By.LINK_TEXT, 'Privacy Policy')
+    status_footer_link = Locator(By.LINK_TEXT, 'Status')
 
     if 'localhost:5000' in settings.OSF_HOME:
         submit_button = Locator(By.ID, 'submit')
@@ -72,13 +72,13 @@ class InstitutionalLoginPage(BasePage):
     sign_in_button = Locator(By.ID, 'institutionSubmit')
     osf_home_link = Locator(By.CSS_SELECTOR, '.navbar-link')
     sign_up_button = Locator(By.ID, 'osfRegister')
-    cant_find_institution_link = Locator(By.CSS_SELECTOR, '#content > div > section > section:nth-child(5) > span > a')
-    need_help_link = Locator(By.CSS_SELECTOR, '#content > div > section > section:nth-child(8) > span > a')
-    sign_in_with_osf_link = Locator(By.CSS_SELECTOR, '#content > div > section > section:nth-child(9) > span > a')
-    cos_footer_link = Locator(By.CSS_SELECTOR, '#copyright > a:nth-child(2)')
-    terms_of_use_footer_link = Locator(By.CSS_SELECTOR, '#copyright > a:nth-child(3)')
-    privacy_policy_footer_link = Locator(By.CSS_SELECTOR, '#copyright > a:nth-child(4)')
-    status_footer_link = Locator(By.CSS_SELECTOR, '#copyright > a:nth-child(5)')
+    cant_find_institution_link = Locator(By.LINK_TEXT, "I can't find my institution")
+    need_help_link = Locator(By.LINK_TEXT, 'Need help signing in?')
+    sign_in_with_osf_link = Locator(By.LINK_TEXT, 'Sign in with your OSF account')
+    cos_footer_link = Locator(By.LINK_TEXT, 'Center for Open Science')
+    terms_of_use_footer_link = Locator(By.LINK_TEXT, 'Terms of Use')
+    privacy_policy_footer_link = Locator(By.LINK_TEXT, 'Privacy Policy')
+    status_footer_link = Locator(By.LINK_TEXT, 'Status')
 
     dropdown_options = GroupLocator(By.CSS_SELECTOR, '#institutionSelect option')
 
@@ -102,6 +102,7 @@ class GenericCASPage(BasePage):
     navbar_brand = Locator(By.CLASS_NAME, 'cas-brand-text')
     auto_redirect_message = Locator(By.CSS_SELECTOR, '#content > div > section > section.text-without-mdi.text-center.text-bold.text-large.margin-large-vertical.title')
     status_message = Locator(By.CSS_SELECTOR, '#content > div > section > section.card-message > h2')
+    error_detail = Locator(By.CSS_SELECTOR, '#content > div > section > section.card-message > pre')
 
 
 class CASAuthorizationPage(BasePage):
@@ -111,6 +112,7 @@ class CASAuthorizationPage(BasePage):
     navbar_brand = Locator(By.CLASS_NAME, 'cas-brand-text')
     status_message = Locator(By.CSS_SELECTOR, '#content > div > section > section.card-message > h2')
     allow_button = Locator(By.ID, 'allow')
+    deny_button = Locator(By.ID, 'deny')
 
 
 def login(driver, user=settings.USER_ONE, password=settings.USER_ONE_PASSWORD):

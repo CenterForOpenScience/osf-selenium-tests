@@ -29,6 +29,7 @@ def login_page(driver):
     return login_page
 
 
+@markers.smoke_test
 class TestLoginPage:
 
     @markers.core_functionality
@@ -103,6 +104,14 @@ class Test2FAPage:
         # click the Verify button and verify that you receive an error message that a one-time password is required
         two_factor_page.verify_button.click()
         assert two_factor_page.login_error_message.text == 'One-time password is required.'
+
+    def test_invalid_one_time_password(self, driver):
+        login(driver, user=settings.CAS_2FA_USER, password=settings.CAS_2FA_USER_PASSWORD)
+        two_factor_page = Login2FAPage(driver, verify=True)
+        # Enter an invalid one-time password and click the Verify button and verify that you receive an error message
+        two_factor_page.oneTimePassword_input.send_keys_deliberately('999999')
+        two_factor_page.verify_button.click()
+        assert two_factor_page.login_error_message.text == 'The one-time password you entered is incorrect.'
 
     def test_cancel_2fa_login(self, driver):
         login(driver, user=settings.CAS_2FA_USER, password=settings.CAS_2FA_USER_PASSWORD)
@@ -251,6 +260,7 @@ class TestCustomExceptionPages:
         assert exception_page.status_message.text == 'Account disabled'
 
 
+@markers.smoke_test
 class TestInstitutionLoginPage:
 
     @pytest.fixture
@@ -420,3 +430,106 @@ class TestOauthAPI:
         r = requests.get(profile_url, headers=headers)
         assert r.status_code == 401
         assert r.json()['error'] == 'expired_accessToken'
+
+    def test_authorization_single_scope(self, driver, must_be_logged_in):
+        client_id = settings.DEVAPP_CLIENT_ID
+        client_secret = settings.DEVAPP_CLIENT_SECRET
+        redirect_uri = 'https://www.google.com/'
+        requested_scope = 'osf.nodes.metadata_write'  # request just 1 access type
+        authorization_url = settings.CAS_DOMAIN + '/oauth2/authorize?response_type=code&client_id=' + client_id + '&redirect_uri=' + redirect_uri + '&scope=' + requested_scope + '&access_type=online&approval_prompt=force'
+        # navigate to the authorization url in the browser
+        driver.get(authorization_url)
+        authorization_page = CASAuthorizationPage(driver, verify=True)
+        assert authorization_page.navbar_brand.text == 'OSF HOME'
+        assert authorization_page.status_message.text == 'Approve or deny authorization'
+        # click allow button to redirect to callback url with authorization code
+        authorization_page.allow_button.click()
+        callback_url = driver.current_url
+        # parse out authorization code from callback url
+        authorization_code = callback_url.partition('?code=')[2]
+        token_url = settings.CAS_DOMAIN + '/oauth2/token'
+        # set the body parameters for the POST including the authorization code
+        body_params = {'code': authorization_code, 'grant_type': 'authorization_code', 'client_id': client_id, 'client_secret': client_secret, 'redirect_uri': redirect_uri}
+        r = requests.post(token_url, data=body_params)
+        assert r.status_code == 200
+        # get the access token from the response
+        access_token = r.json()['access_token']
+        # use the access token to check profile
+        profile_url = settings.CAS_DOMAIN + '/oauth2/profile'
+        headers = {'Authorization': 'Bearer ' + access_token}
+        r = requests.get(profile_url, headers=headers)
+        # verify the profile response
+        assert r.status_code == 200
+        # response will contain list of 2 scopes, the first of which will be empty (otherwise response would be a string and not a list)
+        scope_list = list(('', requested_scope))
+        assert r.json()['scope'] == scope_list
+        assert r.json()['service'] == redirect_uri
+        assert r.json()['attributes']['oauthClientId'] == client_id
+        # lastly we want to revoke the access token
+        revoke_url = settings.CAS_DOMAIN + '/oauth2/revoke'
+        # set the body parameters for the POST with the access token to be revoked
+        body_params = {'token': access_token}
+        r = requests.post(revoke_url, data=body_params)
+        # verify revoke status code returns 204 if revoke was successful
+        assert r.status_code == 204
+        # now try profile again with access code and verify that access code has been successfully revoked
+        headers = {'Authorization': 'Bearer ' + access_token}
+        r = requests.get(profile_url, headers=headers)
+        assert r.status_code == 401
+        assert r.json()['error'] == 'expired_accessToken'
+
+    def test_deny_authorization(self, driver, must_be_logged_in):
+        client_id = settings.DEVAPP_CLIENT_ID
+        redirect_uri = 'https://www.google.com/'
+        requested_scope = 'osf.full_read osf.users.email_read'
+        authorization_url = settings.CAS_DOMAIN + '/oauth2/authorize?response_type=code&client_id=' + client_id + '&redirect_uri=' + redirect_uri + '&scope=' + requested_scope + '&access_type=offline&approval_prompt=force'
+        # navigate to the authorization url in the browser
+        driver.get(authorization_url)
+        authorization_page = CASAuthorizationPage(driver, verify=True)
+        assert authorization_page.navbar_brand.text == 'OSF HOME'
+        assert authorization_page.status_message.text == 'Approve or deny authorization'
+        # click deny button to redirect to callback url with access denied error message
+        authorization_page.deny_button.click()
+        callback_url = driver.current_url
+        # parse out error message from callback url
+        message = callback_url.partition('?error=')[2]
+        assert message == 'access_denied'
+
+    def test_authorization_failed_missing_client_id(self, driver, must_be_logged_in):
+        client_id = ''  # no client id
+        redirect_uri = 'https://www.google.com/'
+        requested_scope = 'osf.full_read osf.full_write'
+        authorization_url = settings.CAS_DOMAIN + '/oauth2/authorize?response_type=code&client_id=' + client_id + '&redirect_uri=' + redirect_uri + '&scope=' + requested_scope + '&access_type=online&approval_prompt=force'
+        # navigate to the authorization url in the browser
+        driver.get(authorization_url)
+        # verify exception page
+        exception_page = GenericCASPage(driver, verify=True)
+        assert exception_page.navbar_brand.text == 'OSF HOME'
+        assert exception_page.status_message.text == 'Authorization failed'
+        assert exception_page.error_detail.text == 'missing_request_param: client_id'
+
+    def test_authorization_failed_invalid_redirect_uri(self, driver, must_be_logged_in):
+        client_id = settings.DEVAPP_CLIENT_ID
+        redirect_uri = 'https://www.gogle.com/'  # typo in redirect uri
+        requested_scope = 'osf.nodes.access_write osf.users.profile_read'
+        authorization_url = settings.CAS_DOMAIN + '/oauth2/authorize?response_type=code&client_id=' + client_id + '&redirect_uri=' + redirect_uri + '&scope=' + requested_scope + '&access_type=online&approval_prompt=force'
+        # navigate to the authorization url in the browser
+        driver.get(authorization_url)
+        # verify exception page
+        exception_page = GenericCASPage(driver, verify=True)
+        assert exception_page.navbar_brand.text == 'OSF HOME'
+        assert exception_page.status_message.text == 'Authorization failed'
+        assert exception_page.error_detail.text == 'invalid_redirect_url: https://www.gogle.com/'
+
+    def test_authorization_failed_invalid_scope(self, driver, must_be_logged_in):
+        client_id = settings.DEVAPP_CLIENT_ID
+        redirect_uri = 'https://www.google.com/'
+        requested_scope = 'everything'  # not a valid scope for OSF
+        authorization_url = settings.CAS_DOMAIN + '/oauth2/authorize?response_type=code&client_id=' + client_id + '&redirect_uri=' + redirect_uri + '&scope=' + requested_scope + '&access_type=online&approval_prompt=force'
+        # navigate to the authorization url in the browser
+        driver.get(authorization_url)
+        # verify exception page
+        exception_page = GenericCASPage(driver, verify=True)
+        assert exception_page.navbar_brand.text == 'OSF HOME'
+        assert exception_page.status_message.text == 'Authorization failed'
+        assert exception_page.error_detail.text == 'invalid_scope: everything'
