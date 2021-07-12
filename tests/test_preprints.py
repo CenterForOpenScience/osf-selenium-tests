@@ -125,7 +125,7 @@ def custom_providers():
     return [provider for provider in providers if provider['attributes']['domain_redirect_enabled']]
 
 
-class TestBrandedProviders:
+class TestProvidersWithCustomDomains:
 
     @pytest.fixture(params=custom_providers(), ids=[prov['id'] for prov in custom_providers()])
     def provider(self, request):
@@ -148,9 +148,18 @@ class TestBrandedProviders:
             assert 'submit' not in landing_page.submit_navbar.text
             assert not landing_page.submit_button.present()
 
-    @markers.smoke_test
-    @markers.core_functionality
-    @pytest.mark.skipif(not settings.PRODUCTION, reason='Cannot test on stagings as they share SHARE')
+
+@markers.smoke_test
+@markers.core_functionality
+@pytest.mark.skipif(not settings.PRODUCTION, reason='Cannot test on stagings as they share SHARE')
+class TestBrandedProviders:
+    """This class only runs in Production for all Branded Providers
+    """
+
+    @pytest.fixture(params=providers(), ids=[prov['id'] for prov in providers()])
+    def provider(self, request):
+        return request.param
+
     def test_detail_page(self, session, driver, provider):
         """Test a preprint detail page by grabbing the first search result from the discover page.
         """
@@ -162,9 +171,13 @@ class TestBrandedProviders:
 
         discover_page.goto()
         discover_page.verify()
+        # add OSF consent cookie to get rid of the banner at the bottom of the page which can get in the way
+        # when we have to scroll down to click the first preprint listing
+        driver.add_cookie({'name': 'osf_cookieconsent', 'value': '1'})
+        discover_page.reload()
         discover_page.loading_indicator.here_then_gone()
 
-        if osf_api.get_providers_total(provider['attributes']['name'], session=session):
+        if osf_api.get_providers_total(provider['id'], session=session):
             search_results = discover_page.search_results
             assert search_results
             search_results[0].click()
