@@ -1,5 +1,6 @@
 import pytest
 import markers
+import settings
 
 from selenium.webdriver.common.keys import Keys
 
@@ -27,19 +28,30 @@ class TestRegistriesDiscoverPage:
         discover_page.loading_indicator.here_then_gone()
         assert len(discover_page.search_results) > 0
 
+    @markers.smoke_test
     @markers.core_functionality
     def test_detail_page(self, driver):
         """Test a registration detail page by grabbing the first search result from the discover page.
         """
         discover_page = RegistriesDiscoverPage(driver)
         discover_page.goto()
+        if not settings.PRODUCTION:
+            # Since all of the testing environments use the same SHARE server, we need to enter a value in the search
+            # input box that will ensure that the results are specific to the current environment.  We can do this by
+            # searching for the test environment in the affiliations metadata field.  The affiliated institutions as
+            # setup in the testing environments typically include the specific environment in their names.
+            # EX: The Center For Open Science [Stage2]
+            if settings.STAGE1:
+                # need to drop the 1 since they usually just use 'Stage' instead of 'Stage1'
+                environment = 'stage'
+            else:
+                environment = settings.DOMAIN
+            search_text = 'affiliations:' + environment
+            discover_page.search_box.send_keys_deliberately(search_text)
+            discover_page.search_box.send_keys(Keys.ENTER)
         discover_page.loading_indicator.here_then_gone()
         search_results = discover_page.search_results
         assert search_results
-
-        discover_page.scroll_into_view(discover_page.osf_filter.element)
-        discover_page.osf_filter.click()
-        discover_page.loading_indicator.here_then_gone()
 
         target_registration = discover_page.get_first_non_withdrawn_registration()
         target_registration_title = target_registration.text
