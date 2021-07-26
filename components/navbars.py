@@ -151,7 +151,8 @@ class RegistriesNavbar(EmberNavbar):
         By.CSS_SELECTOR, 'a[data-analytics-name="Settings"]'
     )
 
-    add_new_link = Locator(By.CSS_SELECTOR, 'a[data-test-add-new-button]')
+    add_new_link = Locator(By.CSS_SELECTOR, 'a[data-test-add-new-button][href="/registries/osf/new"]')
+    my_registrations_link = Locator(By.CSS_SELECTOR, 'a[data-test-add-new-button][href="/registries/my-registrations"]')
 
     def verify(self):
         return self.current_service.text == 'REGISTRIES'

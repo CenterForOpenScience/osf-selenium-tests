@@ -29,6 +29,8 @@ from pages.user import (
     ProfileInformationPage,
     UserProfilePage,
 )
+from pages.institutions import InstitutionsLandingPage
+from pages.registrations import MyRegistrationsPage
 
 
 class NavbarTestLoggedOutMixin:
@@ -241,6 +243,10 @@ class TestRegistriesNavbarLoggedIn(NavbarTestLoggedInMixin):
     def test_add_new_link(self, page, driver):
         page.navbar.add_new_link.click()
         RegistrationAddNewPage(driver, verify=True)
+
+    def test_my_registrations_link(self, page, driver):
+        page.navbar.my_registrations_link.click()
+        MyRegistrationsPage(driver, verify=True)
 
 
 @markers.smoke_test
