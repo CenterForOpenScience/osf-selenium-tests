@@ -86,7 +86,9 @@ class PreprintSubmitPage(BasePreprintPage):
 
     authors_save_button = Locator(By.CSS_SELECTOR, '#preprint-form-authors .btn-primary', settings.QUICK_TIMEOUT)
 
-    conflict_of_interest = Locator(By.ID, 'coiNo', settings.QUICK_TIMEOUT)
+    conflict_of_interest_yes = Locator(By.ID, 'coiYes', settings.QUICK_TIMEOUT)
+    conflict_of_interest_no = Locator(By.ID, 'coiNo', settings.QUICK_TIMEOUT)
+    no_coi_text_box = Locator(By.CSS_SELECTOR, '[data-test-has-no-coi]', settings.QUICK_TIMEOUT)
     coi_save_button = Locator(By.CSS_SELECTOR, '[data-test-coi-continue]')
 
     supplemental_create_new_project = Locator(By.CSS_SELECTOR, 'div[class="start"] > div[class="row"] > div:nth-child(2)', settings.QUICK_TIMEOUT)
