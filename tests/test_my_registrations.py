@@ -1,6 +1,6 @@
 import pytest
 from pages.registrations import MyRegistrationsPage
-from pages.registries import RegistrationAddNewPage
+from pages.registries import RegistrationAddNewPage, RegistrationDraftPage, RegistrationDetailPage
 
 
 class TestMyRegistrationsPageEmpty:
@@ -23,3 +23,23 @@ class TestMyRegistrationsPageEmpty:
         assert "You don't have any submitted registrations." in registrations_page.no_submissions_message.text
         registrations_page.create_a_registration_button_submitted.click()
         RegistrationAddNewPage(driver, verify=True)
+
+
+class TestMyRegistrationsUserTwo:
+    """User two has a public registration and a registration in the draft state for test purposes.
+    """
+    @pytest.fixture()
+    def registrations_page(self, driver, must_be_logged_in_as_user_two):
+        my_registrations_page = MyRegistrationsPage(driver)
+        my_registrations_page.goto()
+        return my_registrations_page
+
+    def test_drafts_tab(self, driver, registrations_page):
+        registrations_page.drafts_tab.click()
+        registrations_page.draft_registration_title.click()
+        RegistrationDraftPage(driver, verify=True)
+
+    def test_submissions_tab(self, driver, registrations_page):
+        registrations_page.submissions_tab.click()
+        registrations_page.public_registration_title.click()
+        RegistrationDetailPage(driver, verify=True)
