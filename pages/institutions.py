@@ -22,3 +22,8 @@ class InstitutionsLandingPage(OSFBasePage):
 class InstitutionBrandedPage(OSFBasePage):
 
     identity = Locator(By.CSS_SELECTOR, '#fileBrowser > div.db-header.row > div.db-buttonRow.col-xs-12.col-sm-4.col-lg-3 > div > input')
+
+    empty_collection_indicator = Locator(By.CLASS_NAME, 'db-non-load-template')
+
+    # Group Locators
+    project_list = GroupLocator(By.CSS_SELECTOR, '#tb-tbody > div > div > div.tb-row')
