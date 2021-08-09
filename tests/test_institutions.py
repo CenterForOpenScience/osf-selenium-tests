@@ -1,6 +1,11 @@
 import pytest
 import markers
 import settings
+
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+
 from pages.institutions import InstitutionsLandingPage, InstitutionBrandedPage
 
 class TestInstitutionsPage:
@@ -29,5 +34,11 @@ class TestCustomDomains:
         """
         #TODO: Add check for institution name
         driver.get(domain)
-        InstitutionBrandedPage(driver, verify=True)
+        institution_page = InstitutionBrandedPage(driver, verify=True)
         assert domain in driver.current_url
+        # first check if the collection is empty - this may often be the case in the test environments
+        if institution_page.empty_collection_indicator.absent():
+            # wait for projects table to start loading and verify that there are some projects listed
+            WebDriverWait(driver, 60).until(EC.presence_of_element_located((By.CSS_SELECTOR, '#tb-tbody > div > div > div.tb-row')))
+            # projects are loaded in batches in varying sizes - anywhere from 4 to 15 at a time
+            assert len(institution_page.project_list) >= 4
