@@ -1,9 +1,20 @@
 repos:
-- repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.0.1
+- repo: https://github.com/psf/black
+  rev: 21.7b0 # Replace by any tag/version: https://github.com/psf/black/tags
   hooks:
-  - id: double-quote-string-fixer
-  - id: trailing-whitespace
+    - id: black
+      args:
+        - "--skip-string-normalization" # Prefer single quotes
+      language_version: python3 # Should be a command that runs python3.6+
+- repo: https://github.com/pycqa/isort
+  rev: 5.9.3
+  hooks:
+  - id: isort
+    args: ["--profile=black",
+           "--filter-files",
+           "--force-grid-wrap=2", #Pycharm profile
+           "--lines-after-imports=2"] #Pycharm profile
+    files: \.py$
 - repo: https://github.com/pycqa/flake8
   rev: 3.9.2
   hooks:
@@ -11,13 +22,12 @@ repos:
       args:
         # Match Black's default line length
         - "--max-line-length=88"
-        - "--max-complexity=18"
-- repo: https://github.com/pycqa/isort
-  rev: 5.9.3
+        # E501: Line too long
+        # W503: line break before binary operator
+        # E203: colons should not have any space before them
+      - "--ignore=E501,W503,E203"
+- repo: https://github.com/pre-commit/pre-commit-hooks
+  rev: v4.0.1
   hooks:
-  - id: isort
-    args: ["--profile=black",
-           "--filter-files",
-           "--force-grid-wrap=2",
-           "--lines-after-imports=2"]
-    files: \.py$
+  - id: double-quote-string-fixer
+  - id: trailing-whitespace
