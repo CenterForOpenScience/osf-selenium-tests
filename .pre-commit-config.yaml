@@ -8,3 +8,16 @@ repos:
   rev: 3.9.2
   hooks:
   -   id: flake8
+      args:
+        # Match Black's default line length
+        - "--max-line-length=88"
+        - "--max-complexity=18"
+- repo: https://github.com/pycqa/isort
+  rev: 5.9.3
+  hooks:
+  - id: isort
+    args: ["--profile=black",
+           "--filter-files",
+           "--force-grid-wrap=2",
+           "--lines-after-imports=2"]
+    files: \.py$
