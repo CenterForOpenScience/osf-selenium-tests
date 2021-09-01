@@ -1,19 +1,22 @@
 repos:
 - repo: https://github.com/psf/black
-  rev: 21.7b0 # Replace by any tag/version: https://github.com/psf/black/tags
+  rev: 21.7b0
   hooks:
     - id: black
       args:
-        - "--skip-string-normalization" # Prefer single quotes
-      language_version: python3 # Should be a command that runs python3.6+
+        # Prefer single quotes
+        - "--skip-string-normalization"
+      # Should be a command that runs python3.6+
+      language_version: python3
 - repo: https://github.com/pycqa/isort
   rev: 5.9.3
   hooks:
   - id: isort
     args: ["--profile=black",
            "--filter-files",
-           "--force-grid-wrap=2", #Pycharm profile
-           "--lines-after-imports=2"] #Pycharm profile
+           # Pycharm profile
+           "--force-grid-wrap=2",
+           "--lines-after-imports=2"]
     files: \.py$
 - repo: https://github.com/pycqa/flake8
   rev: 3.9.2
