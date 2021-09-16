@@ -10,10 +10,12 @@ from selenium.webdriver.support.wait import WebDriverWait
 @pytest.fixture
 def meetings_page(driver):
     meetings_page = MeetingsPage(driver)
-    meetings_page.goto()
+    meetings_page.goto_with_reload()
     return meetings_page
 
 
+@markers.smoke_test
+@markers.core_functionality
 class TestMeetingsPage:
 
     def test_meetings_landing(self, meetings_page, driver):
@@ -56,7 +58,6 @@ class TestMeetingsPage:
         sorted_top_result = meetings_page.top_meeting_link.text
         assert default_top_result != sorted_top_result
 
-    @markers.core_functionality
     def test_meetings_list(self, meetings_page, driver):
         search_bar = driver.find_element_by_css_selector('div[data-test-meetings-list-search]')
         driver.execute_script('arguments[0].scrollIntoView();', search_bar)
@@ -67,6 +68,8 @@ class TestMeetingsPage:
         assert meeting_name.strip() == meeting_detail.meeting_title.text.strip()
 
 
+@markers.smoke_test
+@markers.core_functionality
 class TestMeetingDetailPage:
 
     @pytest.fixture
@@ -77,7 +80,6 @@ class TestMeetingDetailPage:
         meetings_page.top_meeting_link.click()
         return MeetingDetailPage(driver, verify=True)
 
-    @markers.core_functionality
     def test_meeting_detail(self, meeting_detail_page, driver):
 
         assert meeting_detail_page.entry_download_button.present()
