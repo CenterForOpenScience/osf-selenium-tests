@@ -1,8 +1,10 @@
 import pytest
+import markers
 from pages.registrations import MyRegistrationsPage
 from pages.registries import RegistrationAddNewPage, RegistrationDraftPage, RegistrationDetailPage
 
 
+@markers.smoke_test
 class TestMyRegistrationsPageEmpty:
     """This test covers the My Registrations page: https://{home}/registries/my-registrations
     """
@@ -25,6 +27,7 @@ class TestMyRegistrationsPageEmpty:
         RegistrationAddNewPage(driver, verify=True)
 
 
+@markers.smoke_test
 class TestMyRegistrationsUserTwo:
     """User two has a public registration and a registration in the draft state for test purposes.
     """
