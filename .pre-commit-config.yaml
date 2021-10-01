@@ -28,7 +28,8 @@ repos:
         # E501: Line too long
         # W503: line break before binary operator
         # E203: colons should not have any space before them
-      - "--ignore=E501,W503,E203"
+        # E731: Do not assign a lambda expression, use a def
+        - "--ignore=E501,W503,E203,E731"
 - repo: https://github.com/pre-commit/pre-commit-hooks
   rev: v4.0.1
   hooks:
