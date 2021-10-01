@@ -2,8 +2,14 @@ from selenium.webdriver.common.by import By
 
 import settings
 from base.exceptions import LoginError
-from base.locators import Locator, GroupLocator
-from pages.base import BasePage, OSFBasePage
+from base.locators import (
+    GroupLocator,
+    Locator,
+)
+from pages.base import (
+    BasePage,
+    OSFBasePage,
+)
 
 
 class LoginPage(BasePage):
@@ -36,7 +42,7 @@ class LoginPage(BasePage):
 
     def submit_login(self, user, password):
         self.username_input.send_keys(user)
-        if ('localhost:5000' not in settings.OSF_HOME):
+        if 'localhost:5000' not in settings.OSF_HOME:
             self.password_input.send_keys(password)
             if self.remember_me_checkbox.is_selected():
                 self.remember_me_checkbox.click()
@@ -100,9 +106,16 @@ class GenericCASPage(BasePage):
 
     identity = Locator(By.CLASS_NAME, 'login-error-card')
     navbar_brand = Locator(By.CLASS_NAME, 'cas-brand-text')
-    auto_redirect_message = Locator(By.CSS_SELECTOR, '#content > div > section > section.text-without-mdi.text-center.text-bold.text-large.margin-large-vertical.title')
-    status_message = Locator(By.CSS_SELECTOR, '#content > div > section > section.card-message > h2')
-    error_detail = Locator(By.CSS_SELECTOR, '#content > div > section > section.card-message > pre')
+    auto_redirect_message = Locator(
+        By.CSS_SELECTOR,
+        '#content > div > section > section.text-without-mdi.text-center.text-bold.text-large.margin-large-vertical.title',
+    )
+    status_message = Locator(
+        By.CSS_SELECTOR, '#content > div > section > section.card-message > h2'
+    )
+    error_detail = Locator(
+        By.CSS_SELECTOR, '#content > div > section > section.card-message > pre'
+    )
 
 
 class CASAuthorizationPage(BasePage):
@@ -110,7 +123,9 @@ class CASAuthorizationPage(BasePage):
 
     identity = Locator(By.CLASS_NAME, 'login-section')
     navbar_brand = Locator(By.CLASS_NAME, 'cas-brand-text')
-    status_message = Locator(By.CSS_SELECTOR, '#content > div > section > section.card-message > h2')
+    status_message = Locator(
+        By.CSS_SELECTOR, '#content > div > section > section.card-message > h2'
+    )
     allow_button = Locator(By.ID, 'allow')
     deny_button = Locator(By.ID, 'deny')
 
@@ -122,14 +137,12 @@ def login(driver, user=settings.USER_ONE, password=settings.USER_ONE_PASSWORD):
 
 
 def safe_login(driver, user=settings.USER_ONE, password=settings.USER_ONE_PASSWORD):
-    """Raise a LoginError if login fails.
-    """
+    """Raise a LoginError if login fails."""
     login(driver, user=user, password=password)
     if not OSFBasePage(driver).is_logged_in():
         raise LoginError('Login failed')
 
 
 def logout(driver):
-    """Log the user out.
-    """
+    """Log the user out."""
     driver.get(settings.OSF_HOME + '/logout/')

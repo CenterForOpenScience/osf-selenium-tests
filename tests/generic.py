@@ -1,21 +1,28 @@
 import pytest
+
 import markers
 import settings
 
-class CreateUserMixin():
-    """Mixin used to inject user creation test
-    """
+
+class CreateUserMixin:
+    """Mixin used to inject user creation test"""
+
     @pytest.fixture()
     def page(self, driver):
         raise NotImplementedError()
 
     @markers.dont_run_on_prod
-    @pytest.mark.skipif(settings.TEST, reason='There is a real recapcha on test. Robots cannot create users there.')
+    @pytest.mark.skipif(
+        settings.TEST,
+        reason='There is a real recapcha on test. Robots cannot create users there.',
+    )
     @markers.core_functionality
     def test_create_user(self, page, fake):
 
         name = fake.name()
-        email = settings.NEW_USER_EMAIL.format(''.join(name.split()))  # Add name with no spaces to end of email
+        email = settings.NEW_USER_EMAIL.format(
+            ''.join(name.split())
+        )  # Add name with no spaces to end of email
         password = fake.sentence()
 
         page.scroll_into_view(page.sign_up_form.sign_up_button.element)

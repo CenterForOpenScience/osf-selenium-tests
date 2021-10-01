@@ -1,15 +1,21 @@
-import settings
 import json
-import os
 import logging
-import requests
+import os
 
+import requests
 from pythosf import client
+
+import settings
+
+
 logger = logging.getLogger(__name__)
 
 
 def get_default_session():
-    return client.Session(api_base_url=settings.API_DOMAIN, auth=(settings.USER_ONE, settings.USER_ONE_PASSWORD))
+    return client.Session(
+        api_base_url=settings.API_DOMAIN,
+        auth=(settings.USER_ONE, settings.USER_ONE_PASSWORD),
+    )
 
 
 def create_project(session, title='osf selenium test', tags=None, **kwargs):
@@ -71,8 +77,7 @@ def upload_single_quickfile(session):
 
 
 def delete_all_quickfiles(session, quickfiles_url):
-    """ Delete all quickfiles. Just pass in the quickfiles url for the currently logged in user.
-    """
+    """Delete all quickfiles. Just pass in the quickfiles url for the currently logged in user."""
 
     for quickfile in session.get(quickfiles_url)['data']:
         delete_url = quickfile['links']['delete']
@@ -125,14 +130,15 @@ def delete_all_user_projects(session, user=None):
         for error_tuple in nodes_failed:
             # Position [0] of error_tuple contains node_id
             # Position [1] of error_tuple contains the exception
-            error_message = "node '{}' errored with exception: '{}'".format(error_tuple[0], error_tuple[1])
+            error_message = "node '{}' errored with exception: '{}'".format(
+                error_tuple[0], error_tuple[1]
+            )
             error_message_list.append(error_message)
         logger.error('\n'.join(error_message_list))
 
 
 def delete_project(session, guid, user=None):
-    """Delete a single project. Simply pass in the guid
-    """
+    """Delete a single project. Simply pass in the guid"""
     if not user:
         user = current_user(session)
     nodes_url = user.relationships.nodes['links']['related']['href']
@@ -145,8 +151,7 @@ def delete_project(session, guid, user=None):
 
 
 def create_custom_collection(session):
-    """Create a new custom collection. You can modify the title of the collection here as well.
-    """
+    """Create a new custom collection. You can modify the title of the collection here as well."""
     collections_url = '{}/v2/collections/'.format(session.api_base_url)
 
     payload = {
@@ -157,8 +162,7 @@ def create_custom_collection(session):
 
 
 def delete_custom_collections(session):
-    """Delete all custom collections for the current user.
-    """
+    """Delete all custom collections for the current user."""
     collections_url = '{}/v2/collections/'.format(session.api_base_url)
     data = session.get(collections_url)
 
@@ -171,8 +175,7 @@ def delete_custom_collections(session):
 # TODO rename this to get_node_providers, and create new function that actually IS get_node_addons -
 #  note, this is confusing, talk to BrianG before we change this
 def get_node_addons(session, node_id):
-    """Return a list of the names of all the addons connected to the given node.
-    """
+    """Return a list of the names of all the addons connected to the given node."""
     url = '/v2/nodes/{}/files/'.format(node_id)
     data = session.get(url, query_parameters={'page[size]': 20})
     providers = []
@@ -206,7 +209,14 @@ def get_existing_file(session, node_id=settings.PREFERRED_NODE):
         return upload_fake_file(session, node)
 
 
-def upload_fake_file(session, node=None, name='osf selenium test file for testing because its fake.txt', upload_url=None, provider='osfstorage', quickfile=False):
+def upload_fake_file(
+    session,
+    node=None,
+    name='osf selenium test file for testing because its fake.txt',
+    upload_url=None,
+    provider='osfstorage',
+    quickfile=False,
+):
     """Upload an almost empty file to the given node. Return the file's name.
 
     Note: The default file has a very long name because it makes it easier to click a link to it.
@@ -215,9 +225,13 @@ def upload_fake_file(session, node=None, name='osf selenium test file for testin
     if not upload_url:
         if not node:
             raise TypeError('Node must not be none when upload URL is not set.')
-        upload_url = '{}/v1/resources/{}/providers/{}/'.format(settings.FILE_DOMAIN, node.id, provider)
+        upload_url = '{}/v1/resources/{}/providers/{}/'.format(
+            settings.FILE_DOMAIN, node.id, provider
+        )
 
-    metadata = session.put(url=upload_url, query_parameters={'kind': 'file', 'name': name}, raw_body={})
+    metadata = session.put(
+        url=upload_url, query_parameters={'kind': 'file', 'name': name}, raw_body={}
+    )
 
     if quickfile:
         # create_guid param is tied to the GET request so we can't use query_parameters={'create_guid': 1} here
@@ -229,8 +243,7 @@ def upload_fake_file(session, node=None, name='osf selenium test file for testin
 
 
 def delete_addon_files(session, provider, current_browser, guid):
-    """Delete all files for the given addon.
-    """
+    """Delete all files for the given addon."""
     files_url = '{}/v2/nodes/{}/files/{}/'.format(session.api_base_url, guid, provider)
 
     data = session.get(url=files_url, query_parameters={'page[size]': 20})
@@ -252,8 +265,7 @@ def delete_file(session, delete_url):
 
 
 def get_providers_list(session=None, type='preprints'):
-    """Return the providers list data. The default is the preprint providers list.
-    """
+    """Return the providers list data. The default is the preprint providers list."""
     if not session:
         session = get_default_session()
     url = '/v2/providers/' + type
@@ -261,21 +273,24 @@ def get_providers_list(session=None, type='preprints'):
 
 
 def get_provider_submission_status(provider):
-    """Return the boolean attribute `allow_submissions` from the dictionary object (provider)
-    """
+    """Return the boolean attribute `allow_submissions` from the dictionary object (provider)"""
     return provider['attributes']['allow_submissions']
 
 
 def get_providers_total(provider_name, session):
-    """ Return the total number of preprints for a given service provider.
-        Note: Reformat provider names to all lowercase and remove white spaces.
+    """Return the total number of preprints for a given service provider.
+    Note: Reformat provider names to all lowercase and remove white spaces.
     """
-    provider_url = '/v2/providers/preprints/{}/preprints/'.format(provider_name.lower().replace(' ', ''))
+    provider_url = '/v2/providers/preprints/{}/preprints/'.format(
+        provider_name.lower().replace(' ', '')
+    )
     return session.get(provider_url)['links']['meta']['total']
 
 
 def connect_provider_root_to_node(
-    session, provider, external_account_id,
+    session,
+    provider,
+    external_account_id,
     node_id=settings.PREFERRED_NODE,
 ):
     """Initialize the node<=>addon connection, add the given external_account_id, and configure it
@@ -306,7 +321,9 @@ def connect_provider_root_to_node(
         },
     }
     addon = session.patch(
-        url=url, item_type='node_addons', item_id=provider,
+        url=url,
+        item_type='node_addons',
+        item_id=provider,
         raw_body=json.dumps(raw_payload),
     )
     # payload = {
@@ -321,7 +338,9 @@ def connect_provider_root_to_node(
     root_folder = session.get(url + 'folders/')['data'][0]['attributes']['folder_id']
     raw_payload['data']['attributes']['folder_id'] = root_folder
     addon = session.patch(
-        url=url, item_type='node_addons', item_id=provider,
+        url=url,
+        item_type='node_addons',
+        item_id=provider,
         raw_body=json.dumps(raw_payload),
     )
     return addon

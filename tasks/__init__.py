@@ -5,10 +5,11 @@
 commands, run ``$ invoke --list``.
 """
 
-import os
-import sys
 import glob
 import logging
+import os
+import sys
+
 from invoke import task
 
 
@@ -47,10 +48,10 @@ def requirements(ctx, dev=False):
     cmd = bin_prefix('pip install --exists-action w --upgrade -r {} '.format(req_file))
     ctx.run(cmd, echo=True)
 
+
 @task
 def test_module_wo_exit(ctx, module=None, params=None):
-    """Helper for running tests.
-    """
+    """Helper for running tests."""
     import pytest
 
     if params is None:
@@ -65,12 +66,13 @@ def test_module_wo_exit(ctx, module=None, params=None):
     retcode = pytest.main(args)
     return retcode
 
+
 @task
 def test_module(ctx, module=None, params=None):
-    """Helper for running tests.
-    """
+    """Helper for running tests."""
     retcode = test_module_wo_exit(ctx, module, params)
     sys.exit(retcode)
+
 
 @task
 def test_travis_on_prod(ctx):
@@ -79,7 +81,10 @@ def test_travis_on_prod(ctx):
     """
     flake(ctx)
     print('>>> Testing modules in "{}" in Chrome'.format('tests'))
-    test_travis_with_retries(ctx, 'Master', _get_test_file_list(), module=['-m', 'smoke_test'])
+    test_travis_with_retries(
+        ctx, 'Master', _get_test_file_list(), module=['-m', 'smoke_test']
+    )
+
 
 @task
 def test_travis_part_one(ctx):
@@ -88,6 +93,7 @@ def test_travis_part_one(ctx):
     midpoint = len(all_test_files) // 2
     file_list = all_test_files[:midpoint]
     test_travis_with_retries(ctx, 'part one', file_list)
+
 
 @task
 def test_travis_part_two(ctx):
@@ -103,12 +109,17 @@ def _get_test_file_list():
     all_test_files.sort()
     return all_test_files
 
+
 @task
 def test_travis_with_retries(ctx, partition_name, file_list, module=None):
     """Run group of tests on the browser defined by TEST_BUILD."""
     flake(ctx)
 
-    print('>>> Testing {} modules in "/tests/" in {}'.format(partition_name, os.environ['TEST_BUILD']))
+    print(
+        '>>> Testing {} modules in "/tests/" in {}'.format(
+            partition_name, os.environ['TEST_BUILD']
+        )
+    )
     print('>>> File list for {} is: {}'.format(partition_name, file_list))
     retcode = test_module_wo_exit(ctx, params=file_list, module=module)
 
@@ -117,9 +128,11 @@ def test_travis_with_retries(ctx, partition_name, file_list, module=None):
 
     file_list = ['--last-failed', '--last-failed-no-failures', 'none'] + file_list
 
-    for i in range(1, MAX_TRAVIS_RETRIES+1):
-        print('>>> Retesting {} failures, iteration {}, in "/test/" '
-              'in {}'.format(partition_name, i, os.environ['TEST_BUILD']))
+    for i in range(1, MAX_TRAVIS_RETRIES + 1):
+        print(
+            '>>> Retesting {} failures, iteration {}, in "/test/" '
+            'in {}'.format(partition_name, i, os.environ['TEST_BUILD'])
+        )
         retcode = test_module_wo_exit(ctx, params=file_list, module=module)
 
         if retcode != 1:

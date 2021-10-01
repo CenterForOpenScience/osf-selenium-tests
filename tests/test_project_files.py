@@ -1,19 +1,19 @@
-import pytest
 import time
 
+import pytest
 from selenium.common.exceptions import TimeoutException
+from selenium.webdriver import ActionChains
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 import markers
 import settings
-
 from api import osf_api
 from pages.project import FilesPage
 from utils import find_current_browser
-from selenium.webdriver.common.keys import Keys
-from selenium.webdriver import ActionChains
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
+
 
 """
 *** NOTE ***
@@ -43,10 +43,18 @@ def format_provider_name(row):
 
 def create_dictionary(driver):
     # Wait until fangorn has loaded all files in the tree before testing
-    WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, '#tb-tbody div[data-level="3"]')))
-    WebDriverWait(driver, 10).until(EC.invisibility_of_element_located((By.CSS_SELECTOR, '#tb-tbody .fa-refresh')))
+    WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located(
+            (By.CSS_SELECTOR, '#tb-tbody div[data-level="3"]')
+        )
+    )
+    WebDriverWait(driver, 10).until(
+        EC.invisibility_of_element_located((By.CSS_SELECTOR, '#tb-tbody .fa-refresh'))
+    )
 
-    all_fangorn_rows = driver.find_elements_by_css_selector('#treeGrid .tb-table .tb-tbody-inner > div > div')
+    all_fangorn_rows = driver.find_elements_by_css_selector(
+        '#treeGrid .tb-table .tb-tbody-inner > div > div'
+    )
     fangorn_dictionary = {}
     key = ''
 
@@ -59,7 +67,9 @@ def create_dictionary(driver):
             file_name = row.find_element_by_css_selector('.td-title .title-text')
             # Create sub-dictionary entries for each provider
             # Each sub-dictionary contains name of the row and the row object
-            fangorn_dictionary[key].append({'file_name': file_name.text, 'row_object': row})
+            fangorn_dictionary[key].append(
+                {'file_name': file_name.text, 'row_object': row}
+            )
 
     return fangorn_dictionary
 
@@ -74,7 +84,9 @@ def find_row_by_name(driver, provider, row_name):
 
 # Click a button in the toolbar, just pass in the button name
 def find_toolbar_button_by_name(driver, button_name):
-    file_action_buttons = driver.find_elements_by_css_selector('#folderRow .fangorn-toolbar-icon')
+    file_action_buttons = driver.find_elements_by_css_selector(
+        '#folderRow .fangorn-toolbar-icon'
+    )
     for button in file_action_buttons:
         if button.text == button_name:
             return button
@@ -83,10 +95,12 @@ def find_toolbar_button_by_name(driver, button_name):
 
 @markers.dont_run_on_prod
 @pytest.mark.usefixtures('must_be_logged_in')
-@pytest.mark.skipif(settings.BUILD == 'edge',
-                    reason='Our actions prompt edge to ask "Would you like to navigate away from this page?"')
+@pytest.mark.skipif(
+    settings.BUILD == 'edge',
+    reason='Our actions prompt edge to ask "Would you like to navigate away from this page?"',
+)
 class TestFilesPage:
-    """ We want to wrap all of our tests with try/finally so we can delete leftover files after failures.
+    """We want to wrap all of our tests with try/finally so we can delete leftover files after failures.
     Decorators did not work here because we would need to pull out node_id from each test.
     """
 
@@ -100,10 +114,14 @@ class TestFilesPage:
         if provider != 'osfstorage':
             addon = osf_api.get_user_addon(session, provider)
             addon_account_id = list(addon['data']['links']['accounts'])[0]
-            osf_api.connect_provider_root_to_node(session, provider, addon_account_id, node_id=node_id)
+            osf_api.connect_provider_root_to_node(
+                session, provider, addon_account_id, node_id=node_id
+            )
 
         file_name = 'rename_' + current_browser + '_' + provider + '.txt'
-        new_file, metadata = osf_api.upload_fake_file(session=session, node=node, name=file_name, provider=provider)
+        new_file, metadata = osf_api.upload_fake_file(
+            session=session, node=node, name=file_name, provider=provider
+        )
 
         try:
             files_page = FilesPage(driver, guid=node_id)
@@ -123,9 +141,13 @@ class TestFilesPage:
             rename_text_box.send_keys(Keys.RETURN)
 
             # Wait for 5 seconds for Rename message to show
-            WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.CLASS_NAME, 'text-muted')))
+            WebDriverWait(driver, 5).until(
+                EC.visibility_of_element_located((By.CLASS_NAME, 'text-muted'))
+            )
             # Wait a maximum of 20 seconds for Rename message to resolve
-            WebDriverWait(driver, 20).until(EC.invisibility_of_element_located((By.CLASS_NAME, 'text-muted')))
+            WebDriverWait(driver, 20).until(
+                EC.invisibility_of_element_located((By.CLASS_NAME, 'text-muted'))
+            )
 
             files_page.goto()
             # Test old file name does not exist
@@ -148,7 +170,9 @@ class TestFilesPage:
         # Connect add-on to node, upload a single test file
         node = osf_api.get_node(session, node_id=node_id)
         file_name = 'checkout_' + find_current_browser(driver) + '.txt'
-        new_file, metadata = osf_api.upload_fake_file(session=session, node=node, name=file_name, provider=provider)
+        new_file, metadata = osf_api.upload_fake_file(
+            session=session, node=node, name=file_name, provider=provider
+        )
 
         try:
             files_page = FilesPage(driver, guid=node_id)
@@ -162,9 +186,15 @@ class TestFilesPage:
             driver.find_element_by_css_selector('.btn-warning').click()
 
             # Wait for delete modal to resolve
-            WebDriverWait(driver, 5).until(EC.invisibility_of_element_located((By.CSS_SELECTOR, '.btn-warning')))
+            WebDriverWait(driver, 5).until(
+                EC.invisibility_of_element_located((By.CSS_SELECTOR, '.btn-warning'))
+            )
             # Wait for 3rd fangorn row to load
-            WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.CSS_SELECTOR, '#tb-tbody > div > div > div:nth-child(3)')))
+            WebDriverWait(driver, 5).until(
+                EC.visibility_of_element_located(
+                    (By.CSS_SELECTOR, '#tb-tbody > div > div > div:nth-child(3)')
+                )
+            )
 
             # Test that Check Out button is no longer present
             row = find_row_by_name(driver, 'osf', new_file)
@@ -178,9 +208,17 @@ class TestFilesPage:
             check_in_button.click()
 
             # Wait for page to reload
-            WebDriverWait(driver, 5).until(EC.invisibility_of_element_located((By.CSS_SELECTOR, '#tb-tbody > div > div > div:nth-child(3)')))
+            WebDriverWait(driver, 5).until(
+                EC.invisibility_of_element_located(
+                    (By.CSS_SELECTOR, '#tb-tbody > div > div > div:nth-child(3)')
+                )
+            )
             # Wait for 3rd fangorn row to load
-            WebDriverWait(driver, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, '#tb-tbody > div > div > div:nth-child(3)')))
+            WebDriverWait(driver, 10).until(
+                EC.visibility_of_element_located(
+                    (By.CSS_SELECTOR, '#tb-tbody > div > div > div:nth-child(3)')
+                )
+            )
 
             # Test that Check In button is no longer present
             row = find_row_by_name(driver, 'osf', new_file)
@@ -202,10 +240,14 @@ class TestFilesPage:
         if provider != 'osfstorage':
             addon = osf_api.get_user_addon(session, provider)
             addon_account_id = list(addon['data']['links']['accounts'])[0]
-            osf_api.connect_provider_root_to_node(session, provider, addon_account_id, node_id=node_id)
+            osf_api.connect_provider_root_to_node(
+                session, provider, addon_account_id, node_id=node_id
+            )
 
         file_name = 'delete_' + current_browser + '_' + provider + '.txt'
-        new_file, metadata = osf_api.upload_fake_file(session=session, node=node, name=file_name, provider=provider)
+        new_file, metadata = osf_api.upload_fake_file(
+            session=session, node=node, name=file_name, provider=provider
+        )
 
         try:
             files_page = FilesPage(driver, guid=node_id)
@@ -223,7 +265,11 @@ class TestFilesPage:
             driver.find_element_by_css_selector('.btn-danger').click()
 
             # Wait for delete modal to resolve
-            WebDriverWait(driver, 5).until(EC.invisibility_of_element_located((By.CSS_SELECTOR, 'p[class="text-danger"]')))
+            WebDriverWait(driver, 5).until(
+                EC.invisibility_of_element_located(
+                    (By.CSS_SELECTOR, 'p[class="text-danger"]')
+                )
+            )
 
             deleted_row = find_row_by_name(driver, provider, new_file)
             assert deleted_row is None
@@ -231,17 +277,22 @@ class TestFilesPage:
         finally:
             osf_api.delete_addon_files(session, provider, current_browser, guid=node_id)
 
-    @pytest.mark.parametrize('provider, modifier_key, action', [
-        ['s3', 'none', 'move'],
-        ['s3', 'alt', 'copy'],
-        ['box', 'none', 'move'],
-        ['box', 'alt', 'copy'],
-        ['dropbox', 'none', 'move'],
-        ['dropbox', 'alt', 'copy'],
-        ['owncloud', 'none', 'move'],
-        ['owncloud', 'alt', 'copy']
-    ])
-    def test_dragon_drop(self, driver, default_project, session, provider, modifier_key, action):
+    @pytest.mark.parametrize(
+        'provider, modifier_key, action',
+        [
+            ['s3', 'none', 'move'],
+            ['s3', 'alt', 'copy'],
+            ['box', 'none', 'move'],
+            ['box', 'alt', 'copy'],
+            ['dropbox', 'none', 'move'],
+            ['dropbox', 'alt', 'copy'],
+            ['owncloud', 'none', 'move'],
+            ['owncloud', 'alt', 'copy'],
+        ],
+    )
+    def test_dragon_drop(
+        self, driver, default_project, session, provider, modifier_key, action
+    ):
         current_browser = driver.desired_capabilities.get('browserName')
         node_id = default_project.id
 
@@ -250,13 +301,19 @@ class TestFilesPage:
         if provider != 'osfstorage':
             addon = osf_api.get_user_addon(session, provider)
             addon_account_id = list(addon['data']['links']['accounts'])[0]
-            osf_api.connect_provider_root_to_node(session, provider, addon_account_id, node_id=node_id)
+            osf_api.connect_provider_root_to_node(
+                session, provider, addon_account_id, node_id=node_id
+            )
         if modifier_key == 'alt':
             file_name = 'copy_' + find_current_browser(driver) + '_' + provider + '.txt'
-            new_file, metadata = osf_api.upload_fake_file(session=session, node=node, name=file_name, provider=provider)
+            new_file, metadata = osf_api.upload_fake_file(
+                session=session, node=node, name=file_name, provider=provider
+            )
         else:
             file_name = 'move_' + current_browser + '_' + provider + '.txt'
-            new_file, metadata = osf_api.upload_fake_file(session=session, node=node, name=file_name, provider=provider)
+            new_file, metadata = osf_api.upload_fake_file(
+                session=session, node=node, name=file_name, provider=provider
+            )
 
         try:
             files_page = FilesPage(driver, guid=node_id)
@@ -318,11 +375,15 @@ class TestFilesPage:
                     action_chains.drag_and_drop(source_row, target).perform()
 
             # Wait for 5 seconds for Copying message to show
-            WebDriverWait(driver, 5).until(EC.visibility_of_element_located((By.CLASS_NAME, 'text-muted')))
+            WebDriverWait(driver, 5).until(
+                EC.visibility_of_element_located((By.CLASS_NAME, 'text-muted'))
+            )
 
             try:
                 # Wait a maximum of 30 seconds for Copying message to resolve
-                WebDriverWait(driver, 30).until(EC.invisibility_of_element_located((By.CLASS_NAME, 'text-muted')))
+                WebDriverWait(driver, 30).until(
+                    EC.invisibility_of_element_located((By.CLASS_NAME, 'text-muted'))
+                )
             except TimeoutException:
                 # Reload the page and continue test
                 pass
@@ -357,10 +418,14 @@ class TestFilesPage:
         if provider != 'osfstorage':
             addon = osf_api.get_user_addon(session, provider)
             addon_account_id = list(addon['data']['links']['accounts'])[0]
-            osf_api.connect_provider_root_to_node(session, provider, addon_account_id, node_id=node_id)
+            osf_api.connect_provider_root_to_node(
+                session, provider, addon_account_id, node_id=node_id
+            )
 
         file_name = 'download_' + current_browser + '_' + provider + '.txt'
-        new_file, metadata = osf_api.upload_fake_file(session=session, node=node, name=file_name, provider=provider)
+        new_file, metadata = osf_api.upload_fake_file(
+            session=session, node=node, name=file_name, provider=provider
+        )
 
         try:
             files_page = FilesPage(driver, guid=node_id)
@@ -374,7 +439,10 @@ class TestFilesPage:
             time.sleep(2)
 
             # Negative test
-            assert 'Could not retrieve file or directory' not in driver.find_element_by_xpath('/html/body').text
+            assert (
+                'Could not retrieve file or directory'
+                not in driver.find_element_by_xpath('/html/body').text
+            )
 
         finally:
             osf_api.delete_addon_files(session, provider, current_browser, guid=node_id)
