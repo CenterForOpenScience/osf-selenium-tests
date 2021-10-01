@@ -1,7 +1,8 @@
 import pytest
 
-from tests.generic import CreateUserMixin
 from pages.register import RegisterPage
+from tests.generic import CreateUserMixin
+
 
 @pytest.fixture()
 def register_page(driver):
@@ -11,7 +12,6 @@ def register_page(driver):
 
 
 class TestRegisterPage(CreateUserMixin):
-
     @pytest.fixture()
     def page(self, register_page):
         return register_page

@@ -1,24 +1,26 @@
-import pytest
-import markers
-import settings
 import logging
 import re
 
-from api import osf_api
-from utils import find_current_browser
-from selenium.webdriver.support.ui import WebDriverWait
+import pytest
+from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.select import Select
-from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
 
+import markers
+import settings
+from api import osf_api
 from pages.preprints import (
-    PreprintLandingPage,
-    PreprintSubmitPage,
     PreprintDetailPage,
     PreprintDiscoverPage,
+    PreprintLandingPage,
+    PreprintSubmitPage,
 )
+from utils import find_current_browser
+
 
 logger = logging.getLogger(__name__)
+
 
 @pytest.fixture
 def landing_page(driver):
@@ -30,17 +32,20 @@ def landing_page(driver):
 # TODO: Add checking for missing translations
 @pytest.mark.usefixtures('must_be_logged_in')
 class TestPreprintWorkflow:
-
     @markers.dont_run_on_prod
     @markers.core_functionality
     @pytest.mark.usefixtures('delete_user_projects_at_setup')
-    def test_create_preprint_from_landing(self, session, driver, landing_page, project_with_file):
+    def test_create_preprint_from_landing(
+        self, session, driver, landing_page, project_with_file
+    ):
 
         landing_page.add_preprint_button.click()
         submit_page = PreprintSubmitPage(driver, verify=True)
 
         # Wait for select a service to show
-        WebDriverWait(driver, 10).until(EC.visibility_of(submit_page.select_a_service_help_text))
+        WebDriverWait(driver, 10).until(
+            EC.visibility_of(submit_page.select_a_service_help_text)
+        )
         submit_page.select_a_service_save_button.click()
         submit_page.upload_from_existing_project_button.click()
         submit_page.upload_project_selector.click()
@@ -57,7 +62,9 @@ class TestPreprintWorkflow:
         # we have to get the button object using the driver.find_element method while it is disabled.  After the button becomes
         # enabled (i.e. after required data has been provided) then we can use the submit_page.save_author_assertions object to
         # check the disabled property.  See implementation below.
-        assert driver.find_element(By.CSS_SELECTOR, '[data-test-author-assertions-continue]').get_property('disabled')
+        assert driver.find_element(
+            By.CSS_SELECTOR, '[data-test-author-assertions-continue]'
+        ).get_property('disabled')
         assert submit_page.public_data_input.absent()
         submit_page.public_available_button.click()
         assert submit_page.public_data_input.present()
@@ -95,7 +102,9 @@ class TestPreprintWorkflow:
         submit_page.authors_save_button.click()
 
         # Conflict of Interest section:
-        assert driver.find_element(By.CSS_SELECTOR, '[data-test-coi-continue]').get_property('disabled')
+        assert driver.find_element(
+            By.CSS_SELECTOR, '[data-test-coi-continue]'
+        ).get_property('disabled')
         assert submit_page.no_coi_text_box.absent()
         submit_page.conflict_of_interest_no.click()
         assert submit_page.no_coi_text_box.present()
@@ -113,7 +122,10 @@ class TestPreprintWorkflow:
         WebDriverWait(driver, 10).until(EC.visibility_of(preprint_detail.title))
 
         assert preprint_detail.title.text == project_with_file.title
-        match = re.search(r'Supplemental Materials\s+([a-z0-9]{4,8})\.osf\.io/([a-z0-9]{5})', preprint_detail.view_page.text)
+        match = re.search(
+            r'Supplemental Materials\s+([a-z0-9]{4,8})\.osf\.io/([a-z0-9]{5})',
+            preprint_detail.view_page.text,
+        )
         assert match is not None
 
         # Delete supplemental project created during workflow
@@ -131,22 +143,25 @@ class TestPreprintWorkflow:
 
 @pytest.fixture(scope='session')
 def providers():
-    """Return all preprint providers.
-    """
+    """Return all preprint providers."""
     return osf_api.get_providers_list()
 
 
 @pytest.fixture(scope='session')
 def custom_providers():
-    """Return the API data of all preprint providers with custom domains.
-    """
+    """Return the API data of all preprint providers with custom domains."""
     providers = osf_api.get_providers_list()
-    return [provider for provider in providers if provider['attributes']['domain_redirect_enabled']]
+    return [
+        provider
+        for provider in providers
+        if provider['attributes']['domain_redirect_enabled']
+    ]
 
 
 class TestProvidersWithCustomDomains:
-
-    @pytest.fixture(params=custom_providers(), ids=[prov['id'] for prov in custom_providers()])
+    @pytest.fixture(
+        params=custom_providers(), ids=[prov['id'] for prov in custom_providers()]
+    )
     def provider(self, request):
         return request.param
 
@@ -170,18 +185,18 @@ class TestProvidersWithCustomDomains:
 
 @markers.smoke_test
 @markers.core_functionality
-@pytest.mark.skipif(not settings.PRODUCTION, reason='Cannot test on stagings as they share SHARE')
+@pytest.mark.skipif(
+    not settings.PRODUCTION, reason='Cannot test on stagings as they share SHARE'
+)
 class TestBrandedProviders:
-    """This class only runs in Production for all Branded Providers
-    """
+    """This class only runs in Production for all Branded Providers"""
 
     @pytest.fixture(params=providers(), ids=[prov['id'] for prov in providers()])
     def provider(self, request):
         return request.param
 
     def test_detail_page(self, session, driver, provider):
-        """Test a preprint detail page by grabbing the first search result from the discover page.
-        """
+        """Test a preprint detail page by grabbing the first search result from the discover page."""
         discover_page = PreprintDiscoverPage(driver, provider=provider)
 
         # This fails only in firefox because of selenium incompatibilities with right-left languages

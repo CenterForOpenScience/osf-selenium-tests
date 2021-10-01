@@ -1,25 +1,38 @@
 import pytest
-import markers
 
-from pages.login import LoginPage, login
+import markers
 from pages.cos import COSDonatePage
-from pages.search import SearchPage
-from pages.landing import LandingPage
-from pages.support import SupportPage
-from pages.meetings import MeetingsPage
-from pages.register import RegisterPage
-from pages.project import MyProjectsPage
 from pages.dashboard import DashboardPage
-from pages.registries import RegistriesLandingPage, RegistrationAddNewPage
-from pages.user import UserProfilePage, ProfileInformationPage
-from pages.preprints import PreprintLandingPage, PreprintSubmitPage, PreprintDiscoverPage
-from pages.quickfiles import QuickfilesPage
 from pages.institutions import InstitutionsLandingPage
+from pages.landing import LandingPage
+from pages.login import (
+    LoginPage,
+    login,
+)
+from pages.meetings import MeetingsPage
+from pages.preprints import (
+    PreprintDiscoverPage,
+    PreprintLandingPage,
+    PreprintSubmitPage,
+)
+from pages.project import MyProjectsPage
+from pages.quickfiles import QuickfilesPage
+from pages.register import RegisterPage
+from pages.registries import (
+    RegistrationAddNewPage,
+    RegistriesLandingPage,
+)
+from pages.search import SearchPage
+from pages.support import SupportPage
+from pages.user import (
+    ProfileInformationPage,
+    UserProfilePage,
+)
 
 
 class NavbarTestLoggedOutMixin:
-    """Mixin used to inject generic tests
-    """
+    """Mixin used to inject generic tests"""
+
     @pytest.fixture()
     def page(self, driver):
         raise NotImplementedError()
@@ -67,8 +80,8 @@ class NavbarTestLoggedOutMixin:
 
 
 class NavbarTestLoggedInMixin:
-    """Mixin used to inject generic tests
-    """
+    """Mixin used to inject generic tests"""
+
     @pytest.fixture()
     def page(self, driver):
         raise NotImplementedError()
@@ -105,7 +118,6 @@ class NavbarTestLoggedInMixin:
 @markers.smoke_test
 @markers.core_functionality
 class TestOSFHomeNavbarLoggedOut(NavbarTestLoggedOutMixin):
-
     @pytest.fixture()
     def page(self, driver):
         page = LandingPage(driver)
@@ -127,7 +139,6 @@ class TestOSFHomeNavbarLoggedOut(NavbarTestLoggedOutMixin):
 @markers.smoke_test
 @markers.core_functionality
 class TestOSFHomeNavbarLoggedIn(NavbarTestLoggedInMixin):
-
     @pytest.fixture()
     def page(self, driver, must_be_logged_in):
         page = DashboardPage(driver)
@@ -146,7 +157,6 @@ class TestOSFHomeNavbarLoggedIn(NavbarTestLoggedInMixin):
 @markers.smoke_test
 @markers.core_functionality
 class TestPreprintsNavbarLoggedOut(NavbarTestLoggedOutMixin):
-
     @pytest.fixture()
     def page(self, driver):
         page = PreprintLandingPage(driver)
@@ -164,7 +174,7 @@ class TestPreprintsNavbarLoggedOut(NavbarTestLoggedOutMixin):
 
     def test_sign_up_button(self, page, driver):
         page.navbar.sign_up_button.click()
-        #Sign Up button takes you to a more specific OSF Preprints sign up page
+        # Sign Up button takes you to a more specific OSF Preprints sign up page
         assert 'campaign=osf-preprints' in driver.current_url
 
 
@@ -172,7 +182,6 @@ class TestPreprintsNavbarLoggedOut(NavbarTestLoggedOutMixin):
 @markers.core_functionality
 @pytest.mark.usefixtures('must_be_logged_in')
 class TestPreprintsNavbarLoggedIn(NavbarTestLoggedInMixin):
-
     @pytest.fixture()
     def page(self, driver):
         page = PreprintLandingPage(driver)
@@ -185,14 +194,13 @@ class TestPreprintsNavbarLoggedIn(NavbarTestLoggedInMixin):
 
     def test_my_preprints_link(self, page, driver):
         page.navbar.my_preprints_link.click()
-        #My Preprints link actually navigates to My Preprints section of My Projects page
+        # My Preprints link actually navigates to My Preprints section of My Projects page
         assert 'myprojects/#preprints' in driver.current_url
 
 
 @markers.smoke_test
 @markers.core_functionality
 class TestRegistriesNavbarLoggedOut(NavbarTestLoggedOutMixin):
-
     @pytest.fixture()
     def page(self, driver):
         page = RegistriesLandingPage(driver)
@@ -204,13 +212,13 @@ class TestRegistriesNavbarLoggedOut(NavbarTestLoggedOutMixin):
         help_url = 'https://help.osf.io/hc/en-us/categories/360001550953'
         assert driver.current_url == help_url
 
-    #In the Registries navbar there is no Sign Up button, instead it is a Join link
+    # In the Registries navbar there is no Sign Up button, instead it is a Join link
     def test_sign_up_button(self, page, driver):
         page.navbar.join_link.click()
-        #Join link takes you to a more specific OSF Registries sign up page
+        # Join link takes you to a more specific OSF Registries sign up page
         assert 'campaign=osf-registries' in driver.current_url
 
-    #In the Registries navbar there is no Sign In button, instead it is a Login link
+    # In the Registries navbar there is no Sign In button, instead it is a Login link
     def test_sign_in_button(self, page, driver):
         page.navbar.login_link.click()
         LoginPage(driver, verify=True)
@@ -220,7 +228,6 @@ class TestRegistriesNavbarLoggedOut(NavbarTestLoggedOutMixin):
 @markers.core_functionality
 @pytest.mark.usefixtures('must_be_logged_in')
 class TestRegistriesNavbarLoggedIn(NavbarTestLoggedInMixin):
-
     @pytest.fixture()
     def page(self, driver):
         page = RegistriesLandingPage(driver)
@@ -235,7 +242,6 @@ class TestRegistriesNavbarLoggedIn(NavbarTestLoggedInMixin):
 @markers.smoke_test
 @markers.core_functionality
 class TestMeetingsNavbarLoggedOut(NavbarTestLoggedOutMixin):
-
     @pytest.fixture()
     def page(self, driver):
         page = MeetingsPage(driver)
@@ -259,7 +265,6 @@ class TestMeetingsNavbarLoggedOut(NavbarTestLoggedOutMixin):
 @markers.core_functionality
 @pytest.mark.usefixtures('must_be_logged_in')
 class TestMeetingsNavbarLoggedIn(NavbarTestLoggedInMixin):
-
     @pytest.fixture()
     def page(self, driver):
         page = MeetingsPage(driver)
@@ -278,7 +283,6 @@ class TestMeetingsNavbarLoggedIn(NavbarTestLoggedInMixin):
 @markers.smoke_test
 @markers.core_functionality
 class TestInstitutionsNavbarLoggedOut(NavbarTestLoggedOutMixin):
-
     @pytest.fixture()
     def page(self, driver):
         page = InstitutionsLandingPage(driver)
@@ -298,7 +302,6 @@ class TestInstitutionsNavbarLoggedOut(NavbarTestLoggedOutMixin):
 @markers.core_functionality
 @pytest.mark.usefixtures('must_be_logged_in')
 class TestInstitutionsNavbarLoggedIn(NavbarTestLoggedInMixin):
-
     @pytest.fixture()
     def page(self, driver):
         page = InstitutionsLandingPage(driver)
@@ -317,7 +320,9 @@ class TestInstitutionsNavbarLoggedIn(NavbarTestLoggedInMixin):
 def assert_donate_page(driver, donate_page):
     # locators.py does not currently support invisible elements as identity
     # https://github.com/cos-qa/osf-selenium-tests/blob/b7f3f21376b7d6f751993cdcffea9262856263e3/base/locators.py#L151
-    meta_tag = driver.find_element_by_xpath('//meta[@name="cos:id" and @content="donate-page"]')
+    meta_tag = driver.find_element_by_xpath(
+        '//meta[@name="cos:id" and @content="donate-page"]'
+    )
 
     assert driver.current_url == donate_page.url
     assert meta_tag.get_attribute('name') == 'cos:id'

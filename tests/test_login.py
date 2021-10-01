@@ -1,26 +1,26 @@
 import pytest
-import markers
-import settings
 import requests
-
-from pages.landing import LandingPage
-from pages.register import RegisterPage
-from pages.login import (
-    LoginPage,
-    Login2FAPage,
-    LoginToSPage,
-    InstitutionalLoginPage,
-    ForgotPasswordPage,
-    UnsupportedInstitutionLoginPage,
-    GenericCASPage,
-    CASAuthorizationPage,
-    login,
-)
-
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.wait import WebDriverWait
+
+import markers
+import settings
+from pages.landing import LandingPage
+from pages.login import (
+    CASAuthorizationPage,
+    ForgotPasswordPage,
+    GenericCASPage,
+    InstitutionalLoginPage,
+    Login2FAPage,
+    LoginPage,
+    LoginToSPage,
+    UnsupportedInstitutionLoginPage,
+    login,
+)
+from pages.register import RegisterPage
+
 
 @pytest.fixture
 def login_page(driver):
@@ -31,7 +31,6 @@ def login_page(driver):
 
 @markers.smoke_test
 class TestLoginPage:
-
     @markers.core_functionality
     def test_institutional_login(self, driver, login_page):
         """Check that you arrive on the institutional login page and the institution dropdown is populated.
@@ -43,8 +42,7 @@ class TestLoginPage:
 
     @markers.core_functionality
     def test_orcid_login(self, driver, login_page):
-        """Check that you arrive on the orcid login page.
-        """
+        """Check that you arrive on the orcid login page."""
         login_page.orcid_login_button.click()
 
         # If user is logged out of ORCID, ORCID's Oauth service will use
@@ -76,11 +74,17 @@ class TestLoginPage:
 
     def test_terms_of_use_footer_link(self, driver, login_page):
         login_page.terms_of_use_footer_link.click()
-        assert driver.current_url == 'https://github.com/CenterForOpenScience/cos.io/blob/master/TERMS_OF_USE.md'
+        assert (
+            driver.current_url
+            == 'https://github.com/CenterForOpenScience/cos.io/blob/master/TERMS_OF_USE.md'
+        )
 
     def test_privacy_policy_footer_link(self, driver, login_page):
         login_page.privacy_policy_footer_link.click()
-        assert driver.current_url == 'https://github.com/CenterForOpenScience/cos.io/blob/master/PRIVACY_POLICY.md'
+        assert (
+            driver.current_url
+            == 'https://github.com/CenterForOpenScience/cos.io/blob/master/PRIVACY_POLICY.md'
+        )
 
     def test_status_footer_link(self, driver, login_page):
         login_page.status_footer_link.click()
@@ -96,35 +100,51 @@ class Test2FAPage:
     """
 
     def test_one_time_password_required(self, driver):
-        login(driver, user=settings.CAS_2FA_USER, password=settings.CAS_2FA_USER_PASSWORD)
+        login(
+            driver, user=settings.CAS_2FA_USER, password=settings.CAS_2FA_USER_PASSWORD
+        )
         # verify that you are now on the 2 Factor Authentication page
         two_factor_page = Login2FAPage(driver, verify=True)
         assert two_factor_page.username_input.present()
         assert two_factor_page.oneTimePassword_input.present()
         # click the Verify button and verify that you receive an error message that a one-time password is required
         two_factor_page.verify_button.click()
-        assert two_factor_page.login_error_message.text == 'One-time password is required.'
+        assert (
+            two_factor_page.login_error_message.text == 'One-time password is required.'
+        )
 
     def test_invalid_one_time_password(self, driver):
-        login(driver, user=settings.CAS_2FA_USER, password=settings.CAS_2FA_USER_PASSWORD)
+        login(
+            driver, user=settings.CAS_2FA_USER, password=settings.CAS_2FA_USER_PASSWORD
+        )
         two_factor_page = Login2FAPage(driver, verify=True)
         # Enter an invalid one-time password and click the Verify button and verify that you receive an error message
         two_factor_page.oneTimePassword_input.send_keys_deliberately('999999')
         two_factor_page.verify_button.click()
-        assert two_factor_page.login_error_message.text == 'The one-time password you entered is incorrect.'
+        assert (
+            two_factor_page.login_error_message.text
+            == 'The one-time password you entered is incorrect.'
+        )
 
     def test_cancel_2fa_login(self, driver):
-        login(driver, user=settings.CAS_2FA_USER, password=settings.CAS_2FA_USER_PASSWORD)
+        login(
+            driver, user=settings.CAS_2FA_USER, password=settings.CAS_2FA_USER_PASSWORD
+        )
         two_factor_page = Login2FAPage(driver, verify=True)
         # click the Cancel link and verify that you are redirected back to the OSF home page
         two_factor_page.cancel_link.click()
         assert LandingPage(driver, verify=True)
 
     def test_need_help_link(self, driver):
-        login(driver, user=settings.CAS_2FA_USER, password=settings.CAS_2FA_USER_PASSWORD)
+        login(
+            driver, user=settings.CAS_2FA_USER, password=settings.CAS_2FA_USER_PASSWORD
+        )
         two_factor_page = Login2FAPage(driver, verify=True)
         two_factor_page.need_help_link.click()
-        assert 'https://help.osf.io' and 'Enable-or-Disable-Two-Factor-Authentication' in driver.current_url
+        assert (
+            'https://help.osf.io'
+            and 'Enable-or-Disable-Two-Factor-Authentication' in driver.current_url
+        )
 
 
 @markers.dont_run_on_prod
@@ -136,27 +156,43 @@ class TestToSPage:
     """
 
     def test_continue_button_disabled(self, driver):
-        login(driver, user=settings.CAS_TOS_USER, password=settings.CAS_TOS_USER_PASSWORD)
+        login(
+            driver, user=settings.CAS_TOS_USER, password=settings.CAS_TOS_USER_PASSWORD
+        )
         tos_page = LoginToSPage(driver, verify=True)
         # verify that at first the Continue button is disabled and then becomes enabled after checking the checkbox
-        assert driver.find_element(By.ID, 'primarySubmitButton').get_property('disabled')
+        assert driver.find_element(By.ID, 'primarySubmitButton').get_property(
+            'disabled'
+        )
         tos_page.tos_checkbox.click()
         assert tos_page.continue_button.is_enabled()
 
     def test_terms_of_use_link(self, driver):
-        login(driver, user=settings.CAS_TOS_USER, password=settings.CAS_TOS_USER_PASSWORD)
+        login(
+            driver, user=settings.CAS_TOS_USER, password=settings.CAS_TOS_USER_PASSWORD
+        )
         tos_page = LoginToSPage(driver, verify=True)
         tos_page.terms_of_use_link.click()
-        assert driver.current_url == 'https://github.com/CenterForOpenScience/cos.io/blob/master/TERMS_OF_USE.md'
+        assert (
+            driver.current_url
+            == 'https://github.com/CenterForOpenScience/cos.io/blob/master/TERMS_OF_USE.md'
+        )
 
     def test_privacy_policy_link(self, driver):
-        login(driver, user=settings.CAS_TOS_USER, password=settings.CAS_TOS_USER_PASSWORD)
+        login(
+            driver, user=settings.CAS_TOS_USER, password=settings.CAS_TOS_USER_PASSWORD
+        )
         tos_page = LoginToSPage(driver, verify=True)
         tos_page.privacy_policy_link.click()
-        assert driver.current_url == 'https://github.com/CenterForOpenScience/cos.io/blob/master/PRIVACY_POLICY.md'
+        assert (
+            driver.current_url
+            == 'https://github.com/CenterForOpenScience/cos.io/blob/master/PRIVACY_POLICY.md'
+        )
 
     def test_cancel_tos_link(self, driver):
-        login(driver, user=settings.CAS_TOS_USER, password=settings.CAS_TOS_USER_PASSWORD)
+        login(
+            driver, user=settings.CAS_TOS_USER, password=settings.CAS_TOS_USER_PASSWORD
+        )
         tos_page = LoginToSPage(driver, verify=True)
         # click the Cancel link and verify that you are redirected back to the OSF home page
         tos_page.cancel_link.click()
@@ -171,25 +207,28 @@ class TestGenericPages:
     """
 
     def test_generic_logged_in_page(self, driver, must_be_logged_in):
-        """Test the generic CAS logged in page by manually navigating to a CAS page without a service in the url
-        """
+        """Test the generic CAS logged in page by manually navigating to a CAS page without a service in the url"""
         driver.get(settings.CAS_DOMAIN + '/login')
         logged_in_page = GenericCASPage(driver, verify=True)
-        assert logged_in_page.auto_redirect_message.text == "Auto-redirection didn't happen ..."
+        assert (
+            logged_in_page.auto_redirect_message.text
+            == "Auto-redirection didn't happen ..."
+        )
         assert logged_in_page.status_message.text == 'Login successful'
 
     def test_generic_logged_out_page(self, driver):
-        """Test the generic CAS logged out page by manually navigating to a CAS page without a service in the url
-        """
+        """Test the generic CAS logged out page by manually navigating to a CAS page without a service in the url"""
         driver.get(settings.CAS_DOMAIN + '/logout')
         logged_out_page = GenericCASPage(driver, verify=True)
-        assert logged_out_page.auto_redirect_message.text == "Auto-redirection didn't happen ..."
+        assert (
+            logged_out_page.auto_redirect_message.text
+            == "Auto-redirection didn't happen ..."
+        )
         assert logged_out_page.status_message.text == 'Logout successful'
 
 
 class TestLoginErrors:
-    """Test the inline error messages on the CAS login page when user enters invalid login data
-    """
+    """Test the inline error messages on the CAS login page when user enters invalid login data"""
 
     def test_missing_email(self, driver, login_page):
         login_page.submit_button.click()
@@ -204,13 +243,19 @@ class TestLoginErrors:
         login_page.username_input.send_keys_deliberately('foo')
         login_page.password_input.send_keys_deliberately('foo')
         login_page.submit_button.click()
-        assert login_page.login_error_message.text == 'The email or password you entered is incorrect.'
+        assert (
+            login_page.login_error_message.text
+            == 'The email or password you entered is incorrect.'
+        )
 
     def test_invalid_password(self, driver, login_page):
         login_page.username_input.send_keys_deliberately(settings.USER_ONE)
         login_page.password_input.send_keys_deliberately('foo')
         login_page.submit_button.click()
-        assert login_page.login_error_message.text == 'The email or password you entered is incorrect.'
+        assert (
+            login_page.login_error_message.text
+            == 'The email or password you entered is incorrect.'
+        )
 
 
 class TestCustomExceptionPages:
@@ -219,8 +264,7 @@ class TestCustomExceptionPages:
     """
 
     def test_service_not_authorized_page(self, driver):
-        """Test the Service not authorized exception page by having an invalid service in the url
-        """
+        """Test the Service not authorized exception page by having an invalid service in the url"""
         driver.get(settings.CAS_DOMAIN + '/login?service=https://noservice.osf.io/')
         exception_page = GenericCASPage(driver, verify=True)
         assert exception_page.navbar_brand.text == 'OSF HOME'
@@ -230,7 +274,16 @@ class TestCustomExceptionPages:
         """Test the Verification key login failed exception page by having an invalid verification_key parameter
         in the url
         """
-        driver.get(settings.CAS_DOMAIN + '/login?service=' + settings.CAS_DOMAIN + '/login/?next=' + settings.CAS_DOMAIN + '/&username=' + settings.USER_ONE + '&verification_key=foo')
+        driver.get(
+            settings.CAS_DOMAIN
+            + '/login?service='
+            + settings.CAS_DOMAIN
+            + '/login/?next='
+            + settings.CAS_DOMAIN
+            + '/&username='
+            + settings.USER_ONE
+            + '&verification_key=foo'
+        )
         exception_page = GenericCASPage(driver, verify=True)
         assert exception_page.navbar_brand.text == 'OSF HOME'
         assert exception_page.status_message.text == 'Verification key login failed'
@@ -247,14 +300,22 @@ class TestCustomExceptionPages:
 
     @markers.dont_run_on_prod
     def test_account_not_confirmed_page(self, driver):
-        login(driver, user=settings.UNCONFIRMED_USER, password=settings.UNCONFIRMED_USER_PASSWORD)
+        login(
+            driver,
+            user=settings.UNCONFIRMED_USER,
+            password=settings.UNCONFIRMED_USER_PASSWORD,
+        )
         exception_page = GenericCASPage(driver, verify=True)
         assert exception_page.navbar_brand.text == 'OSF HOME'
         assert exception_page.status_message.text == 'Account not confirmed'
 
     @markers.dont_run_on_prod
     def test_account_disabled_page(self, driver):
-        login(driver, user=settings.DEACTIVATED_USER, password=settings.DEACTIVATED_USER_PASSWORD)
+        login(
+            driver,
+            user=settings.DEACTIVATED_USER,
+            password=settings.DEACTIVATED_USER_PASSWORD,
+        )
         exception_page = GenericCASPage(driver, verify=True)
         assert exception_page.navbar_brand.text == 'OSF HOME'
         assert exception_page.status_message.text == 'Account disabled'
@@ -262,7 +323,6 @@ class TestCustomExceptionPages:
 
 @markers.smoke_test
 class TestInstitutionLoginPage:
-
     @pytest.fixture
     def institution_login_page(self, driver):
         institution_login_page = InstitutionalLoginPage(driver)
@@ -305,11 +365,17 @@ class TestInstitutionLoginPage:
 
     def test_terms_of_use_footer_link(self, driver, institution_login_page):
         institution_login_page.terms_of_use_footer_link.click()
-        assert driver.current_url == 'https://github.com/CenterForOpenScience/cos.io/blob/master/TERMS_OF_USE.md'
+        assert (
+            driver.current_url
+            == 'https://github.com/CenterForOpenScience/cos.io/blob/master/TERMS_OF_USE.md'
+        )
 
     def test_privacy_policy_footer_link(self, driver, institution_login_page):
         institution_login_page.privacy_policy_footer_link.click()
-        assert driver.current_url == 'https://github.com/CenterForOpenScience/cos.io/blob/master/PRIVACY_POLICY.md'
+        assert (
+            driver.current_url
+            == 'https://github.com/CenterForOpenScience/cos.io/blob/master/PRIVACY_POLICY.md'
+        )
 
     def test_status_footer_link(self, driver, institution_login_page):
         institution_login_page.status_footer_link.click()
@@ -318,13 +384,23 @@ class TestInstitutionLoginPage:
 
 @markers.dont_run_on_prod
 class TestOauthAPI:
-
     def test_authorization_online(self, driver, must_be_logged_in):
         client_id = settings.DEVAPP_CLIENT_ID
         client_secret = settings.DEVAPP_CLIENT_SECRET
         redirect_uri = 'https://www.google.com/'
-        requested_scope = 'osf.nodes.metadata_read osf.nodes.access_read osf.nodes.data_read'
-        authorization_url = settings.CAS_DOMAIN + '/oauth2/authorize?response_type=code&client_id=' + client_id + '&redirect_uri=' + redirect_uri + '&scope=' + requested_scope + '&access_type=online'
+        requested_scope = (
+            'osf.nodes.metadata_read osf.nodes.access_read osf.nodes.data_read'
+        )
+        authorization_url = (
+            settings.CAS_DOMAIN
+            + '/oauth2/authorize?response_type=code&client_id='
+            + client_id
+            + '&redirect_uri='
+            + redirect_uri
+            + '&scope='
+            + requested_scope
+            + '&access_type=online'
+        )
         # navigate to the authorization url in the browser
         driver.get(authorization_url)
         authorization_page = CASAuthorizationPage(driver, verify=True)
@@ -337,7 +413,13 @@ class TestOauthAPI:
         authorization_code = callback_url.partition('?code=')[2]
         token_url = settings.CAS_DOMAIN + '/oauth2/token'
         # set the body parameters for the POST including the authorization code
-        body_params = {'code': authorization_code, 'grant_type': 'authorization_code', 'client_id': client_id, 'client_secret': client_secret, 'redirect_uri': redirect_uri}
+        body_params = {
+            'code': authorization_code,
+            'grant_type': 'authorization_code',
+            'client_id': client_id,
+            'client_secret': client_secret,
+            'redirect_uri': redirect_uri,
+        }
         r = requests.post(token_url, data=body_params)
         assert r.status_code == 200
         # get the access token from the response
@@ -348,7 +430,9 @@ class TestOauthAPI:
         r = requests.get(profile_url, headers=headers)
         # verify the profile response
         assert r.status_code == 200
-        assert r.json()['scope'] == requested_scope.split()  # response has a comma separated list while the scopes in authorization url are separated by spaces
+        assert (
+            r.json()['scope'] == requested_scope.split()
+        )  # response has a comma separated list while the scopes in authorization url are separated by spaces
         assert r.json()['service'] == redirect_uri
         assert r.json()['attributes']['oauthClientId'] == client_id
         # lastly we want to revoke the access token
@@ -369,7 +453,16 @@ class TestOauthAPI:
         client_secret = settings.DEVAPP_CLIENT_SECRET
         redirect_uri = 'https://www.google.com/'
         requested_scope = 'osf.full_write osf.users.profile_write'
-        authorization_url = settings.CAS_DOMAIN + '/oauth2/authorize?response_type=code&client_id=' + client_id + '&redirect_uri=' + redirect_uri + '&scope=' + requested_scope + '&access_type=offline&approval_prompt=force'
+        authorization_url = (
+            settings.CAS_DOMAIN
+            + '/oauth2/authorize?response_type=code&client_id='
+            + client_id
+            + '&redirect_uri='
+            + redirect_uri
+            + '&scope='
+            + requested_scope
+            + '&access_type=offline&approval_prompt=force'
+        )
         # navigate to the authorization url in the browser
         driver.get(authorization_url)
         authorization_page = CASAuthorizationPage(driver, verify=True)
@@ -381,7 +474,13 @@ class TestOauthAPI:
         # parse out authorization code from callback url
         authorization_code = callback_url.partition('?code=')[2]
         # set the body parameters for the POST including the authorization code
-        body_params = {'code': authorization_code, 'grant_type': 'authorization_code', 'client_id': client_id, 'client_secret': client_secret, 'redirect_uri': redirect_uri}
+        body_params = {
+            'code': authorization_code,
+            'grant_type': 'authorization_code',
+            'client_id': client_id,
+            'client_secret': client_secret,
+            'redirect_uri': redirect_uri,
+        }
         token_url = settings.CAS_DOMAIN + '/oauth2/token'
         r = requests.post(token_url, data=body_params)
         assert r.status_code == 200
@@ -395,11 +494,19 @@ class TestOauthAPI:
         r = requests.get(profile_url, headers=headers)
         # verify the profile response
         assert r.status_code == 200
-        assert r.json()['scope'] == requested_scope.split()  # response has a comma separated list while the scopes in authorization url are separated by spaces
+        assert (
+            r.json()['scope'] == requested_scope.split()
+        )  # response has a comma separated list while the scopes in authorization url are separated by spaces
         assert r.json()['service'] == redirect_uri
         assert r.json()['attributes']['oauthClientId'] == client_id
         # now use the refresh token from above to request another access token
-        body_params_refresh = {'refresh_token': refresh_token, 'grant_type': 'refresh_token', 'client_id': client_id, 'client_secret': client_secret, 'redirect_uri': redirect_uri}
+        body_params_refresh = {
+            'refresh_token': refresh_token,
+            'grant_type': 'refresh_token',
+            'client_id': client_id,
+            'client_secret': client_secret,
+            'redirect_uri': redirect_uri,
+        }
         token_url = settings.CAS_DOMAIN + '/oauth2/token'
         r = requests.post(token_url, data=body_params_refresh)
         assert r.status_code == 200
@@ -410,7 +517,9 @@ class TestOauthAPI:
         r = requests.get(profile_url, headers=headers)
         # again verify the profile response
         assert r.status_code == 200
-        assert r.json()['scope'] == requested_scope.split()  # response has a comma separated list while the scopes in authorization url are separated by spaces
+        assert (
+            r.json()['scope'] == requested_scope.split()
+        )  # response has a comma separated list while the scopes in authorization url are separated by spaces
         assert r.json()['service'] == client_id
         assert r.json()['attributes']['oauthClientId'] == client_id
         # lastly we want to revoke the refresh token
@@ -436,7 +545,16 @@ class TestOauthAPI:
         client_secret = settings.DEVAPP_CLIENT_SECRET
         redirect_uri = 'https://www.google.com/'
         requested_scope = 'osf.nodes.metadata_write'  # request just 1 access type
-        authorization_url = settings.CAS_DOMAIN + '/oauth2/authorize?response_type=code&client_id=' + client_id + '&redirect_uri=' + redirect_uri + '&scope=' + requested_scope + '&access_type=online&approval_prompt=force'
+        authorization_url = (
+            settings.CAS_DOMAIN
+            + '/oauth2/authorize?response_type=code&client_id='
+            + client_id
+            + '&redirect_uri='
+            + redirect_uri
+            + '&scope='
+            + requested_scope
+            + '&access_type=online&approval_prompt=force'
+        )
         # navigate to the authorization url in the browser
         driver.get(authorization_url)
         authorization_page = CASAuthorizationPage(driver, verify=True)
@@ -449,7 +567,13 @@ class TestOauthAPI:
         authorization_code = callback_url.partition('?code=')[2]
         token_url = settings.CAS_DOMAIN + '/oauth2/token'
         # set the body parameters for the POST including the authorization code
-        body_params = {'code': authorization_code, 'grant_type': 'authorization_code', 'client_id': client_id, 'client_secret': client_secret, 'redirect_uri': redirect_uri}
+        body_params = {
+            'code': authorization_code,
+            'grant_type': 'authorization_code',
+            'client_id': client_id,
+            'client_secret': client_secret,
+            'redirect_uri': redirect_uri,
+        }
         r = requests.post(token_url, data=body_params)
         assert r.status_code == 200
         # get the access token from the response
@@ -482,7 +606,16 @@ class TestOauthAPI:
         client_id = settings.DEVAPP_CLIENT_ID
         redirect_uri = 'https://www.google.com/'
         requested_scope = 'osf.full_read osf.users.email_read'
-        authorization_url = settings.CAS_DOMAIN + '/oauth2/authorize?response_type=code&client_id=' + client_id + '&redirect_uri=' + redirect_uri + '&scope=' + requested_scope + '&access_type=offline&approval_prompt=force'
+        authorization_url = (
+            settings.CAS_DOMAIN
+            + '/oauth2/authorize?response_type=code&client_id='
+            + client_id
+            + '&redirect_uri='
+            + redirect_uri
+            + '&scope='
+            + requested_scope
+            + '&access_type=offline&approval_prompt=force'
+        )
         # navigate to the authorization url in the browser
         driver.get(authorization_url)
         authorization_page = CASAuthorizationPage(driver, verify=True)
@@ -499,7 +632,16 @@ class TestOauthAPI:
         client_id = ''  # no client id
         redirect_uri = 'https://www.google.com/'
         requested_scope = 'osf.full_read osf.full_write'
-        authorization_url = settings.CAS_DOMAIN + '/oauth2/authorize?response_type=code&client_id=' + client_id + '&redirect_uri=' + redirect_uri + '&scope=' + requested_scope + '&access_type=online&approval_prompt=force'
+        authorization_url = (
+            settings.CAS_DOMAIN
+            + '/oauth2/authorize?response_type=code&client_id='
+            + client_id
+            + '&redirect_uri='
+            + redirect_uri
+            + '&scope='
+            + requested_scope
+            + '&access_type=online&approval_prompt=force'
+        )
         # navigate to the authorization url in the browser
         driver.get(authorization_url)
         # verify exception page
@@ -512,20 +654,41 @@ class TestOauthAPI:
         client_id = settings.DEVAPP_CLIENT_ID
         redirect_uri = 'https://www.gogle.com/'  # typo in redirect uri
         requested_scope = 'osf.nodes.access_write osf.users.profile_read'
-        authorization_url = settings.CAS_DOMAIN + '/oauth2/authorize?response_type=code&client_id=' + client_id + '&redirect_uri=' + redirect_uri + '&scope=' + requested_scope + '&access_type=online&approval_prompt=force'
+        authorization_url = (
+            settings.CAS_DOMAIN
+            + '/oauth2/authorize?response_type=code&client_id='
+            + client_id
+            + '&redirect_uri='
+            + redirect_uri
+            + '&scope='
+            + requested_scope
+            + '&access_type=online&approval_prompt=force'
+        )
         # navigate to the authorization url in the browser
         driver.get(authorization_url)
         # verify exception page
         exception_page = GenericCASPage(driver, verify=True)
         assert exception_page.navbar_brand.text == 'OSF HOME'
         assert exception_page.status_message.text == 'Authorization failed'
-        assert exception_page.error_detail.text == 'invalid_redirect_url: https://www.gogle.com/'
+        assert (
+            exception_page.error_detail.text
+            == 'invalid_redirect_url: https://www.gogle.com/'
+        )
 
     def test_authorization_failed_invalid_scope(self, driver, must_be_logged_in):
         client_id = settings.DEVAPP_CLIENT_ID
         redirect_uri = 'https://www.google.com/'
         requested_scope = 'everything'  # not a valid scope for OSF
-        authorization_url = settings.CAS_DOMAIN + '/oauth2/authorize?response_type=code&client_id=' + client_id + '&redirect_uri=' + redirect_uri + '&scope=' + requested_scope + '&access_type=online&approval_prompt=force'
+        authorization_url = (
+            settings.CAS_DOMAIN
+            + '/oauth2/authorize?response_type=code&client_id='
+            + client_id
+            + '&redirect_uri='
+            + redirect_uri
+            + '&scope='
+            + requested_scope
+            + '&access_type=online&approval_prompt=force'
+        )
         # navigate to the authorization url in the browser
         driver.get(authorization_url)
         # verify exception page

@@ -1,13 +1,12 @@
 import pytest
-import markers
-import settings
-
 from selenium.webdriver.common.keys import Keys
 
+import markers
+import settings
 from pages.registries import (
-    RegistriesLandingPage,
+    RegistrationDetailPage,
     RegistriesDiscoverPage,
-    RegistrationDetailPage
+    RegistriesLandingPage,
 )
 
 
@@ -31,8 +30,7 @@ class TestRegistriesDiscoverPage:
     @markers.smoke_test
     @markers.core_functionality
     def test_detail_page(self, driver):
-        """Test a registration detail page by grabbing the first search result from the discover page.
-        """
+        """Test a registration detail page by grabbing the first search result from the discover page."""
         discover_page = RegistriesDiscoverPage(driver)
         discover_page.goto()
         if not settings.PRODUCTION:

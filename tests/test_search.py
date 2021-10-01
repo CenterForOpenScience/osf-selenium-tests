@@ -4,6 +4,7 @@ from selenium.webdriver.common.keys import Keys
 import markers
 from pages.search import SearchPage
 
+
 @pytest.fixture()
 def search_page(driver):
     search_page = SearchPage(driver)
@@ -12,7 +13,6 @@ def search_page(driver):
 
 
 class TestSearchPage:
-
     @markers.smoke_test
     @markers.core_functionality
     def test_search_results_exist(self, search_page):

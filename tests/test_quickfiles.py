@@ -1,13 +1,17 @@
-import pytest
-import markers
 import re
-from api import osf_api
 
-from pages.quickfiles import QuickfilesPage, QuickfileDetailPage
-from pages.project import ProjectPage
-from selenium.webdriver.support import expected_conditions as EC
+import pytest
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support import expected_conditions as EC
+
+import markers
+from api import osf_api
+from pages.project import ProjectPage
+from pages.quickfiles import (
+    QuickfileDetailPage,
+    QuickfilesPage,
+)
 
 
 @pytest.fixture()
@@ -18,7 +22,6 @@ def quickfiles_page(driver, session):
 
 @markers.dont_run_on_prod
 class TestQuickfilesLoggedIn:
-
     @pytest.fixture()
     def my_quickfiles(self, quickfiles_page, must_be_logged_in):
         quickfiles_page.goto()
@@ -98,16 +101,22 @@ class TestQuickfilesLoggedIn:
         my_quickfiles.filter_input.click()
         # enter a value in the filter input box that wll filter out the file from the list
         my_quickfiles.filter_input.send_keys_deliberately('XXXXXX')
-        assert EC.invisibility_of_element_located((By.CSS_SELECTOR, '[data-test-file-icon-and-name]'))
+        assert EC.invisibility_of_element_located(
+            (By.CSS_SELECTOR, '[data-test-file-icon-and-name]')
+        )
         # clear the filter input box and verify that the file is visible again
         for _ in range(5):
             my_quickfiles.filter_input.send_keys_deliberately(Keys.BACKSPACE)
-        assert EC.visibility_of_element_located((By.CSS_SELECTOR, '[data-test-file-icon-and-name]'))
+        assert EC.visibility_of_element_located(
+            (By.CSS_SELECTOR, '[data-test-file-icon-and-name]')
+        )
         my_quickfiles.filter_close_button.click()
 
     def test_move_quickfile_to_new_project(self, driver, session, my_quickfiles):
         my_quickfiles.loading_indicator.here_then_gone()
-        file_name = driver.find_element(By.CSS_SELECTOR, '[data-test-file-icon-and-name]').text
+        file_name = driver.find_element(
+            By.CSS_SELECTOR, '[data-test-file-icon-and-name]'
+        ).text
         my_quickfiles.files[0].click()
         my_quickfiles.move_button.click()
         # verify move modal
@@ -145,7 +154,9 @@ class TestQuickfilesLoggedIn:
 
     def test_rename_quickfile(self, driver, my_quickfiles):
         my_quickfiles.loading_indicator.here_then_gone()
-        original_name = driver.find_element(By.CSS_SELECTOR, '[data-test-file-icon-and-name]').text
+        original_name = driver.find_element(
+            By.CSS_SELECTOR, '[data-test-file-icon-and-name]'
+        ).text
         my_quickfiles.files[0].click()
         my_quickfiles.rename_button.click()
         assert my_quickfiles.rename_input.present()
@@ -156,13 +167,16 @@ class TestQuickfilesLoggedIn:
         my_quickfiles.rename_input.send_keys_deliberately(new_name)
         my_quickfiles.rename_save_button.click()
         my_quickfiles.flash_message.here_then_gone()
-        assert driver.find_element(By.CSS_SELECTOR, '[data-test-file-icon-and-name]').text == new_name
+        assert (
+            driver.find_element(By.CSS_SELECTOR, '[data-test-file-icon-and-name]').text
+            == new_name
+        )
 
 
 @markers.dont_run_on_prod
 class AnothersQuickfilesMixin:
-    """Mixin used to inject generic tests
-    """
+    """Mixin used to inject generic tests"""
+
     @pytest.fixture()
     def anothers_quickfiles(self, quickfiles_page):
         raise NotImplementedError()
@@ -216,7 +230,6 @@ class AnothersQuickfilesMixin:
 
 @markers.dont_run_on_prod
 class TestQuickfilesLoggedOut(AnothersQuickfilesMixin):
-
     @pytest.fixture()
     def anothers_quickfiles(self, quickfiles_page):
         quickfiles_page.goto()
@@ -225,7 +238,6 @@ class TestQuickfilesLoggedOut(AnothersQuickfilesMixin):
 
 @markers.dont_run_on_prod
 class TestQuickfilesAsDifferentUser(AnothersQuickfilesMixin):
-
     @pytest.fixture()
     def anothers_quickfiles(self, quickfiles_page, must_be_logged_in_as_user_two):
         quickfiles_page.goto()
