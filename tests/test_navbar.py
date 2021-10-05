@@ -111,7 +111,6 @@ class NavbarTestLoggedInMixin:
         page.navbar.user_dropdown.click()
         page.navbar.logout_link.click()
         LandingPage(driver, verify=True)
-        assert 'goodbye' in driver.current_url
         login(driver)
 
 
