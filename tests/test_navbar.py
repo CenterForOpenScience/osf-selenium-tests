@@ -1,6 +1,7 @@
 import pytest
 
 import markers
+from base.exceptions import PageException
 from pages.cos import COSDonatePage
 from pages.dashboard import DashboardPage
 from pages.institutions import InstitutionsLandingPage
@@ -110,8 +111,12 @@ class NavbarTestLoggedInMixin:
     def test_logout_link(self, driver, page):
         page.navbar.user_dropdown.click()
         page.navbar.logout_link.click()
-        LandingPage(driver, verify=True)
-        login(driver)
+        try:
+            LandingPage(driver, verify=True)
+        except PageException:
+            raise
+        finally:
+            login(driver)
 
 
 @markers.smoke_test
