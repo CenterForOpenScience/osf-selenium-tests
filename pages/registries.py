@@ -62,4 +62,8 @@ class RegistrationDetailPage(GuidBasePage):
 
 class RegistrationAddNewPage(BaseRegistriesPage):
     url = settings.OSF_HOME + '/registries/osf/new'
-    identity = Locator(By.CLASS_NAME, 'Application__page', settings.LONG_TIMEOUT)
+    identity = Locator(By.CSS_SELECTOR, 'form[data-test-new-registration-form]', settings.LONG_TIMEOUT)
+
+
+class RegistrationDraftPage(BaseRegistriesPage):
+    identity = Locator(By.CSS_SELECTOR, 'nav[data-test-side-nav]', settings.LONG_TIMEOUT)
