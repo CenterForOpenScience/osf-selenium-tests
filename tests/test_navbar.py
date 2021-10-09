@@ -19,6 +19,7 @@ from pages.preprints import (
 from pages.project import MyProjectsPage
 from pages.quickfiles import QuickfilesPage
 from pages.register import RegisterPage
+from pages.registrations import MyRegistrationsPage
 from pages.registries import (
     RegistrationAddNewPage,
     RegistriesLandingPage,
@@ -29,8 +30,6 @@ from pages.user import (
     ProfileInformationPage,
     UserProfilePage,
 )
-from pages.institutions import InstitutionsLandingPage
-from pages.registrations import MyRegistrationsPage
 
 
 class NavbarTestLoggedOutMixin:
