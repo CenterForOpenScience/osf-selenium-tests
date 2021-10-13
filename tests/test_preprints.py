@@ -3,6 +3,7 @@ import re
 
 import pytest
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.support.ui import WebDriverWait
@@ -132,6 +133,8 @@ class TestPreprintWorkflow:
         supplemental_guid = match.group(2)
         osf_api.delete_project(session, supplemental_guid, None)
 
+
+class TestPreprintSearch:
     @markers.smoke_test
     @markers.core_functionality
     def test_search_results_exist(self, driver, landing_page):
@@ -139,6 +142,34 @@ class TestPreprintWorkflow:
         discover_page = PreprintDiscoverPage(driver, verify=True)
         discover_page.loading_indicator.here_then_gone()
         assert len(discover_page.search_results) > 0
+
+    def test_preprint_detail_page(self, driver):
+        discover_page = PreprintDiscoverPage(driver)
+        discover_page.goto()
+        assert PreprintDiscoverPage(driver, verify=True)
+        if not settings.PRODUCTION:
+            # Since all of the testing environments use the same SHARE server, we need
+            # to enter a value in the search input box that will ensure that the results
+            # are specific to the current environment.  We can do this by searching for
+            # the test environment url in the identifiers metadata field.
+            environment_url = settings.OSF_HOME[
+                8:
+            ]  # Need to strip out "https://" from the url
+            search_text = 'identifiers:"' + environment_url + '"'
+            discover_page.search_box.send_keys_deliberately(search_text)
+            discover_page.search_box.send_keys(Keys.ENTER)
+            if settings.STAGE2:
+                # Stage 2 has a lot of old preprint data that is still listed in search
+                # results but does not actually have preprint detail pages so we need to
+                # sort the results so that the newest preprints are listed first.
+                discover_page.sort_button.click()
+                discover_page.sort_option_newest_to_oldest.click()
+        discover_page.loading_indicator.here_then_gone()
+        search_results = discover_page.search_results
+        assert search_results
+        # Click on first entry in search results to open the Preprint Detail page
+        search_results[0].click()
+        assert PreprintDetailPage(driver, verify=True)
 
 
 @pytest.fixture(scope='session')
@@ -186,7 +217,8 @@ class TestProvidersWithCustomDomains:
 @markers.smoke_test
 @markers.core_functionality
 @pytest.mark.skipif(
-    not settings.PRODUCTION, reason='Cannot test on stagings as they share SHARE'
+    not settings.PRODUCTION,
+    reason='Most of the Branded Preprint Provider pages in test environments have no preprints',
 )
 class TestBrandedProviders:
     """This class only runs in Production for all Branded Providers"""
