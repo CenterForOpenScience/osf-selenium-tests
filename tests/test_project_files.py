@@ -1,3 +1,5 @@
+import datetime
+import os
 import time
 
 import pytest
@@ -407,7 +409,6 @@ class TestFilesPage:
         finally:
             osf_api.delete_addon_files(session, provider, current_browser, guid=node_id)
 
-    @pytest.mark.skipif(settings.DRIVER == 'remote', reason='File_Detector Class only ')
     @pytest.mark.parametrize('provider', ['s3', 'dropbox', 'box', 'owncloud'])
     def test_download_file(self, driver, default_project, session, provider):
         current_browser = driver.desired_capabilities.get('browserName')
@@ -444,13 +445,40 @@ class TestFilesPage:
                 not in driver.find_element_by_xpath('/html/body').text
             )
 
+            # Positive Test: Verify that file is actually downloaded to user's machine
+            current_date = datetime.datetime.now()
+            if settings.DRIVER == 'Remote':
+                # First verify the downloaded file exists on the virtual remote machine
+                assert driver.execute_script(
+                    'browserstack_executor: {"action": "fileExists", "arguments": {"fileName": "%s"}}'
+                    % (file_name)
+                )
+                # Next get the file properties and then verify that the file creation date is today
+                file_props = driver.execute_script(
+                    'browserstack_executor: {"action": "getFileProperties", "arguments": {"fileName": "%s"}}'
+                    % (file_name)
+                )
+                file_create_date = datetime.datetime.fromtimestamp(
+                    file_props['created_time']
+                )
+                assert file_create_date.date() == current_date.date()
+            else:
+                file_path = os.path.expanduser('~/Downloads/' + file_name)
+                # First verify the downloaded file exists
+                assert os.path.exists(file_path)
+                # Next verify the file was downloaded today
+                status = os.stat(file_path)
+                file_create_date = datetime.datetime.fromtimestamp(status.st_ctime)
+                assert file_create_date.date() == current_date.date()
+                # Cleanup - Delete the downloaded file after we have verified it
+                os.remove(file_path)
+
         finally:
             osf_api.delete_addon_files(session, provider, current_browser, guid=node_id)
 
 
 """
 TODO:
-- improve downloads test to check for positive result
 - write an uploads test
 
 Addons this test does not cover, and reasons:
