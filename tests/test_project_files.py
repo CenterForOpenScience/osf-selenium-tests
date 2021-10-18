@@ -429,6 +429,14 @@ class TestFilesPage:
         )
 
         try:
+            # If running on local machine, first check if the download file already
+            # exists in the Downloads folder. If so then delete the old copy before
+            # attempting to download a new one.
+            if settings.DRIVER != 'Remote':
+                file_path = os.path.expanduser('~/Downloads/' + file_name)
+                if os.path.exists(file_path):
+                    os.remove(file_path)
+
             files_page = FilesPage(driver, guid=node_id)
             files_page.goto()
 
@@ -463,15 +471,12 @@ class TestFilesPage:
                 )
                 assert file_create_date.date() == current_date.date()
             else:
-                file_path = os.path.expanduser('~/Downloads/' + file_name)
                 # First verify the downloaded file exists
                 assert os.path.exists(file_path)
                 # Next verify the file was downloaded today
                 status = os.stat(file_path)
                 file_create_date = datetime.datetime.fromtimestamp(status.st_ctime)
                 assert file_create_date.date() == current_date.date()
-                # Cleanup - Delete the downloaded file after we have verified it
-                os.remove(file_path)
 
         finally:
             osf_api.delete_addon_files(session, provider, current_browser, guid=node_id)

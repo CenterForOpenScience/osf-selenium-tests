@@ -21,6 +21,12 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
         command_executor = 'http://{}:{}@hub.browserstack.com:80/wd/hub'.format(
             settings.BSTACK_USER, settings.BSTACK_KEY
         )
+
+        # NOTE: BrowserStack does support the use of Chrome Options, but we are not
+        # currently using any of them. Below are several steps to setup preferences
+        # that are specific to Firefox.  Currently when running Chrome or Edge in
+        # BrowserStack we are running with the default base install options.
+
         # DeprecationWarning: Please use FirefoxOptions to set browser profile
         from selenium.webdriver import FirefoxProfile
 
