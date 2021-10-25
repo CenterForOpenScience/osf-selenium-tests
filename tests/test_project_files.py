@@ -474,8 +474,8 @@ class TestFilesPage:
                 # First verify the downloaded file exists
                 assert os.path.exists(file_path)
                 # Next verify the file was downloaded today
-                status = os.stat(file_path)
-                file_create_date = datetime.datetime.fromtimestamp(status.st_ctime)
+                file_ctime = os.path.getctime(file_path)
+                file_create_date = datetime.datetime.fromtimestamp(file_ctime)
                 assert file_create_date.date() == current_date.date()
 
         finally:
