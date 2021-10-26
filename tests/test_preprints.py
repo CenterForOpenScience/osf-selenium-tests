@@ -248,5 +248,8 @@ class TestBrandedProviders:
             assert search_results
             search_results[0].click()
             PreprintDetailPage(driver, verify=True)
-        else:
+        elif not provider['attributes']['additional_providers']:
+            # Some Preprint Providers may also display preprints from other sources not
+            # just OSF. So we do not want to assert that there are No Results when there
+            # may be results from non-OSF providers.
             assert discover_page.no_results
