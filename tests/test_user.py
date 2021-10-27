@@ -87,6 +87,7 @@ class TestUserSettings:
         profile_settings_page.goto()
         return profile_settings_page
 
+    @markers.smoke_test
     @markers.core_functionality
     def test_user_settings_loads(self, settings_page):
         """Confirm the given user settings page loads."""
