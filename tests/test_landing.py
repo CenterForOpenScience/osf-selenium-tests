@@ -14,6 +14,7 @@ def landing_page(driver):
     return landing_page
 
 
+@markers.smoke_test
 class TestHomeLandingPage:
     @pytest.fixture()
     def page(self, landing_page):
@@ -26,6 +27,7 @@ class TestHomeLandingPage:
     # TO DO: Come back later and add other tests for elements on OSF Home page - see ENG-826
 
 
+@markers.smoke_test
 class TestRegisteredReportsLandingPage:
     @markers.core_functionality
     def test_landing_page(self, driver):
