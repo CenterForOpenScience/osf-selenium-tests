@@ -80,10 +80,12 @@ class TestDashboardPage:
     # TODO: Maybe add a test to verify Most popular section if/when we ever figure out how a project becomes
     # Most Popular
 
+    @markers.smoke_test
     def test_meetings_link(self, driver, dashboard_page):
         dashboard_page.view_meetings_button.click()
         assert MeetingsPage(driver).verify()
 
+    @markers.smoke_test
     def test_preprints_link(self, driver, dashboard_page):
         dashboard_page.view_preprints_button.click()
         assert PreprintLandingPage(driver).verify()
