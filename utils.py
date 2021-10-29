@@ -21,22 +21,31 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
         command_executor = 'http://{}:{}@hub.browserstack.com:80/wd/hub'.format(
             settings.BSTACK_USER, settings.BSTACK_KEY
         )
+
+        # NOTE: BrowserStack does support the use of Chrome Options, but we are not
+        # currently using any of them. Below are several steps to setup preferences
+        # that are specific to Firefox.  Currently when running Chrome or Edge in
+        # BrowserStack we are running with the default base install options.
+
         # DeprecationWarning: Please use FirefoxOptions to set browser profile
         from selenium.webdriver import FirefoxProfile
 
         ffp = FirefoxProfile()
         # Set the default download location [0=Desktop, 1=Downloads, 2=Specified location]
-        ffp.set_preference('browser.download.folderList', 2)
-        # Specify the download directory
-        ffp.set_preference('browser.download.dir', 'Users/Public/Downloads')
+        ffp.set_preference('browser.download.folderList', 1)
+
         # Disable the OS-level pop-up modal
         ffp.set_preference('browser.download.manager.showWhenStarting', False)
         ffp.set_preference('browser.helperApps.alwaysAsk.force', False)
+        ffp.set_preference('browser.download.manager.alertOnEXEOpen', False)
+        ffp.set_preference('browser.download.manager.closeWhenDone', True)
+        ffp.set_preference('browser.download.manager.showAlertOnComplete', False)
+        ffp.set_preference('browser.download.manager.useWindow', False)
         # Specify the file types supported by the download
         ffp.set_preference(
             'browser.helperApps.neverAsk.saveToDisk',
             'text/plain, application/octet-stream, application/binary, text/csv, application/csv, '
-            'application/excel, text/comma-separated-values, text/xml, application/xml',
+            'application/excel, text/comma-separated-values, text/xml, application/xml, binary/octet-stream',
         )
         driver = driver_cls(
             command_executor=command_executor,
@@ -71,7 +80,7 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
         ffp.set_preference(
             'browser.helperApps.neverAsk.saveToDisk',
             'text/plain, application/octet-stream, application/binary, text/csv, application/csv, '
-            'application/excel, text/comma-separated-values, text/xml, application/xml',
+            'application/excel, text/comma-separated-values, text/xml, application/xml, binary/octet-stream',
         )
         driver = driver_cls(firefox_profile=ffp)
     else:
