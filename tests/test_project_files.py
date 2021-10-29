@@ -474,9 +474,9 @@ class TestFilesPage:
                 # First verify the downloaded file exists
                 assert os.path.exists(file_path)
                 # Next verify the file was downloaded today
-                file_ctime = os.path.getctime(file_path)
-                file_create_date = datetime.datetime.fromtimestamp(file_ctime)
-                assert file_create_date.date() == current_date.date()
+                file_mtime = os.path.getmtime(file_path)
+                file_mod_date = datetime.datetime.fromtimestamp(file_mtime)
+                assert file_mod_date.date() == current_date.date()
 
         finally:
             osf_api.delete_addon_files(session, provider, current_browser, guid=node_id)
