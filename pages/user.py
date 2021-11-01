@@ -29,7 +29,7 @@ class UserProfilePage(GuidBasePage):
     edit_profile_link = Locator(By.CSS_SELECTOR, '#edit-profile-settings')
 
     # TODO: Seperate out by component if it becomes necessary
-    loading_indicator = Locator(By.CSS_SELECTOR, '.ball-pulse')
+    loading_indicator = Locator(By.CSS_SELECTOR, '.ball-pulse', settings.LONG_TIMEOUT)
 
     # Group Locators
     public_projects = GroupLocator(By.CSS_SELECTOR, '#publicProjects .list-group-item')
