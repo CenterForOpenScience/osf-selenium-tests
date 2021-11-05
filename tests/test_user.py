@@ -4,7 +4,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 import markers
-import settings
 from api import osf_api
 from pages import user
 
@@ -27,14 +26,13 @@ class ProfilePageMixin:
     def profile_page(self, driver):
         raise NotImplementedError()
 
+    @markers.smoke_test
     @markers.core_functionality
     def test_nothings_public(self, profile_page):
-        """Confirm there the user has no public projects."""
+        """Confirm that the user has no public projects."""
+        profile_page.loading_indicator.here_then_gone()
         assert profile_page.no_public_projects_text.present()
         assert profile_page.no_public_components_text.present()
-
-        if settings.PRODUCTION:
-            assert profile_page.no_public_quickfiles.present()
 
     @markers.dont_run_on_prod
     def test_public_lists(self, quickfile, public_project, profile_page):
