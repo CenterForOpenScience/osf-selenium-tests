@@ -97,10 +97,6 @@ def find_toolbar_button_by_name(driver, button_name):
 
 @markers.dont_run_on_prod
 @pytest.mark.usefixtures('must_be_logged_in')
-@pytest.mark.skipif(
-    settings.BUILD == 'edge',
-    reason='Our actions prompt edge to ask "Would you like to navigate away from this page?"',
-)
 class TestFilesPage:
     """We want to wrap all of our tests with try/finally so we can delete leftover files after failures.
     Decorators did not work here because we would need to pull out node_id from each test.
@@ -332,7 +328,7 @@ class TestFilesPage:
 
             action_chains = ActionChains(driver)
             action_chains.reset_actions()
-            if 'chrome' in current_browser:
+            if 'chrome' or 'edge' in current_browser:
                 # The sleeps in the following code block are needed for
                 # Chrome's virtual keyboard to work properly
                 if modifier_key == 'alt':
