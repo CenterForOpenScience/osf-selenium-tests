@@ -1,6 +1,11 @@
 import pytest
 import ipdb
 from faker import Faker
+import time
+
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
 
 import markers
 from pages.registrations import MyRegistrationsPage
@@ -68,7 +73,7 @@ class TestMyRegistrationsUserTwo:
 class TestRegistrationsVersioning:
     """This test navigates the test user through the entire workflow for updating a registration by creating a new version"""
 
-    def test_versioning_workflow(self, driver, must_be_logged_in):
+    def test_versioning_workflow(self, driver, must_be_logged_in_as_user_two):
         my_registrations_page = MyRegistrationsPage(driver)
         my_registrations_page.goto()
         my_registrations_page.update_button.click()
@@ -87,10 +92,12 @@ class TestRegistrationsVersioning:
         justification_page.summary_textbox.send_keys(summary_paragraph)
         justification_page.summary_review_button.click()
 
-        ### BUG HERE: User needs to return to justification page for validation ###
-        justification_page.navbar_justification.click()
-        justification_page.navbar_review.click()
-
+        # Wait for justification field to update from "No Justification provided." to summary_paragraph
+        WebDriverWait(driver, 10).until(
+            EC.text_to_be_present_in_element(
+                (By.CSS_SELECTOR, 'p[data-test-review-response="revisionJustification"]'), 'selenium'
+            )
+        )
         justification_page.submit_revision.click()
         justification_page.accept_changes.click()
 
@@ -99,4 +106,33 @@ class TestRegistrationsVersioning:
         review_form.link_to_registration.click()
 
         registration_detail_page = RegistrationDetailPage(driver)
+        # The registration detail page needs to be refreshed for the changes to take effect.
+        driver.refresh()
         assert summary_paragraph in registration_detail_page.narrative_summary.text
+
+    def test_delete_versioning(self, driver, must_be_logged_in_as_user_two):
+        my_registrations_page = MyRegistrationsPage(driver)
+        my_registrations_page.goto()
+        my_registrations_page.view_button.click()
+        registration_detail_page = RegistrationDetailPage(driver)
+
+        # Store the text of the most recent update
+        latest_update = registration_detail_page.narrative_summary.text
+
+        registration_detail_page.updates_dropdown.click()
+        registration_detail_page.update_registration_button.click()
+        my_registrations_page.update_registration_dialogue.present()
+        my_registrations_page.update_registration_dialogue_next.click()
+
+        RegistrationJustificationForm(driver, verify=True)
+        justification_page = RegistrationJustificationForm(driver)
+        justification_page.cancel_update_button.click()
+        justification_page.cancel_update_modal.present()
+        justification_page.confirm_cancel_button.click()
+
+        RegistrationDetailPage(driver, verify=True)
+        registration_detail_page = RegistrationDetailPage(driver)
+        registration_detail_page.updates_dropdown.click()
+        registration_detail_page.update_registration_button.present()
+
+        assert latest_update in registration_detail_page.narrative_summary.text

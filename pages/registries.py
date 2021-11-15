@@ -87,6 +87,9 @@ class RegistrationJustificationForm(GuidBasePage):
 
     justification_textbox = Locator(By.CSS_SELECTOR, 'textarea[name="revisionJustification"]')
     justification_next_button = Locator(By.CSS_SELECTOR, '[data-test-goto-next-page]')
+    cancel_update_button = Locator(By.CSS_SELECTOR, '[data-test-delete-button]')
+    cancel_update_modal = Locator(By.CSS_SELECTOR, 'div[data-analytics-scope="Delete button modal"]')
+    confirm_cancel_button = Locator(By.CSS_SELECTOR, '[data-test-confirm-delete]')
 
     navbar_justification = Locator(By.CSS_SELECTOR, '[data-test-link="justification"]')
     navbar_review = Locator(By.CSS_SELECTOR, '[data-test-link="review"]')
