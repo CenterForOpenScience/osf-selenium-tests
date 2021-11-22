@@ -18,7 +18,7 @@ logging.getLogger('invoke').setLevel(logging.CRITICAL)
 HERE = os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..'))
 BIN_PATH = os.path.dirname(sys.executable)
 bin_prefix = lambda cmd: os.path.join(BIN_PATH, cmd)
-MAX_TRAVIS_RETRIES = int(os.getenv('MAX_TRAVIS_RETRIES', 3))
+MAX_RETRIES = int(os.getenv('MAX_RETRIES', 3))
 
 
 @task(aliases=['flake8'])
@@ -75,33 +75,33 @@ def test_module(ctx, module=None, params=None):
 
 
 @task
-def test_travis_on_prod(ctx):
+def test_selenium_on_prod(ctx):
     """
     Runs targeted prod smoke tests on the latest Chrome
     """
     flake(ctx)
     print('>>> Testing modules in "{}" in Chrome'.format('tests'))
-    test_travis_with_retries(
+    test_selenium_with_retries(
         ctx, 'Master', _get_test_file_list(), module=['-m', 'smoke_test']
     )
 
 
 @task
-def test_travis_part_one(ctx):
+def test_selenium_part_one(ctx):
     """Run first group of tests on the browser defined by TEST_BUILD."""
     all_test_files = _get_test_file_list()
     midpoint = len(all_test_files) // 2
     file_list = all_test_files[:midpoint]
-    test_travis_with_retries(ctx, 'part one', file_list)
+    test_selenium_with_retries(ctx, 'part one', file_list)
 
 
 @task
-def test_travis_part_two(ctx):
+def test_selenium_part_two(ctx):
     """Run second group of tests on the browser defined by TEST_BUILD."""
     all_test_files = _get_test_file_list()
     midpoint = len(all_test_files) // 2
     file_list = all_test_files[midpoint:]
-    test_travis_with_retries(ctx, 'part two', file_list)
+    test_selenium_with_retries(ctx, 'part two', file_list)
 
 
 def _get_test_file_list():
@@ -111,7 +111,7 @@ def _get_test_file_list():
 
 
 @task
-def test_travis_with_retries(ctx, partition_name, file_list, module=None):
+def test_selenium_with_retries(ctx, partition_name, file_list, module=None):
     """Run group of tests on the browser defined by TEST_BUILD."""
     flake(ctx)
 
@@ -128,7 +128,7 @@ def test_travis_with_retries(ctx, partition_name, file_list, module=None):
 
     file_list = ['--last-failed', '--last-failed-no-failures', 'none'] + file_list
 
-    for i in range(1, MAX_TRAVIS_RETRIES + 1):
+    for i in range(1, MAX_RETRIES + 1):
         print(
             '>>> Retesting {} failures, iteration {}, in "/test/" '
             'in {}'.format(partition_name, i, os.environ['TEST_BUILD'])
