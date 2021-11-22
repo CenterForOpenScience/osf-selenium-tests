@@ -3,7 +3,9 @@
 This is the UI test automation for the OSF. It uses Selenium WebDriver and Pytest to create end-to-end OSF tests.
 
 
-[![Build Status](https://travis-ci.org/cos-qa/osf-selenium-tests.svg?branch=master)](https://travis-ci.org/cos-qa/osf-selenium-tests)
+![production_smoke_tests](https://github.com/cos-qa/osf-selenium-tests/actions/workflows/production_smoke_tests.yml/badge.svg)
+![develop_staging_tests](https://github.com/cos-qa/osf-selenium-tests/actions/workflows/selenium_staging_tests.yml/badge.svg)
+
 
 
 ## Setting up
