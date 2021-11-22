@@ -86,4 +86,4 @@ jobs:
           PREFERRED_NODE: ra4bf
           TEST_BUILD: ${{ matrix.browser }}
         run: |
-          invoke test_travis_on_prod
+          invoke test_selenium_on_prod
