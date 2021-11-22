@@ -22,7 +22,9 @@ class HomeNavbar(BaseElement):
     support_link = Locator(By.ID, 'navbar-support')
     donate_link = Locator(By.ID, 'navbar-donate')
 
-    user_dropdown = Locator(By.CSS_SELECTOR, 'ul.navbar-nav > li:nth-child(6) > a')
+    user_dropdown = Locator(
+        By.CSS_SELECTOR, 'ul.navbar-nav > li.secondary-nav-dropdown'
+    )
     user_dropdown_profile = Locator(
         By.CSS_SELECTOR, 'ul.dropdown-menu-right > li:nth-child(1)'
     )
@@ -82,7 +84,7 @@ class PreprintsNavbar(EmberNavbar):
     )
 
     my_preprints_link = Locator(
-        By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-child(6) > a'
+        By.CSS_SELECTOR, '#secondary-navigation > ul > li:first-child > a'
     )
     add_a_preprint_link = Locator(
         By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-child(5) > a'
@@ -151,8 +153,13 @@ class RegistriesNavbar(EmberNavbar):
         By.CSS_SELECTOR, 'a[data-analytics-name="Settings"]'
     )
 
-    add_new_link = Locator(By.CSS_SELECTOR, 'a[data-test-add-new-button][href="/registries/osf/new"]')
-    my_registrations_link = Locator(By.CSS_SELECTOR, 'a[data-test-add-new-button][href="/registries/my-registrations"]')
+    add_new_link = Locator(
+        By.CSS_SELECTOR, 'a[data-test-add-new-button][href="/registries/osf/new"]'
+    )
+    my_registrations_link = Locator(
+        By.CSS_SELECTOR,
+        'a[data-test-add-new-button][href="/registries/my-registrations"]',
+    )
 
     def verify(self):
         return self.current_service.text == 'REGISTRIES'
