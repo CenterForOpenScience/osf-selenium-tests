@@ -83,37 +83,18 @@ class PreprintsNavbar(EmberNavbar):
         By.CSS_SELECTOR, 'ul.dropdown-menu.service-dropdown > li:nth-child(5) > a'
     )
 
-    my_preprints_link = Locator(
-        By.CSS_SELECTOR, '#secondary-navigation > ul > li:first-child > a'
-    )
-    add_a_preprint_link = Locator(
-        By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-child(5) > a'
-    )
-    search_link = Locator(
-        By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-child(4) > a'
-    )
-    support_link = Locator(
-        By.CSS_SELECTOR, '#secondary-navigation > ul > li:nth-last-child(3) > a'
-    )
-    donate_link = Locator(
-        By.CSS_SELECTOR, '#secondary-navigation > ul > li.navbar-donate-button'
-    )
-    sign_up_button = Locator(By.CSS_SELECTOR, 'a.btn-success:nth-child(1)')
-    sign_in_button = Locator(By.CSS_SELECTOR, '.btn-top-login')
+    my_preprints_link = Locator(By.LINK_TEXT, 'My Preprints')
+    add_a_preprint_link = Locator(By.LINK_TEXT, 'Add a Preprint')
+    search_link = Locator(By.LINK_TEXT, 'Search')
+    support_link = Locator(By.LINK_TEXT, 'Support')
+    donate_link = Locator(By.LINK_TEXT, 'Donate')
+    sign_up_button = Locator(By.LINK_TEXT, 'Sign Up')
+    sign_in_button = Locator(By.LINK_TEXT, 'Sign In')
 
-    user_dropdown_profile = Locator(
-        By.CSS_SELECTOR, 'ul.dropdown-menu-right > li:nth-child(1)'
-    )
-    user_dropdown_support = Locator(
-        By.CSS_SELECTOR, 'ul.dropdown-menu-right > li:nth-child(2)'
-    )
-    user_dropdown_settings = Locator(
-        By.CSS_SELECTOR, 'ul.dropdown-menu-right > li:nth-child(3)'
-    )
-    logout_link = Locator(
-        By.CSS_SELECTOR,
-        '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(4) > a',
-    )
+    user_dropdown_profile = Locator(By.LINK_TEXT, 'My Profile')
+    user_dropdown_support = Locator(By.LINK_TEXT, 'OSF Support')
+    user_dropdown_settings = Locator(By.LINK_TEXT, 'Settings')
+    logout_link = Locator(By.LINK_TEXT, 'Log Out')
 
     def verify(self):
         return self.current_service.text == 'PREPRINTS'
