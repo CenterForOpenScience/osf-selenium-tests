@@ -15,6 +15,7 @@ from pages.preprints import (
     PreprintDiscoverPage,
     PreprintLandingPage,
     PreprintSubmitPage,
+    ReviewsDashboardPage,
 )
 from pages.project import MyProjectsPage
 from pages.quickfiles import QuickfilesPage
@@ -201,6 +202,13 @@ class TestPreprintsNavbarLoggedIn(NavbarTestLoggedInMixin):
         page.navbar.my_preprints_link.click()
         # My Preprints link actually navigates to My Preprints section of My Projects page
         assert 'myprojects/#preprints' in driver.current_url
+
+    # In order to see the My Reviewing link in the Preprints Navbar the user has to be
+    # an admin for one of the Branded Preprint Providers.
+    @markers.dont_run_on_prod
+    def test_my_reviewing_link(self, page, driver):
+        page.navbar.my_reviewing_link.click()
+        ReviewsDashboardPage(driver, verify=True)
 
 
 @markers.smoke_test

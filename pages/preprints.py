@@ -181,3 +181,8 @@ class PreprintDetailPage(GuidBasePage, BasePreprintPage):
     identity = Locator(By.ID, 'preprintTitle', settings.LONG_TIMEOUT)
     title = Locator(By.ID, 'preprintTitle', settings.LONG_TIMEOUT)
     view_page = Locator(By.ID, 'view-page')
+
+
+class ReviewsDashboardPage(OSFBasePage):
+    url = settings.OSF_HOME + '/reviews'
+    identity = Locator(By.CLASS_NAME, '_reviews-dashboard-header_jdu5ey')

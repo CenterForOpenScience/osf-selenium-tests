@@ -84,6 +84,7 @@ class PreprintsNavbar(EmberNavbar):
     )
 
     my_preprints_link = Locator(By.LINK_TEXT, 'My Preprints')
+    my_reviewing_link = Locator(By.LINK_TEXT, 'My Reviewing')
     add_a_preprint_link = Locator(By.LINK_TEXT, 'Add a Preprint')
     search_link = Locator(By.LINK_TEXT, 'Search')
     support_link = Locator(By.LINK_TEXT, 'Support')
