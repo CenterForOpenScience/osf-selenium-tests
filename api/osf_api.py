@@ -344,3 +344,21 @@ def connect_provider_root_to_node(
         raw_body=json.dumps(raw_payload),
     )
     return addon
+
+
+def get_preprints_list_for_user(session, user=None):
+    """Return the list of Preprints for a given user"""
+    if not user:
+        user = current_user(session)
+    url = '/v2/users/{}/preprints/'.format(user.id)
+    return session.get(url)['data']
+
+
+def get_preprint_supplemental_material_guid(session, preprint_guid):
+    """Return the Supplemental Material Project guid for a given Preprint"""
+    url = '/v2/preprints/{}/relationships/node/'.format(preprint_guid)
+    data = session.get(url)['data']
+    if data:
+        return data['id']
+    else:
+        return None
