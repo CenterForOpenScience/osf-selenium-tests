@@ -164,6 +164,7 @@ class TestPreprintWorkflow:
                                 session, preprint['id']
                             )
                         )
+                        break
 
             # We need to always delete the supplemental materials project if it exists
             if supplemental_guid is not None:
