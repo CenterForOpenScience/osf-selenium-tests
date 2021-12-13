@@ -328,54 +328,53 @@ class TestFilesPage:
 
             action_chains = ActionChains(driver)
             action_chains.reset_actions()
-            if 'chrome' or 'edge' in current_browser:
-                # The sleeps in the following code block are needed for
-                # Chrome's virtual keyboard to work properly
+
+            if 'firefox' in current_browser:
                 if modifier_key == 'alt':
-                    action_chains.key_up(Keys.LEFT_ALT).perform()
+                    # Copy file
                     action_chains.key_down(Keys.LEFT_ALT).perform()
+                    action_chains.drag_and_drop(source_row, target).perform()
+                else:
+                    # Move file
+                    action_chains.drag_and_drop(source_row, target).perform()
+            else:
+                # The sleeps in the following code block are needed for
+                # Chromium's virtual keyboard to work properly
+                if modifier_key == 'alt':
+                    # Copy file
+                    time.sleep(1)
+                    action_chains.key_down(Keys.ALT).perform()
+                    time.sleep(1)
                     action_chains.click_and_hold(source_row).perform()
                     time.sleep(1)
-
-                    action_chains.reset_actions()
-                    action_chains.move_to_element(target).perform()
+                    action_chains.drag_and_drop(source_row, target).perform()
                     time.sleep(1)
-
                     action_chains.reset_actions()
-                    action_chains.key_up(Keys.LEFT_ALT).perform()
-                    action_chains.key_down(Keys.LEFT_ALT).perform()
-                    action_chains.key_up(Keys.ALT).perform()
-                    action_chains.key_down(Keys.ALT).perform()
-                    action_chains.release(target).perform()
-                    time.sleep(1)
-
-                    action_chains.reset_actions()
-                    action_chains.key_up(Keys.LEFT_ALT).perform()
-                    action_chains.key_up(Keys.ALT).perform()
-
+                    if 'chrome' in current_browser:
+                        # The ALT key_up seems to be necessary for Chrome. Without it
+                        # every other copy attempt actually becomes a move.
+                        action_chains.key_up(Keys.ALT).perform()
+                        time.sleep(1)
+                        # However, the ALT key_up can cause an unwanted repetition of
+                        # the drag and drop action which can cause a pop-up modal about
+                        # replacing the copied file. This seems to happen most often
+                        # on BrowserStack.  If we see this modal, then close it.
+                        if files_page.replace_modal.present():
+                            files_page.replace_modal_close_button.click()
                 else:
+                    # Move file
                     action_chains.click_and_hold(source_row).perform()
                     # Chrome -> will highlight multiple rows if you do not sleep here
                     time.sleep(1)
-                    action_chains.move_to_element(target).perform()
-
-                    action_chains.reset_actions()
-                    action_chains.release(target).perform()
-            else:
-                if modifier_key == 'alt':
-                    action_chains.key_down(Keys.LEFT_ALT)
-                    action_chains.click_and_hold(source_row)
-                    action_chains.move_to_element(target)
-                    action_chains.release(target)
-                    action_chains.key_up(Keys.LEFT_ALT)
-                    action_chains.perform()
-                else:
                     action_chains.drag_and_drop(source_row, target).perform()
 
-            # Wait for 5 seconds for Copying message to show
-            WebDriverWait(driver, 5).until(
-                EC.visibility_of_element_located((By.CLASS_NAME, 'text-muted'))
-            )
+            try:
+                # Wait for 5 seconds for Copying message to show
+                WebDriverWait(driver, 5).until(
+                    EC.visibility_of_element_located((By.CLASS_NAME, 'text-muted'))
+                )
+            except TimeoutException:
+                pass
 
             try:
                 # Wait a maximum of 30 seconds for Copying message to resolve
