@@ -115,6 +115,11 @@ class FilesPage(GuidBasePage):
         By.CSS_SELECTOR, '#folderRow .fangorn-toolbar-icon'
     )
     delete_modal = Locator(By.CSS_SELECTOR, 'span.btn:nth-child(1)')
+    replace_modal = Locator(By.CSS_SELECTOR, '#tb-tbody > div.tb-modal-shade > div')
+    replace_modal_close_button = Locator(
+        By.CSS_SELECTOR,
+        '#tb-tbody > div.tb-modal-shade > div > div.modal-header > button.close',
+    )
 
 
 """Note that the class FilesPage in pages/project.py is used for test_project_files.py.
