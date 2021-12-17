@@ -46,7 +46,7 @@ class TestPreprintWorkflow:
             # Create a date and time stamp before starting the creation of the preprint.
             # This may be used later to find the guid for the preprint.
             now = datetime.utcnow()
-            dtStamp = now.strftime('%Y-%m-%dT%H:%M:%S')
+            date_time_stamp = now.strftime('%Y-%m-%dT%H:%M:%S')
 
             landing_page.add_preprint_button.click()
             submit_page = PreprintSubmitPage(driver, verify=True)
@@ -100,8 +100,8 @@ class TestPreprintWorkflow:
             # The order of the options in the license dropdown is not consistent across
             # test environments. So we have to select by the actual text value instead
             # of by relative position (i.e. 3rd option in listbox).
-            licenseSelect = Select(submit_page.basics_license_dropdown)
-            licenseSelect.select_by_visible_text('CC0 1.0 Universal')
+            license_select = Select(submit_page.basics_license_dropdown)
+            license_select.select_by_visible_text('CC0 1.0 Universal')
             # Need to scroll down since the Keyword/tags section is obscured by the Dev
             # mode warning in the test environments
             submit_page.scroll_into_view(submit_page.basics_tags_section.element)
@@ -158,7 +158,7 @@ class TestPreprintWorkflow:
                     # date and time after the date time stamp that we created before
                     # starting this preprint then that is our preprint, so use its guid
                     # to get the guid for the supplemental materials project.
-                    if preprint['attributes']['date_created'] > dtStamp:
+                    if preprint['attributes']['date_created'] > date_time_stamp:
                         supplemental_guid = (
                             osf_api.get_preprint_supplemental_material_guid(
                                 session, preprint['id']
