@@ -81,9 +81,7 @@ def test_selenium_on_prod(ctx):
     """
     flake(ctx)
     print('>>> Testing modules in "{}" in Chrome'.format('tests'))
-    test_selenium_with_retries(
-        ctx, 'Master', _get_test_file_list(), module=['-m', 'smoke_test']
-    )
+    test_selenium_with_retries(ctx, 'Master', module=['-m', 'smoke_test'])
 
 
 def _get_test_file_list():
@@ -93,9 +91,10 @@ def _get_test_file_list():
 
 
 @task
-def test_selenium_with_retries(ctx, file_list, module=None):
+def test_selenium_with_retries(ctx, module=None):
     """Run group of tests on the browser defined by TEST_BUILD."""
     flake(ctx)
+    file_list = _get_test_file_list()
 
     print('>>> Testing modules in "/tests/" in {}'.format(os.environ['TEST_BUILD']))
     print('>>> File list is: {}'.format(file_list))
