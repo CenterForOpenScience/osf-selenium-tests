@@ -86,24 +86,6 @@ def test_selenium_on_prod(ctx):
     )
 
 
-@task
-def test_selenium_part_one(ctx):
-    """Run first group of tests on the browser defined by TEST_BUILD."""
-    all_test_files = _get_test_file_list()
-    midpoint = len(all_test_files) // 2
-    file_list = all_test_files[:midpoint]
-    test_selenium_with_retries(ctx, 'part one', file_list)
-
-
-@task
-def test_selenium_part_two(ctx):
-    """Run second group of tests on the browser defined by TEST_BUILD."""
-    all_test_files = _get_test_file_list()
-    midpoint = len(all_test_files) // 2
-    file_list = all_test_files[midpoint:]
-    test_selenium_with_retries(ctx, 'part two', file_list)
-
-
 def _get_test_file_list():
     all_test_files = glob.glob('tests/test_*.py')
     all_test_files.sort()
@@ -111,16 +93,12 @@ def _get_test_file_list():
 
 
 @task
-def test_selenium_with_retries(ctx, partition_name, file_list, module=None):
+def test_selenium_with_retries(ctx, file_list, module=None):
     """Run group of tests on the browser defined by TEST_BUILD."""
     flake(ctx)
 
-    print(
-        '>>> Testing {} modules in "/tests/" in {}'.format(
-            partition_name, os.environ['TEST_BUILD']
-        )
-    )
-    print('>>> File list for {} is: {}'.format(partition_name, file_list))
+    print('>>> Testing modules in "/tests/" in {}'.format(os.environ['TEST_BUILD']))
+    print('>>> File list is: {}'.format(file_list))
     retcode = test_module_wo_exit(ctx, params=file_list, module=module)
 
     if retcode != 1:
@@ -130,8 +108,8 @@ def test_selenium_with_retries(ctx, partition_name, file_list, module=None):
 
     for i in range(1, MAX_RETRIES + 1):
         print(
-            '>>> Retesting {} failures, iteration {}, in "/test/" '
-            'in {}'.format(partition_name, i, os.environ['TEST_BUILD'])
+            '>>> Retesting failures, iteration {}, in "/test/" '
+            'in {}'.format(i, os.environ['TEST_BUILD'])
         )
         retcode = test_module_wo_exit(ctx, params=file_list, module=module)
 

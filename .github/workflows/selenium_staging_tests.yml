@@ -87,13 +87,8 @@ jobs:
         with:
           path: ${{ env.pythonLocation }}
           key: ${{ env.GHA_DISTRO }}-${{ env.pythonLocation }}-${{ hashFiles('requirements.txt') }}
-      - name: run staging tests, part one
+      - name: run staging tests
         env:
           TEST_BUILD: ${{ matrix.browser }}
         run: |
-          invoke test_selenium_part_one
-      - name: run staging tests, part two
-        env:
-          TEST_BUILD: ${{ matrix.browser }}
-        run: |
-          invoke test_selenium_part_two
+          invoke test_selenium_with_retries
