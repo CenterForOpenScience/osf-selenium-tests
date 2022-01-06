@@ -34,6 +34,11 @@ class ProjectPage(GuidBasePage):
     make_private_link = Locator(By.XPATH, '//a[contains(text(), "Make Private")]')
     confirm_privacy_change_link = Locator(By.XPATH, '//a[text()="Confirm"]')
     cancel_privacy_change_link = Locator(By.XPATH, '//a[text()="Cancel"]')
+    collections_container = Locator(By.CLASS_NAME, 'collections-container')
+    collections_link = Locator(
+        By.CSS_SELECTOR,
+        'div.collections-container > div > div > div:nth-child(1) > a:nth-child(1)',
+    )
 
     # Components
     file_widget = ComponentLocator(FileWidget)
