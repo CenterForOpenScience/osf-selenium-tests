@@ -84,18 +84,10 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
         )
         driver = driver_cls(firefox_profile=ffp)
     elif driver_name == 'Edge' and not settings.HEADLESS:
-        # Is the following only for Windows machines? - It doesn't work on Mac
-        # from msedge.selenium_tools import Edge, EdgeOptions
-
-        # options = EdgeOptions()
-        # options.use_chromium = True
-        # driver = Edge(options=options)
-
-        # The following works on Mac - does it also work on a Windows machine?
-        # Mac requires 'desired_capabilities' parameter even if it is empty. It does not
-        # recognize the 'options' parameter
         from msedge.selenium_tools import Edge
 
+        # Need to set the flag so that we use the newer Chromium based version of Edge
+        # instead of older IE based version of Edge
         desired_capabilities = {'ms:edgeChromium': True}
         driver = Edge(desired_capabilities=desired_capabilities)
 
