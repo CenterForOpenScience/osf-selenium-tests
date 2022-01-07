@@ -155,3 +155,7 @@ class MeetingsNavbar(EmberNavbar):
 class InstitutionsNavbar(EmberNavbar):
     def verify(self):
         return self.current_service.text == 'INSTITUTIONS'
+
+
+class CollectionsNavbar(EmberNavbar):
+    title = Locator(By.CSS_SELECTOR, '.navbar-title')

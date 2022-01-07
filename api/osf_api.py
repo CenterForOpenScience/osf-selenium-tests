@@ -272,6 +272,17 @@ def get_providers_list(session=None, type='preprints'):
     return session.get(url)['data']
 
 
+def get_provider(session=None, type='registrations', provider_id='osf'):
+    """Return the data for an individual provider. The default type is registrations but
+    it can also be used for a preprints or collections provider.  The default provider_id
+    is 'osf'
+    """
+    if not session:
+        session = get_default_session()
+    url = '/v2/providers/' + type + '/' + provider_id
+    return session.get(url)['data']
+
+
 def get_provider_submission_status(provider):
     """Return the boolean attribute `allow_submissions` from the dictionary object (provider)"""
     return provider['attributes']['allow_submissions']
@@ -362,3 +373,25 @@ def get_preprint_supplemental_material_guid(session, preprint_guid):
         return data['id']
     else:
         return None
+
+
+def update_node_public_attribute(session, node_id, status=False):
+    """Update the public attribute on a given node. This will make a project Private
+    if status=False (default) or make the project Public if status=True.
+    """
+    url = '/v2/nodes/{}/'.format(node_id)
+    raw_payload = {
+        'data': {
+            'type': 'nodes',
+            'id': node_id,
+            'attributes': {
+                'public': status,
+            },
+        },
+    }
+    status = session.patch(
+        url=url,
+        item_type='nodes',
+        item_id=node_id,
+        raw_body=json.dumps(raw_payload),
+    )
