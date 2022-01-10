@@ -12,6 +12,7 @@ from pages.collections import (
 from pages.project import ProjectPage
 
 
+@markers.smoke_test
 class TestCollectionDiscoverPages:
     """This test will load the Discover page for each Collection Provider that exists in
     an environment.
