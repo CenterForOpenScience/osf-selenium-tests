@@ -188,7 +188,7 @@ class TestVersioningElements:
         try: 
           result_add_first_contributor = registration_draft_page.add_first_contributor_result
           if(len(result_add_first_contributor) > 0):
-            print(f'Contributor not yet added: ', s)
+            print(f'Contributor not yet added: ')
             result_add_first_contributor.click()
           else:
             print(f'Contributor already added')
