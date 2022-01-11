@@ -100,7 +100,7 @@ class RegistrationDraftPage(BaseRegistriesPage):
 
     add_contributor_search_button = Locator(By.XPATH, '//form[1]//div[4]//button[1]')
 
-    add_first_contributor_result = Locator(By.XPATH, '//form[1]//div["data-test-user-search-results"][4]//div[2]//div[3]//div[1]//span[4]//button[1]')
+    add_first_contributor_result = GroupLocator(By.XPATH, '//form[1]//div["data-test-user-search-results"][4]//div[2]//div[3]//div[1]//span[4]//button[1]')
 
     remove_contributor_button_first_el = Locator(By.XPATH, 'button[data-test-start-registration-button]') # for use with method to first clear all contributors
 
@@ -143,6 +143,8 @@ class RegistrationDraftPage(BaseRegistriesPage):
     demo_back_button = Locator(By.XPATH, '//button[text()="Submit"]//following-sibling::button[text()="Back"]')
 
     register_draft_button = Locator(By.XPATH, '//button[text()="Register"]')
+
+    submit_draft_button = Locator(By.XPATH, '//button[text()="Submit"]')
 
 class MyRegistrationsPage(BaseRegistriesPage):
     identity = Locator(By.CSS_SELECTOR, '[]')
