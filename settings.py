@@ -140,12 +140,19 @@ if DRIVER == 'Remote':
     USER_TWO_PASSWORD = env(
         '{}_USER_TWO_PASSWORD'.format(upper_build), env('USER_TWO_PASSWORD', '')
     )
+    USER_THREE = env('{}_USER_THREE'.format(upper_build), env('USER_THREE', ''))
+    USER_THREE_PASSWORD = env(
+        '{}_USER_THREE_PASSWORD'.format(upper_build), env('USER_THREE_PASSWORD', '')
+    )
 else:
     USER_ONE = env('USER_ONE')
     USER_ONE_PASSWORD = env('USER_ONE_PASSWORD')
 
     USER_TWO = env('USER_TWO')
     USER_TWO_PASSWORD = env('USER_TWO_PASSWORD')
+
+    USER_THREE = env('USER_THREE')
+    USER_THREE_PASSWORD = env('USER_THREE_PASSWORD')
 
 
 # Used to skip certain tests on specific stagings

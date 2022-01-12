@@ -12,6 +12,8 @@ import sys
 import configparser
 import ipdb 
 import random
+import threading as thread
+import time
 
 from selenium.common.exceptions import (
     NoSuchElementException,
@@ -38,6 +40,9 @@ from pages.login import (
     InstitutionalLoginPage,
     GenericCASPage,
     login,
+    login_admin,
+    login_read_only,
+    login_read_write,
     logout
 )
 from pages.dashboard import DashboardPage
@@ -68,9 +73,56 @@ from pages.registries import (
 #     landing_page = RegistriesLandingPage(driver)
 #     landing_page.goto()
 #     return landing_page
-
+@markers.core_functionality
 class TestVersioningElements:
-    @markers.core_functionality
+
+    def test_handle_login(self, driver, user=osf_api.current_user()):
+
+        ipdb.set_trace()
+        # login as read write user
+        login_read_write(driver)
+        print(f'Logging in as read write user')
+        dashboard_page = DashboardPage(driver)
+        dashboard_page.goto()
+        DashboardPage(driver, verify=True)
+        logout(driver)
+
+        ipdb.set_trace()
+        # login as read only user
+        login_read_only(driver)
+        print(f'Logging in as read only user')
+        dashboard_page = DashboardPage(driver)
+        dashboard_page.goto()
+        DashboardPage(driver, verify=True)
+        logout(driver)
+
+        ipdb.set_trace()
+        # login as admin user
+        login_admin(driver)
+        print(f'Logging in as admin user')
+        dashboard_page = DashboardPage(driver)
+        dashboard_page.goto()
+        DashboardPage(driver, verify=True)
+        logout(driver)
+
+    # find all contributor & email
+
+    # navigate to gmail for each one
+
+    # regex the title
+
+    # click the approve button
+
+    # close tab
+
+    # do for each in array of conributor emails
+
+    # create a edit
+
+    # approve by the same approve email but for edits
+
+
+    # create registration
     def test_my_registries_upates_button_exists(self, driver, user = osf_api.current_user()):
 
         # login and go to dashboard
@@ -305,5 +357,12 @@ class TestVersioningElements:
         ipdb.set_trace()
         logout(driver)
 
+    def runAllVersioning(self):
+        if __name__ == '__main__':
+            thread.Thread(target = self.handle_login).start()
+            thread.Thread(target = self.test_my_registries_upates_button_exists).start()
 
+
+run = TestVersioningElements()
+run.runAllVersioning()
         

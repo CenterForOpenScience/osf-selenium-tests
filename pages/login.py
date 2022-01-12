@@ -135,6 +135,21 @@ def login(driver, user=settings.USER_ONE, password=settings.USER_ONE_PASSWORD):
     login_page.goto()
     login_page.submit_login(user, password)
 
+def login_admin(driver, user=settings.USER_ONE, password=settings.USER_ONE_PASSWORD):
+    login_page = LoginPage(driver)
+    login_page.goto()
+    login_page.submit_login(user, password)
+
+def login_read_write(driver, user=settings.USER_TWO, password=settings.USER_TWO_PASSWORD):
+    login_page = LoginPage(driver)
+    login_page.goto()
+    login_page.submit_login(user, password)
+
+def login_read_only(driver, user=settings.USER_THREE, password=settings.USER_THREE_PASSWORD):
+    login_page = LoginPage(driver)
+    login_page.goto()
+    login_page.submit_login(user, password)
+
 
 def safe_login(driver, user=settings.USER_ONE, password=settings.USER_ONE_PASSWORD):
     """Raise a LoginError if login fails."""
