@@ -1,4 +1,5 @@
 import pytest
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
@@ -73,7 +74,7 @@ class TestCollectionSubmission:
             submit_page.tags_input.send_keys('selenium\r')
             submit_page.project_metadata_save.click()
             # Project contributors section - just click Continue button
-            WebDriverWait(driver, 5).until(
+            WebDriverWait(driver, 15).until(
                 EC.visibility_of_element_located(
                     (By.CSS_SELECTOR, '[data-test-project-contributors-list-item-name]')
                 )
@@ -86,6 +87,7 @@ class TestCollectionSubmission:
             submit_page.type_dropdown_trigger.click()
             submit_page.first_type_option.click()
             submit_page.collection_metadata_continue.click()
+
             # Finally click the Add to collection button at the bottom of the form and on
             # the confirmation modal to complete the submission
             submit_page.add_to_collection_button.click()
@@ -99,6 +101,18 @@ class TestCollectionSubmission:
             # Also verify Project is now Public.
             assert project_page.make_private_link.present()
         finally:
+            # If we are still stuck on the Collection Submit page then refresh it to see
+            # if we get an alert pop-up message about leaving the page.  If so then
+            # accept the alert so that we can get off this page and can proceed with
+            # the rest of the tests.
+            if submit_page.verify():
+                submit_page.reload()
+                try:
+                    WebDriverWait(driver, 3).until(EC.alert_is_present())
+                    driver.switch_to.alert.accept()
+                except TimeoutException:
+                    pass
+
             # Need to make project Private to get it to disappear from Collection Discover
             # page.  The project itself will be deleted through the project_with_file
             # fixture code.  However, if we don't also make the project private, then
