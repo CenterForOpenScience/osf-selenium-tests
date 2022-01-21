@@ -74,7 +74,7 @@ class TestCollectionSubmission:
             submit_page.tags_input.send_keys('selenium\r')
             submit_page.project_metadata_save.click()
             # Project contributors section - just click Continue button
-            WebDriverWait(driver, 15).until(
+            WebDriverWait(driver, 5).until(
                 EC.visibility_of_element_located(
                     (By.CSS_SELECTOR, '[data-test-project-contributors-list-item-name]')
                 )
@@ -87,7 +87,6 @@ class TestCollectionSubmission:
             submit_page.type_dropdown_trigger.click()
             submit_page.first_type_option.click()
             submit_page.collection_metadata_continue.click()
-
             # Finally click the Add to collection button at the bottom of the form and on
             # the confirmation modal to complete the submission
             submit_page.add_to_collection_button.click()
