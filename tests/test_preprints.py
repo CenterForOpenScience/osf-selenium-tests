@@ -284,21 +284,32 @@ class TestBrandedProviders:
         if 'firefox' in find_current_browser(driver) and 'arabixiv' in provider['id']:
             discover_page.url_addition += '?q=Analysis'
 
-        discover_page.goto()
-        discover_page.verify()
-        # add OSF consent cookie to get rid of the banner at the bottom of the page which can get in the way
-        # when we have to scroll down to click the first preprint listing
-        driver.add_cookie({'name': 'osf_cookieconsent', 'value': '1'})
-        discover_page.reload()
-        discover_page.loading_indicator.here_then_gone()
+        # As of January 24, 2022, the Engineering Archive ('engrxiv') preprint provider
+        # has switched away from using OSF as their preprint service.  Therefore the
+        # web page that OSF automatically redirects to is no longer based on the OSF
+        # Preprints landing/discover page design.  However, they remain in our active
+        # preprint provider list in the OSF api due to legal issues that are still being
+        # worked out.  The best guess is that the transition will be completed (and
+        # engrxiv removed from the api list) by the end of the first quarter of 2022
+        # (i.e. end of March).  So to prevent this test from failing in Production
+        # every night for 'engrxiv' we are going to skip the following steps for this
+        # provider.
+        if 'engrxiv' not in provider['id']:
+            discover_page.goto()
+            discover_page.verify()
+            # add OSF consent cookie to get rid of the banner at the bottom of the page which can get in the way
+            # when we have to scroll down to click the first preprint listing
+            driver.add_cookie({'name': 'osf_cookieconsent', 'value': '1'})
+            discover_page.reload()
+            discover_page.loading_indicator.here_then_gone()
 
-        if osf_api.get_providers_total(provider['id'], session=session):
-            search_results = discover_page.search_results
-            assert search_results
-            search_results[0].click()
-            PreprintDetailPage(driver, verify=True)
-        elif not provider['attributes']['additional_providers']:
-            # Some Preprint Providers may also display preprints from other sources not
-            # just OSF. So we do not want to assert that there are No Results when there
-            # may be results from non-OSF providers.
-            assert discover_page.no_results
+            if osf_api.get_providers_total(provider['id'], session=session):
+                search_results = discover_page.search_results
+                assert search_results
+                search_results[0].click()
+                PreprintDetailPage(driver, verify=True)
+            elif not provider['attributes']['additional_providers']:
+                # Some Preprint Providers may also display preprints from other sources not
+                # just OSF. So we do not want to assert that there are No Results when there
+                # may be results from non-OSF providers.
+                assert discover_page.no_results
