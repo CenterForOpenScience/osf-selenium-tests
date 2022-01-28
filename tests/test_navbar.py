@@ -1,15 +1,11 @@
 import pytest
 
 import markers
-from base.exceptions import PageException
 from pages.cos import COSDonatePage
 from pages.dashboard import DashboardPage
 from pages.institutions import InstitutionsLandingPage
 from pages.landing import LandingPage
-from pages.login import (
-    LoginPage,
-    login,
-)
+from pages.login import LoginPage
 from pages.meetings import MeetingsPage
 from pages.preprints import (
     PreprintDiscoverPage,
@@ -113,12 +109,7 @@ class NavbarTestLoggedInMixin:
     def test_logout_link(self, driver, page):
         page.navbar.user_dropdown.click()
         page.navbar.logout_link.click()
-        try:
-            LandingPage(driver, verify=True)
-        except PageException:
-            raise
-        finally:
-            login(driver)
+        LandingPage(driver, verify=True)
 
 
 @markers.smoke_test
@@ -146,7 +137,7 @@ class TestOSFHomeNavbarLoggedOut(NavbarTestLoggedOutMixin):
 @markers.core_functionality
 class TestOSFHomeNavbarLoggedIn(NavbarTestLoggedInMixin):
     @pytest.fixture()
-    def page(self, driver, must_be_logged_in):
+    def page(self, driver, log_in_if_not_already):
         page = DashboardPage(driver)
         page.goto_with_reload()
         return page
@@ -186,7 +177,7 @@ class TestPreprintsNavbarLoggedOut(NavbarTestLoggedOutMixin):
 
 @markers.smoke_test
 @markers.core_functionality
-@pytest.mark.usefixtures('must_be_logged_in')
+@pytest.mark.usefixtures('log_in_if_not_already')
 class TestPreprintsNavbarLoggedIn(NavbarTestLoggedInMixin):
     @pytest.fixture()
     def page(self, driver):
@@ -239,7 +230,7 @@ class TestRegistriesNavbarLoggedOut(NavbarTestLoggedOutMixin):
 
 @markers.smoke_test
 @markers.core_functionality
-@pytest.mark.usefixtures('must_be_logged_in')
+@pytest.mark.usefixtures('log_in_if_not_already')
 class TestRegistriesNavbarLoggedIn(NavbarTestLoggedInMixin):
     @pytest.fixture()
     def page(self, driver):
@@ -280,7 +271,7 @@ class TestMeetingsNavbarLoggedOut(NavbarTestLoggedOutMixin):
 
 @markers.smoke_test
 @markers.core_functionality
-@pytest.mark.usefixtures('must_be_logged_in')
+@pytest.mark.usefixtures('log_in_if_not_already')
 class TestMeetingsNavbarLoggedIn(NavbarTestLoggedInMixin):
     @pytest.fixture()
     def page(self, driver):
@@ -317,7 +308,7 @@ class TestInstitutionsNavbarLoggedOut(NavbarTestLoggedOutMixin):
 
 @markers.smoke_test
 @markers.core_functionality
-@pytest.mark.usefixtures('must_be_logged_in')
+@pytest.mark.usefixtures('log_in_if_not_already')
 class TestInstitutionsNavbarLoggedIn(NavbarTestLoggedInMixin):
     @pytest.fixture()
     def page(self, driver):

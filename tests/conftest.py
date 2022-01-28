@@ -1,3 +1,5 @@
+import json
+
 import pytest
 from faker import Faker
 from pythosf import client
@@ -64,6 +66,41 @@ def default_logout(driver):
 @pytest.fixture(scope='class')
 def must_be_logged_in(driver):
     safe_login(driver)
+
+
+@pytest.fixture
+def log_in_if_not_already(driver):
+    """This fixture is similar to the must_be_logged_in fixture above. Where it differs
+    is that it first checks to see if the current user is already logged in before it
+    attempts to login again. Also the scope of this fixture is 'function' by default
+    instead of 'class' so it will be executed with every test function within a class.
+    """
+    if not get_current_logged_in_user(driver):
+        safe_login(driver)
+
+
+@pytest.fixture
+def get_current_logged_in_user(driver):
+    """Returns the user id for the user that is curently logged in by getting the data
+    from the browser's local storage where OSF stores an authenticated user's id.
+    """
+    auth_local_storage = driver.execute_script(
+        'return window.localStorage.getItem(arguments[0]);', 'embosf-auth-session'
+    )
+    if auth_local_storage:
+        # The above script execution returns the data as a string so we need to convert
+        # it back to json so that we can more easily get the user id.
+        auth_json = json.loads(auth_local_storage)
+        auth_data = auth_json['authenticated']
+        if auth_data:
+            user_id = auth_json['authenticated']['id']
+            return user_id
+        else:
+            # If auth_data is empty, then there is no user currently logged in, so just
+            # return nothing.
+            return None
+    else:
+        return None
 
 
 @pytest.fixture(scope='class')
