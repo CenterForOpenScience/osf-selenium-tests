@@ -1,3 +1,5 @@
+import re
+
 import pytest
 from faker import Faker
 from pythosf import client
@@ -64,6 +66,38 @@ def default_logout(driver):
 @pytest.fixture(scope='class')
 def must_be_logged_in(driver):
     safe_login(driver)
+
+
+@pytest.fixture
+def log_in_if_not_already(driver):
+    """This fixture is similar to the must_be_logged_in fixture above. Where it differs
+    is that it first checks to see if the current user is already logged in before it
+    attempts to login again. Also the scope of this fixture is 'function' by default
+    instead of 'class' so it will be executed with every test function within a class.
+    """
+    if not user_logged_in(driver):
+        safe_login(driver)
+
+
+@pytest.fixture
+def user_logged_in(driver):
+    """Check to see if the current user is logged in to OSF by looking for the
+    existence of the OSF session cookie.  If the cookie exists then return True
+    indicating that the user is logged in, otherwise return False.
+    """
+    if settings.PRODUCTION:
+        cookie_name = 'osf'
+    else:
+        # In the testing environments the cookie name contains the environment (i.e.
+        # 'osf_test').  So parse out the environment from the OSF_HOME url.
+        match = re.search(r'(.*)\.osf\.io', settings.OSF_HOME[8:])
+        cookie_name = 'osf_' + match.group(1)
+
+    logged_in_cookie = driver.get_cookie(cookie_name)
+    if logged_in_cookie:
+        return True
+    else:
+        return False
 
 
 @pytest.fixture(scope='class')
