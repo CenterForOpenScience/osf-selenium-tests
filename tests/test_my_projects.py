@@ -21,12 +21,11 @@ def my_projects_page(driver):
     return my_projects_page
 
 
-@pytest.mark.skip(reason='Skip this test until bug ticket ENG-1737 is resolved')
+@markers.dont_run_on_prod
 @pytest.mark.usefixtures('must_be_logged_in')
 class TestMyProjectsPage:
     """Custom collections must implement a PRE-delete setup to start in a clean state."""
 
-    @markers.dont_run_on_prod
     @markers.core_functionality
     def test_create_new_project(self, driver, session, my_projects_page, fake):
         title = fake.sentence(nb_words=4)
@@ -44,6 +43,10 @@ class TestMyProjectsPage:
             )
         )
         my_projects_page.goto()
+        # For some unknown reason the project does not display in the table in some
+        # environments, even after reloading the page.  But if you click the All my
+        # projects and components link in the sidebar the project does appear.
+        my_projects_page.all_my_projects_and_components_link.click()
         guid = my_projects_page.first_project_hyperlink.get_attribute('data-nodeid')
         my_projects_page.first_project_hyperlink.click()
 
@@ -75,6 +78,14 @@ class TestMyProjectsPage:
         my_projects_page.reload()
         assert name in my_projects_page.first_custom_collection.text
 
+        # Click the newly added custom collection and verify that the collection is
+        # initially empty, then go back to the full table of all projects.
+        my_projects_page.first_custom_collection.click()
+        assert name in my_projects_page.breadcrumbs.text
+        my_projects_page.empty_collection_indicator.present()
+        my_projects_page.all_my_projects_and_components_link.click()
+        assert 'All my projects and components' in my_projects_page.breadcrumbs.text
+
         # Add a project to your custom collection
         my_projects_page.first_custom_collection.present()
         drag_project = my_projects_page.first_project
@@ -104,6 +115,11 @@ class TestMyProjectsPage:
             )
         )
         assert '1' in my_projects_page.first_custom_collection.text
+        # Click the custom collection again and verify that the project that was just
+        # added is now listed in the table.
+        my_projects_page.first_custom_collection.click()
+        assert name in my_projects_page.breadcrumbs.text
+        my_projects_page.first_project.present()
 
     def test_delete_custom_collection(self, session, driver, my_projects_page):
         # API Setup

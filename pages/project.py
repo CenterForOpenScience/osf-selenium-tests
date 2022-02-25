@@ -75,6 +75,11 @@ class MyProjectsPage(OSFBasePage):
     first_collection_remove_button = Locator(
         By.CSS_SELECTOR, '[data-target="#removeColl"]', settings.QUICK_TIMEOUT
     )
+    all_my_projects_and_components_link = Locator(
+        By.CSS_SELECTOR, 'li[data-index="0"] span', settings.QUICK_TIMEOUT
+    )
+    empty_collection_indicator = Locator(By.CLASS_NAME, 'db-non-load-template')
+    breadcrumbs = Locator(By.CSS_SELECTOR, 'div.db-breadcrumbs > ul > li > span')
 
     # Components
     create_collection_modal = ComponentLocator(CreateCollectionModal)
