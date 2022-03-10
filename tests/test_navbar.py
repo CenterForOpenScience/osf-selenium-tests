@@ -14,7 +14,6 @@ from pages.preprints import (
     ReviewsDashboardPage,
 )
 from pages.project import MyProjectsPage
-from pages.quickfiles import QuickfilesPage
 from pages.register import RegisterPage
 from pages.registrations import MyRegistrationsPage
 from pages.registries import (
@@ -145,10 +144,6 @@ class TestOSFHomeNavbarLoggedIn(NavbarTestLoggedInMixin):
     def test_my_projects_link(self, page, driver):
         page.navbar.my_projects_link.click()
         assert MyProjectsPage(driver, verify=True)
-
-    def test_my_quick_files_link(self, page, driver):
-        page.navbar.my_quick_files_link.click()
-        QuickfilesPage(driver, verify=True)
 
 
 @markers.smoke_test
@@ -283,10 +278,6 @@ class TestMeetingsNavbarLoggedIn(NavbarTestLoggedInMixin):
         page.navbar.my_projects_link.click()
         assert MyProjectsPage(driver, verify=True)
 
-    def test_my_quick_files_link(self, page, driver):
-        page.navbar.my_quick_files_link.click()
-        QuickfilesPage(driver, verify=True)
-
 
 @markers.smoke_test
 @markers.core_functionality
@@ -319,10 +310,6 @@ class TestInstitutionsNavbarLoggedIn(NavbarTestLoggedInMixin):
     def test_my_projects_link(self, page, driver):
         page.navbar.my_projects_link.click()
         assert MyProjectsPage(driver, verify=True)
-
-    def test_my_quick_files_link(self, page, driver):
-        page.navbar.my_quick_files_link.click()
-        QuickfilesPage(driver, verify=True)
 
 
 def assert_donate_page(driver, donate_page):

@@ -4,13 +4,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 import markers
-from api import osf_api
 from pages import user
-
-
-@pytest.fixture()
-def quickfile(session):
-    return osf_api.upload_single_quickfile(session)
 
 
 @pytest.fixture
@@ -35,9 +29,8 @@ class ProfilePageMixin:
         assert profile_page.no_public_components_text.present()
 
     @markers.dont_run_on_prod
-    def test_public_lists(self, quickfile, public_project, profile_page):
+    def test_public_lists(self, public_project, profile_page):
         profile_page.loading_indicator.here_then_gone()
-        assert profile_page.quickfiles
         assert profile_page.public_projects
 
 
