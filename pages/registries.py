@@ -1,3 +1,5 @@
+from urllib.parse import urljoin
+
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 
@@ -15,14 +17,27 @@ from pages.base import (
 
 
 class BaseRegistriesPage(OSFBasePage):
-
-    # Components
+    base_url = settings.OSF_HOME + '/registries/'
+    url_addition = ''
     navbar = ComponentLocator(RegistriesNavbar)
+
+    def __init__(self, driver, verify=False, provider=None):
+        self.provider = provider
+        if provider:
+            self.provider_id = provider['id']
+            self.provider_name = provider['attributes']['name']
+
+        super().__init__(driver, verify)
+
+    @property
+    def url(self):
+        """Set the URL based on the provider except when the provider is OSF."""
+        if self.provider and self.provider_id != 'osf':
+            self.base_url = urljoin(self.base_url, self.provider_id)
+        return self.base_url + self.url_addition
 
 
 class RegistriesLandingPage(BaseRegistriesPage):
-    url = settings.OSF_HOME + '/registries'
-
     identity = Locator(
         By.CSS_SELECTOR, '._RegistriesHeader_3zbd8x', settings.LONG_TIMEOUT
     )
@@ -30,7 +45,7 @@ class RegistriesLandingPage(BaseRegistriesPage):
 
 
 class RegistriesDiscoverPage(BaseRegistriesPage):
-    url = settings.OSF_HOME + '/registries/discover'
+    url_addition = '/discover'
 
     identity = Locator(
         By.CSS_SELECTOR, 'div[data-analytics-scope="Registries Discover page"]'
@@ -61,9 +76,13 @@ class RegistrationDetailPage(GuidBasePage):
 
 
 class RegistrationAddNewPage(BaseRegistriesPage):
-    url = settings.OSF_HOME + '/registries/osf/new'
-    identity = Locator(By.CSS_SELECTOR, 'form[data-test-new-registration-form]', settings.LONG_TIMEOUT)
+    url_addition = '/new'
+    identity = Locator(
+        By.CSS_SELECTOR, 'form[data-test-new-registration-form]', settings.LONG_TIMEOUT
+    )
 
 
 class RegistrationDraftPage(BaseRegistriesPage):
-    identity = Locator(By.CSS_SELECTOR, 'nav[data-test-side-nav]', settings.LONG_TIMEOUT)
+    identity = Locator(
+        By.CSS_SELECTOR, 'nav[data-test-side-nav]', settings.LONG_TIMEOUT
+    )
