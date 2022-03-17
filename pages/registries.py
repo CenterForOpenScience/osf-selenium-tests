@@ -17,7 +17,7 @@ from pages.base import (
 
 
 class BaseRegistriesPage(OSFBasePage):
-    base_url = settings.OSF_HOME + '/registries/'
+    base_url = urljoin(settings.OSF_HOME, 'registries/')
     url_addition = ''
     navbar = ComponentLocator(RegistriesNavbar)
 
@@ -33,8 +33,8 @@ class BaseRegistriesPage(OSFBasePage):
     def url(self):
         """Set the URL based on the provider except when the provider is OSF."""
         if self.provider and self.provider_id != 'osf':
-            self.base_url = urljoin(self.base_url, self.provider_id)
-        return self.base_url + self.url_addition
+            self.base_url = urljoin(self.base_url, self.provider_id) + '/'
+        return urljoin(self.base_url, self.url_addition)
 
 
 class RegistriesLandingPage(BaseRegistriesPage):
@@ -45,7 +45,7 @@ class RegistriesLandingPage(BaseRegistriesPage):
 
 
 class RegistriesDiscoverPage(BaseRegistriesPage):
-    url_addition = '/discover'
+    url_addition = 'discover'
 
     identity = Locator(
         By.CSS_SELECTOR, 'div[data-analytics-scope="Registries Discover page"]'
@@ -76,7 +76,7 @@ class RegistrationDetailPage(GuidBasePage):
 
 
 class RegistrationAddNewPage(BaseRegistriesPage):
-    url_addition = '/new'
+    url_addition = 'new'
     identity = Locator(
         By.CSS_SELECTOR, 'form[data-test-new-registration-form]', settings.LONG_TIMEOUT
     )
