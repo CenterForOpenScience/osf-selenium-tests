@@ -3,6 +3,7 @@ from selenium.webdriver.common.keys import Keys
 
 import markers
 import settings
+from api import osf_api
 from pages.registries import (
     RegistrationDetailPage,
     RegistriesDiscoverPage,
@@ -58,3 +59,24 @@ class TestRegistriesDiscoverPage:
         detail_page.identity.present()
         assert RegistrationDetailPage(driver, verify=True)
         assert detail_page.identity.text in target_registration_title
+
+
+@markers.smoke_test
+class TestBrandedRegistriesPages:
+    def providers():
+        """Return all registration providers."""
+        return osf_api.get_providers_list(type='registrations')
+
+    @pytest.fixture(params=providers(), ids=[prov['id'] for prov in providers()])
+    def provider(self, request):
+        return request.param
+
+    def test_discover_page(self, session, driver, provider):
+        """This test will load the Discover page for each Branded Registry Provider that
+        exists in an environment.
+        """
+        if provider['attributes']['branded_discovery_page']:
+            discover_page = RegistriesDiscoverPage(driver, provider=provider)
+            discover_page.goto()
+            discover_page.loading_indicator.here_then_gone()
+            assert RegistriesDiscoverPage(driver, verify=True)
