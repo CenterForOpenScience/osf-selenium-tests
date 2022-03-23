@@ -66,7 +66,7 @@ class TestLoginPage:
 
     def test_need_help_link(self, driver, login_page):
         login_page.need_help_link.click()
-        assert 'https://help.osf.io' and 'Sign-in-to-OSF' in driver.current_url
+        assert 'https://help.osf.io' and 'sign-in-to-osf' in driver.current_url
 
     def test_cos_footer_link(self, driver, login_page):
         login_page.cos_footer_link.click()
@@ -143,7 +143,7 @@ class Test2FAPage:
         two_factor_page.need_help_link.click()
         assert (
             'https://help.osf.io'
-            and 'Enable-or-Disable-Two-Factor-Authentication' in driver.current_url
+            and 'enable-or-disable-two-factor-authentication' in driver.current_url
         )
 
 
@@ -353,7 +353,7 @@ class TestInstitutionLoginPage:
 
     def test_need_help_link(self, driver, institution_login_page):
         institution_login_page.need_help_link.click()
-        assert 'https://help.osf.io' and 'Sign-in-to-OSF' in driver.current_url
+        assert 'https://help.osf.io' and 'sign-in-to-osf' in driver.current_url
 
     def test_sign_in_with_osf_link(self, driver, institution_login_page):
         institution_login_page.sign_in_with_osf_link.click()
