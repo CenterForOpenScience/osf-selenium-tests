@@ -1,8 +1,7 @@
-import pytest
-import ipdb
-from faker import Faker
 import time
 
+import pytest
+from faker import Faker
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
@@ -10,11 +9,11 @@ from selenium.webdriver.support.ui import WebDriverWait
 import markers
 from pages.registrations import MyRegistrationsPage
 from pages.registries import (
+    JustificationReviewForm,
     RegistrationAddNewPage,
     RegistrationDetailPage,
     RegistrationDraftPage,
     RegistrationJustificationForm,
-    JustificationReviewForm,
 )
 
 
@@ -85,6 +84,7 @@ class TestRegistrationsVersioning:
         justification_page.justification_textbox.click()
         justification_page.justification_textbox.send_keys('This justification is provided by selenium test automation.')
         justification_page.justification_next_button.click()
+
         fake = Faker()
         summary_paragraph = fake.sentence(nb_words=20)
         justification_page.summary_textbox.click()
@@ -98,6 +98,10 @@ class TestRegistrationsVersioning:
                 (By.CSS_SELECTOR, 'p[data-test-review-response="revisionJustification"]'), 'selenium'
             )
         )
+        # After the justification field updates, the front end needs a second before becoming usable.
+        # If we click the submit button before background process have completed,
+        # we get a red toast message that reads 'Your decision was not recorded.'
+        time.sleep(2)
         justification_page.submit_revision.click()
         justification_page.accept_changes.click()
 
@@ -116,20 +120,23 @@ class TestRegistrationsVersioning:
         my_registrations_page.view_button.click()
         registration_detail_page = RegistrationDetailPage(driver)
 
-        # Store the text of the most recent update
+        # Store the narrative summary text of the most recent update
         latest_update = registration_detail_page.narrative_summary.text
 
+        # Start the new version update
         registration_detail_page.updates_dropdown.click()
         registration_detail_page.update_registration_button.click()
         my_registrations_page.update_registration_dialogue.present()
         my_registrations_page.update_registration_dialogue_next.click()
 
+        # Cancel the new version update from the draft page
         RegistrationJustificationForm(driver, verify=True)
         justification_page = RegistrationJustificationForm(driver)
         justification_page.cancel_update_button.click()
         justification_page.cancel_update_modal.present()
         justification_page.confirm_cancel_button.click()
 
+        # Use the dropdown modal to verify an update is NOT in progress and the user can start a new version.
         RegistrationDetailPage(driver, verify=True)
         registration_detail_page = RegistrationDetailPage(driver)
         registration_detail_page.updates_dropdown.click()
