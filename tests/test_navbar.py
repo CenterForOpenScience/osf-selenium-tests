@@ -21,7 +21,10 @@ from pages.registries import (
     RegistriesLandingPage,
 )
 from pages.search import SearchPage
-from pages.support import SupportPage
+from pages.support import (
+    OldSupportPage,
+    SupportPage,
+)
 from pages.user import (
     ProfileInformationPage,
     UserProfilePage,
@@ -180,6 +183,13 @@ class TestPreprintsNavbarLoggedIn(NavbarTestLoggedInMixin):
         page.goto_with_reload()
         return page
 
+    # Temporary Override of test from mix in - Delete this after eop: 0.139.0 preprints
+    # release
+    def test_user_profile_menu_support_link(self, driver, page):
+        page.navbar.user_dropdown.click()
+        page.navbar.user_dropdown_support.click()
+        assert OldSupportPage(driver, verify=True)
+
     def test_add_a_preprint_link(self, page, driver):
         page.navbar.add_a_preprint_link.click()
         PreprintSubmitPage(driver, verify=True)
@@ -208,8 +218,7 @@ class TestRegistriesNavbarLoggedOut(NavbarTestLoggedOutMixin):
 
     def test_help_link(self, page, driver):
         page.navbar.help_link.click()
-        help_url = 'https://help.osf.io/hc/en-us/categories/360001550953'
-        assert driver.current_url == help_url
+        assert SupportPage(driver, verify=True)
 
     # In the Registries navbar there is no Sign Up button, instead it is a Join link
     def test_sign_up_button(self, page, driver):
@@ -257,11 +266,7 @@ class TestMeetingsNavbarLoggedOut(NavbarTestLoggedOutMixin):
 
     def test_support_link(self, page, driver):
         page.navbar.support_link.click()
-        assert '360001550933' in driver.current_url or 'support' in driver.current_url
-
-        # For future use
-        # support_url = 'https://openscience.zendesk.com/hc/en-us/categories/360001550933'
-        # assert driver.current_url == support_url
+        assert SupportPage(driver, verify=True)
 
 
 @markers.smoke_test
