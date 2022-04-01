@@ -33,7 +33,7 @@ class TestHomeLandingPage:
         search_page.loading_indicator.here_then_gone()
         assert search_page.search_results
 
-    def test_learn_nore(self, driver, landing_page):
+    def test_learn_more(self, driver, landing_page):
         landing_page.learn_more_button.click()
         assert driver.current_url == 'https://www.cos.io/products/osf'
 
