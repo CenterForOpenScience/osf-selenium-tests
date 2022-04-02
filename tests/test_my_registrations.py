@@ -1,5 +1,3 @@
-import time
-
 import pytest
 from faker import Faker
 from selenium.webdriver.common.by import By
@@ -85,8 +83,21 @@ class TestRegistrationsVersioning:
         justification_page.justification_textbox.send_keys(
             'This justification is provided by selenium test automation.'
         )
-        justification_page.justification_next_button.click()
 
+        justification_page.navbar_review.click()
+
+        # Wait for justification field to update from "No Justification provided." to summary_paragraph
+        WebDriverWait(driver, 10).until(
+            EC.text_to_be_present_in_element(
+                (
+                    By.CSS_SELECTOR,
+                    'p[data-test-review-response="revisionJustification"]',
+                ),
+                'selenium',
+            )
+        )
+
+        justification_page.navbar_summary.click()
         fake = Faker()
         summary_paragraph = fake.sentence(nb_words=20)
         justification_page.summary_textbox.click()
@@ -99,15 +110,13 @@ class TestRegistrationsVersioning:
             EC.text_to_be_present_in_element(
                 (
                     By.CSS_SELECTOR,
-                    'p[data-test-review-response="revisionJustification"]',
+                    'p[data-test-revised-responses-list]',
                 ),
-                'selenium',
+                'Provide a narrative summary of what is contained in this registration or how it differs from prior '
+                'registrations. If this project contains documents for a preregistration, please note that here',
             )
         )
-        # After the justification field updates, the front end needs a second before becoming usable.
-        # If we click the submit button before background process have completed,
-        # we get a red toast message that reads 'Your decision was not recorded.'
-        time.sleep(2)
+
         justification_page.submit_revision.click()
         justification_page.accept_changes.click()
 

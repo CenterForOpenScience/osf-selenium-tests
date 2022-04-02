@@ -101,8 +101,12 @@ class RegistrationJustificationForm(GuidBasePage):
     confirm_cancel_button = Locator(By.CSS_SELECTOR, '[data-test-confirm-delete]')
 
     navbar_justification = Locator(By.CSS_SELECTOR, '[data-test-link="justification"]')
+    navbar_summary = Locator(By.CSS_SELECTOR, '[data-test-link="1-summary"]')
     navbar_review = Locator(By.CSS_SELECTOR, '[data-test-link="review"]')
 
+    summary_review_questions = Locator(
+        By.CSS_SELECTOR, 'p[data-test-revised-responses-list-no-update]'
+    )
     summary_textbox = Locator(By.CSS_SELECTOR, 'textarea[name="__responseKey_summary"]')
     summary_review_button = Locator(By.CSS_SELECTOR, '[data-test-goto-review]')
 
