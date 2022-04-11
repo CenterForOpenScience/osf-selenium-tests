@@ -16,7 +16,9 @@ class LandingPage(OSFBasePage):
 
     get_started_button = Locator(By.CSS_SELECTOR, '[data-test-get-started-button]')
     search_input = Locator(By.CSS_SELECTOR, '[data-test-search-input]')
-    learn_more_button = Locator(By.CSS_SELECTOR, '[data-test-learn-more-button]')
+    learn_more_button = Locator(
+        By.CSS_SELECTOR, '[data-analytics-name="Learn more button"]'
+    )
     testimonial_1_button = Locator(
         By.CSS_SELECTOR, '[data-analytics-name="Go to slide 1"]'
     )
