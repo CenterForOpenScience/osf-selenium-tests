@@ -221,6 +221,65 @@ class TestPreprintSearch:
         assert PreprintDetailPage(driver, verify=True)
 
 
+@markers.smoke_test
+class TestPreprintMetrics:
+    @pytest.fixture(scope='session')
+    def latest_preprint_node(self):
+        """Return the node id of the latest preprint submitted in the given environment"""
+        return osf_api.get_most_recent_preprint_node_id()
+
+    def test_preprint_views_count(self, driver, latest_preprint_node):
+        """Test the Views Count functionality on the Preprint Detail page by getting
+        the views count for a preprint using the api and comparing it to the views
+        count value displayed on the page. Also verifying that the views count will
+        be incremented if the page is reloaded (only in testing environments).
+        """
+        api_views_count = osf_api.get_preprint_views_count(node_id=latest_preprint_node)
+        preprint_page = PreprintDetailPage(driver, guid=latest_preprint_node)
+        preprint_page.goto()
+        assert PreprintDetailPage(driver, verify=True)
+        page_views_count = int(preprint_page.views_downloads_counts.text[7:9])
+        assert api_views_count == page_views_count
+        # Don't reload the page in Production since we don't want to artificially
+        # inflate the metrics
+        if not settings.PRODUCTION:
+            # Verify that the views count from the api increases by 1 after we reload
+            # the page.
+            preprint_page.reload()
+            assert (
+                osf_api.get_preprint_views_count(node_id=latest_preprint_node)
+                == api_views_count + 1
+            )
+
+    def test_preprint_downloads_count(self, driver, latest_preprint_node):
+        """Test the Downloads Count functionality on the Preprint Detail page by
+        getting the downloads count for a preprint using the api and comparing it to
+        the downloads count value displayed on the page. Also verifying that the
+        downloads count will be incremented when the downloads button on the page is
+        clicked (only in testing environments).
+        """
+        api_downloads_count = osf_api.get_preprint_downloads_count(
+            node_id=latest_preprint_node
+        )
+        preprint_page = PreprintDetailPage(driver, guid=latest_preprint_node)
+        preprint_page.goto()
+        assert PreprintDetailPage(driver, verify=True)
+        page_downloads_count = int(
+            preprint_page.views_downloads_counts.text.split('Downloads:')[1]
+        )
+        assert api_downloads_count == page_downloads_count
+        # Don't download the Preprint in Production since we don't want to artificially
+        # inflate the metrics
+        if not settings.PRODUCTION:
+            # Verify that the downloads count from the api increases by 1 after we
+            # download the document.
+            preprint_page.download_button.click()
+            assert (
+                osf_api.get_preprint_downloads_count(node_id=latest_preprint_node)
+                == api_downloads_count + 1
+            )
+
+
 @pytest.fixture(scope='session')
 def providers():
     """Return all preprint providers."""

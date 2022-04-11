@@ -365,3 +365,39 @@ def update_node_public_attribute(session, node_id, status=False):
         item_id=node_id,
         raw_body=json.dumps(raw_payload),
     )
+
+
+def get_most_recent_preprint_node_id(session=None):
+    """Return the most recently submitted preprint node id"""
+    if not session:
+        session = get_default_session()
+    url = '/v2/preprints/'
+    data = session.get(url)['data']
+    if data:
+        return data[0]['id']
+    else:
+        return None
+
+
+def get_preprint_views_count(session=None, node_id=None):
+    """Return the views count for the given preprint node id"""
+    if not session:
+        session = get_default_session()
+    url = '/v2/preprints/{}/?metrics[views]=total'.format(node_id)
+    metadata = session.get(url)['meta']
+    if metadata:
+        return metadata['metrics']['views']
+    else:
+        return None
+
+
+def get_preprint_downloads_count(session=None, node_id=None):
+    """Return the downloads count for the given preprint node id"""
+    if not session:
+        session = get_default_session()
+    url = '/v2/preprints/{}/files/osfstorage/'.format(node_id)
+    data = session.get(url)['data']
+    if data:
+        return data[0]['attributes']['extra']['downloads']
+    else:
+        return None
