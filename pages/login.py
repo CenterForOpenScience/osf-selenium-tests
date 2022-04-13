@@ -89,6 +89,16 @@ class InstitutionalLoginPage(BasePage):
     dropdown_options = GroupLocator(By.CSS_SELECTOR, '#institutionSelect option')
 
 
+class GenericInstitutionLoginPage(BasePage):
+    identity = Locator(By.CSS_SELECTOR, 'input[type="password"]')
+
+
+class GenericInstitutionEmailLoginPage(BasePage):
+    # This is for institution login pages that first ask for an email to initiate the
+    # login process before asking for a password.
+    identity = Locator(By.CSS_SELECTOR, 'input[type="email"]')
+
+
 class ForgotPasswordPage(BasePage):
     url = settings.OSF_HOME + '/forgotpassword/'
 
