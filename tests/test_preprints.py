@@ -238,17 +238,29 @@ class TestPreprintMetrics:
         preprint_page = PreprintDetailPage(driver, guid=latest_preprint_node)
         preprint_page.goto()
         assert PreprintDetailPage(driver, verify=True)
-        page_views_count = int(preprint_page.views_downloads_counts.text[7:9])
+        match = re.search(
+            r'Views: (\d+) \| Downloads:', preprint_page.views_downloads_counts.text
+        )
+        assert match is not None
+        page_views_count = int(match.group(1))
         assert api_views_count == page_views_count
         # Don't reload the page in Production since we don't want to artificially
         # inflate the metrics
         if not settings.PRODUCTION:
-            # Verify that the views count from the api increases by 1 after we reload
-            # the page.
+            # Verify that the views count from the api increases after we reload the
+            # page. NOTE: Due to timing, getting the count from the api again could
+            # result in the count being either 1 or 2 greater than the previous count.
+            # The initial load of the page above adds 1 to the views count, and the
+            # following reload adds a 2nd view to the count.  But the update to the
+            # database can take a couple of seconds, so immediately accessing the api
+            # to get the count below may not show the 2nd view.  Hence we are just
+            # checking that the views count did increase but not by how much.
+            # Unfortunately this means that we are not checking for any issues like
+            # double-counting.
             preprint_page.reload()
             assert (
                 osf_api.get_preprint_views_count(node_id=latest_preprint_node)
-                == api_views_count + 1
+                > api_views_count
             )
 
     def test_preprint_downloads_count(self, driver, latest_preprint_node):
