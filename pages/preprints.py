@@ -181,6 +181,12 @@ class PreprintDetailPage(GuidBasePage, BasePreprintPage):
     identity = Locator(By.ID, 'preprintTitle', settings.LONG_TIMEOUT)
     title = Locator(By.ID, 'preprintTitle', settings.LONG_TIMEOUT)
     view_page = Locator(By.ID, 'view-page')
+    views_downloads_counts = Locator(
+        By.CSS_SELECTOR, 'div.share-row.p-sm.osf-box-lt.clearfix > div'
+    )
+    download_button = Locator(
+        By.CSS_SELECTOR, 'div.share-row.p-sm.osf-box-lt.clearfix > a'
+    )
 
 
 class ReviewsDashboardPage(OSFBasePage):
