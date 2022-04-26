@@ -401,3 +401,59 @@ def get_preprint_downloads_count(session=None, node_id=None):
         return data[0]['attributes']['extra']['downloads']
     else:
         return None
+
+
+def get_registration_schemas_for_provider(
+    session=None, provider_id='osf', data_type='name'
+):
+    """Returns a list of allowed registration schemas for an individual provider.  The
+    list will be either schema names or a paired list of schema names and ids.  The
+    default data type is 'name'.  The default provider_id is 'osf'.
+    """
+    if not session:
+        session = get_default_session()
+    url = 'v2/providers/registrations/{}/schemas/'.format(provider_id)
+    # NOTE: Using '50' as the page size query parameter here. We don't actually have 50
+    # total registration schemas. It's under 30 at this time, but using 50 here gives us
+    # plenty of room to add more schemas without having to update this function.
+    data = session.get(url, query_parameters={'page[size]': 50})['data']
+    if data:
+        schema_list = []
+        for schema in data:
+            name = schema['attributes']['name']
+            if data_type == 'name':
+                schema_list.append(name)
+            elif data_type == 'name_id':
+                schema_id = schema['id']
+                schema_list.append([name, schema_id])
+        return schema_list
+    else:
+        return None
+
+
+def create_draft_registration(session, node_id=None, schema_id=None):
+    """Create a new draft registration for a given project node."""
+    if not session:
+        session = get_default_session()
+    url = '/v2/nodes/{}/draft_registrations/'.format(node_id)
+    # NOTE: The OSF api documentation says to use:
+    # 'attributes': {'registration_supplement': {schema_id} }
+    # but that doesn't work. That produced an error message that indicated that the
+    # schema id was missing and required.  Passing the raw_body parameter below does
+    # provide the api with the schema id in a format that works.
+    raw_payload = {
+        'data': {
+            'type': 'draft_registrations',
+            'relationships': {
+                'registration_schema': {
+                    'data': {
+                        'id': schema_id,
+                        'type': 'registration-schemas',
+                    }
+                }
+            },
+        },
+    }
+    session.post(
+        url=url, item_type='draft_registrations', raw_body=json.dumps(raw_payload)
+    )

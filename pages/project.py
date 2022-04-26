@@ -14,6 +14,8 @@ from components.dashboard import (
     ProjectCreatedModal,
 )
 from components.project import (
+    ConfirmDeleteDraftRegistrationModal,
+    CreateRegistrationModal,
     FileWidget,
     LogWidget,
 )
@@ -136,3 +138,65 @@ class FilesPage(GuidBasePage):
 The class FileWidget in components/project.py is used for tests test_file_widget_loads
 and test_addon_files_load in test_project.py.
 In the future, we may want to put all files tests in one place."""
+
+
+class RegistrationsPage(GuidBasePage):
+    base_url = settings.OSF_HOME + '/{guid}/registrations/'
+
+    identity = Locator(By.CSS_SELECTOR, '[data-test-registrations-container]')
+    registrations_tab = Locator(By.CSS_SELECTOR, 'ul._TabList_ojvago > li')
+    draft_registrations_tab = Locator(By.CSS_SELECTOR, '[data-test-drafts-tab]')
+    registration_card = Locator(By.CSS_SELECTOR, '[data-test-node-card]')
+    draft_registration_card = Locator(
+        By.CSS_SELECTOR, '[data-test-draft-registration-card]'
+    )
+    no_registrations_message_1 = Locator(
+        By.CSS_SELECTOR,
+        'div._RegistrationsPane_ojvago > div > div > div > div > p:nth-child(1)',
+    )
+    no_registrations_message_2 = Locator(
+        By.CSS_SELECTOR,
+        'div._RegistrationsPane_ojvago > div > div > div > div > p:nth-child(2)',
+    )
+    no_registrations_message_3 = Locator(
+        By.CSS_SELECTOR,
+        'div._RegistrationsPane_ojvago > div > div > div > div > p:nth-child(3)',
+    )
+    no_draft_registrations_message_1 = Locator(
+        By.CSS_SELECTOR,
+        'div._RegistrationsPane_ojvago > div > div > div > p:nth-child(1)',
+    )
+    no_draft_registrations_message_2 = Locator(
+        By.CSS_SELECTOR,
+        'div._RegistrationsPane_ojvago > div > div > div > p:nth-child(2)',
+    )
+    no_draft_registrations_message_3 = Locator(
+        By.CSS_SELECTOR,
+        'div._RegistrationsPane_ojvago > div > div > div > p:nth-child(3)',
+    )
+    here_support_link = Locator(By.LINK_TEXT, 'here')
+    new_registration_button = Locator(
+        By.CSS_SELECTOR, '[data-test-new-registration-button]'
+    )
+    # The following are for the first Draft Registration Card on the page. If we ever
+    # deal with more than one draft registration card, then we should probably use
+    # group locators and indexing.
+    draft_registration_title = Locator(
+        By.CSS_SELECTOR, 'h4[data-test-draft-registration-card-title] > a'
+    )
+    draft_registration_schema_name = Locator(
+        By.CSS_SELECTOR, 'div[data-test-form-type] > dd'
+    )
+    draft_registration_provider = Locator(
+        By.CSS_SELECTOR, 'div[data-test-provider-name] > dd'
+    )
+    review_draft_button = Locator(By.CSS_SELECTOR, '[data-test-draft-card-review]')
+    edit_draft_button = Locator(By.CSS_SELECTOR, '[data-test-draft-card-edit]')
+    delete_draft_button = Locator(
+        By.CSS_SELECTOR, '[data-test-delete-button-secondary-destroy]'
+    )
+    # Components
+    create_registration_modal = ComponentLocator(CreateRegistrationModal)
+    delete_draft_registration_modal = ComponentLocator(
+        ConfirmDeleteDraftRegistrationModal
+    )
