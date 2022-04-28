@@ -23,7 +23,7 @@ def registrations_page(driver, default_project):
 
 @pytest.fixture()
 def registrations_page_with_draft(session, registrations_page):
-    """This fixture uses the registration_page fixture above and adds a draft
+    """This fixture uses the registrations_page fixture above and adds a draft
     registration to the temporary project.  NOTE: Since we are creating the draft
     registration from a temporary project that gets automatically deleted when we are
     done with it, the draft registration as a child of the project will also get
@@ -55,7 +55,7 @@ class TestProjectRegistrationsPage:
     def test_empty_registrations_tab(self, driver, registrations_page):
         """Tests that when the Project Registration page is first loaded, the submitted
         Registrations tab is selected and displayed by default. Also since this is a
-        newly createdd project there should not be any existing submitted registrations.
+        newly created project there should not be any existing submitted registrations.
         """
         assert (
             registrations_page.registrations_tab.get_attribute('aria-selected')
@@ -85,7 +85,7 @@ class TestProjectRegistrationsPage:
     def test_empty_draft_registrations_tab(self, driver, registrations_page):
         """Tests that when the Project Registration page is first loaded, you can switch
         to the Draft Registrations tab by clicking the tab link.  And since this is a
-        newly createdd project there should not be any existing draft registrations.
+        newly created project there should not be any existing draft registrations.
         """
         registrations_page.draft_registrations_tab.click()
         assert (
@@ -182,7 +182,7 @@ class TestProjectRegistrationsPage:
     def test_review_draft_registration(
         self, session, driver, registrations_page_with_draft
     ):
-        """Using the registration_page_with_draft fixture that already has a draft
+        """Using the registrations_page_with_draft fixture that already has a draft
         registration created for the temporary project, verify that the draft
         registration is visble on the Draft registrations tab of the Project
         Registrations page.  Then click the Review button and verify that you are
@@ -207,7 +207,7 @@ class TestProjectRegistrationsPage:
     def test_edit_draft_registration(
         self, session, driver, registrations_page_with_draft
     ):
-        """Using the registration_page_with_draft fixture that already has a draft
+        """Using the registrations_page_with_draft fixture that already has a draft
         registration created for the temporary project, verify that the draft
         registration is visble on the Draft registrations tab of the Project
         Registrations page.  Then click the Edit button and verify that you are
@@ -224,7 +224,7 @@ class TestProjectRegistrationsPage:
     def test_delete_draft_registration(
         self, session, driver, registrations_page_with_draft
     ):
-        """Using the registration_page_with_draft fixture that already has a draft
+        """Using the registrations_page_with_draft fixture that already has a draft
         registration created for the temporary project, verify that the draft
         registration is visble on the Draft registrations tab of the Project
         Registrations page.  Then verify that you can delete the draft registration
