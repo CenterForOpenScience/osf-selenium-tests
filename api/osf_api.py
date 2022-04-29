@@ -403,12 +403,10 @@ def get_preprint_downloads_count(session=None, node_id=None):
         return None
 
 
-def get_registration_schemas_for_provider(
-    session=None, provider_id='osf', data_type='name'
-):
+def get_registration_schemas_for_provider(session=None, provider_id='osf'):
     """Returns a list of allowed registration schemas for an individual provider.  The
-    list will be either schema names or a paired list of schema names and ids.  The
-    default data type is 'name'.  The default provider_id is 'osf'.
+    list will be a paired list of schema names and ids.  The The default provider_id is
+    'osf'.
     """
     if not session:
         session = get_default_session()
@@ -417,18 +415,9 @@ def get_registration_schemas_for_provider(
     # total registration schemas. It's under 30 at this time, but using 50 here gives us
     # plenty of room to add more schemas without having to update this function.
     data = session.get(url, query_parameters={'page[size]': 50})['data']
-    if data:
-        schema_list = []
-        for schema in data:
-            name = schema['attributes']['name']
-            if data_type == 'name':
-                schema_list.append(name)
-            elif data_type == 'name_id':
-                schema_id = schema['id']
-                schema_list.append([name, schema_id])
-        return schema_list
-    else:
+    if data is None:
         return None
+    return [[schema['attributes']['name'], schema['id']] for schema in data]
 
 
 def create_draft_registration(session, node_id=None, schema_id=None):

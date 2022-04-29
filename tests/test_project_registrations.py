@@ -33,12 +33,11 @@ def registrations_page_with_draft(session, registrations_page):
     # First get the list of allowed registration schemas for OSF in a name and id pair
     # list. Then loop through the list to pull out just the id for the Open-Ended
     # Registration schema. We'll need this schema id to create the draft.
-    schema_list = osf_api.get_registration_schemas_for_provider(
-        provider_id='osf', data_type='name_id'
-    )
+    schema_list = osf_api.get_registration_schemas_for_provider(provider_id='osf')
     for schema in schema_list:
         if schema[0] == 'Open-Ended Registration':
             schema_id = schema[1]
+            break
     # Use the api to create a draft registration for the temporary project
     osf_api.create_draft_registration(
         session, node_id=registrations_page.guid, schema_id=schema_id
@@ -123,11 +122,10 @@ class TestProjectRegistrationsPage:
         # Verify that the first schema in the list is pre-selected
         first_schema = create_registration_modal.schema_list[0]
         assert first_schema.find_element_by_css_selector('.ember-view').is_selected()
-        # Get list of allowed schemas for OSF Registries from the api and verify the
-        # list on the modal matches the api list
-        api_schema_list = osf_api.get_registration_schemas_for_provider(
-            provider_id='osf', data_type='name'
-        )
+        # Get list of allowed schema names for OSF Registries from the api and verify
+        # the list on the modal matches the api list
+        api_schemas = osf_api.get_registration_schemas_for_provider(provider_id='osf')
+        api_schema_list = [schema[0] for schema in api_schemas]
         api_schema_list.sort()
         modal_schema_list = create_registration_modal.get_schema_names_list()
         modal_schema_list.sort()
@@ -236,11 +234,17 @@ class TestProjectRegistrationsPage:
             == 'OSF Test Project'
         )
         # Click the Delete button for the Draft Registration card and then click the
-        # Delete button on the Comfirm Delete Draft Registration Modal
+        # Cancel button on the Comfirm Delete Draft Registration Modal and verify the
+        # Draft Registration card is still present.
+        registrations_page_with_draft.delete_draft_button.click()
+        registrations_page_with_draft.delete_draft_registration_modal.cancel_button.click()
+        assert registrations_page_with_draft.draft_registration_card.present()
+        # Now click the Delete button for the Draft Registration card again and this
+        # time click the Delete button on the Comfirm Delete Draft Registration Modal.
+        # Then verify that the Draft Registration is no longer visible on the Draft
+        # Registrations tab.
         registrations_page_with_draft.delete_draft_button.click()
         registrations_page_with_draft.delete_draft_registration_modal.delete_button.click()
-        # Verify that the Draft Registration is no longer visible on the Draft
-        # Registrations tab.
         assert registrations_page_with_draft.draft_registration_card.absent()
         assert (
             registrations_page_with_draft.no_draft_registrations_message_1.text

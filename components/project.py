@@ -43,16 +43,14 @@ class CreateRegistrationModal(BaseElement):
 
     def get_schema_names_list(self):
         """Returns the schema names from the schema list"""
-        names_list = []
-        for schema in self.schema_list:
-            names_list.append(schema.text)
-        return names_list
+        return [schema.text for schema in self.schema_list]
 
     def select_schema_radio_button(self, schema_name='Open-Ended Registration'):
         """Selects the radio button corresponding to the given schema name"""
         for schema in self.schema_list:
             if schema.text == schema_name:
                 schema.find_element_by_css_selector('.ember-view').click()
+                break
 
 
 class ConfirmDeleteDraftRegistrationModal(BaseElement):
