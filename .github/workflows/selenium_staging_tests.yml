@@ -91,9 +91,9 @@ jobs:
         env:
           TEST_BUILD: ${{ matrix.browser }}
         run: |
-          invoke test_travis_part_one
+          invoke test_selenium_part_one
       - name: run staging tests, part two
         env:
           TEST_BUILD: ${{ matrix.browser }}
         run: |
-          invoke test_travis_part_two
+          invoke test_selenium_part_two
