@@ -425,11 +425,6 @@ def create_draft_registration(session, node_id=None, schema_id=None):
     if not session:
         session = get_default_session()
     url = '/v2/nodes/{}/draft_registrations/'.format(node_id)
-    # NOTE: The OSF api documentation says to use:
-    # 'attributes': {'registration_supplement': {schema_id} }
-    # but that doesn't work. That produced an error message that indicated that the
-    # schema id was missing and required.  Passing the raw_body parameter below does
-    # provide the api with the schema id in a format that works.
     raw_payload = {
         'data': {
             'type': 'draft_registrations',

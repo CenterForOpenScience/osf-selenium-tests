@@ -150,7 +150,7 @@ class TestProjectRegistrationsPage:
 
     def test_create_new_draft_registration(self, driver, registrations_page):
         """Tests the creation of a new draft registration from the Project Registrations
-        page by clicking the New regsitration button on the page.  Then on the Create
+        page by clicking the New registration button on the page.  Then on the Create
         Registration modal window, select a schema and click the Create draft button to
         actually create the draft registration.
         """
@@ -182,7 +182,7 @@ class TestProjectRegistrationsPage:
     ):
         """Using the registrations_page_with_draft fixture that already has a draft
         registration created for the temporary project, verify that the draft
-        registration is visble on the Draft registrations tab of the Project
+        registration is visible on the Draft registrations tab of the Project
         Registrations page.  Then click the Review button and verify that you are
         redirected to the Draft Registration Review page.
         """
@@ -207,7 +207,7 @@ class TestProjectRegistrationsPage:
     ):
         """Using the registrations_page_with_draft fixture that already has a draft
         registration created for the temporary project, verify that the draft
-        registration is visble on the Draft registrations tab of the Project
+        registration is visible on the Draft registrations tab of the Project
         Registrations page.  Then click the Edit button and verify that you are
         redirected to the Draft Registration Metadata page.
         """
@@ -224,7 +224,7 @@ class TestProjectRegistrationsPage:
     ):
         """Using the registrations_page_with_draft fixture that already has a draft
         registration created for the temporary project, verify that the draft
-        registration is visble on the Draft registrations tab of the Project
+        registration is visible on the Draft registrations tab of the Project
         Registrations page.  Then verify that you can delete the draft registration
         using the Delete button on the page.
         """
@@ -234,13 +234,13 @@ class TestProjectRegistrationsPage:
             == 'OSF Test Project'
         )
         # Click the Delete button for the Draft Registration card and then click the
-        # Cancel button on the Comfirm Delete Draft Registration Modal and verify the
+        # Cancel button on the Confirm Delete Draft Registration Modal and verify the
         # Draft Registration card is still present.
         registrations_page_with_draft.delete_draft_button.click()
         registrations_page_with_draft.delete_draft_registration_modal.cancel_button.click()
         assert registrations_page_with_draft.draft_registration_card.present()
         # Now click the Delete button for the Draft Registration card again and this
-        # time click the Delete button on the Comfirm Delete Draft Registration Modal.
+        # time click the Delete button on the Confirm Delete Draft Registration Modal.
         # Then verify that the Draft Registration is no longer visible on the Draft
         # Registrations tab.
         registrations_page_with_draft.delete_draft_button.click()
