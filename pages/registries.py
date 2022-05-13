@@ -83,6 +83,22 @@ class RegistrationAddNewPage(BaseRegistriesPage):
 
 
 class RegistrationDraftPage(BaseRegistriesPage):
+    # This is a very generic draft registration page since it is using the side nav
+    # bar as the locator which is on every draft page.
     identity = Locator(
         By.CSS_SELECTOR, 'nav[data-test-side-nav]', settings.LONG_TIMEOUT
+    )
+
+
+class DraftRegistrationMetadataPage(BaseRegistriesPage):
+    identity = Locator(
+        By.CSS_SELECTOR, 'div[data-test-metadata-title]', settings.LONG_TIMEOUT
+    )
+
+
+class DraftRegistrationReviewPage(BaseRegistriesPage):
+    identity = Locator(
+        By.CSS_SELECTOR,
+        '[data-test-toggle-anchor-nav-button]',
+        settings.LONG_TIMEOUT,
     )
