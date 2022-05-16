@@ -158,6 +158,71 @@ class PreprintSubmitPage(BasePreprintPage):
     )
 
 
+class PreprintEditPage(GuidBasePage, BasePreprintPage):
+    url_base = urljoin(settings.OSF_HOME, '{guid}')
+    url_addition = '/edit'
+
+    identity = Locator(
+        By.CSS_SELECTOR, '.m-t-md.preprint-header-preview > p:nth-child(1) > em.m-r-md'
+    )
+    basics_section = Locator(By.ID, 'preprint-form-basics')
+    basics_tags_section = Locator(By.CSS_SELECTOR, '#preprint-form-basics .tagsinput')
+    basics_tags_input = Locator(
+        By.CSS_SELECTOR, '#preprint-form-basics .tagsinput input'
+    )
+    basics_save_button = Locator(By.CSS_SELECTOR, '#preprint-form-basics .btn-primary')
+    basics_section_changes_saved_indicator = Locator(
+        By.CSS_SELECTOR,
+        '#preprint-form-basics > header > div.preprint-section-status.pull-right > span.text-success.',
+    )
+    discipline_section = Locator(By.ID, 'preprint-form-subjects')
+    discipline_save_button = Locator(
+        By.CSS_SELECTOR, '#preprint-form-subjects .btn-primary'
+    )
+    authors_save_button = Locator(
+        By.CSS_SELECTOR, '#preprint-form-authors .btn-primary', settings.QUICK_TIMEOUT
+    )
+    return_to_preprint_button = Locator(
+        By.CSS_SELECTOR,
+        'div.submit-section > div > button.btn.btn-default.btn-md.m-t-md.pull-right',
+    )
+    withdraw_preprint_button = Locator(
+        By.CSS_SELECTOR,
+        'div.submit-section > div > button.btn.btn-danger.btn-md.m-t-md.pull-right',
+    )
+
+    # Group Locators
+    primary_subjects = GroupLocator(
+        By.CSS_SELECTOR,
+        '#preprint-form-subjects > div > div > div:nth-child(2) > div:nth-child(1) > ul > li',
+    )
+
+    def select_primary_subject_by_name(self, subject_name):
+        """Select a subject from the first box in the Discipline section (i.e. 'primary'
+        subject). This function would need to be modified or another separate function
+        created to select from either of the 2 secondary subject boxes.
+        """
+        for subject in self.primary_subjects:
+            if subject.text == subject_name:
+                subject.click()
+                break
+
+
+class PreprintWithdrawPage(GuidBasePage, BasePreprintPage):
+    url_base = urljoin(settings.OSF_HOME, '{guid}')
+    url_addition = '/withdraw'
+
+    identity = Locator(
+        By.CSS_SELECTOR,
+        'section.preprint-form-block.preprint-form-section-withdraw-comment',
+    )
+    reason_for_withdrawal_textarea = Locator(By.NAME, 'explanation')
+    request_withdrawal_button = Locator(
+        By.CSS_SELECTOR,
+        'div.submit-section > button.btn.btn-danger.btn-md.m-t-md.pull-right',
+    )
+
+
 @pytest.mark.usefixtures('must_be_logged_in')
 class PreprintDiscoverPage(BasePreprintPage):
     url_addition = 'discover'
@@ -187,6 +252,14 @@ class PreprintDetailPage(GuidBasePage, BasePreprintPage):
     download_button = Locator(
         By.CSS_SELECTOR, 'div.share-row.p-sm.osf-box-lt.clearfix > a'
     )
+    edit_preprint_button = Locator(By.LINK_TEXT, 'Edit preprint')
+
+    # Group Locators
+    subjects = GroupLocator(
+        By.CSS_SELECTOR,
+        '#view-page > div.container > div > div.col-md-5 > div:nth-child(6) > span',
+    )
+    tags = GroupLocator(By.CSS_SELECTOR, 'div.tag-section.p-t-xs > span')
 
 
 class ReviewsDashboardPage(OSFBasePage):
