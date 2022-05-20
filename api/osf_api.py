@@ -1,6 +1,7 @@
 import json
 import logging
 import os
+from datetime import datetime
 
 import requests
 from pythosf import client
@@ -461,24 +462,36 @@ def create_preprint(
     """
     if not session:
         session = get_default_session()
-    # Get the License Id for the license_name parameter
-    license_id = get_license_id(session, license_name=license_name)
-    # Get Subject Id for the subject_name parameter. NOTE: Currently we are creating
+    # Get the license id and any required fields for the license_name parameter
+    license_data = get_license_data_for_provider(
+        session,
+        provider_type='preprints',
+        provider_id=provider_id,
+        license_name=license_name,
+    )
+    license_id = license_data[0]
+    # If the particular license requires copyright holders then provide some test data
+    if 'copyrightHolders' in license_data[1]:
+        copyright_holders = ['OSF Selenium Tester', 'QA Guy']
+    else:
+        copyright_holders = []
+    # NOTE: In the preprint payload record below we are adding a license_record with
+    # year set to the current year even though in most cases we may be using a license
+    # that does not require the year value. There is a weird bug that occurs on the Edit
+    # Preprint page if the preprint does not have a value for year. If the year is null
+    # then the Edit Preprint page thinks that the preprint has unsaved changes even if
+    # you have made no changes on the form page. There is a ticket for this issue:
+    # ENG-3782.
+    current_year = datetime.now().year
+    # Get subject id for the subject_name parameter. NOTE: Currently we are creating
     # the preprint with only a single subject, which is the minimum required to publish.
-    subject_id = get_subject_for_provider(
+    subject_id = get_subject_id_for_provider(
         session,
         provider_type='preprints',
         provider_id=provider_id,
         subject_name=subject_name,
     )
     # Step 1: Create draft unpublished preprint without primary file
-    # NOTE: In the preprint payload record below we are adding a license_record
-    # with year set to 2022 even though in most cases we may be using a license
-    # that does not require the year value. There is a weird bug that occurs on
-    # the Edit Preprint page if the preprint does not have a value for year. If
-    # the year is null then the Edit Preprint page thinks that the preprint has
-    # unsaved changes even if you have made no changes on the form page. There
-    # is a ticket for this issue: ENG-3782.
     url = '/v2/preprints/'
     raw_payload = {
         'data': {
@@ -487,7 +500,10 @@ def create_preprint(
                 'title': title,
                 'description': 'Preprint created via the OSF api',
                 'subjects': [[subject_id]],
-                'license_record': {'year': '2022'},
+                'license_record': {
+                    'copyright_holders': copyright_holders,
+                    'year': current_year,
+                },
                 'tags': ['qatest', 'selenium'],
                 'has_coi': False,
                 'has_data_links': 'available',
@@ -504,25 +520,21 @@ def create_preprint(
     return_data = session.post(
         url=url, item_type='preprints', raw_body=json.dumps(raw_payload)
     )
-    preprint_node = return_data['data']['id']
+    preprint_node_id = return_data['data']['id']
     # Step 2: Create a test file in WaterButler and associate it with the preprint
-    wb_upload_url = '{}/v1/resources/{}/providers/{}/'.format(
-        settings.FILE_DOMAIN, preprint_node, 'osfstorage'
-    )
-    metadata = session.put(
-        url=wb_upload_url,
-        query_parameters={'kind': 'file', 'name': 'OSF Test File.txt'},
-        raw_body={},
+    preprint_node = get_node(session, node_id=preprint_node_id)
+    file_name, metadata = upload_fake_file(
+        session, node=preprint_node, name='OSF Test File.txt', provider='osfstorage'
     )
     # The id value from WB has the provider name and '/' at the beginning of it
     # (ex: 'osfstorage/627a5b3ab4f587000aa2725c').  So we need to parse out the
     # actual file id to use in the Preprint patch.
     file_id = metadata['data']['id'].split('/')[1]
     # Step 3: Attach the file to the Preprint and set it as Published
-    patch_url = '/v2/preprints/{}/'.format(preprint_node)
+    patch_url = '/v2/preprints/{}/'.format(preprint_node_id)
     patch_payload = {
         'data': {
-            'id': preprint_node,
+            'id': preprint_node_id,
             'type': 'preprints',
             'attributes': {
                 'is_published': True,
@@ -535,20 +547,28 @@ def create_preprint(
     return_data = session.patch(
         url=patch_url,
         item_type='preprints',
-        item_id=preprint_node,
+        item_id=preprint_node_id,
         raw_body=json.dumps(patch_payload),
     )
     # Return the Preprint Node Id
     return return_data['data']['id']
 
 
-def get_license_id(session=None, license_name='CC0 1.0 Universal'):
-    """Returns the license id for the given license name.  The default license_name is
+def get_license_data_for_provider(
+    session=None,
+    provider_type='preprints',
+    provider_id='osf',
+    license_name='CC0 1.0 Universal',
+):
+    """Returns the license id and any required fields for a given provider type, provider
+    id, and license name. Required fields may be 'year' and 'copyrightHolders' for some
+    licenses. The default provider_type is 'preprints' but this will also work for
+    'registrations'. The default provider_id is 'osf' and the default license_name is
     'CC0 1.0 Universal'.
     """
     if not session:
         session = get_default_session()
-    url = 'v2/licenses/'
+    url = 'v2/providers/{}/{}/licenses/'.format(provider_type, provider_id)
     # NOTE: Using '30' as the page size query parameter here. We don't actually have 30
     # total licenses. It's under 20 at this time, but using 30 here gives us plenty of
     # room to add more licenses without having to update this function.
@@ -556,11 +576,12 @@ def get_license_id(session=None, license_name='CC0 1.0 Universal'):
     for license in data:
         if license['attributes']['name'] == license_name:
             license_id = license['id']
+            required_fields = license['attributes']['required_fields']
             break
-    return license_id
+    return [license_id, required_fields]
 
 
-def get_subject_for_provider(
+def get_subject_id_for_provider(
     session=None,
     provider_type='preprints',
     provider_id='osf',
