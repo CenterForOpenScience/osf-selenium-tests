@@ -1,5 +1,6 @@
 import pytest
 import requests
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.select import Select
@@ -418,14 +419,24 @@ class TestInstitutionLoginPage:
                     # password input field
                     assert GenericInstitutionLoginPage(driver, verify=True)
                 except PageException:
-                    try:
-                        # For a small number of institutions the initial login page
-                        # first asks for just an email without the passord field.
-                        assert GenericInstitutionEmailLoginPage(driver, verify=True)
-                    except PageException:
-                        # if there is a failure add the name of the institution to the
-                        # failed list
-                        failed_list.append(institution)
+                    # University of Notre Dame changed their login - now there is a Username
+                    # input box that is of type="text".
+                    if institution == 'University of Notre Dame':
+                        try:
+                            driver.find_element(
+                                By.CSS_SELECTOR, 'div.o-form-input > span > input'
+                            )
+                        except NoSuchElementException:
+                            failed_list.append(institution)
+                    else:
+                        try:
+                            # For a small number of institutions the initial login page
+                            # first asks for just an email without the passord field.
+                            assert GenericInstitutionEmailLoginPage(driver, verify=True)
+                        except PageException:
+                            # if there is a failure add the name of the institution to the
+                            # failed list
+                            failed_list.append(institution)
                 # Need to go back to the original OSF Institution Login page
                 institution_login_page.goto()
         # If there are any failed institutions then fail the test and print the list
