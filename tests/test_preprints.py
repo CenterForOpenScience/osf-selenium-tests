@@ -1,4 +1,5 @@
 import logging
+import os
 import re
 from datetime import datetime
 
@@ -16,8 +17,10 @@ from api import osf_api
 from pages.preprints import (
     PreprintDetailPage,
     PreprintDiscoverPage,
+    PreprintEditPage,
     PreprintLandingPage,
     PreprintSubmitPage,
+    PreprintWithdrawPage,
 )
 from utils import find_current_browser
 
@@ -181,6 +184,127 @@ class TestPreprintWorkflow:
                     driver.switch_to.alert.accept()
                 except TimeoutException:
                     pass
+
+    @pytest.fixture
+    def preprint_detail_page(self, driver, session):
+        """Fixture that uses the OSF api to create a published preprint in OSF
+        Preprints and then navigates to the Preprint Detail page for this preprint.
+        """
+        preprint_node = osf_api.create_preprint(
+            session,
+            provider_id='osf',
+            title='OSF Selenium Preprint',
+            license_name='CC0 1.0 Universal',
+            subject_name='Engineering',
+        )
+        preprint_detail_page = PreprintDetailPage(driver, guid=preprint_node)
+        preprint_detail_page.goto()
+        return preprint_detail_page
+
+    @markers.dont_run_on_prod
+    def test_edit_preprint(self, session, driver, preprint_detail_page):
+        """Test the Edit Preprint functionality. Using the preprint_detail_page fixture
+        we start on the Preprint Detail page for an api created preprint. Then click
+        the 'Edit preprint' button to go to the Edit Preprint page. Make some minor
+        updates to the preprint and save. Lastly verify that the edits that were made
+        are displayed correctly on the Preprint Detail page.
+        """
+        assert PreprintDetailPage(driver, verify=True)
+        preprint_detail_page.edit_preprint_button.click()
+        edit_page = PreprintEditPage(driver, verify=True)
+        # Click the Basics section to reveal the Basic form fields
+        edit_page.scroll_into_view(edit_page.basics_section.element)
+        edit_page.basics_section.click()
+        # Add another Tag and click the Save and continue button
+        edit_page.basics_tags_section.click()
+        edit_page.basics_tags_input.send_keys(os.environ['PYTEST_CURRENT_TEST'])
+        edit_page.basics_tags_input.send_keys('\r')
+        edit_page.basics_save_button.click()
+        # Next add another subject in the Discipline section
+        edit_page.scroll_into_view(edit_page.discipline_section.element)
+        edit_page.discipline_section.click()
+        # Need to wait a couple seconds for the event code behind the Subjects listbox
+        # to be operable, so wait for the Changes saved message in the Basics section
+        # to disappear.
+        edit_page.basics_section_changes_saved_indicator.here_then_gone()
+        edit_page.select_primary_subject_by_name('Business')
+        edit_page.scroll_into_view(edit_page.discipline_save_button.element)
+        edit_page.discipline_save_button.click()
+        # Wait for the Authors section to become visible to give the addition of the
+        # subject time to actually save before we leave the page.
+        WebDriverWait(driver, 5).until(EC.visibility_of(edit_page.authors_save_button))
+        # Click Return to preprint button to go back to Preprint Detail page
+        edit_page.scroll_into_view(edit_page.return_to_preprint_button.element)
+        edit_page.return_to_preprint_button.click()
+        detail_page = PreprintDetailPage(driver, verify=True)
+        # Verify new Subject appears on the page
+        subjects = detail_page.subjects
+        subject_found = False
+        for subject in subjects:
+            if subject.text == 'Business':
+                subject_found = True
+                break
+        assert subject_found
+        # Verify new Tag appears on the page
+        tags = detail_page.tags
+        tag_found = False
+        for tag in tags:
+            if tag.text == os.environ['PYTEST_CURRENT_TEST']:
+                tag_found = True
+                break
+        assert tag_found
+
+    @markers.dont_run_on_prod
+    def test_withdraw_preprint(self, session, driver, preprint_detail_page):
+        """Test the Withdraw Preprint functionality. Using the preprint_detail_page
+        fixture we start on the Preprint Detail page for an api created preprint. Then
+        click the 'Edit preprint' button to go to the Edit Preprint page. Scroll to the
+        bottom of the Edit Preprint page and click the 'Withdraw preprint' button. Next
+        on the Withdraw Preprint page enter a reason for withdrawing the preprint and
+        click the 'Request withdrawal' button. OSF Preprints is a non-moderated preprint
+        provider so the actual withdrawal request is accepted and completed by an admin
+        user in the OSF admin app. The best we can do here is to verify through the api
+        that the withdrawal request record is created.
+        """
+        assert PreprintDetailPage(driver, verify=True)
+        preprint_detail_page.edit_preprint_button.click()
+        edit_page = PreprintEditPage(driver, verify=True)
+        edit_page.scroll_into_view(edit_page.withdraw_preprint_button.element)
+        edit_page.withdraw_preprint_button.click()
+        withdraw_page = PreprintWithdrawPage(driver, verify=True)
+        withdraw_page.reason_for_withdrawal_textarea.send_keys_deliberately(
+            'OSF Selenium Test: '
+        )
+        withdraw_page.reason_for_withdrawal_textarea.send_keys(
+            os.environ['PYTEST_CURRENT_TEST']
+        )
+        withdraw_page.request_withdrawal_button.click()
+        # Should be redirected back to Preprint Detail page
+        assert PreprintDetailPage(driver, verify=True)
+        # Verify via the api that the Withdrawal Request record was created
+        requests = osf_api.get_preprint_requests_records(
+            node_id=preprint_detail_page.guid
+        )
+        if requests:
+            # Look for 'withdrawal' request_type and verify it has a 'pending' status
+            record_found = False
+            for request in requests:
+                if request['attributes']['request_type'] == 'withdrawal':
+                    assert request['attributes']['machine_state'] == 'pending'
+                    record_found = True
+                    break
+            if not record_found:
+                raise ValueError(
+                    'Withdrawal Request record was not found for preprint: `{}`'.format(
+                        preprint_detail_page.guid
+                    )
+                )
+        else:
+            raise ValueError(
+                'No Requests records found for preprint: `{}`'.format(
+                    preprint_detail_page.guid
+                )
+            )
 
 
 class TestPreprintSearch:
