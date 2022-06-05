@@ -76,19 +76,28 @@ class RegistrationDetailPage(GuidBasePage):
 
     narrative_summary = Locator(By.CSS_SELECTOR, '[data-test-read-only-response]')
     updates_dropdown = Locator(By.CSS_SELECTOR, '[data-test-update-button]')
-    update_registration_button = Locator(By.CSS_SELECTOR, '[data-test-update-dropdown-create-new-revision]')
-    update_registration_dialogue = Locator(By.CSS_SELECTOR, '[data-test-new-update-dialog-main]')
-    update_registration_dialogue_next = Locator(By.CSS_SELECTOR, '[data-test-new-update-dialog-footer-next]')
-
+    update_registration_button = Locator(
+        By.CSS_SELECTOR, '[data-test-update-dropdown-create-new-revision]'
+    )
+    update_registration_dialogue = Locator(
+        By.CSS_SELECTOR, '[data-test-new-update-dialog-main]'
+    )
+    update_registration_dialogue_next = Locator(
+        By.CSS_SELECTOR, '[data-test-new-update-dialog-footer-next]'
+    )
 
 
 class RegistrationJustificationForm(GuidBasePage):
     identity = Locator(By.CSS_SELECTOR, '[data-test-link-back-to-registration]')
 
-    justification_textbox = Locator(By.CSS_SELECTOR, 'textarea[name="revisionJustification"]')
+    justification_textbox = Locator(
+        By.CSS_SELECTOR, 'textarea[name="revisionJustification"]'
+    )
     justification_next_button = Locator(By.CSS_SELECTOR, '[data-test-goto-next-page]')
     cancel_update_button = Locator(By.CSS_SELECTOR, '[data-test-delete-button]')
-    cancel_update_modal = Locator(By.CSS_SELECTOR, 'div[data-analytics-scope="Delete button modal"]')
+    cancel_update_modal = Locator(
+        By.CSS_SELECTOR, 'div[data-analytics-scope="Delete button modal"]'
+    )
     confirm_cancel_button = Locator(By.CSS_SELECTOR, '[data-test-confirm-delete]')
 
     navbar_justification = Locator(By.CSS_SELECTOR, '[data-test-link="justification"]')
@@ -104,11 +113,14 @@ class RegistrationJustificationForm(GuidBasePage):
 class JustificationReviewForm(GuidBasePage):
     identity = Locator(By.ID, 'JustificationPageLabel')
 
-    link_to_registration = Locator(By.CSS_SELECTOR, '[data-analytics-name="Go to registration"]')
+    link_to_registration = Locator(
+        By.CSS_SELECTOR, '[data-analytics-name="Go to registration"]'
+    )
 
 
 class RegistrationAddNewPage(BaseRegistriesPage):
     url_addition = 'new'
+    url = settings.OSF_HOME + '/registries/osf/new'
     identity = Locator(
         By.CSS_SELECTOR, 'form[data-test-new-registration-form]', settings.LONG_TIMEOUT
     )

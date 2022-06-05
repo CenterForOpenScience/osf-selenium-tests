@@ -82,7 +82,9 @@ class TestRegistrationsVersioning:
         RegistrationJustificationForm(driver, verify=True)
         justification_page = RegistrationJustificationForm(driver)
         justification_page.justification_textbox.click()
-        justification_page.justification_textbox.send_keys('This justification is provided by selenium test automation.')
+        justification_page.justification_textbox.send_keys(
+            'This justification is provided by selenium test automation.'
+        )
         justification_page.justification_next_button.click()
 
         fake = Faker()
@@ -95,7 +97,11 @@ class TestRegistrationsVersioning:
         # Wait for justification field to update from "No Justification provided." to summary_paragraph
         WebDriverWait(driver, 10).until(
             EC.text_to_be_present_in_element(
-                (By.CSS_SELECTOR, 'p[data-test-review-response="revisionJustification"]'), 'selenium'
+                (
+                    By.CSS_SELECTOR,
+                    'p[data-test-review-response="revisionJustification"]',
+                ),
+                'selenium',
             )
         )
         # After the justification field updates, the front end needs a second before becoming usable.

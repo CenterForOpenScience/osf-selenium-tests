@@ -33,5 +33,9 @@ class MyRegistrationsPage(OSFBasePage):
 
     view_button = Locator(By.CSS_SELECTOR, '[data-test-view-button]')
     update_button = Locator(By.CSS_SELECTOR, '[data-test-update-button]')
-    update_registration_dialogue = Locator(By.CSS_SELECTOR, '[data-test-new-update-dialog-main]')
-    update_registration_dialogue_next = Locator(By.CSS_SELECTOR, '[data-test-new-update-dialog-footer-next]')
+    update_registration_dialogue = Locator(
+        By.CSS_SELECTOR, '[data-test-new-update-dialog-main]'
+    )
+    update_registration_dialogue_next = Locator(
+        By.CSS_SELECTOR, '[data-test-new-update-dialog-footer-next]'
+    )
