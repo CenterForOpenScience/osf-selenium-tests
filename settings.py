@@ -51,7 +51,6 @@ domains = {
             'https://osf.usc.edu',
             'https://osf.ucla.edu',
             'https://osf.ucr.edu',
-            'https://osf.wustl.edu',
             'https://osf.research.vcu.edu',
         ],
     },
