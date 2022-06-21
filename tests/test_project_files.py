@@ -92,16 +92,14 @@ class TestFilesPage:
                 new_name
             )
             files_page.rename_file_modal.save_button.click()
-            # Need to wait for the Rename modal to disappear before reloading the page
+            # Need to wait for the Rename modal to disappear
             WebDriverWait(driver, 5).until(
                 EC.invisibility_of_element_located(
                     (By.CSS_SELECTOR, '[data-test-file-rename-modal]')
                 )
             )
-            # The actual file rename usually takes about a second, so instead of using
-            # time.sleep() here we will just reload the page and wait for the list items
-            # to reappear. That should be plenty of time.
-            files_page.reload()
+            # The page is automatically reloaded with the new file name, so wait for the
+            # list items to reappear.
             WebDriverWait(driver, 5).until(
                 EC.visibility_of_element_located(
                     (By.CSS_SELECTOR, '[data-test-file-list-item]')
@@ -270,7 +268,7 @@ class TestFilesPage:
             files_page.move_copy_modal.move_copy_button.click()
             # After the move process has finished click the Done button to go back to
             # the Files list page.
-            WebDriverWait(driver, 15).until(
+            WebDriverWait(driver, 30).until(
                 EC.visibility_of(files_page.move_copy_modal.done_button)
             )
             files_page.move_copy_modal.done_button.click()
@@ -335,7 +333,7 @@ class TestFilesPage:
             files_page.move_copy_modal.move_copy_button.click()
             # After the move process has finished click the Done button to go back to
             # the Files list page.
-            WebDriverWait(driver, 15).until(
+            WebDriverWait(driver, 120).until(
                 EC.visibility_of(files_page.move_copy_modal.done_button)
             )
             files_page.move_copy_modal.done_button.click()
@@ -399,7 +397,7 @@ class TestFilesPage:
             files_page.move_copy_modal.move_copy_button.click()
             # After the copy process has finished click the Done button to go back to
             # the Files list page.
-            WebDriverWait(driver, 15).until(
+            WebDriverWait(driver, 30).until(
                 EC.visibility_of(files_page.move_copy_modal.done_button)
             )
             files_page.move_copy_modal.done_button.click()
@@ -464,7 +462,7 @@ class TestFilesPage:
             files_page.move_copy_modal.move_copy_button.click()
             # After the copy process has finished click the Done button to go back to
             # the Files list page.
-            WebDriverWait(driver, 15).until(
+            WebDriverWait(driver, 30).until(
                 EC.visibility_of(files_page.move_copy_modal.done_button)
             )
             files_page.move_copy_modal.done_button.click()
