@@ -268,8 +268,10 @@ class TestFilesPage:
             files_page.move_copy_modal.move_copy_button.click()
             # After the move process has finished click the Done button to go back to
             # the Files list page.
-            WebDriverWait(driver, 30).until(
-                EC.visibility_of(files_page.move_copy_modal.done_button)
+            WebDriverWait(driver, 60).until(
+                EC.element_to_be_clickable(
+                    (By.CSS_SELECTOR, '[data-test-move-done-button]')
+                )
             )
             files_page.move_copy_modal.done_button.click()
             files_page.loading_indicator.here_then_gone()
@@ -333,8 +335,10 @@ class TestFilesPage:
             files_page.move_copy_modal.move_copy_button.click()
             # After the move process has finished click the Done button to go back to
             # the Files list page.
-            WebDriverWait(driver, 120).until(
-                EC.visibility_of(files_page.move_copy_modal.done_button)
+            WebDriverWait(driver, 90).until(
+                EC.element_to_be_clickable(
+                    (By.CSS_SELECTOR, '[data-test-move-done-button]')
+                )
             )
             files_page.move_copy_modal.done_button.click()
             files_page.loading_indicator.here_then_gone()
@@ -397,8 +401,10 @@ class TestFilesPage:
             files_page.move_copy_modal.move_copy_button.click()
             # After the copy process has finished click the Done button to go back to
             # the Files list page.
-            WebDriverWait(driver, 30).until(
-                EC.visibility_of(files_page.move_copy_modal.done_button)
+            WebDriverWait(driver, 60).until(
+                EC.element_to_be_clickable(
+                    (By.CSS_SELECTOR, '[data-test-move-done-button]')
+                )
             )
             files_page.move_copy_modal.done_button.click()
             files_page.loading_indicator.here_then_gone()
@@ -462,8 +468,10 @@ class TestFilesPage:
             files_page.move_copy_modal.move_copy_button.click()
             # After the copy process has finished click the Done button to go back to
             # the Files list page.
-            WebDriverWait(driver, 30).until(
-                EC.visibility_of(files_page.move_copy_modal.done_button)
+            WebDriverWait(driver, 90).until(
+                EC.element_to_be_clickable(
+                    (By.CSS_SELECTOR, '[data-test-move-done-button]')
+                )
             )
             files_page.move_copy_modal.done_button.click()
             files_page.loading_indicator.here_then_gone()
