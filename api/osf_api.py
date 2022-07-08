@@ -530,15 +530,28 @@ def create_preprint(
     # (ex: 'osfstorage/627a5b3ab4f587000aa2725c').  So we need to parse out the
     # actual file id to use in the Preprint patch.
     file_id = metadata['data']['id'].split('/')[1]
-    # Step 3: Attach the file to the Preprint and set it as Published
+    # Get the moderation type for the Preprint Provider. If the preprint provider
+    # uses a moderation workflow (either pre-moderation or post-moderation) then
+    # set the publish indicator to False. A pre-moderation preprint cannot be
+    # published until after it has been accepted by the moderator, and a post-
+    # moderation preprint will automatically get published upon creation of the
+    # submit review_action below.
+    mod_type = get_moderation_type_for_provider(
+        session,
+        provider_type='preprints',
+        provider_id=provider_id,
+    )
+    if mod_type:
+        publish_ind = False
+    else:
+        publish_ind = True
+    # Step 3: Attach the file to the Preprint and set the Published status
     patch_url = '/v2/preprints/{}/'.format(preprint_node_id)
     patch_payload = {
         'data': {
             'id': preprint_node_id,
             'type': 'preprints',
-            'attributes': {
-                'is_published': True,
-            },
+            'attributes': {'is_published': publish_ind},
             'relationships': {
                 'primary_file': {'data': {'type': 'files', 'id': file_id}}
             },
@@ -550,6 +563,25 @@ def create_preprint(
         item_id=preprint_node_id,
         raw_body=json.dumps(patch_payload),
     )
+    # If the Preprint Provider uses a moderation workflow (pre-moderation or post-
+    # moderation), then create a submit review_action and post it to the preprint
+    # record.
+    if mod_type:
+        review_url = '/v2/preprints/{}/review_actions/'.format(preprint_node_id)
+        review_payload = {
+            'data': {
+                'type': 'review_actions',
+                'attributes': {'trigger': 'submit'},
+                'relationships': {
+                    'target': {'data': {'id': preprint_node_id, 'type': 'preprints'}}
+                },
+            }
+        }
+        session.post(
+            url=review_url,
+            item_type='review-actions',
+            raw_body=json.dumps(review_payload),
+        )
     # Return the Preprint Node Id
     return return_data['data']['id']
 
@@ -612,5 +644,24 @@ def get_preprint_requests_records(session=None, node_id=None):
     data = session.get(url)['data']
     if data:
         return data
+    else:
+        return None
+
+
+def get_moderation_type_for_provider(
+    session=None,
+    provider_type='preprints',
+    provider_id='osf',
+):
+    """Returns the moderation type for a given provider type and provider id.  The
+    default provider_type is 'preprints' but this will also work for 'registrations'.
+    The default provider_id is 'osf'.
+    """
+    if not session:
+        session = get_default_session()
+    url = 'v2/providers/{}/{}/'.format(provider_type, provider_id)
+    data = session.get(url)['data']
+    if data:
+        return data['attributes']['reviews_workflow']
     else:
         return None
