@@ -56,3 +56,44 @@ class CreateRegistrationModal(BaseElement):
 class ConfirmDeleteDraftRegistrationModal(BaseElement):
     cancel_button = Locator(By.CSS_SELECTOR, 'button[data-test-cancel-delete]')
     delete_button = Locator(By.CSS_SELECTOR, 'button[data-test-confirm-delete]')
+
+
+class ConfirmFileDeleteModal(BaseElement):
+    """There are actually multiple almost identical versions of the Confirm Delete Modal
+    on the Project Files page. So we use the GroupLocator to locate the Cancel and Delete
+    buttons which are identical, and then use indexing of these elements when interacting
+    with them in the tests.
+    """
+
+    heading = Locator(By.ID, 'osf-dialog-heading')
+    cancel_button = GroupLocator(
+        By.CSS_SELECTOR,
+        'button._Button_6kisxq._MediumButton_6kisxq._SecondaryButton_6kisxq',
+    )
+    delete_button = GroupLocator(
+        By.CSS_SELECTOR,
+        'button._Button_6kisxq._MediumButton_6kisxq._DestroyButton_6kisxq',
+    )
+    done_button = Locator(By.CSS_SELECTOR, 'div._Footer_gyio2l > button')
+
+
+class MoveCopyFileModal(BaseElement):
+    project_link = Locator(
+        By.CSS_SELECTOR, '[data-test-go-to-current-node-file-providers]'
+    )
+    provider_osfstorage_link = Locator(
+        By.CSS_SELECTOR, '[data-test-move-to-folder="osfstorage"]'
+    )
+    loading_indicator = Locator(By.CSS_SELECTOR, '.ball-pulse')
+    cancel_button = Locator(
+        By.CSS_SELECTOR,
+        'div._Footer_gyio2l > button._Button_6kisxq._MediumButton_6kisxq._SecondaryButton_6kisxq',
+    )
+    move_copy_button = Locator(By.CSS_SELECTOR, '[data-test-move-files-button]')
+    in_process_ind = Locator(By.CSS_SELECTOR, '[data-icon="spinner"]')
+    done_button = Locator(By.CSS_SELECTOR, '[data-test-move-done-button]')
+
+
+class RenameFileModal(BaseElement):
+    rename_input_box = Locator(By.CSS_SELECTOR, '[data-test-user-input]')
+    save_button = Locator(By.CSS_SELECTOR, '[data-test-disabled-rename]')

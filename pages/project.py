@@ -15,9 +15,12 @@ from components.dashboard import (
 )
 from components.project import (
     ConfirmDeleteDraftRegistrationModal,
+    ConfirmFileDeleteModal,
     CreateRegistrationModal,
     FileWidget,
     LogWidget,
+    MoveCopyFileModal,
+    RenameFileModal,
 )
 from pages.base import (
     GuidBasePage,
@@ -117,21 +120,46 @@ class ForksPage(GuidBasePage):
 
 
 class FilesPage(GuidBasePage):
-    base_url = settings.OSF_HOME + '/{guid}/files/'
+    base_url = settings.OSF_HOME + '/{guid}/files/{addon_provider}'
 
-    identity = Locator(By.CSS_SELECTOR, '#treeGrid')
+    def __init__(
+        self, driver, verify=False, guid='', addon_provider='', domain=settings.OSF_HOME
+    ):
+        super().__init__(driver, verify)
+        self.guid = guid
+        self.addon_provider = addon_provider
+
+    @property
+    def url(self):
+        if '{guid}' in self.base_url and '{addon_provider}' in self.base_url:
+            return self.base_url.format(
+                guid=self.guid, addon_provider=self.addon_provider
+            )
+        else:
+            raise ValueError('No GUID or Addon Provider specified in base_url.')
+
+    identity = Locator(By.CSS_SELECTOR, '[data-test-file-search]')
     session = osf_api.get_default_session()
-    fangorn_rows = GroupLocator(By.CSS_SELECTOR, '#tb-tbody .fg-file-links')
-    fangorn_addons = GroupLocator(By.CSS_SELECTOR, "div[data-level='2']")
-    file_action_buttons = GroupLocator(
-        By.CSS_SELECTOR, '#folderRow .fangorn-toolbar-icon'
+    file_rows = GroupLocator(By.CSS_SELECTOR, '[data-test-file-list-item]')
+    loading_indicator = Locator(By.CSS_SELECTOR, '.ball-pulse')
+    file_selected_text = Locator(By.CSS_SELECTOR, '[data-test-file-selected-count]')
+    file_list_move_button = Locator(
+        By.CSS_SELECTOR, 'div._OptionBar__right_1qi2e2 > button:nth-child(1)'
     )
-    delete_modal = Locator(By.CSS_SELECTOR, 'span.btn:nth-child(1)')
-    replace_modal = Locator(By.CSS_SELECTOR, '#tb-tbody > div.tb-modal-shade > div')
-    replace_modal_close_button = Locator(
-        By.CSS_SELECTOR,
-        '#tb-tbody > div.tb-modal-shade > div > div.modal-header > button.close',
+    file_list_copy_button = Locator(
+        By.CSS_SELECTOR, 'div._OptionBar__right_1qi2e2 > button:nth-child(2)'
     )
+    file_list_delete_button = Locator(
+        By.CSS_SELECTOR, 'div._OptionBar__right_1qi2e2 > button:nth-child(3)'
+    )
+    leftnav_osfstorage_link = Locator(
+        By.CSS_SELECTOR, '[data-test-files-provider-link="osfstorage"]'
+    )
+
+    # Components
+    delete_modal = ComponentLocator(ConfirmFileDeleteModal)
+    move_copy_modal = ComponentLocator(MoveCopyFileModal)
+    rename_file_modal = ComponentLocator(RenameFileModal)
 
 
 """Note that the class FilesPage in pages/project.py is used for test_project_files.py.
