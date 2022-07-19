@@ -376,13 +376,15 @@ def update_node_public_attribute(session, node_id, status=False):
 
 
 def get_most_recent_preprint_node_id(session=None):
-    """Return the most recently submitted preprint node id"""
+    """Return the most recently published preprint node id"""
     if not session:
         session = get_default_session()
     url = '/v2/preprints/'
     data = session.get(url)['data']
     if data:
-        return data[0]['id']
+        for preprint in data:
+            if preprint['attributes']['is_published']:
+                return preprint['id']
     else:
         return None
 
