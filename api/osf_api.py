@@ -19,6 +19,13 @@ def get_default_session():
     )
 
 
+def get_user_two_session():
+    return client.Session(
+        api_base_url=settings.API_DOMAIN,
+        auth=(settings.USER_TWO, settings.USER_TWO_PASSWORD),
+    )
+
+
 def create_project(session, title='osf selenium test', tags=None, **kwargs):
     """Create a project for your current user through the OSF api.
 
@@ -663,5 +670,19 @@ def get_moderation_type_for_provider(
     data = session.get(url)['data']
     if data:
         return data['attributes']['reviews_workflow']
+    else:
+        return None
+
+
+def get_preprint_publish_and_review_states(session=None, preprint_node=None):
+    """Return the publish and review states for the given preprint node id"""
+    if not session:
+        session = get_default_session()
+    url = '/v2/preprints/{}/'.format(preprint_node)
+    data = session.get(url)['data']
+    if data:
+        publish_state = data['attributes']['is_published']
+        review_state = data['attributes']['reviews_state']
+        return [publish_state, review_state]
     else:
         return None
