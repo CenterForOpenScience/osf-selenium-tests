@@ -246,11 +246,13 @@ class PreprintDetailPage(GuidBasePage, BasePreprintPage):
     identity = Locator(By.ID, 'preprintTitle', settings.LONG_TIMEOUT)
     title = Locator(By.ID, 'preprintTitle', settings.LONG_TIMEOUT)
     status = Locator(By.CSS_SELECTOR, 'span._status-badge_7ivjq4')
+    status_explanation = Locator(By.CSS_SELECTOR, 'div.status-explanation')
     make_decision_button = Locator(
         By.CSS_SELECTOR, 'button.btn.dropdown-toggle.btn-success'
     )
     accept_radio_button = Locator(By.CSS_SELECTOR, 'input[value="accepted"]')
     reject_radio_button = Locator(By.CSS_SELECTOR, 'input[value="rejected"]')
+    withdraw_radio_button = Locator(By.CSS_SELECTOR, 'input[value="withdrawn"]')
     reason_textarea = Locator(By.CSS_SELECTOR, 'textarea.form-control.ember-text-area')
     submit_decision_button = Locator(By.ID, 'submit-btn')
     view_page = Locator(By.ID, 'view-page')
