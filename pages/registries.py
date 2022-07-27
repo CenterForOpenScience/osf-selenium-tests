@@ -147,4 +147,5 @@ class RegistrationDraftPage(BaseRegistriesPage):
     submit_draft_button = Locator(By.XPATH, '//button[text()="Submit"]')
 
 class MyRegistrationsPage(BaseRegistriesPage):
+    url = settings.OSF_HOME + '/registries/osf/new'
     identity = Locator(By.CSS_SELECTOR, '[]')

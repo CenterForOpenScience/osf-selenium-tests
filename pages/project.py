@@ -34,6 +34,7 @@ class ProjectPage(GuidBasePage):
     make_private_link = Locator(By.XPATH, '//a[contains(text(), "Make Private")]')
     confirm_privacy_change_link = Locator(By.XPATH, '//a[text()="Confirm"]')
     cancel_privacy_change_link = Locator(By.XPATH, '//a[text()="Cancel"]')
+    project_files_tab =  Locator(By.ID, 'projectNavFiles')
 
     # Components
     file_widget = ComponentLocator(FileWidget)

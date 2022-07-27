@@ -47,6 +47,11 @@ class DashboardPage(BaseDashboardPage):
         By.CSS_SELECTOR, '.carousel-control.right'
     )
 
+    # First in search results
+    search_string = 'African and European Birbs'
+    result_first_match = Locator(By.CSS_SELECTOR, 'div[data-test-dashboard-item]')
+   
+
     # Group Locators
     institution_carousel_logos = GroupLocator(By.CSS_SELECTOR, '.carousel-inner img')
 
@@ -97,3 +102,4 @@ class LegacyDashboardPage(BaseDashboardPage):
     create_project_modal = ComponentLocator(components.CreateProjectModal)
     project_created_modal = ComponentLocator(components.ProjectCreatedModal)
     project_list = ComponentLocator(components.ProjectList)
+

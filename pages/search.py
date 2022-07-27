@@ -12,7 +12,8 @@ class SearchPage(OSFBasePage):
     url = settings.OSF_HOME + '/search/'
 
     identity = Locator(By.ID, 'searchPageFullBar')
-    search_bar = Locator(By.ID, 'searchPageFullBar')
+    # search_bar = Locator(By.ID, 'searchPageFullBar')
+    search_bar = Locator(By.XPATH, '//input[@placeholder="Search your projects"]')
     loading_indicator = Locator(By.CSS_SELECTOR, '.ball-scale')
 
     # Group Locators
