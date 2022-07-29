@@ -688,3 +688,53 @@ def get_preprint_publish_and_review_states(session=None, preprint_node=None):
         return [publish_state, review_state]
     else:
         return None
+
+
+def accept_moderated_preprint(session=None, preprint_node=None):
+    """Accept a moderated preprint by creating an 'accept' review_action record for a
+    given preprint node id.
+    """
+    if not session:
+        session = get_default_session()
+    review_url = '/v2/preprints/{}/review_actions/'.format(preprint_node)
+    review_payload = {
+        'data': {
+            'type': 'review_actions',
+            'attributes': {
+                'trigger': 'accept',
+                'comment': 'Preprint Accepted via OSF api',
+            },
+            'relationships': {
+                'target': {'data': {'id': preprint_node, 'type': 'preprints'}}
+            },
+        }
+    }
+    session.post(
+        url=review_url,
+        item_type='review-actions',
+        raw_body=json.dumps(review_payload),
+    )
+
+
+def create_preprint_withdrawal_request(session=None, preprint_node=None):
+    """Create a withdrawal request for a given preprint node id."""
+    if not session:
+        session = get_default_session()
+    url = '/v2/preprints/{}/requests/'.format(preprint_node)
+    request_payload = {
+        'data': {
+            'type': 'preprint-requests',
+            'attributes': {
+                'request_type': 'withdrawal',
+                'comment': 'Withdrawal Request via OSF api',
+            },
+            'relationships': {
+                'target': {'data': {'id': preprint_node, 'type': 'preprints'}}
+            },
+        }
+    }
+    session.post(
+        url=url,
+        item_type='preprint-requests',
+        raw_body=json.dumps(request_payload),
+    )

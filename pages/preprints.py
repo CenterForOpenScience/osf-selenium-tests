@@ -338,6 +338,10 @@ class ReviewsSubmissionsPage(BaseReviewsPage):
         'div._reviews-list-body_k45x8p > div.text-center.p-v-md._moderation-list-row_xkm0pa',
     )
     loading_indicator = Locator(By.CSS_SELECTOR, '.ball-scale')
+    withdrawal_requests_tab = Locator(
+        By.CSS_SELECTOR,
+        'div._flex-container_hcnzoe > div:nth-child(3) > ul > li:nth-child(2) > a',
+    )
     submissions = GroupLocator(By.CSS_SELECTOR, 'div._moderation-list-row_xkm0pa')
 
     def click_submission_row(self, provider_id, preprint_id):
@@ -346,6 +350,25 @@ class ReviewsSubmissionsPage(BaseReviewsPage):
         row is found click it to open the Preprint Detail page for that preprint.
         """
         for row in self.submissions:
+            url = row.find_element_by_css_selector('a').get_attribute('href')
+            node_id = url.split(provider_id + '/', 1)[1]
+            if node_id == preprint_id:
+                row.click()
+                break
+
+
+class ReviewsWithdrawalsPage(BaseReviewsPage):
+    url_addition = 'withdrawals'
+    identity = Locator(By.CLASS_NAME, '_reviews-list-heading_k45x8p')
+    loading_indicator = Locator(By.CSS_SELECTOR, '.ball-scale')
+    requests = GroupLocator(By.CSS_SELECTOR, 'div._moderation-list-row_17iwzt')
+
+    def click_requests_row(self, provider_id, preprint_id):
+        """Search through the rows of requests on the Reviews Withdrawal Requests
+        page to find the preprint that has the given preprint_id in its url. When the
+        row is found click it to open the Preprint Detail page for that preprint.
+        """
+        for row in self.requests:
             url = row.find_element_by_css_selector('a').get_attribute('href')
             node_id = url.split(provider_id + '/', 1)[1]
             if node_id == preprint_id:
