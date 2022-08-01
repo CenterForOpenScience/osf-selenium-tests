@@ -71,9 +71,7 @@ class MyProjectsPage(OSFBasePage):
         By.CSS_SELECTOR,
         'div[data-rindex="0"] > div:first-child >' ' span:last-child > a:first-child',
     )
-    first_custom_collection = Locator(
-        By.CSS_SELECTOR, 'li[data-index="4"] span', settings.QUICK_TIMEOUT
-    )
+    first_custom_collection = Locator(By.CSS_SELECTOR, 'li[data-index="4"] span')
     first_collection_settings_button = Locator(
         By.CSS_SELECTOR, '.fa-ellipsis-v', settings.QUICK_TIMEOUT
     )
