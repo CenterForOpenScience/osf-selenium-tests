@@ -47,6 +47,9 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
             'text/plain, application/octet-stream, application/binary, text/csv, application/csv, '
             'application/excel, text/comma-separated-values, text/xml, application/xml, binary/octet-stream',
         )
+        # Block Third Party Tracking Cookies (Default in Firefox is now 5 which blocks
+        # all Cross-site cookies)
+        ffp.set_preference('network.cookie.cookieBehavior', 4)
         driver = driver_cls(
             command_executor=command_executor,
             desired_capabilities=desired_capabilities,
@@ -82,6 +85,9 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
             'text/plain, application/octet-stream, application/binary, text/csv, application/csv, '
             'application/excel, text/comma-separated-values, text/xml, application/xml, binary/octet-stream',
         )
+        # Block Third Party Tracking Cookies (Default in Firefox is now 5 which blocks
+        # all Cross-site cookies)
+        ffp.set_preference('network.cookie.cookieBehavior', 4)
         driver = driver_cls(firefox_profile=ffp)
     elif driver_name == 'Edge' and not settings.HEADLESS:
         from msedge.selenium_tools import Edge
