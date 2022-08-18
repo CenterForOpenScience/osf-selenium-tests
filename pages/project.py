@@ -141,14 +141,10 @@ class FilesPage(GuidBasePage):
     file_rows = GroupLocator(By.CSS_SELECTOR, '[data-test-file-list-item]')
     loading_indicator = Locator(By.CSS_SELECTOR, '.ball-pulse')
     file_selected_text = Locator(By.CSS_SELECTOR, '[data-test-file-selected-count]')
-    file_list_move_button = Locator(
-        By.CSS_SELECTOR, 'div._OptionBar__right_1qi2e2 > button:nth-child(1)'
-    )
-    file_list_copy_button = Locator(
-        By.CSS_SELECTOR, 'div._OptionBar__right_1qi2e2 > button:nth-child(2)'
-    )
+    file_list_move_button = Locator(By.CSS_SELECTOR, '[data-test-bulk-move-trigger]')
+    file_list_copy_button = Locator(By.CSS_SELECTOR, '[data-test-bulk-copy-trigger]')
     file_list_delete_button = Locator(
-        By.CSS_SELECTOR, 'div._OptionBar__right_1qi2e2 > button:nth-child(3)'
+        By.CSS_SELECTOR, '[data-test-bulk-delete-trigger]'
     )
     leftnav_osfstorage_link = Locator(
         By.CSS_SELECTOR, '[data-test-files-provider-link="osfstorage"]'

@@ -391,8 +391,8 @@ class TestFilesPage:
                 '[data-test-file-download-share-trigger]'
             )
             menu_button.click()
-            move_button = row.find_element_by_css_selector('[data-test-copy-button]')
-            move_button.click()
+            copy_button = row.find_element_by_css_selector('[data-test-copy-button]')
+            copy_button.click()
             # Click the Project link on the Copy modal to go up a level and then click
             # the OSF Storage link. Then click the Copy button on the modal to copy
             # the file to OSF Storage.
@@ -533,10 +533,10 @@ class TestFilesPage:
                 '[data-test-file-download-share-trigger]'
             )
             menu_button.click()
-            move_button = row.find_element_by_css_selector(
+            download_button = row.find_element_by_css_selector(
                 '[data-test-download-button]'
             )
-            move_button.click()
+            download_button.click()
             # The actual file download usually takes a second or two, so instead of
             # using time.sleep() here we will just reload the page and wait for the
             # list items to reappear. That should be plenty of time.
