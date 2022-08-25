@@ -22,7 +22,7 @@ def my_projects_page(driver):
 
 
 @pytest.mark.skip(
-    reason='Skip this test because it just takes toooo loong to do anything.'
+    reason='Skip this test because it just takes toooo loong to do anything. We can revisit this if/when the page is emberized.'
 )
 @markers.dont_run_on_prod
 @pytest.mark.usefixtures('must_be_logged_in')
