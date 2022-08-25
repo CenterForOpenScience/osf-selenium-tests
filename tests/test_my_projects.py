@@ -21,6 +21,9 @@ def my_projects_page(driver):
     return my_projects_page
 
 
+@pytest.mark.skip(
+    reason='Skip this test because it just takes toooo loong to do anything.'
+)
 @markers.dont_run_on_prod
 @pytest.mark.usefixtures('must_be_logged_in')
 class TestMyProjectsPage:
