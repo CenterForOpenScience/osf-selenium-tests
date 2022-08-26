@@ -29,6 +29,7 @@ class ProfilePageMixin:
         assert profile_page.no_public_components_text.present()
 
     @markers.dont_run_on_prod
+    @markers.core_functionality
     def test_public_lists(self, public_project, profile_page):
         profile_page.loading_indicator.here_then_gone()
         assert profile_page.public_projects

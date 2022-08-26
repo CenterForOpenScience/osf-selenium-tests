@@ -10,6 +10,7 @@ from pages.registries import (
 
 
 @markers.smoke_test
+@markers.core_functionality
 class TestMyRegistrationsPageEmpty:
     """This test covers the My Registrations page: https://{home}/registries/my-registrations"""
 
@@ -39,6 +40,7 @@ class TestMyRegistrationsPageEmpty:
 
 
 @markers.smoke_test
+@markers.core_functionality
 class TestMyRegistrationsUserTwo:
     """User two has a public registration and a registration in the draft state for test purposes."""
 

@@ -39,7 +39,6 @@ def landing_page(driver):
 @pytest.mark.usefixtures('must_be_logged_in')
 class TestPreprintWorkflow:
     @markers.dont_run_on_prod
-    @markers.core_functionality
     @pytest.mark.usefixtures('delete_user_projects_at_setup')
     def test_create_preprint_from_landing(
         self, session, driver, landing_page, project_with_file
@@ -307,9 +306,9 @@ class TestPreprintWorkflow:
             )
 
 
+@markers.core_functionality
 class TestPreprintSearch:
     @markers.smoke_test
-    @markers.core_functionality
     def test_search_results_exist(self, driver, landing_page):
         landing_page.search_button.click()
         discover_page = PreprintDiscoverPage(driver, verify=True)
@@ -346,6 +345,7 @@ class TestPreprintSearch:
 
 
 @markers.smoke_test
+@markers.core_functionality
 class TestPreprintMetrics:
     @pytest.fixture(scope='session')
     def latest_preprint_node(self):
@@ -433,6 +433,7 @@ def custom_providers():
     ]
 
 
+@markers.core_functionality
 class TestProvidersWithCustomDomains:
     @pytest.fixture(
         params=custom_providers(), ids=[prov['id'] for prov in custom_providers()]
@@ -459,7 +460,6 @@ class TestProvidersWithCustomDomains:
 
 
 @markers.smoke_test
-@markers.core_functionality
 @pytest.mark.skipif(
     not settings.PRODUCTION,
     reason='Most of the Branded Preprint Provider pages in test environments have no preprints',

@@ -33,6 +33,7 @@ class TestDashboardPage:
         project_page = ProjectPage(driver, verify=True)
         assert project_page.title.text == title, 'Project title incorrect.'
 
+    @markers.core_functionality
     def test_create_project_modal_buttons(self, dashboard_page, session):
         institutions = osf_api.get_user_institutions(session)
         dashboard_page.create_project_button.click()
@@ -73,7 +74,6 @@ class TestDashboardPage:
         reason='No new and noteworthy node on stage2 or test',
     )
     @markers.smoke_test
-    @markers.core_functionality
     def test_new_and_noteworthy(self, dashboard_page):
         assert dashboard_page.first_noteworthy_project.present()
 
@@ -81,11 +81,13 @@ class TestDashboardPage:
     # Most Popular
 
     @markers.smoke_test
+    @markers.core_functionality
     def test_meetings_link(self, driver, dashboard_page):
         dashboard_page.view_meetings_button.click()
         assert MeetingsPage(driver).verify()
 
     @markers.smoke_test
+    @markers.core_functionality
     def test_preprints_link(self, driver, dashboard_page):
         dashboard_page.view_preprints_button.click()
         assert PreprintLandingPage(driver).verify()
@@ -178,7 +180,6 @@ class TestProjectList:
         assert project_one.id in project_list.get_nth_project_link(3)
 
     # TODO: Update this test to use more complex characters
-    @markers.core_functionality
     def test_project_quick_search(
         self, driver, dashboard_page, project_one, project_two, project_three
     ):
