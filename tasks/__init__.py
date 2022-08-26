@@ -76,32 +76,38 @@ def test_module(ctx, module=None, params=None):
 
 @task
 def test_selenium_on_prod(ctx):
-    """
-    Runs targeted prod smoke tests on the latest Chrome
-    """
-    flake(ctx)
-    print('>>> Testing modules in "{}" in Chrome'.format('tests'))
+    """Run Production Smoke Tests on the browser defined by TEST_BUILD."""
     test_selenium_with_retries(
-        ctx, 'Master', _get_test_file_list(), module=['-m', 'smoke_test']
+        ctx, 'Production', _get_test_file_list(), module=['-m', 'smoke_test']
     )
 
 
 @task
-def test_selenium_part_one(ctx):
-    """Run first group of tests on the browser defined by TEST_BUILD."""
+def test_core_functionality_part_one(ctx):
+    """Run first group of Core Functionality tests on the browser defined by TEST_BUILD."""
     all_test_files = _get_test_file_list()
     midpoint = len(all_test_files) // 2
     file_list = all_test_files[:midpoint]
-    test_selenium_with_retries(ctx, 'part one', file_list)
+    test_selenium_with_retries(
+        ctx,
+        'Core Functionality Part One',
+        file_list,
+        module=['-m', 'core_functionality'],
+    )
 
 
 @task
-def test_selenium_part_two(ctx):
-    """Run second group of tests on the browser defined by TEST_BUILD."""
+def test_core_functionality_part_two(ctx):
+    """Run second group of Core Functionality tests on the browser defined by TEST_BUILD."""
     all_test_files = _get_test_file_list()
     midpoint = len(all_test_files) // 2
     file_list = all_test_files[midpoint:]
-    test_selenium_with_retries(ctx, 'part two', file_list)
+    test_selenium_with_retries(
+        ctx,
+        'Core Functionality Part Two',
+        file_list,
+        module=['-m', 'core_functionality'],
+    )
 
 
 def _get_test_file_list():
