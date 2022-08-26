@@ -148,7 +148,6 @@ def rr_landing_page(driver):
     return rr_landing_page
 
 
-@markers.smoke_test
 class TestRegisteredReportsLandingPage:
     def test_create_registered_report_button(self, driver, rr_landing_page):
         rr_landing_page.create_registered_report_button.click()
