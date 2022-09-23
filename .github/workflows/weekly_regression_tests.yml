@@ -114,58 +114,9 @@ jobs:
         with:
           path: ${{ env.pythonLocation }}
           key: ${{ env.GHA_DISTRO }}-${{ env.pythonLocation }}-${{ hashFiles('requirements.txt') }}
-      - if: ${{ github.event.inputs.service }} == 'All'
-        name: run all regression tests
+      - name: run all regression tests
         env:
           TEST_BUILD: ${{ matrix.browser }}
         run: |
           invoke test_all_selenium_part_one
           invoke test_all_selenium_part_two
-      - if: ${{ github.event.inputs.service }} == 'Preprints'
-        name: run preprint regression tests
-        env:
-          TEST_BUILD: ${{ matrix.browser }}
-        run: |
-          invoke test_preprints_regression
-      - if: ${{ github.event.inputs.service }} == 'Registries'
-        name: run regisries regression tests
-        env:
-          TEST_BUILD: ${{ matrix.browser }}
-        run: |
-          invoke test_registries_regression
-      - if: ${{ github.event.inputs.service }} == 'Meetings'
-        name: run meetings regression tests
-        env:
-          TEST_BUILD: ${{ matrix.browser }}
-        run: |
-          invoke test_meetings_regression
-      - if: ${{ github.event.inputs.service }} == 'Institutions'
-        name: run institutions regression tests
-        env:
-          TEST_BUILD: ${{ matrix.browser }}
-        run: |
-          invoke test_institutions_regression
-      - if: ${{ github.event.inputs.service }} == 'Projects'
-        name: run projects regression tests
-        env:
-          TEST_BUILD: ${{ matrix.browser }}
-        run: |
-          invoke test_projects_regression
-      - if: ${{ github.event.inputs.service }} == 'Collections'
-        name: run collections regression tests
-        env:
-          TEST_BUILD: ${{ matrix.browser }}
-        run: |
-          invoke test_collections_regression
-      - if: ${{ github.event.inputs.service }} == 'Users'
-        name: run users regression tests
-        env:
-          TEST_BUILD: ${{ matrix.browser }}
-        run: |
-          invoke test_users_regression
-      - if: ${{ github.event.inputs.service }} == 'Other'
-        name: run other regression tests
-        env:
-          TEST_BUILD: ${{ matrix.browser }}
-        run: |
-          invoke test_other_regression
