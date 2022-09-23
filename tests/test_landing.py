@@ -22,10 +22,12 @@ def landing_page(driver):
 
 @markers.smoke_test
 class TestHomeLandingPage:
+    @markers.core_functionality
     def test_get_started(self, driver, landing_page):
         landing_page.get_started_button.click()
         RegisterPage(driver, verify=True)
 
+    @markers.core_functionality
     def test_search(self, driver, landing_page):
         landing_page.search_input.send_keys('*')
         landing_page.search_input.send_keys(Keys.ENTER)
@@ -33,6 +35,7 @@ class TestHomeLandingPage:
         search_page.loading_indicator.here_then_gone()
         assert search_page.search_results
 
+    @markers.core_functionality
     def test_learn_more(self, driver, landing_page):
         landing_page.learn_more_button.click()
         assert driver.current_url == 'https://www.cos.io/products/osf'
@@ -145,7 +148,6 @@ def rr_landing_page(driver):
     return rr_landing_page
 
 
-@markers.smoke_test
 class TestRegisteredReportsLandingPage:
     def test_create_registered_report_button(self, driver, rr_landing_page):
         rr_landing_page.create_registered_report_button.click()

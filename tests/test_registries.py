@@ -62,6 +62,7 @@ class TestRegistriesDiscoverPage:
 
 
 @markers.smoke_test
+@markers.core_functionality
 class TestBrandedRegistriesPages:
     def providers():
         """Return all registration providers."""

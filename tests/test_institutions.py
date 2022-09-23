@@ -12,6 +12,7 @@ from pages.institutions import (
 
 
 @markers.smoke_test
+@markers.core_functionality
 class TestInstitutionsPage:
     @pytest.fixture()
     def landing_page(self, driver):

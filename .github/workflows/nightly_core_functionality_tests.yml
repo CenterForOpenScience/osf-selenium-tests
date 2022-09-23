@@ -1,9 +1,9 @@
-name: Selenium Staging Tests
+name: Nightly Core Functionality Tests
 
 on:
   schedule:
-    # 4am UTC = 11pm EST
-    - cron: '0 4 * * *'
+    # 4am UTC = 12am EDT (Sunday thru Friday)
+    - cron: '0 4 * * 0-5'
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
@@ -65,8 +65,8 @@ jobs:
           pip install -r requirements.txt
           invoke requirements
 
-  staging_test:
-    name: Staging tests (${{ matrix.browser }})
+  core_functionality_test:
+    name: Core Functionality tests (${{ matrix.browser }})
     needs: build
     runs-on: ubuntu-20.04
     env:
@@ -87,13 +87,13 @@ jobs:
         with:
           path: ${{ env.pythonLocation }}
           key: ${{ env.GHA_DISTRO }}-${{ env.pythonLocation }}-${{ hashFiles('requirements.txt') }}
-      - name: run staging tests, part one
+      - name: run core tests, part one
         env:
           TEST_BUILD: ${{ matrix.browser }}
         run: |
-          invoke test_selenium_part_one
-      - name: run staging tests, part two
+          invoke test_core_functionality_part_one
+      - name: run core tests, part two
         env:
           TEST_BUILD: ${{ matrix.browser }}
         run: |
-          invoke test_selenium_part_two
+          invoke test_core_functionality_part_two

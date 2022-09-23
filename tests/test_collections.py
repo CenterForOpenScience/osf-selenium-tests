@@ -14,6 +14,7 @@ from pages.project import ProjectPage
 
 
 @markers.smoke_test
+@markers.core_functionality
 class TestCollectionDiscoverPages:
     """This test will load the Discover page for each Collection Provider that exists in
     an environment.
@@ -35,6 +36,7 @@ class TestCollectionDiscoverPages:
 
 
 @markers.dont_run_on_prod
+@markers.core_functionality
 class TestCollectionSubmission:
     """This tests the process of submitting a project to a Collection via the Collection
     Submit page for a given provider.  We will be using a specific test collection

@@ -34,8 +34,8 @@ def login_page(driver):
 
 
 @markers.smoke_test
+@markers.core_functionality
 class TestLoginPage:
-    @markers.core_functionality
     def test_institutional_login(self, driver, login_page):
         """Check that you arrive on the institutional login page and the institution dropdown is populated.
         We can't actually test institutional login.
@@ -44,7 +44,6 @@ class TestLoginPage:
         institutional_login_page = InstitutionalLoginPage(driver, verify=True)
         assert len(institutional_login_page.dropdown_options) > 1
 
-    @markers.core_functionality
     def test_orcid_login(self, driver, login_page):
         """Check that you arrive on the orcid login page."""
         login_page.orcid_login_button.click()
@@ -96,6 +95,7 @@ class TestLoginPage:
 
 
 @markers.dont_run_on_prod
+@markers.core_functionality
 class Test2FAPage:
     """This test logs in as a user with 2 Factor Authentication enabled and verifies that after entering their
     login credentials as normal the user is then directed to a 2 Factor Authentication page. The test verifies the
@@ -152,6 +152,7 @@ class Test2FAPage:
 
 
 @markers.dont_run_on_prod
+@markers.core_functionality
 class TestToSPage:
     """This test logs in as a user that has not accepted the OSF Terms of Service and verifies that after entering
     their login credentials as normal the user is then directed to a Terms of Service acceptance page. The test
@@ -203,6 +204,7 @@ class TestToSPage:
         assert LandingPage(driver, verify=True)
 
 
+@markers.core_functionality
 class TestGenericPages:
     """Generic pages have no service in the login/logout url. Typically users should not be able to access
     these pages through the standard authentication workflow. The tests in this class manually manipulate the
@@ -231,6 +233,7 @@ class TestGenericPages:
         assert logged_out_page.status_message.text == 'Logout successful'
 
 
+@markers.core_functionality
 class TestLoginErrors:
     """Test the inline error messages on the CAS login page when user enters invalid login data"""
 
@@ -262,6 +265,7 @@ class TestLoginErrors:
         )
 
 
+@markers.core_functionality
 class TestCustomExceptionPages:
     """CAS has several customized exception pages which share the same style and appearance as the CAS login pages.
     Not all of them can be easily tested. Those that can will require the manipulation of urls to reach the pages.
@@ -326,6 +330,7 @@ class TestCustomExceptionPages:
 
 
 @markers.smoke_test
+@markers.core_functionality
 class TestInstitutionLoginPage:
     @pytest.fixture
     def institution_login_page(self, driver):

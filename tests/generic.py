@@ -16,7 +16,6 @@ class CreateUserMixin:
         settings.TEST,
         reason='There is a real recapcha on test. Robots cannot create users there.',
     )
-    @markers.core_functionality
     def test_create_user(self, page, fake):
 
         name = fake.name()

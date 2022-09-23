@@ -29,7 +29,6 @@ def my_projects_page(driver):
 class TestMyProjectsPage:
     """Custom collections must implement a PRE-delete setup to start in a clean state."""
 
-    @markers.core_functionality
     def test_create_new_project(self, driver, session, my_projects_page, fake):
         title = fake.sentence(nb_words=4)
         my_projects_page.create_project_button.click()
