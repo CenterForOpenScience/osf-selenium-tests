@@ -37,6 +37,8 @@ on:
 
 env:
   DRIVER: "Remote"
+  DEFAULT_DOMAIN: test
+  DEFAULT_SERVICE: All
   DOMAIN: ${{ github.event.inputs.domain }}
   NEW_USER_EMAIL: ${{ secrets.NEW_USER_EMAIL }}
   BSTACK_USER: ${{ secrets.BROWSERSTACK_USERNAME }}
@@ -92,9 +94,21 @@ jobs:
           pip install -r requirements.txt
           invoke requirements
 
+  # Need to set the Domain and Service values in this job first so that
+  # when the workflow is run from the scheduler the correct default values
+  # will be used since the scheduler does not have inputs.
+  set_domain_and_service:
+    name: Set the Domain and Service for Regression Tests
+    runs-on: ubuntu-20.04
+    outputs:
+      domain: ${{ github.event.inputs.domain || env.DEFAULT_DOMAIN }}
+      service: ${{ github.event.inputs.service || env.DEFAULT_SERVICE }}
+    steps:
+      - run: echo "Set Domain and Service Values"
+
   regression_test:
     name: Regression tests (${{ matrix.browser }})
-    needs: build
+    needs: [build, set_domain_and_service]
     runs-on: ubuntu-20.04
     env:
       GHA_DISTRO: ubuntu-20.04
@@ -114,9 +128,59 @@ jobs:
         with:
           path: ${{ env.pythonLocation }}
           key: ${{ env.GHA_DISTRO }}-${{ env.pythonLocation }}-${{ hashFiles('requirements.txt') }}
-      - name: run all regression tests
+      - if: ${{ needs.set_domain_and_service.outputs.service == 'All' }}
+        name: run all regression tests in ${{ env.DOMAIN }}
         env:
           TEST_BUILD: ${{ matrix.browser }}
+          DOMAIN: ${{ needs.set_domain_and_service.outputs.domain }}
         run: |
           invoke test_all_selenium_part_one
           invoke test_all_selenium_part_two
+      - if: ${{ github.event.inputs.service == 'Preprints' }}
+        name: run preprints regression tests in ${{ env.DOMAIN }}
+        env:
+          TEST_BUILD: ${{ matrix.browser }}
+        run: |
+          invoke test_preprints_regression
+      - if: ${{ github.event.inputs.service == 'Registries' }}
+        name: run registries regression tests in ${{ env.DOMAIN }}
+        env:
+          TEST_BUILD: ${{ matrix.browser }}
+        run: |
+          invoke test_registries_regression
+      - if: ${{ github.event.inputs.service == 'Meetings' }}
+        name: run meetings regression tests in ${{ env.DOMAIN }}
+        env:
+          TEST_BUILD: ${{ matrix.browser }}
+        run: |
+          invoke test_meetings_regression
+      - if: ${{ github.event.inputs.service == 'Institutions' }}
+        name: run institutions regression tests in ${{ env.DOMAIN }}
+        env:
+          TEST_BUILD: ${{ matrix.browser }}
+        run: |
+          invoke test_institutions_regression
+      - if: ${{ github.event.inputs.service == 'Projects' }}
+        name: run projects regression tests in ${{ env.DOMAIN }}
+        env:
+          TEST_BUILD: ${{ matrix.browser }}
+        run: |
+          invoke test_projects_regression
+      - if: ${{ github.event.inputs.service == 'Collections' }}
+        name: run collections regression tests in ${{ env.DOMAIN }}
+        env:
+          TEST_BUILD: ${{ matrix.browser }}
+        run: |
+          invoke test_collections_regression
+      - if: ${{ github.event.inputs.service == 'Users' }}
+        name: run users regression tests in ${{ env.DOMAIN }}
+        env:
+          TEST_BUILD: ${{ matrix.browser }}
+        run: |
+          invoke test_users_regression
+      - if: ${{ github.event.inputs.service == 'Other' }}
+        name: run other regression tests in ${{ env.DOMAIN }}
+        env:
+          TEST_BUILD: ${{ matrix.browser }}
+        run: |
+          invoke test_other_regression
