@@ -732,3 +732,57 @@ def create_preprint_withdrawal_request(session=None, preprint_node=None):
         item_type='preprint-requests',
         raw_body=json.dumps(request_payload),
     )
+
+
+def create_user_developer_app(
+    session,
+    name='OSF Test Dev App',
+    description=None,
+    home_url=settings.OSF_HOME,
+    callback_url=settings.OSF_HOME,
+):
+    """Create a Developer Application for the user that is currently logged in to OSF
+    (via session object).
+    """
+    if not session:
+        session = get_default_session()
+    url = '/v2/applications/'
+    raw_payload = {
+        'data': {
+            'type': 'applications',
+            'attributes': {
+                'name': name,
+                'description': description,
+                'home_url': home_url,
+                'callback_url': callback_url,
+            },
+        }
+    }
+    return_data = session.post(
+        url=url, item_type='applications', raw_body=json.dumps(raw_payload)
+    )
+    # Return the application id
+    if return_data:
+        return return_data['data']['id']
+    else:
+        return None
+
+
+def delete_user_developer_app(session, app_id=None):
+    """Delete a User's Developer Application as identified by its application id."""
+    if not session:
+        session = get_default_session()
+    url = '/v2/applications/{}/'.format(app_id)
+    session.delete(url=url, item_type='applications')
+
+
+def get_user_developer_app_data(session, app_id=None):
+    """Return User Developer Application data for a given application id."""
+    if not session:
+        session = get_default_session()
+    url = '/v2/applications/{}/'.format(app_id)
+    data = session.get(url)['data']
+    if data:
+        return data
+    else:
+        return None
