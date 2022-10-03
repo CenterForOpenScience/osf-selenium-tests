@@ -7,7 +7,10 @@ from base.locators import (
     GroupLocator,
     Locator,
 )
-from components.user import SettingsSideNavigation
+from components.user import (
+    DeleteDevAppModal,
+    SettingsSideNavigation,
+)
 from pages.base import (
     GuidBasePage,
     OSFBasePage,
@@ -89,6 +92,8 @@ class DeveloperAppsPage(BaseUserSettingsPage):
     loading_indicator = Locator(By.CSS_SELECTOR, '.ball-pulse', settings.LONG_TIMEOUT)
 
     dev_app_cards = GroupLocator(By.CSS_SELECTOR, 'div[data-test-developer-app-card]')
+
+    delete_dev_app_modal = ComponentLocator(DeleteDevAppModal)
 
     def get_dev_app_card_by_app_name(self, app_name):
         for dev_app_card in self.dev_app_cards:
