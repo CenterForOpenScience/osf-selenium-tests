@@ -81,18 +81,66 @@ class NotificationsPage(BaseUserSettingsPage):
     identity = Locator(By.CSS_SELECTOR, '#notificationSettings')
 
 
-class EmberDeveloperAppsPage(BaseUserSettingsPage):
-    url = settings.OSF_HOME + '/settings/applications/'
-
-    identity = Locator(By.CSS_SELECTOR, '[data-test-create-app-link]')
-
-
 class DeveloperAppsPage(BaseUserSettingsPage):
-    waffle_override = {'ember_user_settings_apps_page': EmberDeveloperAppsPage}
-
     url = settings.OSF_HOME + '/settings/applications/'
 
     identity = Locator(By.CSS_SELECTOR, 'div[data-analytics-scope="Developer apps"')
+    create_dev_app_button = Locator(By.CSS_SELECTOR, '[data-test-create-app-link]')
+    loading_indicator = Locator(By.CSS_SELECTOR, '.ball-pulse', settings.LONG_TIMEOUT)
+
+    dev_app_cards = GroupLocator(By.CSS_SELECTOR, 'div[data-test-developer-app-card]')
+
+    def get_dev_app_card_by_app_name(self, app_name):
+        for dev_app_card in self.dev_app_cards:
+            dev_app_name = dev_app_card.find_element_by_css_selector(
+                '[data-analytics-name="App name"]'
+            )
+            if app_name in dev_app_name.text:
+                return dev_app_card
+
+
+class CreateDeveloperAppPage(BaseUserSettingsPage):
+    url = settings.OSF_HOME + '/settings/applications/create'
+
+    identity = Locator(By.CSS_SELECTOR, '[data-test-developer-app-name]')
+    app_name_input = Locator(By.NAME, 'name')
+    project_url_input = Locator(By.NAME, 'homeUrl')
+    app_description_textarea = Locator(
+        By.CSS_SELECTOR, 'div[data-test-developer-app-description] > div > textarea'
+    )
+    callback_url_input = Locator(By.NAME, 'callbackUrl')
+    create_dev_app_button = Locator(
+        By.CSS_SELECTOR, '[data-test-create-developer-app-button]'
+    )
+
+
+class EditDeveloperAppPage(BaseUserSettingsPage):
+    base_url = settings.OSF_HOME + '/settings/applications/'
+
+    identity = Locator(By.CSS_SELECTOR, '[data-test-client-id]')
+    client_id_input = Locator(By.CSS_SELECTOR, 'div[data-test-client-id] > input')
+    client_secret_input = Locator(
+        By.CSS_SELECTOR, 'div[data-test-client-secret] > input'
+    )
+    show_client_secret_button = Locator(
+        By.CSS_SELECTOR, '[data-test-toggle-client-secret]'
+    )
+    app_name_input = Locator(By.NAME, 'name')
+    project_url_input = Locator(By.NAME, 'homeUrl')
+    app_description_textarea = Locator(
+        By.CSS_SELECTOR, 'div[data-test-developer-app-description] > div > textarea'
+    )
+    callback_url_input = Locator(By.NAME, 'callbackUrl')
+    save_button = Locator(By.CSS_SELECTOR, '[data-test-save-developer-app-button]')
+    loading_indicator = Locator(By.CSS_SELECTOR, '.ball-pulse', settings.LONG_TIMEOUT)
+
+    def __init__(self, driver, verify=False, client_id=''):
+        self.client_id = client_id
+        super().__init__(driver, verify)
+
+    @property
+    def url(self):
+        return self.base_url + self.client_id
 
 
 class EmberPersonalAccessTokenPage(BaseUserSettingsPage):
