@@ -107,6 +107,7 @@ class TestUserSettings:
             )
         )
 
+    @markers.dont_run_on_prod
     def test_user_settings_create_dev_app(self, driver, session, fake):
         """Create a Developer Application from the User Settings Developer Apps page
         in OSF. The test uses the OSF api to delete the developer app at the end of the
@@ -231,6 +232,7 @@ class TestUserSettings:
             # Lastly use the api to delete the dev app as cleanup
             osf_api.delete_user_developer_app(session, app_id=client_id)
 
+    @markers.dont_run_on_prod
     def test_user_settings_delete_dev_app(self, driver, session, fake):
         """Delete a Developer Application from the User Settings Developer Apps page
         in OSF. The test uses the OSF api to first create the developer application that
@@ -345,6 +347,7 @@ class TestUserSettings:
             if dev_app_data:
                 osf_api.delete_user_developer_app(session, app_id=app_id)
 
+    @markers.dont_run_on_prod
     def test_user_settings_edit_dev_app(self, driver, session, fake):
         """Edit a Developer Application from the User Settings Developer Apps page
         in OSF. The test uses the OSF api to first create the developer application that
