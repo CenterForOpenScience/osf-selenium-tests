@@ -342,17 +342,11 @@ class TestPreprintModeration:
         )
         # Use the api to verify that the Preprint is not yet published and that its
         # review status is 'pending'.
-        assert not (
-            osf_api.get_preprint_publish_and_review_states(preprint_node=preprint_node)[
-                0
-            ]
+        prep_attr = osf_api.get_preprint_publish_and_review_states(
+            preprint_node=preprint_node
         )
-        assert (
-            osf_api.get_preprint_publish_and_review_states(preprint_node=preprint_node)[
-                1
-            ]
-            == 'pending'
-        )
+        assert not prep_attr[0]
+        assert prep_attr[1] == 'pending'
         # Load Reviews Dashboard page first and then click the Submissions link for the
         # Pre-moderation provider to go to that page.
         reviews_dashboard_page = ReviewsDashboardPage(driver)
@@ -387,15 +381,11 @@ class TestPreprintModeration:
         assert ReviewsSubmissionsPage(driver, verify=True)
         # Use the api to verify that the Preprint is now published and that its review
         # status is now 'accepted'.
-        assert osf_api.get_preprint_publish_and_review_states(
+        prep_attr = osf_api.get_preprint_publish_and_review_states(
             preprint_node=preprint_node
-        )[0]
-        assert (
-            osf_api.get_preprint_publish_and_review_states(preprint_node=preprint_node)[
-                1
-            ]
-            == 'accepted'
         )
+        assert prep_attr[0]
+        assert prep_attr[1] == 'accepted'
         # Logout and navigate to the Preprint Detail page since it is now public.
         logout(driver)
         preprint_page = PreprintDetailPage(driver, guid=preprint_node)
@@ -437,17 +427,11 @@ class TestPreprintModeration:
         )
         # Use the api to verify that the Preprint is not yet published and that its
         # review status is 'pending'.
-        assert not (
-            osf_api.get_preprint_publish_and_review_states(preprint_node=preprint_node)[
-                0
-            ]
+        prep_attr = osf_api.get_preprint_publish_and_review_states(
+            preprint_node=preprint_node
         )
-        assert (
-            osf_api.get_preprint_publish_and_review_states(preprint_node=preprint_node)[
-                1
-            ]
-            == 'pending'
-        )
+        assert not prep_attr[0]
+        assert prep_attr[1] == 'pending'
         # Load Reviews Dashboard page first and then click the Submissions link for the
         # Pre-moderation provider to go to that page.
         reviews_dashboard_page = ReviewsDashboardPage(driver)
@@ -482,17 +466,11 @@ class TestPreprintModeration:
         assert ReviewsSubmissionsPage(driver, verify=True)
         # Use the api to verify that the Preprint is still not published and that its
         # review status is now 'rejected'.
-        assert not (
-            osf_api.get_preprint_publish_and_review_states(preprint_node=preprint_node)[
-                0
-            ]
+        prep_attr = osf_api.get_preprint_publish_and_review_states(
+            preprint_node=preprint_node
         )
-        assert (
-            osf_api.get_preprint_publish_and_review_states(preprint_node=preprint_node)[
-                1
-            ]
-            == 'rejected'
-        )
+        assert not prep_attr[0]
+        assert prep_attr[1] == 'rejected'
         # Logout and attempt to navigate to the Preprint Detail page. We should get a
         # Page Not Found page since the rejected preprint is not public.
         logout(driver)
@@ -548,6 +526,7 @@ class TestPreprintModeration:
         reviews_dashboard_page.loading_indicator.here_then_gone()
         reviews_dashboard_page.click_provider_group_link(provider_name, 'Submissions')
         submissions_page = ReviewsSubmissionsPage(driver, verify=True)
+        submissions_page.loading_indicator.here_then_gone()
         # Click the Withdrawal Requests tab
         submissions_page.withdrawal_requests_tab.click()
         withdrawals_page = ReviewsWithdrawalsPage(driver, verify=True)
@@ -578,15 +557,11 @@ class TestPreprintModeration:
         assert ReviewsSubmissionsPage(driver, verify=True)
         # Use the api to verify that the Preprint is not published and that its review
         # status is now 'withdrawn'.
-        assert not osf_api.get_preprint_publish_and_review_states(
+        prep_attr = osf_api.get_preprint_publish_and_review_states(
             preprint_node=preprint_node
-        )[0]
-        assert (
-            osf_api.get_preprint_publish_and_review_states(preprint_node=preprint_node)[
-                1
-            ]
-            == 'withdrawn'
         )
+        assert not prep_attr[0]
+        assert prep_attr[1] == 'withdrawn'
         # Logout and navigate to the Preprint Detail page. We should see a Withdrawn
         # tombstone page.
         logout(driver)
@@ -646,6 +621,7 @@ class TestPreprintModeration:
         reviews_dashboard_page.loading_indicator.here_then_gone()
         reviews_dashboard_page.click_provider_group_link(provider_name, 'Submissions')
         submissions_page = ReviewsSubmissionsPage(driver, verify=True)
+        submissions_page.loading_indicator.here_then_gone()
         # Click the Withdrawal Requests tab
         submissions_page.withdrawal_requests_tab.click()
         withdrawals_page = ReviewsWithdrawalsPage(driver, verify=True)
@@ -676,15 +652,11 @@ class TestPreprintModeration:
         assert ReviewsSubmissionsPage(driver, verify=True)
         # Use the api to verify that the Preprint is still published and that its review
         # status is still 'accepted'.
-        assert osf_api.get_preprint_publish_and_review_states(
+        prep_attr = osf_api.get_preprint_publish_and_review_states(
             preprint_node=preprint_node
-        )[0]
-        assert (
-            osf_api.get_preprint_publish_and_review_states(preprint_node=preprint_node)[
-                1
-            ]
-            == 'accepted'
         )
+        assert prep_attr[0]
+        assert prep_attr[1] == 'accepted'
         # Logout and navigate to the Preprint Detail page which should still be publicly
         # accessible.
         logout(driver)
@@ -726,15 +698,11 @@ class TestPreprintModeration:
         )
         # Use the api to verify that the Preprint is already published and that its
         # review status is 'pending'.
-        assert osf_api.get_preprint_publish_and_review_states(
+        prep_attr = osf_api.get_preprint_publish_and_review_states(
             preprint_node=preprint_node
-        )[0]
-        assert (
-            osf_api.get_preprint_publish_and_review_states(preprint_node=preprint_node)[
-                1
-            ]
-            == 'pending'
         )
+        assert prep_attr[0]
+        assert prep_attr[1] == 'pending'
         # Load Reviews Dashboard page first and then click the Submissions link for the
         # Post-moderation provider to go to that page.
         reviews_dashboard_page = ReviewsDashboardPage(driver)
@@ -769,15 +737,11 @@ class TestPreprintModeration:
         assert ReviewsSubmissionsPage(driver, verify=True)
         # Use the api to verify that the Preprint is still published and that its review
         # status is now 'accepted'.
-        assert osf_api.get_preprint_publish_and_review_states(
+        prep_attr = osf_api.get_preprint_publish_and_review_states(
             preprint_node=preprint_node
-        )[0]
-        assert (
-            osf_api.get_preprint_publish_and_review_states(preprint_node=preprint_node)[
-                1
-            ]
-            == 'accepted'
         )
+        assert prep_attr[0]
+        assert prep_attr[1] == 'accepted'
         # Logout and navigate to the Preprint Detail page since it is public.
         logout(driver)
         preprint_page = PreprintDetailPage(driver, guid=preprint_node)
@@ -819,15 +783,11 @@ class TestPreprintModeration:
         )
         # Use the api to verify that the Preprint is already published and that its
         # review status is 'pending'.
-        assert osf_api.get_preprint_publish_and_review_states(
+        prep_attr = osf_api.get_preprint_publish_and_review_states(
             preprint_node=preprint_node
-        )[0]
-        assert (
-            osf_api.get_preprint_publish_and_review_states(preprint_node=preprint_node)[
-                1
-            ]
-            == 'pending'
         )
+        assert prep_attr[0]
+        assert prep_attr[1] == 'pending'
         # Load Reviews Dashboard page first and then click the Submissions link for the
         # Post-moderation provider to go to that page.
         reviews_dashboard_page = ReviewsDashboardPage(driver)
@@ -862,17 +822,11 @@ class TestPreprintModeration:
         assert ReviewsSubmissionsPage(driver, verify=True)
         # Use the api to verify that the Preprint is now unpublished and that its
         # review status is now 'withdrawn'.
-        assert not (
-            osf_api.get_preprint_publish_and_review_states(preprint_node=preprint_node)[
-                0
-            ]
+        prep_attr = osf_api.get_preprint_publish_and_review_states(
+            preprint_node=preprint_node
         )
-        assert (
-            osf_api.get_preprint_publish_and_review_states(preprint_node=preprint_node)[
-                1
-            ]
-            == 'withdrawn'
-        )
+        assert not prep_attr[0]
+        assert prep_attr[1] == 'withdrawn'
         # Logout and navigate to the Preprint Detail page. We should see a Withdrawn
         # tombstone page.
         logout(driver)
@@ -932,6 +886,7 @@ class TestPreprintModeration:
         reviews_dashboard_page.loading_indicator.here_then_gone()
         reviews_dashboard_page.click_provider_group_link(provider_name, 'Submissions')
         submissions_page = ReviewsSubmissionsPage(driver, verify=True)
+        submissions_page.loading_indicator.here_then_gone()
         # Click the Withdrawal Requests tab
         submissions_page.withdrawal_requests_tab.click()
         withdrawals_page = ReviewsWithdrawalsPage(driver, verify=True)
@@ -962,15 +917,11 @@ class TestPreprintModeration:
         assert ReviewsSubmissionsPage(driver, verify=True)
         # Use the api to verify that the Preprint is not published and that its review
         # status is now 'withdrawn'.
-        assert not osf_api.get_preprint_publish_and_review_states(
+        prep_attr = osf_api.get_preprint_publish_and_review_states(
             preprint_node=preprint_node
-        )[0]
-        assert (
-            osf_api.get_preprint_publish_and_review_states(preprint_node=preprint_node)[
-                1
-            ]
-            == 'withdrawn'
         )
+        assert not prep_attr[0]
+        assert prep_attr[1] == 'withdrawn'
         # Logout and navigate to the Preprint Detail page. We should see a Withdrawn
         # tombstone page.
         logout(driver)
@@ -1030,6 +981,7 @@ class TestPreprintModeration:
         reviews_dashboard_page.loading_indicator.here_then_gone()
         reviews_dashboard_page.click_provider_group_link(provider_name, 'Submissions')
         submissions_page = ReviewsSubmissionsPage(driver, verify=True)
+        submissions_page.loading_indicator.here_then_gone()
         # Click the Withdrawal Requests tab
         submissions_page.withdrawal_requests_tab.click()
         withdrawals_page = ReviewsWithdrawalsPage(driver, verify=True)
@@ -1060,15 +1012,11 @@ class TestPreprintModeration:
         assert ReviewsSubmissionsPage(driver, verify=True)
         # Use the api to verify that the Preprint is still published and that its review
         # status is still 'accepted'.
-        assert osf_api.get_preprint_publish_and_review_states(
+        prep_attr = osf_api.get_preprint_publish_and_review_states(
             preprint_node=preprint_node
-        )[0]
-        assert (
-            osf_api.get_preprint_publish_and_review_states(preprint_node=preprint_node)[
-                1
-            ]
-            == 'accepted'
         )
+        assert prep_attr[0]
+        assert prep_attr[1] == 'accepted'
         # Logout and navigate to the Preprint Detail page which should still be publicly
         # accessible.
         logout(driver)

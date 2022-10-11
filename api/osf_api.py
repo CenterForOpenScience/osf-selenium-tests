@@ -385,8 +385,7 @@ def get_most_recent_preprint_node_id(session=None):
         for preprint in data:
             if preprint['attributes']['is_published']:
                 return preprint['id']
-    else:
-        return None
+    return None
 
 
 def get_preprint_views_count(session=None, node_id=None):
@@ -541,7 +540,7 @@ def create_preprint(
     file_id = metadata['data']['id'].split('/')[1]
     # Get the moderation type for the Preprint Provider. If the preprint provider
     # uses a moderation workflow (either pre-moderation or post-moderation) then
-    # set the publish indicator to False. A pre-moderation preprint cannot be
+    # set the should publish flag to False. A pre-moderation preprint cannot be
     # published until after it has been accepted by the moderator, and a post-
     # moderation preprint will automatically get published upon creation of the
     # submit review_action below.
@@ -550,17 +549,14 @@ def create_preprint(
         provider_type='preprints',
         provider_id=provider_id,
     )
-    if mod_type:
-        publish_ind = False
-    else:
-        publish_ind = True
+    should_publish = mod_type is None
     # Step 3: Attach the file to the Preprint and set the Published status
     patch_url = '/v2/preprints/{}/'.format(preprint_node_id)
     patch_payload = {
         'data': {
             'id': preprint_node_id,
             'type': 'preprints',
-            'attributes': {'is_published': publish_ind},
+            'attributes': {'is_published': should_publish},
             'relationships': {
                 'primary_file': {'data': {'type': 'files', 'id': file_id}}
             },
@@ -575,7 +571,7 @@ def create_preprint(
     # If the Preprint Provider uses a moderation workflow (pre-moderation or post-
     # moderation), then create a submit review_action and post it to the preprint
     # record.
-    if mod_type:
+    if mod_type is not None:
         review_url = '/v2/preprints/{}/review_actions/'.format(preprint_node_id)
         review_payload = {
             'data': {
@@ -672,8 +668,7 @@ def get_moderation_type_for_provider(
     data = session.get(url)['data']
     if data:
         return data['attributes']['reviews_workflow']
-    else:
-        return None
+    return None
 
 
 def get_preprint_publish_and_review_states(session=None, preprint_node=None):
@@ -686,8 +681,7 @@ def get_preprint_publish_and_review_states(session=None, preprint_node=None):
         publish_state = data['attributes']['is_published']
         review_state = data['attributes']['reviews_state']
         return [publish_state, review_state]
-    else:
-        return None
+    return None
 
 
 def accept_moderated_preprint(session=None, preprint_node=None):
