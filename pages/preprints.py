@@ -245,6 +245,16 @@ class PreprintDetailPage(GuidBasePage, BasePreprintPage):
 
     identity = Locator(By.ID, 'preprintTitle', settings.LONG_TIMEOUT)
     title = Locator(By.ID, 'preprintTitle', settings.LONG_TIMEOUT)
+    status = Locator(By.CSS_SELECTOR, 'span._status-badge_7ivjq4')
+    status_explanation = Locator(By.CSS_SELECTOR, 'div.status-explanation')
+    make_decision_button = Locator(
+        By.CSS_SELECTOR, 'button.btn.dropdown-toggle.btn-success'
+    )
+    accept_radio_button = Locator(By.CSS_SELECTOR, 'input[value="accepted"]')
+    reject_radio_button = Locator(By.CSS_SELECTOR, 'input[value="rejected"]')
+    withdraw_radio_button = Locator(By.CSS_SELECTOR, 'input[value="withdrawn"]')
+    reason_textarea = Locator(By.CSS_SELECTOR, 'textarea.form-control.ember-text-area')
+    submit_decision_button = Locator(By.ID, 'submit-btn')
     view_page = Locator(By.ID, 'view-page')
     views_downloads_counts = Locator(
         By.CSS_SELECTOR, 'div.share-row.p-sm.osf-box-lt.clearfix > div'
@@ -265,3 +275,110 @@ class PreprintDetailPage(GuidBasePage, BasePreprintPage):
 class ReviewsDashboardPage(OSFBasePage):
     url = settings.OSF_HOME + '/reviews'
     identity = Locator(By.CLASS_NAME, '_reviews-dashboard-header_jdu5ey')
+    loading_indicator = Locator(By.CSS_SELECTOR, '.ball-scale')
+    provider_group_links = GroupLocator(
+        By.CSS_SELECTOR, 'li._provider-links-component_gp8jcl'
+    )
+
+    def click_provider_group_link(self, provider_name, link_name):
+        """Search through the Provider Groups in the sidebar on the right side of the
+        Reviews Dashboard page to find the group with the given provider_name.  When
+        the provider group is found, then search through the links in the group for the
+        given link_name. Click this link when found.
+        """
+        for provider_group in self.provider_group_links:
+            group_name = provider_group.find_element_by_css_selector(
+                'span._provider-name_gp8jcl'
+            )
+            if provider_name == group_name.text:
+                links = provider_group.find_elements_by_css_selector(
+                    'ul._provider-links_gp8jcl > li > a'
+                )
+                for link in links:
+                    if link_name in link.text:
+                        link.click()
+                        break
+                break
+
+
+class BaseReviewsPage(OSFBasePage):
+    """The base page from which all preprint provider review pages inherit."""
+
+    base_url = settings.OSF_HOME + '/reviews/preprints/'
+    url_addition = ''
+    navbar = ComponentLocator(PreprintsNavbar)
+    title = Locator(By.CLASS_NAME, '_provider-title_hcnzoe')
+
+    def __init__(self, driver, verify=False, provider=None):
+        self.provider = provider
+        if provider:
+            self.provider_id = provider['id']
+            self.provider_name = provider['attributes']['name']
+
+        super().__init__(driver, verify)
+
+    @property
+    def url(self):
+        """Set the URL based on the provider domain."""
+        return urljoin(self.base_url, self.provider_id) + '/' + self.url_addition
+
+    def verify(self):
+        """Return true if you are on the expected page.
+        Checks both the general page identity and the branding.
+        """
+        if self.provider:
+            return super().verify() and self.provider_name in self.title.text
+        return super().verify()
+
+
+class ReviewsSubmissionsPage(BaseReviewsPage):
+    identity = Locator(By.CLASS_NAME, '_reviews-list-heading_k45x8p')
+    no_submissions = Locator(
+        By.CSS_SELECTOR,
+        'div._reviews-list-body_k45x8p > div.text-center.p-v-md._moderation-list-row_xkm0pa',
+    )
+    loading_indicator = Locator(By.CSS_SELECTOR, '.ball-scale')
+    withdrawal_requests_tab = Locator(
+        By.CSS_SELECTOR,
+        'div._flex-container_hcnzoe > div:nth-child(3) > ul > li:nth-child(2) > a',
+    )
+    submissions = GroupLocator(By.CSS_SELECTOR, 'div._moderation-list-row_xkm0pa')
+
+    def click_submission_row(self, provider_id, preprint_id):
+        """Search through the rows of submitted preprints on the Reviews Submissions
+        page to find the preprint that has the given preprint_id in its url. When the
+        row is found click it to open the Preprint Detail page for that preprint.
+        """
+        for row in self.submissions:
+            url = row.find_element_by_css_selector('a').get_attribute('href')
+            node_id = url.split(provider_id + '/', 1)[1]
+            if node_id == preprint_id:
+                row.click()
+                break
+
+
+class ReviewsWithdrawalsPage(BaseReviewsPage):
+    url_addition = 'withdrawals'
+    identity = Locator(By.CLASS_NAME, '_reviews-list-heading_k45x8p')
+    loading_indicator = Locator(By.CSS_SELECTOR, '.ball-scale')
+    requests = GroupLocator(By.CSS_SELECTOR, 'div._moderation-list-row_17iwzt')
+
+    def click_requests_row(self, provider_id, preprint_id):
+        """Search through the rows of requests on the Reviews Withdrawal Requests
+        page to find the preprint that has the given preprint_id in its url. When the
+        row is found click it to open the Preprint Detail page for that preprint.
+        """
+        for row in self.requests:
+            url = row.find_element_by_css_selector('a').get_attribute('href')
+            node_id = url.split(provider_id + '/', 1)[1]
+            if node_id == preprint_id:
+                row.click()
+                break
+
+
+class PreprintPageNotFoundPage(OSFBasePage):
+    identity = Locator(By.CSS_SELECTOR, 'div.preprint-header.preprint-header-error')
+    page_header = Locator(
+        By.CSS_SELECTOR,
+        'div.preprint-header.preprint-header-error > div > div > div > h1',
+    )

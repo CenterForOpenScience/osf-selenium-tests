@@ -14,13 +14,18 @@ from selenium.webdriver.support.ui import WebDriverWait
 import markers
 import settings
 from api import osf_api
+from pages.login import logout
 from pages.preprints import (
     PreprintDetailPage,
     PreprintDiscoverPage,
     PreprintEditPage,
     PreprintLandingPage,
+    PreprintPageNotFoundPage,
     PreprintSubmitPage,
     PreprintWithdrawPage,
+    ReviewsDashboardPage,
+    ReviewsSubmissionsPage,
+    ReviewsWithdrawalsPage,
 )
 from utils import find_current_browser
 
@@ -304,6 +309,723 @@ class TestPreprintWorkflow:
                     preprint_detail_page.guid
                 )
             )
+
+
+@markers.dont_run_on_prod
+class TestPreprintModeration:
+    def test_accept_pre_moderated_preprint(self, session, driver, must_be_logged_in):
+        """Test the acceptance of a preprint submission to a Preprint Provider with a
+        Pre-moderation workflow. In this workflow a preprint is submitted to the
+        preprint service provider but is not yet published. A moderator must then
+        'accept' the preprint submission before it is published and publicly accessible.
+        NOTE: In this test case User One is used to login to OSF and must therefore be
+        setup through the admin app as a moderator or admin for the Preprint Provider
+        being used.  The test will use the OSF api to create a submitted preprint, but
+        the preprint will be submitted using the session credentials of User Two so
+        that the preprint submitter and moderator are different users.
+        """
+        # The following Preprint Provider must be setup in each testing environment.
+        provider_id = 'selpremod'
+        provider_name = 'Selenium Pre-moderation'
+        preprint_title = 'OSF Selenium Pre-moderation Preprint'
+
+        # NOTE: Using User Two to create the preprint through the api so that the user
+        # that submits the preprint is different from the user that accepts or rejects
+        # it.
+        session_user_two = osf_api.get_user_two_session()
+        preprint_node = osf_api.create_preprint(
+            session_user_two,
+            provider_id=provider_id,
+            title=preprint_title,
+            license_name='CC0 1.0 Universal',
+            subject_name='Engineering',
+        )
+        # Use the api to verify that the Preprint is not yet published and that its
+        # review status is 'pending'.
+        prep_attr = osf_api.get_preprint_publish_and_review_states(
+            preprint_node=preprint_node
+        )
+        assert not prep_attr[0]
+        assert prep_attr[1] == 'pending'
+        # Load Reviews Dashboard page first and then click the Submissions link for the
+        # Pre-moderation provider to go to that page.
+        reviews_dashboard_page = ReviewsDashboardPage(driver)
+        reviews_dashboard_page.goto()
+        assert ReviewsDashboardPage(driver, verify=True)
+        reviews_dashboard_page.loading_indicator.here_then_gone()
+        reviews_dashboard_page.click_provider_group_link(provider_name, 'Submissions')
+        submissions_page = ReviewsSubmissionsPage(driver, verify=True)
+        submissions_page.loading_indicator.here_then_gone()
+        # On the Reviews Submissions page, click the row for the preprint that was just
+        # submitted above. It should be the first in the list since they are sorted
+        # newest to oldest.
+        submissions_page.click_submission_row(provider_id, preprint_node)
+        preprint_detail_page = PreprintDetailPage(driver, verify=True)
+        WebDriverWait(driver, 5).until(
+            EC.element_to_be_clickable(
+                (By.CSS_SELECTOR, 'button.btn.dropdown-toggle.btn-success')
+            )
+        )
+        # Verify that the Preprint has a Pending status in the status bar
+        assert preprint_detail_page.status.text == 'pending'
+        # Click the Make decision button to reveal the review options. Then click
+        # the Accept radio button, enter a reason in the text box and click the
+        # Submit decision button to complete the review.
+        preprint_detail_page.make_decision_button.click()
+        preprint_detail_page.accept_radio_button.click()
+        preprint_detail_page.reason_textarea.send_keys_deliberately(
+            'Selenium Testing - Accepting Pre-Moderated Preprint'
+        )
+        preprint_detail_page.submit_decision_button.click()
+        # Should end up back on the Reviews Submission page
+        assert ReviewsSubmissionsPage(driver, verify=True)
+        # Use the api to verify that the Preprint is now published and that its review
+        # status is now 'accepted'.
+        prep_attr = osf_api.get_preprint_publish_and_review_states(
+            preprint_node=preprint_node
+        )
+        assert prep_attr[0]
+        assert prep_attr[1] == 'accepted'
+        # Logout and navigate to the Preprint Detail page since it is now public.
+        logout(driver)
+        preprint_page = PreprintDetailPage(driver, guid=preprint_node)
+        preprint_page.goto()
+        assert PreprintDetailPage(driver, verify=True)
+        WebDriverWait(driver, 5).until(EC.visibility_of(preprint_page.title))
+        assert preprint_page.title.text == preprint_title
+        assert provider_id in driver.current_url
+
+    def test_reject_pre_moderated_preprint(
+        self, session, driver, log_in_if_not_already
+    ):
+        """Test the rejection of a preprint submission to a Preprint Provider with a
+        Pre-moderation workflow. In this workflow a preprint is submitted to the
+        preprint service provider but is not yet published. A moderator will then
+        'reject' the preprint submission.  The rejected preprint will never become
+        published or publicly accessible.
+        NOTE: In this test case User One is used to login to OSF and must therefore be
+        setup through the admin app as a moderator or admin for the Preprint Provider
+        being used.  The test will use the OSF api to create a submitted preprint, but
+        the preprint will be submitted using the session credentials of User Two so
+        that the preprint submitter and moderator are different users.
+        """
+        # The following Preprint Provider must be setup in each testing environment.
+        provider_id = 'selpremod'
+        provider_name = 'Selenium Pre-moderation'
+        preprint_title = 'OSF Selenium Pre-moderation Preprint'
+
+        # NOTE: Using User Two to create the preprint through the api so that the user
+        # that submits the preprint is different from the user that accepts or rejects
+        # it.
+        session_user_two = osf_api.get_user_two_session()
+        preprint_node = osf_api.create_preprint(
+            session_user_two,
+            provider_id=provider_id,
+            title=preprint_title,
+            license_name='CC0 1.0 Universal',
+            subject_name='Engineering',
+        )
+        # Use the api to verify that the Preprint is not yet published and that its
+        # review status is 'pending'.
+        prep_attr = osf_api.get_preprint_publish_and_review_states(
+            preprint_node=preprint_node
+        )
+        assert not prep_attr[0]
+        assert prep_attr[1] == 'pending'
+        # Load Reviews Dashboard page first and then click the Submissions link for the
+        # Pre-moderation provider to go to that page.
+        reviews_dashboard_page = ReviewsDashboardPage(driver)
+        reviews_dashboard_page.goto()
+        assert ReviewsDashboardPage(driver, verify=True)
+        reviews_dashboard_page.loading_indicator.here_then_gone()
+        reviews_dashboard_page.click_provider_group_link(provider_name, 'Submissions')
+        submissions_page = ReviewsSubmissionsPage(driver, verify=True)
+        submissions_page.loading_indicator.here_then_gone()
+        # On the Reviews Submissions page, click the row for the preprint that was just
+        # submitted above. It should be the first in the list since they are sorted
+        # newest to oldest.
+        submissions_page.click_submission_row(provider_id, preprint_node)
+        preprint_detail_page = PreprintDetailPage(driver, verify=True)
+        WebDriverWait(driver, 5).until(
+            EC.element_to_be_clickable(
+                (By.CSS_SELECTOR, 'button.btn.dropdown-toggle.btn-success')
+            )
+        )
+        # Verify that the Preprint has a Pending status in the status bar
+        assert preprint_detail_page.status.text == 'pending'
+        # Click the Make decision button to reveal the review options. Then click
+        # the Reject radio button, enter a reason in the text box and click the
+        # Submit decision button to complete the review.
+        preprint_detail_page.make_decision_button.click()
+        preprint_detail_page.reject_radio_button.click()
+        preprint_detail_page.reason_textarea.send_keys_deliberately(
+            'Selenium Testing - Rejecting Pre-Moderated Preprint'
+        )
+        preprint_detail_page.submit_decision_button.click()
+        # Should end up back on the Reviews Submission page
+        assert ReviewsSubmissionsPage(driver, verify=True)
+        # Use the api to verify that the Preprint is still not published and that its
+        # review status is now 'rejected'.
+        prep_attr = osf_api.get_preprint_publish_and_review_states(
+            preprint_node=preprint_node
+        )
+        assert not prep_attr[0]
+        assert prep_attr[1] == 'rejected'
+        # Logout and attempt to navigate to the Preprint Detail page. We should get a
+        # Page Not Found page since the rejected preprint is not public.
+        logout(driver)
+        preprint_page = PreprintDetailPage(driver, guid=preprint_node)
+        preprint_page.goto(expect_redirect_to=PreprintPageNotFoundPage)
+        page_not_found_page = PreprintPageNotFoundPage(driver, verify=True)
+        assert page_not_found_page.page_header.text == 'Page not found'
+
+    def test_approve_withdrawal_request_pre_moderated_preprint(
+        self, session, driver, log_in_if_not_already
+    ):
+        """Test the approval of a Withdrawal Request for a preprint submitted and
+        accepted by a preprint provider with a Pre-moderation workflow. In this
+        workflow the moderator will approve/accept the withdrawal request and the
+        public preprint will be replaced with a Withdrawn tombstone page in OSF. The
+        test will use the OSF api to create a submitted preprint and to accept the
+        preprint and create the withdrawal request record. The actual test steps will
+        thus start at the point where the moderator takes action from the Reviews
+        Dashboard page to approve the withdrawal request.
+        NOTE: In this test case User One is used to login to OSF and must therefore be
+        setup through the admin app as a moderator or admin for the Preprint Provider
+        being used.
+        """
+        # The following Preprint Provider must be setup in each testing environment.
+        provider_id = 'selpremod'
+        provider_name = 'Selenium Pre-moderation'
+        preprint_title = 'OSF Selenium Pre-moderation Preprint'
+
+        # NOTE: Using User Two to create the preprint through the api so that the user
+        # that submits the preprint is different from the user that accepts or rejects
+        # it.
+        session_user_two = osf_api.get_user_two_session()
+        preprint_node = osf_api.create_preprint(
+            session_user_two,
+            provider_id=provider_id,
+            title=preprint_title,
+            license_name='CC0 1.0 Universal',
+            subject_name='Engineering',
+        )
+        # Set session to None before calling accept_preprint so that the api function
+        # will use the default User One session which should have the permissions as
+        # a moderator to be able to accept the preprint.
+        osf_api.accept_moderated_preprint(session=None, preprint_node=preprint_node)
+        # Next use the api to create a withdrawal request (using User Two again)
+        osf_api.create_preprint_withdrawal_request(
+            session=session_user_two, preprint_node=preprint_node
+        )
+        # Load Reviews Dashboard page first and then click the Submissions link for the
+        # Pre-moderation provider to go to that page.
+        reviews_dashboard_page = ReviewsDashboardPage(driver)
+        reviews_dashboard_page.goto()
+        assert ReviewsDashboardPage(driver, verify=True)
+        reviews_dashboard_page.loading_indicator.here_then_gone()
+        reviews_dashboard_page.click_provider_group_link(provider_name, 'Submissions')
+        submissions_page = ReviewsSubmissionsPage(driver, verify=True)
+        submissions_page.loading_indicator.here_then_gone()
+        # Click the Withdrawal Requests tab
+        submissions_page.withdrawal_requests_tab.click()
+        withdrawals_page = ReviewsWithdrawalsPage(driver, verify=True)
+        withdrawals_page.loading_indicator.here_then_gone()
+        # On the Withdrawal Requests page, click the row for the preprint that was just
+        # submitted above. It should be the first in the list since they are sorted
+        # newest to oldest.
+        withdrawals_page.click_requests_row(provider_id, preprint_node)
+        preprint_detail_page = PreprintDetailPage(driver, verify=True)
+        WebDriverWait(driver, 5).until(
+            EC.element_to_be_clickable(
+                (By.CSS_SELECTOR, 'button.btn.dropdown-toggle.btn-success')
+            )
+        )
+        # Verify that the Preprint has a Pending status in the status bar
+        assert preprint_detail_page.status.text == 'pending'
+        # Click the Make decision button to reveal the review options. Then click
+        # the Approve radio button, enter a reason in the text box and click the
+        # Submit decision button to complete the review.
+        preprint_detail_page.make_decision_button.click()
+        preprint_detail_page.accept_radio_button.click()
+        preprint_detail_page.reason_textarea.clear()
+        preprint_detail_page.reason_textarea.send_keys_deliberately(
+            'Selenium Testing - Approving Withdrawal Request of Pre-Moderated Preprint'
+        )
+        preprint_detail_page.submit_decision_button.click()
+        # Should end up back on the Reviews Submission page
+        assert ReviewsSubmissionsPage(driver, verify=True)
+        # Use the api to verify that the Preprint is not published and that its review
+        # status is now 'withdrawn'.
+        prep_attr = osf_api.get_preprint_publish_and_review_states(
+            preprint_node=preprint_node
+        )
+        assert not prep_attr[0]
+        assert prep_attr[1] == 'withdrawn'
+        # Logout and navigate to the Preprint Detail page. We should see a Withdrawn
+        # tombstone page.
+        logout(driver)
+        preprint_page = PreprintDetailPage(driver, guid=preprint_node)
+        preprint_page.goto()
+        assert PreprintDetailPage(driver, verify=True)
+        WebDriverWait(driver, 5).until(EC.visibility_of(preprint_page.title))
+        assert preprint_page.title.text == preprint_title
+        assert (
+            preprint_page.status_explanation.text == 'This preprint has been withdrawn.'
+        )
+
+    def test_decline_withdrawal_request_pre_moderated_preprint(
+        self, session, driver, log_in_if_not_already
+    ):
+        """Test the declining of a Withdrawal Request for a preprint submitted and
+        accepted by a preprint provider with a Pre-moderation workflow. In this
+        workflow the moderator will decline the withdrawal request and the preprint
+        will remain accepted and publicly accessible. The test will use the OSF api
+        to create a submitted preprint and to accept the preprint and create the
+        withdrawal request record. The actual test steps will thus start at the point
+        where the moderator takes action from the Reviews Dashboard page to decline
+        the withdrawal request.
+        NOTE: In this test case User One is used to login to OSF and must therefore be
+        setup through the admin app as a moderator or admin for the Preprint Provider
+        being used.
+        """
+        # The following Preprint Provider must be setup in each testing environment.
+        provider_id = 'selpremod'
+        provider_name = 'Selenium Pre-moderation'
+        preprint_title = 'OSF Selenium Pre-moderation Preprint'
+
+        # NOTE: Using User Two to create the preprint through the api so that the user
+        # that submits the preprint is different from the user that accepts or rejects
+        # it.
+        session_user_two = osf_api.get_user_two_session()
+        preprint_node = osf_api.create_preprint(
+            session_user_two,
+            provider_id=provider_id,
+            title=preprint_title,
+            license_name='CC0 1.0 Universal',
+            subject_name='Engineering',
+        )
+        # Set session to None before calling accept_preprint so that the api function
+        # will use the default User One session which should have the permissions as
+        # a moderator to be able to accept the preprint.
+        osf_api.accept_moderated_preprint(session=None, preprint_node=preprint_node)
+        # Next use the api to create a withdrawal request (using User Two again)
+        osf_api.create_preprint_withdrawal_request(
+            session=session_user_two, preprint_node=preprint_node
+        )
+        # Load Reviews Dashboard page first and then click the Submissions link for the
+        # Pre-moderation provider to go to that page.
+        reviews_dashboard_page = ReviewsDashboardPage(driver)
+        reviews_dashboard_page.goto()
+        assert ReviewsDashboardPage(driver, verify=True)
+        reviews_dashboard_page.loading_indicator.here_then_gone()
+        reviews_dashboard_page.click_provider_group_link(provider_name, 'Submissions')
+        submissions_page = ReviewsSubmissionsPage(driver, verify=True)
+        submissions_page.loading_indicator.here_then_gone()
+        # Click the Withdrawal Requests tab
+        submissions_page.withdrawal_requests_tab.click()
+        withdrawals_page = ReviewsWithdrawalsPage(driver, verify=True)
+        withdrawals_page.loading_indicator.here_then_gone()
+        # On the Withdrawal Requests page, click the row for the preprint that was just
+        # submitted above. It should be the first in the list since they are sorted
+        # newest to oldest.
+        withdrawals_page.click_requests_row(provider_id, preprint_node)
+        preprint_detail_page = PreprintDetailPage(driver, verify=True)
+        WebDriverWait(driver, 5).until(
+            EC.element_to_be_clickable(
+                (By.CSS_SELECTOR, 'button.btn.dropdown-toggle.btn-success')
+            )
+        )
+        # Verify that the Preprint has a Pending status in the status bar
+        assert preprint_detail_page.status.text == 'pending'
+        # Click the Make decision button to reveal the review options. Then click
+        # the Decline radio button, enter a reason in the text box and click the
+        # Submit decision button to complete the review.
+        preprint_detail_page.make_decision_button.click()
+        preprint_detail_page.reject_radio_button.click()
+        preprint_detail_page.reason_textarea.clear()
+        preprint_detail_page.reason_textarea.send_keys_deliberately(
+            'Selenium Testing - Declining Withdrawal Request of Pre-Moderated Preprint'
+        )
+        preprint_detail_page.submit_decision_button.click()
+        # Should end up back on the Reviews Submission page
+        assert ReviewsSubmissionsPage(driver, verify=True)
+        # Use the api to verify that the Preprint is still published and that its review
+        # status is still 'accepted'.
+        prep_attr = osf_api.get_preprint_publish_and_review_states(
+            preprint_node=preprint_node
+        )
+        assert prep_attr[0]
+        assert prep_attr[1] == 'accepted'
+        # Logout and navigate to the Preprint Detail page which should still be publicly
+        # accessible.
+        logout(driver)
+        preprint_page = PreprintDetailPage(driver, guid=preprint_node)
+        preprint_page.goto()
+        assert PreprintDetailPage(driver, verify=True)
+        WebDriverWait(driver, 5).until(EC.visibility_of(preprint_page.title))
+        assert preprint_page.title.text == preprint_title
+        assert provider_id in driver.current_url
+
+    def test_accept_post_moderated_preprint(
+        self, session, driver, log_in_if_not_already
+    ):
+        """Test the acceptance of a preprint submission to a preprint provider with a
+        Post-moderation workflow. In this workflow a preprint is submitted to the
+        preprint service provider and is published and publicly accessible upon
+        submission.  A moderator can then 'accept' the preprint submission.
+        NOTE: In this test case User One is used to login to OSF and must therefore be
+        setup through the admin app as a moderator or admin for the Preprint Provider
+        being used.  The test will use the OSF api to create a submitted preprint, but
+        the preprint will be submitted using the session credentials of User Two so
+        that the preprint submitter and moderator are different users.
+        """
+        # The following Preprint Provider must be setup in each testing environment.
+        provider_id = 'selpostmod'
+        provider_name = 'Selenium Post-moderation'
+        preprint_title = 'OSF Selenium Post-moderation Preprint'
+
+        # NOTE: Using User Two to create the preprint through the api so that the user
+        # that submits the preprint is different from the user that accepts or rejects
+        # it.
+        session_user_two = osf_api.get_user_two_session()
+        preprint_node = osf_api.create_preprint(
+            session_user_two,
+            provider_id=provider_id,
+            title=preprint_title,
+            license_name='CC0 1.0 Universal',
+            subject_name='Engineering',
+        )
+        # Use the api to verify that the Preprint is already published and that its
+        # review status is 'pending'.
+        prep_attr = osf_api.get_preprint_publish_and_review_states(
+            preprint_node=preprint_node
+        )
+        assert prep_attr[0]
+        assert prep_attr[1] == 'pending'
+        # Load Reviews Dashboard page first and then click the Submissions link for the
+        # Post-moderation provider to go to that page.
+        reviews_dashboard_page = ReviewsDashboardPage(driver)
+        reviews_dashboard_page.goto()
+        assert ReviewsDashboardPage(driver, verify=True)
+        reviews_dashboard_page.loading_indicator.here_then_gone()
+        reviews_dashboard_page.click_provider_group_link(provider_name, 'Submissions')
+        submissions_page = ReviewsSubmissionsPage(driver, verify=True)
+        submissions_page.loading_indicator.here_then_gone()
+        # On the Reviews Submissions page, click the row for the preprint that was just
+        # submitted above. It should be the first in the list since they are sorted
+        # newest to oldest.
+        submissions_page.click_submission_row(provider_id, preprint_node)
+        preprint_detail_page = PreprintDetailPage(driver, verify=True)
+        WebDriverWait(driver, 5).until(
+            EC.element_to_be_clickable(
+                (By.CSS_SELECTOR, 'button.btn.dropdown-toggle.btn-success')
+            )
+        )
+        # Verify that the Preprint has a Pending status in the status bar
+        assert preprint_detail_page.status.text == 'pending'
+        # Click the Make decision button to reveal the review options. Then click
+        # the Accept radio button, enter a reason in the text box and click the
+        # Submit decision button to complete the review.
+        preprint_detail_page.make_decision_button.click()
+        preprint_detail_page.accept_radio_button.click()
+        preprint_detail_page.reason_textarea.send_keys_deliberately(
+            'Selenium Testing - Accepting Post-Moderated Preprint'
+        )
+        preprint_detail_page.submit_decision_button.click()
+        # Should end up back on the Reviews Submission page
+        assert ReviewsSubmissionsPage(driver, verify=True)
+        # Use the api to verify that the Preprint is still published and that its review
+        # status is now 'accepted'.
+        prep_attr = osf_api.get_preprint_publish_and_review_states(
+            preprint_node=preprint_node
+        )
+        assert prep_attr[0]
+        assert prep_attr[1] == 'accepted'
+        # Logout and navigate to the Preprint Detail page since it is public.
+        logout(driver)
+        preprint_page = PreprintDetailPage(driver, guid=preprint_node)
+        preprint_page.goto()
+        assert PreprintDetailPage(driver, verify=True)
+        WebDriverWait(driver, 5).until(EC.visibility_of(preprint_page.title))
+        assert preprint_page.title.text == preprint_title
+        assert provider_id in driver.current_url
+
+    def test_moderator_withdrawal_post_moderated_preprint(
+        self, session, driver, log_in_if_not_already
+    ):
+        """Test the moderator withdrawal of a preprint submission to a Preprint Provider
+        with a Post-moderation workflow. In this workflow a preprint is submitted to the
+        preprint service provider and is published and publicly accessible upon
+        submission.  A moderator can then 'withdraw' the preprint submission and it will
+        no longer be publicly accessible.
+        NOTE: In this test case User One is used to login to OSF and must therefore be
+        setup through the admin app as a moderator or admin for the Preprint Provider
+        being used.  The test will use the OSF api to create a submitted preprint, but
+        the preprint will be submitted using the session credentials of User Two so
+        that the preprint submitter and moderator are different users.
+        """
+        # The following Preprint Provider must be setup in each testing environment.
+        provider_id = 'selpostmod'
+        provider_name = 'Selenium Post-moderation'
+        preprint_title = 'OSF Selenium Post-moderation Preprint'
+
+        # NOTE: Using User Two to create the preprint through the api so that the user
+        # that submits the preprint is different from the user that accepts or rejects
+        # it.
+        session_user_two = osf_api.get_user_two_session()
+        preprint_node = osf_api.create_preprint(
+            session_user_two,
+            provider_id=provider_id,
+            title=preprint_title,
+            license_name='CC0 1.0 Universal',
+            subject_name='Engineering',
+        )
+        # Use the api to verify that the Preprint is already published and that its
+        # review status is 'pending'.
+        prep_attr = osf_api.get_preprint_publish_and_review_states(
+            preprint_node=preprint_node
+        )
+        assert prep_attr[0]
+        assert prep_attr[1] == 'pending'
+        # Load Reviews Dashboard page first and then click the Submissions link for the
+        # Post-moderation provider to go to that page.
+        reviews_dashboard_page = ReviewsDashboardPage(driver)
+        reviews_dashboard_page.goto()
+        assert ReviewsDashboardPage(driver, verify=True)
+        reviews_dashboard_page.loading_indicator.here_then_gone()
+        reviews_dashboard_page.click_provider_group_link(provider_name, 'Submissions')
+        submissions_page = ReviewsSubmissionsPage(driver, verify=True)
+        submissions_page.loading_indicator.here_then_gone()
+        # On the Reviews Submissions page, click the row for the preprint that was just
+        # submitted above. It should be the first in the list since they are sorted
+        # newest to oldest.
+        submissions_page.click_submission_row(provider_id, preprint_node)
+        preprint_detail_page = PreprintDetailPage(driver, verify=True)
+        WebDriverWait(driver, 5).until(
+            EC.element_to_be_clickable(
+                (By.CSS_SELECTOR, 'button.btn.dropdown-toggle.btn-success')
+            )
+        )
+        # Verify that the Preprint has a Pending status in the status bar
+        assert preprint_detail_page.status.text == 'pending'
+        # Click the Make decision button to reveal the review options. Then click
+        # the Withdraw radio button, enter a reason in the text box and click the
+        # Submit decision button to complete the review.
+        preprint_detail_page.make_decision_button.click()
+        preprint_detail_page.withdraw_radio_button.click()
+        preprint_detail_page.reason_textarea.send_keys_deliberately(
+            'Selenium Testing - Withdrawal by Moderator of a Post-Moderated Preprint'
+        )
+        preprint_detail_page.submit_decision_button.click()
+        # Should end up back on the Reviews Submission page
+        assert ReviewsSubmissionsPage(driver, verify=True)
+        # Use the api to verify that the Preprint is now unpublished and that its
+        # review status is now 'withdrawn'.
+        prep_attr = osf_api.get_preprint_publish_and_review_states(
+            preprint_node=preprint_node
+        )
+        assert not prep_attr[0]
+        assert prep_attr[1] == 'withdrawn'
+        # Logout and navigate to the Preprint Detail page. We should see a Withdrawn
+        # tombstone page.
+        logout(driver)
+        preprint_page = PreprintDetailPage(driver, guid=preprint_node)
+        preprint_page.goto()
+        assert PreprintDetailPage(driver, verify=True)
+        WebDriverWait(driver, 5).until(EC.visibility_of(preprint_page.title))
+        assert preprint_page.title.text == preprint_title
+        assert (
+            preprint_page.status_explanation.text == 'This preprint has been withdrawn.'
+        )
+
+    def test_approve_withdrawal_request_post_moderated_preprint(
+        self, session, driver, log_in_if_not_already
+    ):
+        """Test the approval of a Withdrawal Request for a preprint submitted and
+        accepted by a preprint provider with a Post-moderation workflow. In this
+        workflow the moderator will approve/accept the withdrawal request and the
+        public preprint will be replaced with a Withdrawn tombstone page in OSF. The
+        test will use the OSF api to create a submitted preprint and to accept the
+        preprint and create the withdrawal request record. The actual test steps will
+        thus start at the point where the moderator takes action from the Reviews
+        Dashboard page to approve the withdrawal request.
+        NOTE: In this test case User One is used to login to OSF and must therefore be
+        setup through the admin app as a moderator or admin for the Preprint Provider
+        being used.
+        """
+        # The following Preprint Provider must be setup in each testing environment.
+        provider_id = 'selpostmod'
+        provider_name = 'Selenium Post-moderation'
+        preprint_title = 'OSF Selenium Post-moderation Preprint'
+
+        # NOTE: Using User Two to create the preprint through the api so that the user
+        # that submits the preprint is different from the user that accepts or rejects
+        # it.
+        session_user_two = osf_api.get_user_two_session()
+        preprint_node = osf_api.create_preprint(
+            session_user_two,
+            provider_id=provider_id,
+            title=preprint_title,
+            license_name='CC0 1.0 Universal',
+            subject_name='Engineering',
+        )
+        # Set session to None before calling accept_preprint so that the api function
+        # will use the default User One session which should have the permissions as
+        # a moderator to be able to accept the preprint.
+        osf_api.accept_moderated_preprint(session=None, preprint_node=preprint_node)
+        # Next use the api to create a withdrawal request (using User Two again)
+        osf_api.create_preprint_withdrawal_request(
+            session=session_user_two, preprint_node=preprint_node
+        )
+        # Load Reviews Dashboard page first and then click the Submissions link for the
+        # Post-moderation provider to go to that page.
+        reviews_dashboard_page = ReviewsDashboardPage(driver)
+        reviews_dashboard_page.goto()
+        assert ReviewsDashboardPage(driver, verify=True)
+        reviews_dashboard_page.loading_indicator.here_then_gone()
+        reviews_dashboard_page.click_provider_group_link(provider_name, 'Submissions')
+        submissions_page = ReviewsSubmissionsPage(driver, verify=True)
+        submissions_page.loading_indicator.here_then_gone()
+        # Click the Withdrawal Requests tab
+        submissions_page.withdrawal_requests_tab.click()
+        withdrawals_page = ReviewsWithdrawalsPage(driver, verify=True)
+        withdrawals_page.loading_indicator.here_then_gone()
+        # On the Withdrawal Requests page, click the row for the preprint that was just
+        # submitted above. It should be the first in the list since they are sorted
+        # newest to oldest.
+        withdrawals_page.click_requests_row(provider_id, preprint_node)
+        preprint_detail_page = PreprintDetailPage(driver, verify=True)
+        WebDriverWait(driver, 5).until(
+            EC.element_to_be_clickable(
+                (By.CSS_SELECTOR, 'button.btn.dropdown-toggle.btn-success')
+            )
+        )
+        # Verify that the Preprint has a Pending status in the status bar
+        assert preprint_detail_page.status.text == 'pending'
+        # Click the Make decision button to reveal the review options. Then click
+        # the Approve radio button, enter a reason in the text box and click the
+        # Submit decision button to complete the review.
+        preprint_detail_page.make_decision_button.click()
+        preprint_detail_page.accept_radio_button.click()
+        preprint_detail_page.reason_textarea.clear()
+        preprint_detail_page.reason_textarea.send_keys_deliberately(
+            'Selenium Testing - Approving Withdrawal Request of Post-Moderated Preprint'
+        )
+        preprint_detail_page.submit_decision_button.click()
+        # Should end up back on the Reviews Submission page
+        assert ReviewsSubmissionsPage(driver, verify=True)
+        # Use the api to verify that the Preprint is not published and that its review
+        # status is now 'withdrawn'.
+        prep_attr = osf_api.get_preprint_publish_and_review_states(
+            preprint_node=preprint_node
+        )
+        assert not prep_attr[0]
+        assert prep_attr[1] == 'withdrawn'
+        # Logout and navigate to the Preprint Detail page. We should see a Withdrawn
+        # tombstone page.
+        logout(driver)
+        preprint_page = PreprintDetailPage(driver, guid=preprint_node)
+        preprint_page.goto()
+        assert PreprintDetailPage(driver, verify=True)
+        WebDriverWait(driver, 5).until(EC.visibility_of(preprint_page.title))
+        assert preprint_page.title.text == preprint_title
+        assert (
+            preprint_page.status_explanation.text == 'This preprint has been withdrawn.'
+        )
+
+    def test_decline_withdrawal_request_post_moderated_preprint(
+        self, session, driver, log_in_if_not_already
+    ):
+        """Test the declining of a Withdrawal Request for a preprint submitted and
+        accepted by a preprint provider with a Post-moderation workflow. In this
+        workflow the moderator will decline the withdrawal request and the preprint
+        will remain accepted and publicly accessible. The test will use the OSF api
+        to create a submitted preprint and to accept the preprint and create the
+        withdrawal request record. The actual test steps will thus start at the point
+        where the moderator takes action from the Reviews Dashboard page to decline
+        the withdrawal request.
+        NOTE: In this test case User One is used to login to OSF and must therefore be
+        setup through the admin app as a moderator or admin for the Preprint Provider
+        being used.
+        """
+        # The following Preprint Provider must be setup in each testing environment.
+        provider_id = 'selpostmod'
+        provider_name = 'Selenium Post-moderation'
+        preprint_title = 'OSF Selenium Post-moderation Preprint'
+
+        # NOTE: Using User Two to create the preprint through the api so that the user
+        # that submits the preprint is different from the user that accepts or rejects
+        # it.
+        session_user_two = osf_api.get_user_two_session()
+        preprint_node = osf_api.create_preprint(
+            session_user_two,
+            provider_id=provider_id,
+            title=preprint_title,
+            license_name='CC0 1.0 Universal',
+            subject_name='Engineering',
+        )
+        # Set session to None before calling accept_preprint so that the api function
+        # will use the default User One session which should have the permissions as
+        # a moderator to be able to accept the preprint.
+        osf_api.accept_moderated_preprint(session=None, preprint_node=preprint_node)
+        # Next use the api to create a withdrawal request (using User Two again)
+        osf_api.create_preprint_withdrawal_request(
+            session=session_user_two, preprint_node=preprint_node
+        )
+        # Load Reviews Dashboard page first and then click the Submissions link for the
+        # Pre-moderation provider to go to that page.
+        reviews_dashboard_page = ReviewsDashboardPage(driver)
+        reviews_dashboard_page.goto()
+        assert ReviewsDashboardPage(driver, verify=True)
+        reviews_dashboard_page.loading_indicator.here_then_gone()
+        reviews_dashboard_page.click_provider_group_link(provider_name, 'Submissions')
+        submissions_page = ReviewsSubmissionsPage(driver, verify=True)
+        submissions_page.loading_indicator.here_then_gone()
+        # Click the Withdrawal Requests tab
+        submissions_page.withdrawal_requests_tab.click()
+        withdrawals_page = ReviewsWithdrawalsPage(driver, verify=True)
+        withdrawals_page.loading_indicator.here_then_gone()
+        # On the Withdrawal Requests page, click the row for the preprint that was just
+        # submitted above. It should be the first in the list since they are sorted
+        # newest to oldest.
+        withdrawals_page.click_requests_row(provider_id, preprint_node)
+        preprint_detail_page = PreprintDetailPage(driver, verify=True)
+        WebDriverWait(driver, 5).until(
+            EC.element_to_be_clickable(
+                (By.CSS_SELECTOR, 'button.btn.dropdown-toggle.btn-success')
+            )
+        )
+        # Verify that the Preprint has a Pending status in the status bar
+        assert preprint_detail_page.status.text == 'pending'
+        # Click the Make decision button to reveal the review options. Then click
+        # the Decline radio button, enter a reason in the text box and click the
+        # Submit decision button to complete the review.
+        preprint_detail_page.make_decision_button.click()
+        preprint_detail_page.reject_radio_button.click()
+        preprint_detail_page.reason_textarea.clear()
+        preprint_detail_page.reason_textarea.send_keys_deliberately(
+            'Selenium Testing - Declining Withdrawal Request of Post-Moderated Preprint'
+        )
+        preprint_detail_page.submit_decision_button.click()
+        # Should end up back on the Reviews Submission page
+        assert ReviewsSubmissionsPage(driver, verify=True)
+        # Use the api to verify that the Preprint is still published and that its review
+        # status is still 'accepted'.
+        prep_attr = osf_api.get_preprint_publish_and_review_states(
+            preprint_node=preprint_node
+        )
+        assert prep_attr[0]
+        assert prep_attr[1] == 'accepted'
+        # Logout and navigate to the Preprint Detail page which should still be publicly
+        # accessible.
+        logout(driver)
+        preprint_page = PreprintDetailPage(driver, guid=preprint_node)
+        preprint_page.goto()
+        assert PreprintDetailPage(driver, verify=True)
+        WebDriverWait(driver, 5).until(EC.visibility_of(preprint_page.title))
+        assert preprint_page.title.text == preprint_title
+        assert provider_id in driver.current_url
 
 
 @markers.core_functionality

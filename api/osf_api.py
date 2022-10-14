@@ -19,6 +19,13 @@ def get_default_session():
     )
 
 
+def get_user_two_session():
+    return client.Session(
+        api_base_url=settings.API_DOMAIN,
+        auth=(settings.USER_TWO, settings.USER_TWO_PASSWORD),
+    )
+
+
 def create_project(session, title='osf selenium test', tags=None, **kwargs):
     """Create a project for your current user through the OSF api.
 
@@ -369,15 +376,16 @@ def update_node_public_attribute(session, node_id, status=False):
 
 
 def get_most_recent_preprint_node_id(session=None):
-    """Return the most recently submitted preprint node id"""
+    """Return the most recently published preprint node id"""
     if not session:
         session = get_default_session()
     url = '/v2/preprints/'
     data = session.get(url)['data']
     if data:
-        return data[0]['id']
-    else:
-        return None
+        for preprint in data:
+            if preprint['attributes']['is_published']:
+                return preprint['id']
+    return None
 
 
 def get_preprint_views_count(session=None, node_id=None):
@@ -530,15 +538,25 @@ def create_preprint(
     # (ex: 'osfstorage/627a5b3ab4f587000aa2725c').  So we need to parse out the
     # actual file id to use in the Preprint patch.
     file_id = metadata['data']['id'].split('/')[1]
-    # Step 3: Attach the file to the Preprint and set it as Published
+    # Get the moderation type for the Preprint Provider. If the preprint provider
+    # uses a moderation workflow (either pre-moderation or post-moderation) then
+    # set the should publish flag to False. A pre-moderation preprint cannot be
+    # published until after it has been accepted by the moderator, and a post-
+    # moderation preprint will automatically get published upon creation of the
+    # submit review_action below.
+    mod_type = get_moderation_type_for_provider(
+        session,
+        provider_type='preprints',
+        provider_id=provider_id,
+    )
+    should_publish = mod_type is None
+    # Step 3: Attach the file to the Preprint and set the Published status
     patch_url = '/v2/preprints/{}/'.format(preprint_node_id)
     patch_payload = {
         'data': {
             'id': preprint_node_id,
             'type': 'preprints',
-            'attributes': {
-                'is_published': True,
-            },
+            'attributes': {'is_published': should_publish},
             'relationships': {
                 'primary_file': {'data': {'type': 'files', 'id': file_id}}
             },
@@ -550,6 +568,25 @@ def create_preprint(
         item_id=preprint_node_id,
         raw_body=json.dumps(patch_payload),
     )
+    # If the Preprint Provider uses a moderation workflow (pre-moderation or post-
+    # moderation), then create a submit review_action and post it to the preprint
+    # record.
+    if mod_type is not None:
+        review_url = '/v2/preprints/{}/review_actions/'.format(preprint_node_id)
+        review_payload = {
+            'data': {
+                'type': 'review_actions',
+                'attributes': {'trigger': 'submit'},
+                'relationships': {
+                    'target': {'data': {'id': preprint_node_id, 'type': 'preprints'}}
+                },
+            }
+        }
+        session.post(
+            url=review_url,
+            item_type='review-actions',
+            raw_body=json.dumps(review_payload),
+        )
     # Return the Preprint Node Id
     return return_data['data']['id']
 
@@ -614,3 +651,84 @@ def get_preprint_requests_records(session=None, node_id=None):
         return data
     else:
         return None
+
+
+def get_moderation_type_for_provider(
+    session=None,
+    provider_type='preprints',
+    provider_id='osf',
+):
+    """Returns the moderation type for a given provider type and provider id.  The
+    default provider_type is 'preprints' but this will also work for 'registrations'.
+    The default provider_id is 'osf'.
+    """
+    if not session:
+        session = get_default_session()
+    url = 'v2/providers/{}/{}/'.format(provider_type, provider_id)
+    data = session.get(url)['data']
+    if data:
+        return data['attributes']['reviews_workflow']
+    return None
+
+
+def get_preprint_publish_and_review_states(session=None, preprint_node=None):
+    """Return the publish and review states for the given preprint node id"""
+    if not session:
+        session = get_default_session()
+    url = '/v2/preprints/{}/'.format(preprint_node)
+    data = session.get(url)['data']
+    if data:
+        publish_state = data['attributes']['is_published']
+        review_state = data['attributes']['reviews_state']
+        return [publish_state, review_state]
+    return None
+
+
+def accept_moderated_preprint(session=None, preprint_node=None):
+    """Accept a moderated preprint by creating an 'accept' review_action record for a
+    given preprint node id.
+    """
+    if not session:
+        session = get_default_session()
+    review_url = '/v2/preprints/{}/review_actions/'.format(preprint_node)
+    review_payload = {
+        'data': {
+            'type': 'review_actions',
+            'attributes': {
+                'trigger': 'accept',
+                'comment': 'Preprint Accepted via OSF api',
+            },
+            'relationships': {
+                'target': {'data': {'id': preprint_node, 'type': 'preprints'}}
+            },
+        }
+    }
+    session.post(
+        url=review_url,
+        item_type='review-actions',
+        raw_body=json.dumps(review_payload),
+    )
+
+
+def create_preprint_withdrawal_request(session=None, preprint_node=None):
+    """Create a withdrawal request for a given preprint node id."""
+    if not session:
+        session = get_default_session()
+    url = '/v2/preprints/{}/requests/'.format(preprint_node)
+    request_payload = {
+        'data': {
+            'type': 'preprint-requests',
+            'attributes': {
+                'request_type': 'withdrawal',
+                'comment': 'Withdrawal Request via OSF api',
+            },
+            'relationships': {
+                'target': {'data': {'id': preprint_node, 'type': 'preprints'}}
+            },
+        }
+    }
+    session.post(
+        url=url,
+        item_type='preprint-requests',
+        raw_body=json.dumps(request_payload),
+    )
