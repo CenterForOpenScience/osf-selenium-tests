@@ -764,8 +764,7 @@ def create_user_developer_app(
     # Return the application id
     if return_data:
         return return_data['data']['id']
-    else:
-        return None
+    return None
 
 
 def delete_user_developer_app(session, app_id=None):
@@ -784,5 +783,4 @@ def get_user_developer_app_data(session, app_id=None):
     data = session.get(url)['data']
     if data:
         return data
-    else:
-        return None
+    return None
