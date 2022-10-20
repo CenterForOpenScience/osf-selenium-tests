@@ -98,8 +98,9 @@ class PreprintSubmitPage(BasePreprintPage):
     )
 
     # Author Assertions
+    # Note: Have to use TIMEOUT (10s) instead of QUICK_TIMEOUT (4s) due to slowness introduced by Django3 Upgrade.
     public_available_button = Locator(
-        By.ID, 'hasDataLinksAvailable', settings.QUICK_TIMEOUT
+        By.ID, 'hasDataLinksAvailable', settings.TIMEOUT
     )
     public_data_input = Locator(
         By.CSS_SELECTOR, '[data-test-multiple-textbox-index] > input'
