@@ -1,6 +1,5 @@
 import pytest
 import requests
-from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.select import Select
@@ -16,6 +15,7 @@ from pages.login import (
     GenericCASPage,
     GenericInstitutionEmailLoginPage,
     GenericInstitutionLoginPage,
+    GenericInstitutionUsernameLoginPage,
     InstitutionalLoginPage,
     Login2FAPage,
     LoginPage,
@@ -424,20 +424,17 @@ class TestInstitutionLoginPage:
                     # password input field
                     assert GenericInstitutionLoginPage(driver, verify=True)
                 except PageException:
-                    # University of Notre Dame changed their login - now there is a Username
-                    # input box that is of type="text".
-                    if institution == 'University of Notre Dame':
+                    try:
+                        # For a small number of institutions the initial login page
+                        # first asks for just an email without the passord field.
+                        assert GenericInstitutionEmailLoginPage(driver, verify=True)
+                    except PageException:
                         try:
-                            driver.find_element(
-                                By.CSS_SELECTOR, 'div.o-form-input > span > input'
+                            # A few institutions use a login page with a generic username
+                            # or user id text input field.
+                            assert GenericInstitutionUsernameLoginPage(
+                                driver, verify=True
                             )
-                        except NoSuchElementException:
-                            failed_list.append(institution)
-                    else:
-                        try:
-                            # For a small number of institutions the initial login page
-                            # first asks for just an email without the passord field.
-                            assert GenericInstitutionEmailLoginPage(driver, verify=True)
                         except PageException:
                             # if there is a failure add the name of the institution to the
                             # failed list

@@ -99,6 +99,12 @@ class GenericInstitutionEmailLoginPage(BasePage):
     identity = Locator(By.CSS_SELECTOR, 'input[type="email"]')
 
 
+class GenericInstitutionUsernameLoginPage(BasePage):
+    # This is for institution login pages that first ask for a Username or User ID to
+    # initiate the login process before asking for a password.
+    identity = Locator(By.CSS_SELECTOR, 'input[type="text"]')
+
+
 class ForgotPasswordPage(BasePage):
     url = settings.OSF_HOME + '/forgotpassword/'
 
