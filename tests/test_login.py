@@ -1,5 +1,6 @@
 import pytest
 import requests
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.select import Select
@@ -431,11 +432,14 @@ class TestInstitutionLoginPage:
                     except PageException:
                         try:
                             # A few institutions use a login page with a generic username
-                            # or user id text input field.
+                            # or user id text input field. The page definition checks for
+                            # a form element with methdo="post". Then check that the page
+                            # also has an input box.
                             assert GenericInstitutionUsernameLoginPage(
                                 driver, verify=True
                             )
-                        except PageException:
+                            driver.find_element(By.CSS_SELECTOR, 'input[type="text"]')
+                        except (PageException, NoSuchElementException):
                             # if there is a failure add the name of the institution to the
                             # failed list
                             failed_list.append(institution)
