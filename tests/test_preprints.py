@@ -1211,7 +1211,10 @@ class TestBrandedProviders:
         # (i.e. end of March).  So to prevent this test from failing in Production
         # every night for 'engrxiv' we are going to skip the following steps for this
         # provider.
-        if 'engrxiv' not in provider['id']:
+        # UPDATE 10/26/2022 - the status of 'engrxiv' has not changed and now another
+        # provider - 'ecoevorxiv' is also leaving OSF.
+        providers_leaving_OSF = ['ecoevorxiv', 'engrxiv']
+        if provider['id'] not in providers_leaving_OSF:
             discover_page.goto()
             discover_page.verify()
             # add OSF consent cookie to get rid of the banner at the bottom of the page which can get in the way
