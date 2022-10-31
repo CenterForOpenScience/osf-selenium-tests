@@ -784,3 +784,51 @@ def get_user_developer_app_data(session, app_id=None):
     if data:
         return data
     return None
+
+
+def create_personal_access_token(
+    session, name='OSF Test PAT', scopes='osf.nodes.full_read'
+):
+    """Create a Personal Access Token for the user that is currently logged in to OSF
+    (via session object). Default scope is 'osf.nodes.full_read'. The scopes parameter
+    is a string (not a list) with multiple scopes separated by a space.
+    EX: 'osf.users.profile_write osf.full_write osf.nodes.full_write'
+    """
+    if not session:
+        session = get_default_session()
+    url = '/v2/tokens/'
+    raw_payload = {
+        'data': {
+            'type': 'tokens',
+            'attributes': {
+                'name': name,
+                'scopes': scopes,
+            },
+        }
+    }
+    return_data = session.post(
+        url=url, item_type='tokens', raw_body=json.dumps(raw_payload)
+    )
+    # Return the token id
+    if return_data:
+        return return_data['data']['id']
+    return None
+
+
+def delete_personal_access_token(session, token_id=None):
+    """Delete a User's Personal Access Token as identified by its token id."""
+    if not session:
+        session = get_default_session()
+    url = '/v2/tokens/{}/'.format(token_id)
+    session.delete(url=url, item_type='tokens')
+
+
+def get_user_pat_data(session, token_id=None):
+    """Return User Personal Access Token data for a given token id."""
+    if not session:
+        session = get_default_session()
+    url = '/v2/tokens/{}/'.format(token_id)
+    data = session.get(url)['data']
+    if data:
+        return data
+    return None
