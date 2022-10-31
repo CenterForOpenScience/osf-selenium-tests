@@ -486,6 +486,167 @@ class TestUserSettings:
             if pat_data:
                 osf_api.delete_personal_access_token(session, token_id=token_id)
 
+    @markers.dont_run_on_prod
+    def test_user_settings_edit_PAT(self, driver, session, fake):
+        """Edit a Personal Access Token from the User Settings Edit Personal Access
+        Token page in OSF. The test uses the OSF api to first create the personal access
+        token that will then be edited using the Front End interface. At the end of the
+        test the PAT will be deleted using the api as cleanup.
+        """
+        token_name = 'PAT created via api ' + fake.sentence(nb_words=1)
+        token_id = osf_api.create_personal_access_token(
+            session, name=token_name, scopes='osf.full_read'
+        )
+        try:
+            pat_page = user.PersonalAccessTokenPage(driver)
+            pat_page.goto()
+            assert user.PersonalAccessTokenPage(driver, verify=True)
+            pat_page.loading_indicator.here_then_gone()
+            # Go through the list of PATs listed on the page to find the one that was
+            # just added via the api
+            pat_card = pat_page.get_pat_card_by_name(token_name)
+            pat_link = pat_card.find_element_by_css_selector('a')
+            link_url = pat_link.get_attribute('href')
+            link_token_id = link_url.split('tokens/', 1)[1]
+            assert link_token_id == token_id
+            # Now click the PAT name link to go to the Edit PAT page and verify the
+            # data
+            pat_link.click()
+            edit_pat_page = user.EditPersonalAccessTokenPage(driver, verify=True)
+            assert edit_pat_page.token_name_input.get_attribute('value') == token_name
+            edit_pat_page.scroll_into_view(
+                edit_pat_page.osf_nodes_full_read_checkbox.element
+            )
+            assert not edit_pat_page.osf_nodes_full_read_checkbox.is_selected()
+            edit_pat_page.scroll_into_view(
+                edit_pat_page.osf_nodes_metadata_read_checkbox.element
+            )
+            assert not edit_pat_page.osf_nodes_metadata_read_checkbox.is_selected()
+            edit_pat_page.scroll_into_view(
+                edit_pat_page.osf_nodes_access_read_checkbox.element
+            )
+            assert not edit_pat_page.osf_nodes_access_read_checkbox.is_selected()
+            edit_pat_page.scroll_into_view(
+                edit_pat_page.osf_nodes_data_read_checkbox.element
+            )
+            assert not edit_pat_page.osf_nodes_data_read_checkbox.is_selected()
+            edit_pat_page.scroll_into_view(
+                edit_pat_page.osf_users_profile_write_checkbox.element
+            )
+            assert not edit_pat_page.osf_users_profile_write_checkbox.is_selected()
+            edit_pat_page.scroll_into_view(
+                edit_pat_page.osf_full_write_checkbox.element
+            )
+            assert not edit_pat_page.osf_full_write_checkbox.is_selected()
+            edit_pat_page.scroll_into_view(
+                edit_pat_page.osf_nodes_metadata_write_checkbox.element
+            )
+            assert not edit_pat_page.osf_nodes_metadata_write_checkbox.is_selected()
+            edit_pat_page.scroll_into_view(edit_pat_page.osf_full_read_checkbox.element)
+            assert edit_pat_page.osf_full_read_checkbox.is_selected()
+            edit_pat_page.scroll_into_view(
+                edit_pat_page.osf_nodes_full_write_checkbox.element
+            )
+            assert not edit_pat_page.osf_nodes_full_write_checkbox.is_selected()
+            edit_pat_page.scroll_into_view(
+                edit_pat_page.osf_nodes_access_write_checkbox.element
+            )
+            assert not edit_pat_page.osf_nodes_access_write_checkbox.is_selected()
+            edit_pat_page.scroll_into_view(
+                edit_pat_page.osf_nodes_data_write_checkbox.element
+            )
+            assert not edit_pat_page.osf_nodes_data_write_checkbox.is_selected()
+            edit_pat_page.scroll_into_view(
+                edit_pat_page.osf_users_email_read_checkbox.element
+            )
+            assert not edit_pat_page.osf_users_email_read_checkbox.is_selected()
+            edit_pat_page.scroll_into_view(
+                edit_pat_page.osf_users_profile_read_checkbox.element
+            )
+            assert not edit_pat_page.osf_users_profile_read_checkbox.is_selected()
+            # Make some Edits - change the token name and change permissions from
+            # osf.full_read to osf.full_write
+            new_token_name = token_name + ' edited'
+            edit_pat_page.scroll_into_view(edit_pat_page.token_name_input.element)
+            edit_pat_page.token_name_input.clear()
+            edit_pat_page.token_name_input.send_keys(new_token_name)
+            edit_pat_page.scroll_into_view(edit_pat_page.osf_full_read_checkbox.element)
+            edit_pat_page.osf_full_read_checkbox.click()
+            edit_pat_page.scroll_into_view(
+                edit_pat_page.osf_full_write_checkbox.element
+            )
+            edit_pat_page.osf_full_write_checkbox.click()
+            # Click the Save button
+            edit_pat_page.scroll_into_view(edit_pat_page.save_button.element)
+            edit_pat_page.save_button.click()
+            # Should end up back on PAT list page with new token name listed
+            pat_page = user.PersonalAccessTokenPage(driver, verify=True)
+            pat_page.loading_indicator.here_then_gone()
+            pat_card = pat_page.get_pat_card_by_name(new_token_name)
+            assert pat_card
+            # Now click the PAT name link to go back to the Edit PAT page and verify
+            # the data changes
+            pat_link = pat_card.find_element_by_css_selector('a')
+            pat_link.click()
+            edit_pat_page = user.EditPersonalAccessTokenPage(driver, verify=True)
+            assert (
+                edit_pat_page.token_name_input.get_attribute('value') == new_token_name
+            )
+            edit_pat_page.scroll_into_view(
+                edit_pat_page.osf_nodes_full_read_checkbox.element
+            )
+            assert not edit_pat_page.osf_nodes_full_read_checkbox.is_selected()
+            edit_pat_page.scroll_into_view(
+                edit_pat_page.osf_nodes_metadata_read_checkbox.element
+            )
+            assert not edit_pat_page.osf_nodes_metadata_read_checkbox.is_selected()
+            edit_pat_page.scroll_into_view(
+                edit_pat_page.osf_nodes_access_read_checkbox.element
+            )
+            assert not edit_pat_page.osf_nodes_access_read_checkbox.is_selected()
+            edit_pat_page.scroll_into_view(
+                edit_pat_page.osf_nodes_data_read_checkbox.element
+            )
+            assert not edit_pat_page.osf_nodes_data_read_checkbox.is_selected()
+            edit_pat_page.scroll_into_view(
+                edit_pat_page.osf_users_profile_write_checkbox.element
+            )
+            assert not edit_pat_page.osf_users_profile_write_checkbox.is_selected()
+            edit_pat_page.scroll_into_view(
+                edit_pat_page.osf_full_write_checkbox.element
+            )
+            assert edit_pat_page.osf_full_write_checkbox.is_selected()
+            edit_pat_page.scroll_into_view(
+                edit_pat_page.osf_nodes_metadata_write_checkbox.element
+            )
+            assert not edit_pat_page.osf_nodes_metadata_write_checkbox.is_selected()
+            edit_pat_page.scroll_into_view(edit_pat_page.osf_full_read_checkbox.element)
+            assert not edit_pat_page.osf_full_read_checkbox.is_selected()
+            edit_pat_page.scroll_into_view(
+                edit_pat_page.osf_nodes_full_write_checkbox.element
+            )
+            assert not edit_pat_page.osf_nodes_full_write_checkbox.is_selected()
+            edit_pat_page.scroll_into_view(
+                edit_pat_page.osf_nodes_access_write_checkbox.element
+            )
+            assert not edit_pat_page.osf_nodes_access_write_checkbox.is_selected()
+            edit_pat_page.scroll_into_view(
+                edit_pat_page.osf_nodes_data_write_checkbox.element
+            )
+            assert not edit_pat_page.osf_nodes_data_write_checkbox.is_selected()
+            edit_pat_page.scroll_into_view(
+                edit_pat_page.osf_users_email_read_checkbox.element
+            )
+            assert not edit_pat_page.osf_users_email_read_checkbox.is_selected()
+            edit_pat_page.scroll_into_view(
+                edit_pat_page.osf_users_profile_read_checkbox.element
+            )
+            assert not edit_pat_page.osf_users_profile_read_checkbox.is_selected()
+        finally:
+            # Delete the token using the api as cleanup
+            if token_id:
+                osf_api.delete_personal_access_token(session, token_id=token_id)
+
 
 @markers.dont_run_on_prod
 @pytest.mark.usefixtures('must_be_logged_in')
