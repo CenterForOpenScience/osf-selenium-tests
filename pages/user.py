@@ -9,6 +9,7 @@ from base.locators import (
 )
 from components.user import (
     DeleteDevAppModal,
+    DeletePATModal,
     SettingsSideNavigation,
 )
 from pages.base import (
@@ -157,6 +158,8 @@ class PersonalAccessTokenPage(BaseUserSettingsPage):
 
     pat_cards = GroupLocator(By.CSS_SELECTOR, 'div[data-test-token-card]')
 
+    delete_pat_modal = ComponentLocator(DeletePATModal)
+
     def get_pat_card_by_name(self, pat_name):
         for pat_card in self.pat_cards:
             token_name = pat_card.find_element_by_css_selector(
@@ -263,6 +266,8 @@ class EditPersonalAccessTokenPage(BaseUserSettingsPage):
     )
     delete_button = Locator(By.CSS_SELECTOR, '[data-test-delete-button')
     save_button = Locator(By.CSS_SELECTOR, '[data-test-save-token-button')
+
+    delete_pat_modal = ComponentLocator(DeletePATModal)
 
     def __init__(self, driver, verify=False, token_id=''):
         self.token_id = token_id
