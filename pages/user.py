@@ -148,15 +148,126 @@ class EditDeveloperAppPage(BaseUserSettingsPage):
         return self.base_url + self.client_id
 
 
-class EmberPersonalAccessTokenPage(BaseUserSettingsPage):
-    url = settings.OSF_HOME + '/settings/tokens/'
-
-    identity = Locator(By.CSS_SELECTOR, '[data-test-create-token-link]')
-
-
 class PersonalAccessTokenPage(BaseUserSettingsPage):
-    waffle_override = {'ember_user_settings_tokens_page': EmberPersonalAccessTokenPage}
-
     url = settings.OSF_HOME + '/settings/tokens/'
 
-    identity = Locator(By.CSS_SELECTOR, 'a[data-analytics-name="Personal access"]')
+    identity = Locator(By.CSS_SELECTOR, 'h3[data-test-panel-title]')
+    loading_indicator = Locator(By.CSS_SELECTOR, '.ball-pulse')
+    create_token_button = Locator(By.CSS_SELECTOR, '[data-test-create-token-link]')
+
+    pat_cards = GroupLocator(By.CSS_SELECTOR, 'div[data-test-token-card]')
+
+    def get_pat_card_by_name(self, pat_name):
+        for pat_card in self.pat_cards:
+            token_name = pat_card.find_element_by_css_selector(
+                '[data-analytics-name="Token name"]'
+            )
+            if pat_name in token_name.text:
+                return pat_card
+
+
+class CreatePersonalAccessTokenPage(BaseUserSettingsPage):
+    url = settings.OSF_HOME + '/settings/tokens/create'
+
+    identity = Locator(By.CSS_SELECTOR, '[data-test-token-name]')
+    token_name_input = Locator(By.NAME, 'name')
+    osf_users_profile_write_checkbox = Locator(
+        By.CSS_SELECTOR, 'div[data-test-scope="osf.users.profile_write"] > input'
+    )
+    osf_full_write_checkbox = Locator(
+        By.CSS_SELECTOR, 'div[data-test-scope="osf.full_write"] > input'
+    )
+    osf_nodes_full_write_checkbox = Locator(
+        By.CSS_SELECTOR, 'div[data-test-scope="osf.nodes.full_write"] > input'
+    )
+    osf_nodes_full_read_checkbox = Locator(
+        By.CSS_SELECTOR, 'div[data-test-scope="osf.nodes.full_read"] > input'
+    )
+    osf_nodes_metadata_write_checkbox = Locator(
+        By.CSS_SELECTOR, 'div[data-test-scope="osf.nodes.metadata_write"] > input'
+    )
+    osf_full_read_checkbox = Locator(
+        By.CSS_SELECTOR, 'div[data-test-scope="osf.full_read"] > input'
+    )
+    osf_nodes_metadata_read_checkbox = Locator(
+        By.CSS_SELECTOR, 'div[data-test-scope="osf.nodes.metadata_read"] > input'
+    )
+    osf_nodes_access_read_checkbox = Locator(
+        By.CSS_SELECTOR, 'div[data-test-scope="osf.nodes.access_read"] > input'
+    )
+    osf_nodes_access_write_checkbox = Locator(
+        By.CSS_SELECTOR, 'div[data-test-scope="osf.nodes.access_write"] > input'
+    )
+    osf_nodes_data_read_checkbox = Locator(
+        By.CSS_SELECTOR, 'div[data-test-scope="osf.nodes.data_read"] > input'
+    )
+    osf_nodes_data_write_checkbox = Locator(
+        By.CSS_SELECTOR, 'div[data-test-scope="osf.nodes.data_write"] > input'
+    )
+    osf_users_email_read_checkbox = Locator(
+        By.CSS_SELECTOR, 'div[data-test-scope="osf.users.email_read"] > input'
+    )
+    osf_users_profile_read_checkbox = Locator(
+        By.CSS_SELECTOR, 'div[data-test-scope="osf.users.profile_read"] > input'
+    )
+    create_token_button = Locator(By.CSS_SELECTOR, '[data-test-create-token-button')
+
+
+class EditPersonalAccessTokenPage(BaseUserSettingsPage):
+    base_url = settings.OSF_HOME + '/settings/tokens/'
+
+    identity = Locator(By.CSS_SELECTOR, 'div[data-analytics-scope="Edit"]')
+    new_token_input = Locator(By.CSS_SELECTOR, 'div[data-test-new-token-value] > input')
+    back_to_list_of_tokens_link = Locator(
+        By.CSS_SELECTOR, 'a[data-test-back-to-tokens]'
+    )
+    token_name_input = Locator(By.NAME, 'name')
+    osf_users_profile_write_checkbox = Locator(
+        By.CSS_SELECTOR, 'div[data-test-scope="osf.users.profile_write"] > input'
+    )
+    osf_full_write_checkbox = Locator(
+        By.CSS_SELECTOR, 'div[data-test-scope="osf.full_write"] > input'
+    )
+    osf_nodes_full_write_checkbox = Locator(
+        By.CSS_SELECTOR, 'div[data-test-scope="osf.nodes.full_write"] > input'
+    )
+    osf_nodes_full_read_checkbox = Locator(
+        By.CSS_SELECTOR, 'div[data-test-scope="osf.nodes.full_read"] > input'
+    )
+    osf_nodes_metadata_write_checkbox = Locator(
+        By.CSS_SELECTOR, 'div[data-test-scope="osf.nodes.metadata_write"] > input'
+    )
+    osf_full_read_checkbox = Locator(
+        By.CSS_SELECTOR, 'div[data-test-scope="osf.full_read"] > input'
+    )
+    osf_nodes_metadata_read_checkbox = Locator(
+        By.CSS_SELECTOR, 'div[data-test-scope="osf.nodes.metadata_read"] > input'
+    )
+    osf_nodes_access_read_checkbox = Locator(
+        By.CSS_SELECTOR, 'div[data-test-scope="osf.nodes.access_read"] > input'
+    )
+    osf_nodes_access_write_checkbox = Locator(
+        By.CSS_SELECTOR, 'div[data-test-scope="osf.nodes.access_write"] > input'
+    )
+    osf_nodes_data_read_checkbox = Locator(
+        By.CSS_SELECTOR, 'div[data-test-scope="osf.nodes.data_read"] > input'
+    )
+    osf_nodes_data_write_checkbox = Locator(
+        By.CSS_SELECTOR, 'div[data-test-scope="osf.nodes.data_write"] > input'
+    )
+    osf_users_email_read_checkbox = Locator(
+        By.CSS_SELECTOR, 'div[data-test-scope="osf.users.email_read"] > input'
+    )
+    osf_users_profile_read_checkbox = Locator(
+        By.CSS_SELECTOR, 'div[data-test-scope="osf.users.profile_read"] > input'
+    )
+    delete_button = Locator(By.CSS_SELECTOR, '[data-test-delete-button')
+    save_button = Locator(By.CSS_SELECTOR, '[data-test-save-token-button')
+
+    def __init__(self, driver, verify=False, token_id=''):
+        self.token_id = token_id
+        super().__init__(driver, verify)
+
+    @property
+    def url(self):
+        return self.base_url + self.token_id
