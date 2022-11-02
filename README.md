@@ -4,7 +4,8 @@ This is the UI test automation for the OSF. It uses Selenium WebDriver and Pytes
 
 
 ![production_smoke_tests](https://github.com/cos-qa/osf-selenium-tests/actions/workflows/production_smoke_tests.yml/badge.svg)
-![develop_staging_tests](https://github.com/cos-qa/osf-selenium-tests/actions/workflows/selenium_staging_tests.yml/badge.svg)
+![nightly_core_functionality_tests](https://github.com/cos-qa/osf-selenium-tests/actions/workflows/nightly_core_functionality_tests.yml/badge.svg)
+![weekly_regression_tests](https://github.com/cos-qa/osf-selenium-tests/actions/workflows/weekly_regression_tests.yml/badge.svg)
 
 
 
