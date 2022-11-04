@@ -112,6 +112,7 @@ class RegistrationJustificationForm(GuidBasePage):
 
     submit_revision = Locator(By.CSS_SELECTOR, '[data-test-submit-revision]')
     accept_changes = Locator(By.CSS_SELECTOR, '[data-test-accept-changes]')
+    toast_message = Locator(By.ID, 'toast-container')
 
 
 class JustificationReviewForm(GuidBasePage):

@@ -1,10 +1,14 @@
+import re
+
 import pytest
 from faker import Faker
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
+import api
 import markers
+from api import osf_api
 from pages.registrations import MyRegistrationsPage
 from pages.registries import (
     JustificationReviewForm,
@@ -13,6 +17,16 @@ from pages.registries import (
     RegistrationDraftPage,
     RegistrationJustificationForm,
 )
+
+
+def get_registration_version_draft_id(href):
+    match = re.search(
+        r'([a-z0-9]{4,8})\.osf\.io\/registries\/revisions/([a-z0-9]{24})\/review', href
+    )
+
+    # Group 1 = Test Domain
+    # Group 2 = Draft ID
+    return match.group(2)
 
 
 @markers.smoke_test
@@ -71,8 +85,19 @@ class TestRegistrationsVersioning:
     """This test navigates the test user through the entire workflow for updating a registration by creating a new version"""
 
     def test_versioning_workflow(self, driver, must_be_logged_in_as_user_two):
+        session_user_two = osf_api.get_user_two_session()
         my_registrations_page = MyRegistrationsPage(driver)
         my_registrations_page.goto()
+
+        # Delete leftover update in progress
+        if my_registrations_page.continue_update_button.present():
+            update_in_progress_url = (
+                my_registrations_page.continue_update_button.get_attribute('href')
+            )
+            draft_id = get_registration_version_draft_id(update_in_progress_url)
+            api.osf_api.delete_registration_version_draft(session_user_two, draft_id)
+            my_registrations_page.goto()
+
         my_registrations_page.update_button.click()
         my_registrations_page.update_registration_dialogue.present()
         my_registrations_page.update_registration_dialogue_next.click()
@@ -119,14 +144,16 @@ class TestRegistrationsVersioning:
 
         justification_page.submit_revision.click()
         justification_page.accept_changes.click()
+        justification_page.toast_message.here_then_gone()
 
         JustificationReviewForm(driver, verify=True)
-        review_form = JustificationReviewForm(driver)
-        review_form.link_to_registration.click()
+        justification_review_page = JustificationReviewForm(driver)
+        justification_review_page.link_to_registration.click()
 
+        RegistrationDetailPage(driver, verify=True)
         registration_detail_page = RegistrationDetailPage(driver)
-        # The registration detail page needs to be refreshed for the changes to take effect.
-        driver.refresh()
+        registration_detail_page.reload()
+
         assert summary_paragraph in registration_detail_page.narrative_summary.text
 
     def test_delete_versioning(self, driver, must_be_logged_in_as_user_two):
