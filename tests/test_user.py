@@ -107,7 +107,10 @@ class TestUserSettings:
             )
         )
 
-    @markers.dont_run_on_prod
+
+@markers.dont_run_on_prod
+@pytest.mark.usefixtures('must_be_logged_in')
+class TestUserDeveloperApps:
     def test_user_settings_create_dev_app(self, driver, session, fake):
         """Create a Developer Application from the User Settings Developer Apps page
         in OSF. The test uses the OSF api to delete the developer app at the end of the
@@ -117,67 +120,62 @@ class TestUserSettings:
         dev_apps_page.goto()
         assert user.DeveloperAppsPage(driver, verify=True)
         dev_apps_page.create_dev_app_button.click()
-        create_dev_app_page = user.CreateDeveloperAppPage(driver, verify=True)
+        create_page = user.CreateDeveloperAppPage(driver, verify=True)
+
         # Complete the form fields and click the Create developer app button
         app_name = fake.sentence(nb_words=3)
-        create_dev_app_page.app_name_input.send_keys(app_name)
-        create_dev_app_page.project_url_input.send_keys(settings.OSF_HOME)
-        create_dev_app_page.app_description_textarea.click()
-        create_dev_app_page.app_description_textarea.send_keys(
+        create_page.app_name_input.send_keys(app_name)
+        create_page.project_url_input.send_keys(settings.OSF_HOME)
+        create_page.app_description_textarea.click()
+        create_page.app_description_textarea.send_keys(
             'Selenium test: ' + os.environ['PYTEST_CURRENT_TEST']
         )
-        create_dev_app_page.callback_url_input.send_keys('https://www.google.com/')
-        create_dev_app_page.create_dev_app_button.click()
+        create_page.callback_url_input.send_keys('https://www.google.com/')
+        create_page.create_dev_app_button.click()
         try:
             # Verify that you are now on the Edit page for the newly created Developer
             # app
-            edit_dev_app_page = user.EditDeveloperAppPage(driver, verify=True)
-            edit_dev_app_page.loading_indicator.here_then_gone()
+            edit_page = user.EditDeveloperAppPage(driver, verify=True)
+            edit_page.loading_indicator.here_then_gone()
+
             # Get client id from the input box and verify that it is also in the page's
             # url
-            client_id = edit_dev_app_page.client_id_input.get_attribute('value')
+            client_id = edit_page.client_id_input.get_attribute('value')
             assert client_id in driver.current_url
+
             # Verify other info on this page - we need to use up 2 minutes before
             # attempting to delete the dev app using the api, since CAS only refreshes
             # its db connection every 2 minutes.
-            edit_dev_app_page.show_client_secret_button.click()
+            edit_page.show_client_secret_button.click()
             # Get the dev app data from the api and verify client secret
             dev_app_data = osf_api.get_user_developer_app_data(
                 session, app_id=client_id
             )
             client_secret = dev_app_data['attributes']['client_secret']
+            assert edit_page.client_secret_input.get_attribute('value') == client_secret
+            edit_page.scroll_into_view(edit_page.app_name_input.element)
+            assert edit_page.app_name_input.get_attribute('value') == app_name
+            edit_page.scroll_into_view(edit_page.project_url_input.element)
             assert (
-                edit_dev_app_page.client_secret_input.get_attribute('value')
-                == client_secret
+                edit_page.project_url_input.get_attribute('value') == settings.OSF_HOME
             )
-            edit_dev_app_page.scroll_into_view(edit_dev_app_page.app_name_input.element)
-            assert edit_dev_app_page.app_name_input.get_attribute('value') == app_name
-            edit_dev_app_page.scroll_into_view(
-                edit_dev_app_page.project_url_input.element
-            )
+            edit_page.scroll_into_view(edit_page.app_description_textarea.element)
             assert (
-                edit_dev_app_page.project_url_input.get_attribute('value')
-                == settings.OSF_HOME
-            )
-            edit_dev_app_page.scroll_into_view(
-                edit_dev_app_page.app_description_textarea.element
-            )
-            assert (
-                edit_dev_app_page.app_description_textarea.get_attribute('value')
+                edit_page.app_description_textarea.get_attribute('value')
                 == 'Selenium test: ' + os.environ['PYTEST_CURRENT_TEST']
             )
-            edit_dev_app_page.scroll_into_view(
-                edit_dev_app_page.callback_url_input.element
-            )
+            edit_page.scroll_into_view(edit_page.callback_url_input.element)
             assert (
-                edit_dev_app_page.callback_url_input.get_attribute('value')
+                edit_page.callback_url_input.get_attribute('value')
                 == 'https://www.google.com/'
             )
+
             # Click the Save button to go back to the Dev Apps list page
-            edit_dev_app_page.scroll_into_view(edit_dev_app_page.save_button.element)
-            edit_dev_app_page.save_button.click()
+            edit_page.scroll_into_view(edit_page.save_button.element)
+            edit_page.save_button.click()
             dev_apps_page = user.DeveloperAppsPage(driver, verify=True)
             dev_apps_page.loading_indicator.here_then_gone()
+
             # Go through the list of developer apps listed on the page to find the one
             # that was just added
             dev_app_card = dev_apps_page.get_dev_app_card_by_app_name(app_name)
@@ -185,54 +183,43 @@ class TestUserSettings:
             link_url = app_link.get_attribute('href')
             link_client_id = link_url.split('applications/', 1)[1]
             assert link_client_id == client_id
+
             # Now click the app name link to go back to Edit Dev App page and verify
             # the data again - just trying to waste more time before we can delete
             # the app
             app_link.click()
-            edit_dev_app_page = user.EditDeveloperAppPage(driver, verify=True)
-            edit_dev_app_page.loading_indicator.here_then_gone()
-            # Click the Show client secret button to unveil the client secret
-            edit_dev_app_page.show_client_secret_button.click()
-            # Verify text on the button has changed to 'Hide client secret'
+            edit_page = user.EditDeveloperAppPage(driver, verify=True)
+            edit_page.loading_indicator.here_then_gone()
+
+            # Click the Show client secret button to unveil the client secret and verify
+            # the text on the button has changed to 'Hide client secret'
+            edit_page.show_client_secret_button.click()
+            assert edit_page.show_client_secret_button.text == 'Hide client secret'
+            assert edit_page.client_secret_input.get_attribute('value') == client_secret
+            edit_page.scroll_into_view(edit_page.app_name_input.element)
+            assert edit_page.app_name_input.get_attribute('value') == app_name
+            edit_page.scroll_into_view(edit_page.project_url_input.element)
             assert (
-                edit_dev_app_page.show_client_secret_button.text == 'Hide client secret'
+                edit_page.project_url_input.get_attribute('value') == settings.OSF_HOME
             )
+            edit_page.scroll_into_view(edit_page.app_description_textarea.element)
             assert (
-                edit_dev_app_page.client_secret_input.get_attribute('value')
-                == client_secret
-            )
-            edit_dev_app_page.scroll_into_view(edit_dev_app_page.app_name_input.element)
-            assert edit_dev_app_page.app_name_input.get_attribute('value') == app_name
-            edit_dev_app_page.scroll_into_view(
-                edit_dev_app_page.project_url_input.element
-            )
-            assert (
-                edit_dev_app_page.project_url_input.get_attribute('value')
-                == settings.OSF_HOME
-            )
-            edit_dev_app_page.scroll_into_view(
-                edit_dev_app_page.app_description_textarea.element
-            )
-            assert (
-                edit_dev_app_page.app_description_textarea.get_attribute('value')
+                edit_page.app_description_textarea.get_attribute('value')
                 == 'Selenium test: ' + os.environ['PYTEST_CURRENT_TEST']
             )
-            edit_dev_app_page.scroll_into_view(
-                edit_dev_app_page.callback_url_input.element
-            )
+            edit_page.scroll_into_view(edit_page.callback_url_input.element)
             assert (
-                edit_dev_app_page.callback_url_input.get_attribute('value')
+                edit_page.callback_url_input.get_attribute('value')
                 == 'https://www.google.com/'
             )
-            edit_dev_app_page.scroll_into_view(edit_dev_app_page.save_button.element)
-            edit_dev_app_page.save_button.click()
+            edit_page.scroll_into_view(edit_page.save_button.element)
+            edit_page.save_button.click()
             dev_apps_page = user.DeveloperAppsPage(driver, verify=True)
             dev_apps_page.loading_indicator.here_then_gone()
         finally:
             # Lastly use the api to delete the dev app as cleanup
             osf_api.delete_user_developer_app(session, app_id=client_id)
 
-    @markers.dont_run_on_prod
     def test_user_settings_delete_dev_app(self, driver, session, fake):
         """Delete a Developer Application from the User Settings Developer Apps page
         in OSF. The test uses the OSF api to first create the developer application that
@@ -246,6 +233,7 @@ class TestUserSettings:
             home_url=settings.OSF_HOME,
             callback_url='https://www.google.com/',
         )
+
         # Note: We need to use up 2 minutes before attempting to delete the dev app
         # since CAS only refreshes its db connection every 2 minutes.
         try:
@@ -257,6 +245,7 @@ class TestUserSettings:
             profile_settings_page.side_navigation.developer_apps_link.click()
             dev_apps_page = user.DeveloperAppsPage(driver, verify=True)
             dev_apps_page.loading_indicator.here_then_gone()
+
             # Go through the list of developer apps listed on the page to find the one
             # that was just added via the api
             dev_app_card = dev_apps_page.get_dev_app_card_by_app_name(app_name)
@@ -264,50 +253,44 @@ class TestUserSettings:
             link_url = app_link.get_attribute('href')
             link_client_id = link_url.split('applications/', 1)[1]
             assert link_client_id == app_id
+
             # Now click the app name link to go to the Edit Dev App page and verify the
             # data
             app_link.click()
-            edit_dev_app_page = user.EditDeveloperAppPage(driver, verify=True)
-            edit_dev_app_page.loading_indicator.here_then_gone()
+            edit_page = user.EditDeveloperAppPage(driver, verify=True)
+            edit_page.loading_indicator.here_then_gone()
+
             # Verify that the app_id is also in the page's url
             assert app_id in driver.current_url
-            assert edit_dev_app_page.client_id_input.get_attribute('value') == app_id
-            edit_dev_app_page.show_client_secret_button.click()
+            assert edit_page.client_id_input.get_attribute('value') == app_id
+            edit_page.show_client_secret_button.click()
+
             # Get the dev app data from the api and verify client secret
             dev_app_data = osf_api.get_user_developer_app_data(session, app_id=app_id)
             client_secret = dev_app_data['attributes']['client_secret']
+            assert edit_page.client_secret_input.get_attribute('value') == client_secret
+            edit_page.scroll_into_view(edit_page.app_name_input.element)
+            assert edit_page.app_name_input.get_attribute('value') == app_name
+            edit_page.scroll_into_view(edit_page.project_url_input.element)
             assert (
-                edit_dev_app_page.client_secret_input.get_attribute('value')
-                == client_secret
+                edit_page.project_url_input.get_attribute('value') == settings.OSF_HOME
             )
-            edit_dev_app_page.scroll_into_view(edit_dev_app_page.app_name_input.element)
-            assert edit_dev_app_page.app_name_input.get_attribute('value') == app_name
-            edit_dev_app_page.scroll_into_view(
-                edit_dev_app_page.project_url_input.element
-            )
+            edit_page.scroll_into_view(edit_page.app_description_textarea.element)
             assert (
-                edit_dev_app_page.project_url_input.get_attribute('value')
-                == settings.OSF_HOME
-            )
-            edit_dev_app_page.scroll_into_view(
-                edit_dev_app_page.app_description_textarea.element
-            )
-            assert (
-                edit_dev_app_page.app_description_textarea.get_attribute('value')
+                edit_page.app_description_textarea.get_attribute('value')
                 == 'a developer application created using the OSF api'
             )
-            edit_dev_app_page.scroll_into_view(
-                edit_dev_app_page.callback_url_input.element
-            )
+            edit_page.scroll_into_view(edit_page.callback_url_input.element)
             assert (
-                edit_dev_app_page.callback_url_input.get_attribute('value')
+                edit_page.callback_url_input.get_attribute('value')
                 == 'https://www.google.com/'
             )
+
             # Note: The Delete button on the Edit Dev App page does not actually do
             # anything - this is a known bug. So click the Save button to go back to
             # the Dev Apps List page and delete the app from there.
-            edit_dev_app_page.scroll_into_view(edit_dev_app_page.save_button.element)
-            edit_dev_app_page.save_button.click()
+            edit_page.scroll_into_view(edit_page.save_button.element)
+            edit_page.save_button.click()
             dev_apps_page = user.DeveloperAppsPage(driver, verify=True)
             dev_apps_page.loading_indicator.here_then_gone()
             dev_app_card = dev_apps_page.get_dev_app_card_by_app_name(app_name)
@@ -315,15 +298,18 @@ class TestUserSettings:
                 '[data-test-delete-button]'
             )
             delete_button.click()
+
             # Verify the Delete Dev App Modal is displayed
             delete_modal = dev_apps_page.delete_dev_app_modal
             assert delete_modal.app_name.text == app_name
+
             # Click the Cancel button first and verify that the Dev App is not
             # actually deleted
             delete_modal.cancel_button.click()
             dev_apps_page.reload()
             dev_apps_page = user.DeveloperAppsPage(driver, verify=True)
             dev_apps_page.loading_indicator.here_then_gone()
+
             # Find the Dev App card again and click the Delete button again
             dev_app_card = dev_apps_page.get_dev_app_card_by_app_name(app_name)
             delete_button = dev_app_card.find_element_by_css_selector(
@@ -332,12 +318,14 @@ class TestUserSettings:
             delete_button.click()
             delete_modal = dev_apps_page.delete_dev_app_modal
             assert delete_modal.app_name.text == app_name
+
             # This time click the Delete button to actually delete the Dev App
             delete_modal.delete_button.click()
             dev_apps_page.reload()
             dev_apps_page = user.DeveloperAppsPage(driver, verify=True)
             dev_apps_page.loading_indicator.here_then_gone()
             dev_app_card = dev_apps_page.get_dev_app_card_by_app_name(app_name)
+
             # Verify that we don't find the dev app card this time since it was deleted
             assert not dev_app_card
         except Exception:
@@ -347,7 +335,6 @@ class TestUserSettings:
             if dev_app_data:
                 osf_api.delete_user_developer_app(session, app_id=app_id)
 
-    @markers.dont_run_on_prod
     def test_user_settings_edit_dev_app(self, driver, session, fake):
         """Edit a Developer Application from the User Settings Developer Apps page
         in OSF. The test uses the OSF api to first create the developer application that
@@ -362,6 +349,7 @@ class TestUserSettings:
             home_url=settings.OSF_HOME,
             callback_url='https://www.google.com/',
         )
+
         # Note: We need to use up 2 minutes before attempting to delete the dev app
         # since CAS only refreshes its db connection every 2 minutes.
         try:
@@ -373,6 +361,7 @@ class TestUserSettings:
             profile_settings_page.side_navigation.developer_apps_link.click()
             dev_apps_page = user.DeveloperAppsPage(driver, verify=True)
             dev_apps_page.loading_indicator.here_then_gone()
+
             # Go through the list of developer apps listed on the page to find the one
             # that was just added via the api
             dev_app_card = dev_apps_page.get_dev_app_card_by_app_name(app_name)
@@ -380,57 +369,50 @@ class TestUserSettings:
             link_url = app_link.get_attribute('href')
             link_client_id = link_url.split('applications/', 1)[1]
             assert link_client_id == app_id
+
             # Now click the app name link to go to the Edit Dev App page and verify the
             # data
             app_link.click()
-            edit_dev_app_page = user.EditDeveloperAppPage(driver, verify=True)
-            edit_dev_app_page.loading_indicator.here_then_gone()
+            edit_page = user.EditDeveloperAppPage(driver, verify=True)
+            edit_page.loading_indicator.here_then_gone()
+
             # Verify that the app_id is also in the page's url
             assert app_id in driver.current_url
-            assert edit_dev_app_page.client_id_input.get_attribute('value') == app_id
-            edit_dev_app_page.show_client_secret_button.click()
+            assert edit_page.client_id_input.get_attribute('value') == app_id
+            edit_page.show_client_secret_button.click()
+
             # Get the dev app data from the api and verify client secret
             dev_app_data = osf_api.get_user_developer_app_data(session, app_id=app_id)
             client_secret = dev_app_data['attributes']['client_secret']
+            assert edit_page.client_secret_input.get_attribute('value') == client_secret
+            edit_page.scroll_into_view(edit_page.app_name_input.element)
+            assert edit_page.app_name_input.get_attribute('value') == app_name
+            edit_page.scroll_into_view(edit_page.project_url_input.element)
             assert (
-                edit_dev_app_page.client_secret_input.get_attribute('value')
-                == client_secret
+                edit_page.project_url_input.get_attribute('value') == settings.OSF_HOME
             )
-            edit_dev_app_page.scroll_into_view(edit_dev_app_page.app_name_input.element)
-            assert edit_dev_app_page.app_name_input.get_attribute('value') == app_name
-            edit_dev_app_page.scroll_into_view(
-                edit_dev_app_page.project_url_input.element
-            )
+            edit_page.scroll_into_view(edit_page.app_description_textarea.element)
             assert (
-                edit_dev_app_page.project_url_input.get_attribute('value')
-                == settings.OSF_HOME
-            )
-            edit_dev_app_page.scroll_into_view(
-                edit_dev_app_page.app_description_textarea.element
-            )
-            assert (
-                edit_dev_app_page.app_description_textarea.get_attribute('value')
+                edit_page.app_description_textarea.get_attribute('value')
                 == 'a developer application created using the OSF api'
             )
-            edit_dev_app_page.scroll_into_view(
-                edit_dev_app_page.callback_url_input.element
-            )
+            edit_page.scroll_into_view(edit_page.callback_url_input.element)
             assert (
-                edit_dev_app_page.callback_url_input.get_attribute('value')
+                edit_page.callback_url_input.get_attribute('value')
                 == 'https://www.google.com/'
             )
+
             # Now update some of the data fields and Save the changes
             new_app_name = app_name + ' edited'
-            edit_dev_app_page.app_name_input.clear()
-            edit_dev_app_page.app_name_input.send_keys_deliberately(new_app_name)
-            edit_dev_app_page.app_description_textarea.click()
-            edit_dev_app_page.app_description_textarea.send_keys_deliberately(
-                ' and edited'
-            )
-            edit_dev_app_page.scroll_into_view(edit_dev_app_page.save_button.element)
-            edit_dev_app_page.save_button.click()
+            edit_page.app_name_input.clear()
+            edit_page.app_name_input.send_keys_deliberately(new_app_name)
+            edit_page.app_description_textarea.click()
+            edit_page.app_description_textarea.send_keys_deliberately(' and edited')
+            edit_page.scroll_into_view(edit_page.save_button.element)
+            edit_page.save_button.click()
             dev_apps_page = user.DeveloperAppsPage(driver, verify=True)
             dev_apps_page.loading_indicator.here_then_gone()
+
             # Go through the list of developer apps listed on the page to find the one
             # that was just edited
             dev_app_card = dev_apps_page.get_dev_app_card_by_app_name(new_app_name)
@@ -438,49 +420,37 @@ class TestUserSettings:
             link_url = app_link.get_attribute('href')
             link_client_id = link_url.split('applications/', 1)[1]
             assert link_client_id == app_id
+
             # Now click the app name link to go back to Edit Dev App page and verify
             # the data again - just trying to waste more time before we can delete
             # the app
             app_link.click()
-            edit_dev_app_page = user.EditDeveloperAppPage(driver, verify=True)
-            edit_dev_app_page.loading_indicator.here_then_gone()
-            # Click the Show client secret button to unveil the client secret
-            edit_dev_app_page.show_client_secret_button.click()
-            # Verify text on the button has changed to 'Hide client secret'
+            edit_page = user.EditDeveloperAppPage(driver, verify=True)
+            edit_page.loading_indicator.here_then_gone()
+
+            # Click the Show client secret button to unveil the client secret and verify
+            # the text on the button has changed to 'Hide client secret'
+            edit_page.show_client_secret_button.click()
+            assert edit_page.show_client_secret_button.text == 'Hide client secret'
+            assert edit_page.client_secret_input.get_attribute('value') == client_secret
+            edit_page.scroll_into_view(edit_page.app_name_input.element)
+            assert edit_page.app_name_input.get_attribute('value') == new_app_name
+            edit_page.scroll_into_view(edit_page.project_url_input.element)
             assert (
-                edit_dev_app_page.show_client_secret_button.text == 'Hide client secret'
+                edit_page.project_url_input.get_attribute('value') == settings.OSF_HOME
             )
+            edit_page.scroll_into_view(edit_page.app_description_textarea.element)
             assert (
-                edit_dev_app_page.client_secret_input.get_attribute('value')
-                == client_secret
-            )
-            edit_dev_app_page.scroll_into_view(edit_dev_app_page.app_name_input.element)
-            assert (
-                edit_dev_app_page.app_name_input.get_attribute('value') == new_app_name
-            )
-            edit_dev_app_page.scroll_into_view(
-                edit_dev_app_page.project_url_input.element
-            )
-            assert (
-                edit_dev_app_page.project_url_input.get_attribute('value')
-                == settings.OSF_HOME
-            )
-            edit_dev_app_page.scroll_into_view(
-                edit_dev_app_page.app_description_textarea.element
-            )
-            assert (
-                edit_dev_app_page.app_description_textarea.get_attribute('value')
+                edit_page.app_description_textarea.get_attribute('value')
                 == 'a developer application created using the OSF api and edited'
             )
-            edit_dev_app_page.scroll_into_view(
-                edit_dev_app_page.callback_url_input.element
-            )
+            edit_page.scroll_into_view(edit_page.callback_url_input.element)
             assert (
-                edit_dev_app_page.callback_url_input.get_attribute('value')
+                edit_page.callback_url_input.get_attribute('value')
                 == 'https://www.google.com/'
             )
-            edit_dev_app_page.scroll_into_view(edit_dev_app_page.save_button.element)
-            edit_dev_app_page.save_button.click()
+            edit_page.scroll_into_view(edit_page.save_button.element)
+            edit_page.save_button.click()
             dev_apps_page = user.DeveloperAppsPage(driver, verify=True)
             dev_apps_page.loading_indicator.here_then_gone()
             dev_app_card = dev_apps_page.get_dev_app_card_by_app_name(new_app_name)
