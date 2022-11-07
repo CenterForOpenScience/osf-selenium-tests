@@ -71,6 +71,9 @@ class AccountSettingsPage(BaseUserSettingsPage):
     identity = Locator(
         By.CSS_SELECTOR, 'div[data-analytics-scope="Connected emails panel"]'
     )
+    storage_location_listbox = Locator(
+        By.CSS_SELECTOR, 'div[data-test-region-selector] > div'
+    )
 
 
 class ConfigureAddonsPage(BaseUserSettingsPage):

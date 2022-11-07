@@ -111,6 +111,42 @@ class TestUserSettings:
         )
 
 
+@pytest.mark.usefixtures('must_be_logged_in')
+class TestUserAccountSettings:
+    def test_user_account_settings_storage_locations(self, driver, session):
+        """Check the list of storage locations in the dropdown listbox on the User
+        Account Settings page and verify that the correct default storage location
+        is selected.
+        """
+        settings_page = user.AccountSettingsPage(driver)
+        settings_page.goto()
+        assert user.AccountSettingsPage(driver, verify=True)
+        settings_page.scroll_into_view(settings_page.storage_location_listbox.element)
+        # Use the api to get the logged in user's default region and verify that it
+        # matches the storage location region that is displayed as selected in the
+        # listbox
+        user_region = osf_api.get_user_region_name(session)
+        assert settings_page.storage_location_listbox.text == user_region
+        # Click the listbox to display all of the storage locations and get a list
+        # of the displayed regions
+        settings_page.storage_location_listbox.click()
+        listbox_items = settings_page.storage_location_listbox.find_elements(
+            By.CSS_SELECTOR,
+            'div.ember-basic-dropdown-content-wormhole-origin > div > ul > li',
+        )
+        listbox_regions = []
+        for region in listbox_items:
+            listbox_regions.append(region.text)
+        listbox_regions.sort()
+        # Get available regions using the api and verify that the lists match
+        regions_data = osf_api.get_regions_data(session)
+        api_regions = []
+        for region in regions_data:
+            api_regions.append(region['attributes']['name'])
+        api_regions.sort()
+        assert listbox_regions == api_regions
+
+
 @markers.dont_run_on_prod
 @pytest.mark.usefixtures('must_be_logged_in')
 class TestUserDeveloperApps:
