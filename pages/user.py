@@ -8,6 +8,7 @@ from base.locators import (
     Locator,
 )
 from components.user import (
+    Configure2FAModal,
     ConfirmDeactivationRequestModal,
     DeleteDevAppModal,
     DeletePATModal,
@@ -76,6 +77,13 @@ class AccountSettingsPage(BaseUserSettingsPage):
     storage_location_listbox = Locator(
         By.CSS_SELECTOR, 'div[data-test-region-selector] > div'
     )
+    configure_2fa_button = Locator(
+        By.CSS_SELECTOR, 'button[data-test-two-factor-enable-button]'
+    )
+    two_facor_qr_code_img = Locator(By.CSS_SELECTOR, 'div[data-test-2f-qr-code] > img')
+    cancel_2fa_button = Locator(
+        By.CSS_SELECTOR, 'button[data-test-two-factor-verify-cancel-button]'
+    )
     request_deactivation_button = Locator(
         By.CSS_SELECTOR, 'button[data-analytics-name="Deactivation request"]'
     )
@@ -86,6 +94,7 @@ class AccountSettingsPage(BaseUserSettingsPage):
     undo_deactivation_request_button = Locator(
         By.CSS_SELECTOR, 'button[data-analytics-name="Undo deactivation request"]'
     )
+    configure_2fa_modal = ComponentLocator(Configure2FAModal)
     confirm_deactivation_modal = ComponentLocator(ConfirmDeactivationRequestModal)
     undo_deactivation_modal = ComponentLocator(UndoDeactivationRequestModal)
 

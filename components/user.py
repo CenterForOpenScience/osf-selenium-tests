@@ -35,3 +35,8 @@ class ConfirmDeactivationRequestModal(BaseElement):
 class UndoDeactivationRequestModal(BaseElement):
     cancel_button = Locator(By.CSS_SELECTOR, '[data-test-undo-warning-cancel]')
     undo_request_button = Locator(By.CSS_SELECTOR, '[data-test-undo-warning-confirm]')
+
+
+class Configure2FAModal(BaseElement):
+    cancel_button = Locator(By.CSS_SELECTOR, '[data-test-enable-warning-cancel]')
+    configure_button = Locator(By.CSS_SELECTOR, '[data-test-enable-warning-confirm]')

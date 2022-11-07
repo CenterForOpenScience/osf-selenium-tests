@@ -147,6 +147,32 @@ class TestUserAccountSettings:
         api_regions.sort()
         assert listbox_regions == api_regions
 
+    def test_user_account_settings_enable_2fa(self, driver, session):
+        """Test the process of enabling two factor authentication on the User Account
+        Settings page in OSF. The test only goes as far as displaying the QR code
+        needed to enable an external 2FA application or device. It does NOT actually
+        enable 2FA for the user.
+        """
+        settings_page = user.AccountSettingsPage(driver)
+        settings_page.goto()
+        assert user.AccountSettingsPage(driver, verify=True)
+        # Scroll down to the Security settiings section near the bottom of the page and
+        # click the Configure button
+        settings_page.scroll_into_view(settings_page.configure_2fa_button.element)
+        settings_page.configure_2fa_button.click()
+        # On the Configure 2FA Modal, first click the Cancel button and verify that the
+        # 2FA QR code is not yet displayed.
+        settings_page.configure_2fa_modal.cancel_button.click()
+        assert settings_page.two_facor_qr_code_img.absent()
+        # Click the Configure button again and this time click the Configure button on
+        # the modal and then verify that the QR code is now displayed.
+        settings_page.configure_2fa_button.click()
+        settings_page.configure_2fa_modal.configure_button.click()
+        assert settings_page.two_facor_qr_code_img.present()
+        # Finally click the Cancel button to end the enable 2FA process
+        settings_page.scroll_into_view(settings_page.cancel_2fa_button.element)
+        settings_page.cancel_2fa_button.click()
+
     def test_user_account_settings_deactivate_account(self, driver, session):
         """Test the process of Requestiog Account Deactivation on the User Account
         Settings page in OSF. The test requests account deactivation and then reverses
