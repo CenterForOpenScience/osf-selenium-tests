@@ -8,9 +8,11 @@ from base.locators import (
     Locator,
 )
 from components.user import (
+    ConfirmDeactivationRequestModal,
     DeleteDevAppModal,
     DeletePATModal,
     SettingsSideNavigation,
+    UndoDeactivationRequestModal,
 )
 from pages.base import (
     GuidBasePage,
@@ -74,6 +76,18 @@ class AccountSettingsPage(BaseUserSettingsPage):
     storage_location_listbox = Locator(
         By.CSS_SELECTOR, 'div[data-test-region-selector] > div'
     )
+    request_deactivation_button = Locator(
+        By.CSS_SELECTOR, 'button[data-analytics-name="Deactivation request"]'
+    )
+    pending_deactivation_message = Locator(
+        By.CSS_SELECTOR,
+        'div[data-test-deactivation-panel] > div > div.panel-body > p:nth-child(3) > strong',
+    )
+    undo_deactivation_request_button = Locator(
+        By.CSS_SELECTOR, 'button[data-analytics-name="Undo deactivation request"]'
+    )
+    confirm_deactivation_modal = ComponentLocator(ConfirmDeactivationRequestModal)
+    undo_deactivation_modal = ComponentLocator(UndoDeactivationRequestModal)
 
 
 class ConfigureAddonsPage(BaseUserSettingsPage):

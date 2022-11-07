@@ -25,3 +25,13 @@ class DeletePATModal(BaseElement):
     token_name = Locator(By.CSS_SELECTOR, 'div.modal-header > h3 > strong')
     cancel_button = Locator(By.CSS_SELECTOR, 'button[data-test-cancel-delete]')
     delete_button = Locator(By.CSS_SELECTOR, 'button[data-test-confirm-delete]')
+
+
+class ConfirmDeactivationRequestModal(BaseElement):
+    cancel_button = Locator(By.CSS_SELECTOR, '[data-test-deactivation-cancel]')
+    request_button = Locator(By.CSS_SELECTOR, '[data-test-confirm-deactivation-submit]')
+
+
+class UndoDeactivationRequestModal(BaseElement):
+    cancel_button = Locator(By.CSS_SELECTOR, '[data-test-undo-warning-cancel]')
+    undo_request_button = Locator(By.CSS_SELECTOR, '[data-test-undo-warning-confirm]')

@@ -111,6 +111,7 @@ class TestUserSettings:
         )
 
 
+@markers.dont_run_on_prod
 @pytest.mark.usefixtures('must_be_logged_in')
 class TestUserAccountSettings:
     def test_user_account_settings_storage_locations(self, driver, session):
@@ -145,6 +146,49 @@ class TestUserAccountSettings:
             api_regions.append(region['attributes']['name'])
         api_regions.sort()
         assert listbox_regions == api_regions
+
+    def test_user_account_settings_deactivate_account(self, driver, session):
+        """Test the process of Requestiog Account Deactivation on the User Account
+        Settings page in OSF. The test requests account deactivation and then reverses
+        the request using the 'Undo deactivation request' process as well.
+        """
+        settings_page = user.AccountSettingsPage(driver)
+        settings_page.goto()
+        assert user.AccountSettingsPage(driver, verify=True)
+        # Scroll down to the Deactivate account section at the bottom of the page and
+        # click the Request deactivation button
+        settings_page.scroll_into_view(
+            settings_page.request_deactivation_button.element
+        )
+        settings_page.request_deactivation_button.click()
+        # First click the Cancel button on the Confirmation modal
+        settings_page.confirm_deactivation_modal.cancel_button.click()
+        assert settings_page.pending_deactivation_message.absent()
+        # Click the Request deactivation button again and this time click the Request
+        # button on the modal
+        settings_page.request_deactivation_button.click()
+        settings_page.confirm_deactivation_modal.request_button.click()
+        # Verify that the account pending deactivation message is now displayed
+        assert settings_page.pending_deactivation_message.present()
+        assert (
+            settings_page.pending_deactivation_message.text
+            == 'Your account is currently pending deactivation.'
+        )
+        # Click the Undo deactivation request button
+        settings_page.undo_deactivation_request_button.click()
+        # First click Cancel on the Undo Deactivation Request modal
+        settings_page.undo_deactivation_modal.cancel_button.click()
+        assert settings_page.pending_deactivation_message.present()
+        assert (
+            settings_page.pending_deactivation_message.text
+            == 'Your account is currently pending deactivation.'
+        )
+        # Click the Undo deactivation request button again and this time click the
+        # Undo deactivation request button on the modal
+        settings_page.undo_deactivation_request_button.click()
+        settings_page.undo_deactivation_modal.undo_request_button.click()
+        assert settings_page.pending_deactivation_message.absent()
+        assert settings_page.request_deactivation_button.present()
 
 
 @markers.dont_run_on_prod
