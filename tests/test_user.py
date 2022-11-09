@@ -11,6 +11,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 import markers
 import settings
 from api import osf_api
+from components.email_access import EmailAccess
 from pages import user
 
 
@@ -114,6 +115,84 @@ class TestUserSettings:
 @markers.dont_run_on_prod
 @pytest.mark.usefixtures('must_be_logged_in')
 class TestUserAccountSettings:
+    def test_user_account_settings_connected_email(self, driver, session):
+        """Test the process of adding an alternate email to the user account on the
+        User Account Settings page in OSF. The test will add an email address and
+        verify that a confirmation email is sent to that address, but the email address
+        will NOT be confirmed and permanently merged with the account. Lastly the
+        unconfirmed email will be deleted from the user account as cleanup.
+        """
+        settings_page = user.AccountSettingsPage(driver)
+        settings_page.goto()
+        assert user.AccountSettingsPage(driver, verify=True)
+
+        # Enter an IMAP enabled email address in the email address input box and click
+        # the Add email button
+        settings_page.email_address_input.send_keys_deliberately(settings.IMAP_EMAIL)
+        settings_page.add_email_button.click()
+        try:
+            # After clicking the Close button on the confirmation modal, verify that the
+            # email address is displayed in the Unconfirmed emails list
+            settings_page.confrim_email_sent_modal.close_button.click()
+            unconfirmed_email = settings_page.get_unconfimred_email_item(
+                settings.IMAP_EMAIL
+            )
+            assert unconfirmed_email is not None
+
+            # Next connect to the email account and verify that a Confirm account merge
+            # email was actually sent
+            email_count = 0
+            loop_counter = 0
+            while email_count == 0:
+                # Retrieve count of UNSEEN email messages from inbox
+                email_count = EmailAccess.get_count_of_unseen_emails_by_imap(
+                    settings.IMAP_HOST,
+                    settings.IMAP_EMAIL,
+                    settings.IMAP_EMAIL_PASSWORD,
+                )
+                # To prevent an endless loop waiting for the email
+                loop_counter += 1
+                if loop_counter == 90:
+                    raise Exception(
+                        'No unseen emails. Verify that Reset Password email was sent.'
+                    )
+                    break
+
+            if email_count > 0:
+                # Next retrieve the email with subject 'Confirm account merge'
+                email_body = EmailAccess.get_latest_email_body_by_imap(
+                    settings.IMAP_HOST,
+                    settings.IMAP_EMAIL,
+                    settings.IMAP_EMAIL_PASSWORD,
+                    'Inbox',
+                    'SUBJECT',
+                    'Confirm account merge',
+                )
+                # Search through the email body and verify that the OSF account owner's
+                # email address is in the body of the email
+                assert str(email_body).find(settings.USER_ONE) > 0
+        finally:
+            # Lastly delete the unconfirmed email from the account
+            unconfirmed_email = settings_page.get_unconfimred_email_item(
+                settings.IMAP_EMAIL
+            )
+            if unconfirmed_email is not None:
+                delete_button = unconfirmed_email.find_element_by_css_selector(
+                    'button[data-test-delete-button]'
+                )
+                delete_button.click()
+                # Verify email address in text of confirmation modal
+                assert (
+                    settings_page.confrim_remove_email_modal.deleted_email.text
+                    == settings.IMAP_EMAIL
+                )
+                settings_page.confrim_remove_email_modal.delete_button.click()
+                settings_page.reload()
+                unconfirmed_email = settings_page.get_unconfimred_email_item(
+                    settings.IMAP_EMAIL
+                )
+                assert unconfirmed_email is None
+
     def test_user_account_settings_storage_locations(self, driver, session):
         """Check the list of storage locations in the dropdown listbox on the User
         Account Settings page and verify that the correct default storage location
@@ -156,7 +235,7 @@ class TestUserAccountSettings:
         settings_page = user.AccountSettingsPage(driver)
         settings_page.goto()
         assert user.AccountSettingsPage(driver, verify=True)
-        # Scroll down to the Security settiings section near the bottom of the page and
+        # Scroll down to the Security settings section near the bottom of the page and
         # click the Configure button
         settings_page.scroll_into_view(settings_page.configure_2fa_button.element)
         settings_page.configure_2fa_button.click()
@@ -174,7 +253,7 @@ class TestUserAccountSettings:
         settings_page.cancel_2fa_button.click()
 
     def test_user_account_settings_deactivate_account(self, driver, session):
-        """Test the process of Requestiog Account Deactivation on the User Account
+        """Test the process of Requesting Account Deactivation on the User Account
         Settings page in OSF. The test requests account deactivation and then reverses
         the request using the 'Undo deactivation request' process as well.
         """

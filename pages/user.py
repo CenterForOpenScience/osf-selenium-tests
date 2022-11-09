@@ -10,6 +10,8 @@ from base.locators import (
 from components.user import (
     Configure2FAModal,
     ConfirmDeactivationRequestModal,
+    ConfirmEmailSentModal,
+    ConfirmRemoveEmailModal,
     DeleteDevAppModal,
     DeletePATModal,
     SettingsSideNavigation,
@@ -74,6 +76,8 @@ class AccountSettingsPage(BaseUserSettingsPage):
     identity = Locator(
         By.CSS_SELECTOR, 'div[data-analytics-scope="Connected emails panel"]'
     )
+    email_address_input = Locator(By.NAME, 'emailAddress')
+    add_email_button = Locator(By.CSS_SELECTOR, 'button[data-test-add-email-button]')
     storage_location_listbox = Locator(
         By.CSS_SELECTOR, 'div[data-test-region-selector] > div'
     )
@@ -94,9 +98,23 @@ class AccountSettingsPage(BaseUserSettingsPage):
     undo_deactivation_request_button = Locator(
         By.CSS_SELECTOR, 'button[data-analytics-name="Undo deactivation request"]'
     )
+    unconfirmed_emails = GroupLocator(
+        By.CSS_SELECTOR, 'div[data-test-unconfirmed-email-item]'
+    )
+
     configure_2fa_modal = ComponentLocator(Configure2FAModal)
     confirm_deactivation_modal = ComponentLocator(ConfirmDeactivationRequestModal)
     undo_deactivation_modal = ComponentLocator(UndoDeactivationRequestModal)
+    confrim_email_sent_modal = ComponentLocator(ConfirmEmailSentModal)
+    confrim_remove_email_modal = ComponentLocator(ConfirmRemoveEmailModal)
+
+    def get_unconfimred_email_item(self, email_address):
+        for email_item in self.unconfirmed_emails:
+            email_addr = email_item.find_element_by_css_selector(
+                '._email-address_mkik0'
+            )
+            if email_address in email_addr.text:
+                return email_item
 
 
 class ConfigureAddonsPage(BaseUserSettingsPage):

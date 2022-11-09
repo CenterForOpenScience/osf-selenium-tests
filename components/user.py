@@ -40,3 +40,12 @@ class UndoDeactivationRequestModal(BaseElement):
 class Configure2FAModal(BaseElement):
     cancel_button = Locator(By.CSS_SELECTOR, '[data-test-enable-warning-cancel]')
     configure_button = Locator(By.CSS_SELECTOR, '[data-test-enable-warning-confirm]')
+
+
+class ConfirmEmailSentModal(BaseElement):
+    close_button = Locator(By.CSS_SELECTOR, '[data-test-close-modal]')
+
+
+class ConfirmRemoveEmailModal(BaseElement):
+    deleted_email = Locator(By.CSS_SELECTOR, 'div.modal-body > p > strong')
+    delete_button = Locator(By.CSS_SELECTOR, '[data-test-confirm-delete]')
