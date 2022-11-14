@@ -809,9 +809,11 @@ def create_personal_access_token(
     return_data = session.post(
         url=url, item_type='tokens', raw_body=json.dumps(raw_payload)
     )
-    # Return the token id
+    # Return the public id and the private token_id
     if return_data:
-        return return_data['data']['id']
+        public_id = return_data['data']['id']
+        token_id = return_data['data']['attributes']['token_id']
+        return [public_id, token_id]
     return None
 
 

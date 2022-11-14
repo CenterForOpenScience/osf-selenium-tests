@@ -1,7 +1,9 @@
 import os
 import re
+import tkinter
 
 import pytest
+import requests
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
@@ -464,6 +466,35 @@ class TestUserDeveloperApps:
 @markers.dont_run_on_prod
 @pytest.mark.usefixtures('must_be_logged_in')
 class TestUserPersonalAccessTokens:
+    def create_scope_dictionary(self, driver):
+        """Helper function used to create a dictionary of all of the scope checkboxes on
+        the Edit Personal Access Token Page.
+        """
+        all_scope_rows = driver.find_elements_by_css_selector(
+            '._Checkboxes_qxt8ij > div'
+        )
+        scope_dictionary = {}
+        for row in all_scope_rows:
+            scope = row.get_attribute('data-test-scope')
+            checkbox_element = row.find_element_by_css_selector('input')
+            scope_dictionary[scope] = checkbox_element
+        return scope_dictionary
+
+    def verify_scope_checkboxes(self, driver, page, scope_list, checked=True):
+        """Helper function used to verify scope checkboxes on the Edit Personal Access
+        Token Page. For each scope in the scope_list parameter, get the corresponding
+        checkbox element from the scope dictionary. Then verify whether the checkbox
+        should be selected or not based on the checked parameter.
+        """
+        scope_dictionary = self.create_scope_dictionary(driver)
+        for scope in scope_list:
+            checkbox = scope_dictionary[scope]
+            page.scroll_into_view(checkbox)
+            if checked:
+                assert checkbox.is_selected()
+            else:
+                assert not checkbox.is_selected()
+
     def test_user_settings_create_PAT(self, driver, session, fake):
         """Create a Personal Access Token from the User Settings Personal Access Tokens
         page in OSF. The test uses the OSF api to delete the personal access token at
@@ -518,8 +549,19 @@ class TestUserPersonalAccessTokens:
             match = re.search(r'tokens/([a-z0-9]{24})\?view_only=', driver.current_url)
             token_id = match.group(1)
 
-            # Verify that New Token Input Box has a value
-            assert edit_page.new_token_input.get_attribute('value') != ''
+            if settings.DRIVER == 'Remote':
+                # Running on BrowserStack - Can't get value from remote clipboard, so
+                # just verify that New Token Input Box has a value
+                assert edit_page.new_token_input.get_attribute('value') != ''
+            else:
+                # Running locally - click the Copy to Clipboard button and verify that
+                # the value copied to the clipboard matches the value displayed in the
+                # token input box
+                edit_page.copy_to_clipboard_button.click()
+                window = tkinter.Tk()
+                window.withdraw()  # to hide the window
+                token_value = window.clipboard_get()
+                assert edit_page.new_token_input.get_attribute('value') == token_value
 
             # Click the Back to list of tokens link
             edit_page.back_to_list_of_tokens_link.click()
@@ -539,59 +581,62 @@ class TestUserPersonalAccessTokens:
             pat_link.click()
             edit_page = user.EditPersonalAccessTokenPage(driver, verify=True)
             assert edit_page.token_name_input.get_attribute('value') == token_name
-            edit_page.scroll_into_view(edit_page.osf_nodes_full_read_checkbox.element)
-            assert edit_page.osf_nodes_full_read_checkbox.is_selected()
-            edit_page.scroll_into_view(edit_page.osf_full_read_checkbox.element)
-            assert edit_page.osf_full_read_checkbox.is_selected()
-            edit_page.scroll_into_view(
-                edit_page.osf_nodes_metadata_read_checkbox.element
+
+            # Use helper function to verify scopes
+            selected_scopes = [
+                'osf.nodes.full_read',
+                'osf.full_read',
+                'osf.nodes.metadata_read',
+                'osf.nodes.access_read',
+                'osf.nodes.data_read',
+                'osf.users.email_read',
+                'osf.users.profile_read',
+            ]
+            self.verify_scope_checkboxes(
+                driver, edit_page, selected_scopes, checked=True
             )
-            assert edit_page.osf_nodes_metadata_read_checkbox.is_selected()
-            edit_page.scroll_into_view(edit_page.osf_nodes_access_read_checkbox.element)
-            assert edit_page.osf_nodes_access_read_checkbox.is_selected()
-            edit_page.scroll_into_view(edit_page.osf_nodes_data_read_checkbox.element)
-            assert edit_page.osf_nodes_data_read_checkbox.is_selected()
-            edit_page.scroll_into_view(edit_page.osf_users_email_read_checkbox.element)
-            assert edit_page.osf_users_email_read_checkbox.is_selected()
-            edit_page.scroll_into_view(
-                edit_page.osf_users_profile_read_checkbox.element
+            unselected_scopes = [
+                'osf.nodes.full_write',
+                'osf.full_write',
+                'osf.nodes.metadata_write',
+                'osf.nodes.access_write',
+                'osf.nodes.data_write',
+                'osf.users.profile_write',
+            ]
+            self.verify_scope_checkboxes(
+                driver, edit_page, unselected_scopes, checked=False
             )
-            assert edit_page.osf_users_profile_read_checkbox.is_selected()
-            edit_page.scroll_into_view(
-                edit_page.osf_users_profile_write_checkbox.element
-            )
-            assert not edit_page.osf_users_profile_write_checkbox.is_selected()
-            edit_page.scroll_into_view(edit_page.osf_full_write_checkbox.element)
-            assert not edit_page.osf_full_write_checkbox.is_selected()
-            edit_page.scroll_into_view(edit_page.osf_nodes_full_write_checkbox.element)
-            assert not edit_page.osf_nodes_full_write_checkbox.is_selected()
-            edit_page.scroll_into_view(
-                edit_page.osf_nodes_metadata_write_checkbox.element
-            )
-            assert not edit_page.osf_nodes_metadata_write_checkbox.is_selected()
-            edit_page.scroll_into_view(
-                edit_page.osf_nodes_access_write_checkbox.element
-            )
-            assert not edit_page.osf_nodes_access_write_checkbox.is_selected()
-            edit_page.scroll_into_view(edit_page.osf_nodes_data_write_checkbox.element)
-            assert not edit_page.osf_nodes_data_write_checkbox.is_selected()
+
         finally:
             # Delete the token using the api as cleanup
             if token_id:
                 osf_api.delete_personal_access_token(session, token_id=token_id)
 
-    def test_user_settings_delete_PAT_from_edit_page(self, driver, session, fake):
+    def test_user_settings_delete_PAT_from_edit_page(
+        self, driver, session, fake, default_project
+    ):
         """Delete a Personal Access Token from the User Settings Edit Personal Access
         Token page in OSF. The test uses the OSF api to first create the personal access
         token that will then be deleted using the Front End interface.
         """
         token_name = 'PAT created via api ' + fake.sentence(nb_words=1)
-        token_id = osf_api.create_personal_access_token(
+        token_ids = osf_api.create_personal_access_token(
             session,
             name=token_name,
             scopes='osf.nodes.full_read osf.nodes.metadata_read osf.nodes.access_read osf.nodes.data_read',
         )
+        public_token_id = token_ids[0]
+        private_token_id = token_ids[1]
+
         try:
+            # Use the PAT so that it becomes registered in CAS
+            node_url = settings.API_DOMAIN + '/v2/nodes/' + default_project.id
+            headers = {'Authorization': 'Bearer ' + private_token_id}
+            r = requests.get(node_url, headers=headers)
+            # verify the node access response and some of the returned data
+            assert r.status_code == 200
+            assert r.json()['data']['attributes']['title'] == 'OSF Test Project'
+
             # Go to the Profile Information page first and use the side navigation bar
             # to then go to the Personal Access Tokens page.
             profile_settings_page = user.ProfileInformationPage(driver)
@@ -607,49 +652,38 @@ class TestUserPersonalAccessTokens:
             pat_link = pat_card.find_element_by_css_selector('a')
             link_url = pat_link.get_attribute('href')
             link_token_id = link_url.split('tokens/', 1)[1]
-            assert link_token_id == token_id
+            assert link_token_id == public_token_id
 
             # Now click the PAT name link to go to the Edit PAT page and verify the
             # data
             pat_link.click()
             edit_page = user.EditPersonalAccessTokenPage(driver, verify=True)
             assert edit_page.token_name_input.get_attribute('value') == token_name
-            edit_page.scroll_into_view(edit_page.osf_nodes_full_read_checkbox.element)
-            assert edit_page.osf_nodes_full_read_checkbox.is_selected()
-            edit_page.scroll_into_view(
-                edit_page.osf_nodes_metadata_read_checkbox.element
+
+            # Use helper function to verify scopes
+            selected_scopes = [
+                'osf.nodes.full_read',
+                'osf.nodes.metadata_read',
+                'osf.nodes.access_read',
+                'osf.nodes.data_read',
+            ]
+            self.verify_scope_checkboxes(
+                driver, edit_page, selected_scopes, checked=True
             )
-            assert edit_page.osf_nodes_metadata_read_checkbox.is_selected()
-            edit_page.scroll_into_view(edit_page.osf_nodes_access_read_checkbox.element)
-            assert edit_page.osf_nodes_access_read_checkbox.is_selected()
-            edit_page.scroll_into_view(edit_page.osf_nodes_data_read_checkbox.element)
-            assert edit_page.osf_nodes_data_read_checkbox.is_selected()
-            edit_page.scroll_into_view(
-                edit_page.osf_users_profile_write_checkbox.element
+            unselected_scopes = [
+                'osf.full_read',
+                'osf.nodes.full_write',
+                'osf.full_write',
+                'osf.nodes.metadata_write',
+                'osf.nodes.access_write',
+                'osf.nodes.data_write',
+                'osf.users.profile_write',
+                'osf.users.email_read',
+                'osf.users.profile_read',
+            ]
+            self.verify_scope_checkboxes(
+                driver, edit_page, unselected_scopes, checked=False
             )
-            assert not edit_page.osf_users_profile_write_checkbox.is_selected()
-            edit_page.scroll_into_view(edit_page.osf_full_write_checkbox.element)
-            assert not edit_page.osf_full_write_checkbox.is_selected()
-            edit_page.scroll_into_view(
-                edit_page.osf_nodes_metadata_write_checkbox.element
-            )
-            assert not edit_page.osf_nodes_metadata_write_checkbox.is_selected()
-            edit_page.scroll_into_view(edit_page.osf_full_read_checkbox.element)
-            assert not edit_page.osf_full_read_checkbox.is_selected()
-            edit_page.scroll_into_view(edit_page.osf_nodes_full_write_checkbox.element)
-            assert not edit_page.osf_nodes_full_write_checkbox.is_selected()
-            edit_page.scroll_into_view(
-                edit_page.osf_nodes_access_write_checkbox.element
-            )
-            assert not edit_page.osf_nodes_access_write_checkbox.is_selected()
-            edit_page.scroll_into_view(edit_page.osf_nodes_data_write_checkbox.element)
-            assert not edit_page.osf_nodes_data_write_checkbox.is_selected()
-            edit_page.scroll_into_view(edit_page.osf_users_email_read_checkbox.element)
-            assert not edit_page.osf_users_email_read_checkbox.is_selected()
-            edit_page.scroll_into_view(
-                edit_page.osf_users_profile_read_checkbox.element
-            )
-            assert not edit_page.osf_users_profile_read_checkbox.is_selected()
 
             # Click the Delete button
             edit_page.scroll_into_view(edit_page.delete_button.element)
@@ -696,9 +730,9 @@ class TestUserPersonalAccessTokens:
         except Exception:
             # As cleanup, delete the PAT using the api if the test failed for some
             # reason and the PAT was not actually deleted.
-            pat_data = osf_api.get_user_pat_data(session, token_id=token_id)
+            pat_data = osf_api.get_user_pat_data(session, token_id=public_token_id)
             if pat_data:
-                osf_api.delete_personal_access_token(session, token_id=token_id)
+                osf_api.delete_personal_access_token(session, token_id=public_token_id)
 
     def test_user_settings_delete_PAT_from_list_page(self, driver, session, fake):
         """Delete a Personal Access Token from the User Settings Edit Personal Access
@@ -706,12 +740,26 @@ class TestUserPersonalAccessTokens:
         token that will then be deleted using the Front End interface.
         """
         token_name = 'PAT created via api ' + fake.sentence(nb_words=1)
-        token_id = osf_api.create_personal_access_token(
+        token_ids = osf_api.create_personal_access_token(
             session,
             name=token_name,
             scopes='osf.users.profile_read osf.users.email_read',
         )
+        public_token_id = token_ids[0]
+        private_token_id = token_ids[1]
+
         try:
+            # Use the PAT so that it becomes registered in CAS
+            current_user = osf_api.current_user()
+            user_url = settings.API_DOMAIN + '/v2/users/{}/settings/emails/'.format(
+                current_user.id
+            )
+            headers = {'Authorization': 'Bearer ' + private_token_id}
+            r = requests.get(user_url, headers=headers)
+            # verify the node access response and some of the returned data
+            assert r.status_code == 200
+            assert r.json()['data'][0]['attributes']['confirmed']
+
             # Go to the Profile Information page first and use the side navigation bar
             # to then go to the Personal Access Tokens page.
             profile_settings_page = user.ProfileInformationPage(driver)
@@ -727,49 +775,35 @@ class TestUserPersonalAccessTokens:
             pat_link = pat_card.find_element_by_css_selector('a')
             link_url = pat_link.get_attribute('href')
             link_token_id = link_url.split('tokens/', 1)[1]
-            assert link_token_id == token_id
+            assert link_token_id == public_token_id
 
             # Now click the PAT name link to go to the Edit PAT page and verify the
             # data
             pat_link.click()
             edit_page = user.EditPersonalAccessTokenPage(driver, verify=True)
             assert edit_page.token_name_input.get_attribute('value') == token_name
-            edit_page.scroll_into_view(edit_page.osf_nodes_full_read_checkbox.element)
-            assert not edit_page.osf_nodes_full_read_checkbox.is_selected()
-            edit_page.scroll_into_view(
-                edit_page.osf_nodes_metadata_read_checkbox.element
+
+            # Use helper function to verify scopes
+            selected_scopes = ['osf.users.profile_read', 'osf.users.email_read']
+            self.verify_scope_checkboxes(
+                driver, edit_page, selected_scopes, checked=True
             )
-            assert not edit_page.osf_nodes_metadata_read_checkbox.is_selected()
-            edit_page.scroll_into_view(edit_page.osf_nodes_access_read_checkbox.element)
-            assert not edit_page.osf_nodes_access_read_checkbox.is_selected()
-            edit_page.scroll_into_view(edit_page.osf_nodes_data_read_checkbox.element)
-            assert not edit_page.osf_nodes_data_read_checkbox.is_selected()
-            edit_page.scroll_into_view(
-                edit_page.osf_users_profile_write_checkbox.element
+            unselected_scopes = [
+                'osf.full_read',
+                'osf.nodes.full_write',
+                'osf.full_write',
+                'osf.nodes.metadata_write',
+                'osf.nodes.access_write',
+                'osf.nodes.data_write',
+                'osf.users.profile_write',
+                'osf.nodes.full_read',
+                'osf.nodes.metadata_read',
+                'osf.nodes.access_read',
+                'osf.nodes.data_read',
+            ]
+            self.verify_scope_checkboxes(
+                driver, edit_page, unselected_scopes, checked=False
             )
-            assert not edit_page.osf_users_profile_write_checkbox.is_selected()
-            edit_page.scroll_into_view(edit_page.osf_full_write_checkbox.element)
-            assert not edit_page.osf_full_write_checkbox.is_selected()
-            edit_page.scroll_into_view(
-                edit_page.osf_nodes_metadata_write_checkbox.element
-            )
-            assert not edit_page.osf_nodes_metadata_write_checkbox.is_selected()
-            edit_page.scroll_into_view(edit_page.osf_full_read_checkbox.element)
-            assert not edit_page.osf_full_read_checkbox.is_selected()
-            edit_page.scroll_into_view(edit_page.osf_nodes_full_write_checkbox.element)
-            assert not edit_page.osf_nodes_full_write_checkbox.is_selected()
-            edit_page.scroll_into_view(
-                edit_page.osf_nodes_access_write_checkbox.element
-            )
-            assert not edit_page.osf_nodes_access_write_checkbox.is_selected()
-            edit_page.scroll_into_view(edit_page.osf_nodes_data_write_checkbox.element)
-            assert not edit_page.osf_nodes_data_write_checkbox.is_selected()
-            edit_page.scroll_into_view(edit_page.osf_users_email_read_checkbox.element)
-            assert edit_page.osf_users_email_read_checkbox.is_selected()
-            edit_page.scroll_into_view(
-                edit_page.osf_users_profile_read_checkbox.element
-            )
-            assert edit_page.osf_users_profile_read_checkbox.is_selected()
 
             # Click the Back to list of tokens link
             edit_page.back_to_list_of_tokens_link.click()
@@ -816,9 +850,9 @@ class TestUserPersonalAccessTokens:
         except Exception:
             # As cleanup, delete the PAT using the api if the test failed for some
             # reason and the PAT was not actually deleted.
-            pat_data = osf_api.get_user_pat_data(session, token_id=token_id)
+            pat_data = osf_api.get_user_pat_data(session, token_id=public_token_id)
             if pat_data:
-                osf_api.delete_personal_access_token(session, token_id=token_id)
+                osf_api.delete_personal_access_token(session, token_id=public_token_id)
 
     def test_user_settings_edit_PAT(self, driver, session, fake):
         """Edit a Personal Access Token from the User Settings Edit Personal Access
@@ -827,9 +861,10 @@ class TestUserPersonalAccessTokens:
         test the PAT will be deleted using the api as cleanup.
         """
         token_name = 'PAT created via api ' + fake.sentence(nb_words=1)
-        token_id = osf_api.create_personal_access_token(
+        token_ids = osf_api.create_personal_access_token(
             session, name=token_name, scopes='osf.full_read'
         )
+        public_token_id = token_ids[0]
         try:
             pat_page = user.PersonalAccessTokenPage(driver)
             pat_page.goto()
@@ -842,49 +877,36 @@ class TestUserPersonalAccessTokens:
             pat_link = pat_card.find_element_by_css_selector('a')
             link_url = pat_link.get_attribute('href')
             link_token_id = link_url.split('tokens/', 1)[1]
-            assert link_token_id == token_id
+            assert link_token_id == public_token_id
 
             # Now click the PAT name link to go to the Edit PAT page and verify the
             # data
             pat_link.click()
             edit_page = user.EditPersonalAccessTokenPage(driver, verify=True)
             assert edit_page.token_name_input.get_attribute('value') == token_name
-            edit_page.scroll_into_view(edit_page.osf_nodes_full_read_checkbox.element)
-            assert not edit_page.osf_nodes_full_read_checkbox.is_selected()
-            edit_page.scroll_into_view(
-                edit_page.osf_nodes_metadata_read_checkbox.element
+
+            # Use helper function to verify scopes
+            selected_scopes = ['osf.full_read']
+            self.verify_scope_checkboxes(
+                driver, edit_page, selected_scopes, checked=True
             )
-            assert not edit_page.osf_nodes_metadata_read_checkbox.is_selected()
-            edit_page.scroll_into_view(edit_page.osf_nodes_access_read_checkbox.element)
-            assert not edit_page.osf_nodes_access_read_checkbox.is_selected()
-            edit_page.scroll_into_view(edit_page.osf_nodes_data_read_checkbox.element)
-            assert not edit_page.osf_nodes_data_read_checkbox.is_selected()
-            edit_page.scroll_into_view(
-                edit_page.osf_users_profile_write_checkbox.element
+            unselected_scopes = [
+                'osf.nodes.full_write',
+                'osf.full_write',
+                'osf.nodes.metadata_write',
+                'osf.nodes.access_write',
+                'osf.nodes.data_write',
+                'osf.users.profile_write',
+                'osf.nodes.full_read',
+                'osf.nodes.metadata_read',
+                'osf.nodes.access_read',
+                'osf.nodes.data_read',
+                'osf.users.profile_read',
+                'osf.users.email_read',
+            ]
+            self.verify_scope_checkboxes(
+                driver, edit_page, unselected_scopes, checked=False
             )
-            assert not edit_page.osf_users_profile_write_checkbox.is_selected()
-            edit_page.scroll_into_view(edit_page.osf_full_write_checkbox.element)
-            assert not edit_page.osf_full_write_checkbox.is_selected()
-            edit_page.scroll_into_view(
-                edit_page.osf_nodes_metadata_write_checkbox.element
-            )
-            assert not edit_page.osf_nodes_metadata_write_checkbox.is_selected()
-            edit_page.scroll_into_view(edit_page.osf_full_read_checkbox.element)
-            assert edit_page.osf_full_read_checkbox.is_selected()
-            edit_page.scroll_into_view(edit_page.osf_nodes_full_write_checkbox.element)
-            assert not edit_page.osf_nodes_full_write_checkbox.is_selected()
-            edit_page.scroll_into_view(
-                edit_page.osf_nodes_access_write_checkbox.element
-            )
-            assert not edit_page.osf_nodes_access_write_checkbox.is_selected()
-            edit_page.scroll_into_view(edit_page.osf_nodes_data_write_checkbox.element)
-            assert not edit_page.osf_nodes_data_write_checkbox.is_selected()
-            edit_page.scroll_into_view(edit_page.osf_users_email_read_checkbox.element)
-            assert not edit_page.osf_users_email_read_checkbox.is_selected()
-            edit_page.scroll_into_view(
-                edit_page.osf_users_profile_read_checkbox.element
-            )
-            assert not edit_page.osf_users_profile_read_checkbox.is_selected()
 
             # Make some Edits - change the token name and change permissions from
             # osf.full_read to osf.full_write
@@ -913,43 +935,30 @@ class TestUserPersonalAccessTokens:
             pat_link.click()
             edit_page = user.EditPersonalAccessTokenPage(driver, verify=True)
             assert edit_page.token_name_input.get_attribute('value') == new_token_name
-            edit_page.scroll_into_view(edit_page.osf_nodes_full_read_checkbox.element)
-            assert not edit_page.osf_nodes_full_read_checkbox.is_selected()
-            edit_page.scroll_into_view(
-                edit_page.osf_nodes_metadata_read_checkbox.element
+
+            # Use helper function to verify scopes
+            selected_scopes = ['osf.full_write']
+            self.verify_scope_checkboxes(
+                driver, edit_page, selected_scopes, checked=True
             )
-            assert not edit_page.osf_nodes_metadata_read_checkbox.is_selected()
-            edit_page.scroll_into_view(edit_page.osf_nodes_access_read_checkbox.element)
-            assert not edit_page.osf_nodes_access_read_checkbox.is_selected()
-            edit_page.scroll_into_view(edit_page.osf_nodes_data_read_checkbox.element)
-            assert not edit_page.osf_nodes_data_read_checkbox.is_selected()
-            edit_page.scroll_into_view(
-                edit_page.osf_users_profile_write_checkbox.element
+            unselected_scopes = [
+                'osf.nodes.full_write',
+                'osf.full_read',
+                'osf.nodes.metadata_write',
+                'osf.nodes.access_write',
+                'osf.nodes.data_write',
+                'osf.users.profile_write',
+                'osf.nodes.full_read',
+                'osf.nodes.metadata_read',
+                'osf.nodes.access_read',
+                'osf.nodes.data_read',
+                'osf.users.profile_read',
+                'osf.users.email_read',
+            ]
+            self.verify_scope_checkboxes(
+                driver, edit_page, unselected_scopes, checked=False
             )
-            assert not edit_page.osf_users_profile_write_checkbox.is_selected()
-            edit_page.scroll_into_view(edit_page.osf_full_write_checkbox.element)
-            assert edit_page.osf_full_write_checkbox.is_selected()
-            edit_page.scroll_into_view(
-                edit_page.osf_nodes_metadata_write_checkbox.element
-            )
-            assert not edit_page.osf_nodes_metadata_write_checkbox.is_selected()
-            edit_page.scroll_into_view(edit_page.osf_full_read_checkbox.element)
-            assert not edit_page.osf_full_read_checkbox.is_selected()
-            edit_page.scroll_into_view(edit_page.osf_nodes_full_write_checkbox.element)
-            assert not edit_page.osf_nodes_full_write_checkbox.is_selected()
-            edit_page.scroll_into_view(
-                edit_page.osf_nodes_access_write_checkbox.element
-            )
-            assert not edit_page.osf_nodes_access_write_checkbox.is_selected()
-            edit_page.scroll_into_view(edit_page.osf_nodes_data_write_checkbox.element)
-            assert not edit_page.osf_nodes_data_write_checkbox.is_selected()
-            edit_page.scroll_into_view(edit_page.osf_users_email_read_checkbox.element)
-            assert not edit_page.osf_users_email_read_checkbox.is_selected()
-            edit_page.scroll_into_view(
-                edit_page.osf_users_profile_read_checkbox.element
-            )
-            assert not edit_page.osf_users_profile_read_checkbox.is_selected()
         finally:
             # Delete the token using the api as cleanup
-            if token_id:
-                osf_api.delete_personal_access_token(session, token_id=token_id)
+            if public_token_id:
+                osf_api.delete_personal_access_token(session, token_id=public_token_id)

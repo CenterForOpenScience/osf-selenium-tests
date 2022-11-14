@@ -221,6 +221,9 @@ class EditPersonalAccessTokenPage(BaseUserSettingsPage):
 
     identity = Locator(By.CSS_SELECTOR, 'div[data-analytics-scope="Edit"]')
     new_token_input = Locator(By.CSS_SELECTOR, 'div[data-test-new-token-value] > input')
+    copy_to_clipboard_button = Locator(
+        By.CSS_SELECTOR, 'div[data-test-new-token-value] > span > button'
+    )
     back_to_list_of_tokens_link = Locator(
         By.CSS_SELECTOR, 'a[data-test-back-to-tokens]'
     )
