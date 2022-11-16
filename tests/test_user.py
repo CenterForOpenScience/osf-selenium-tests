@@ -466,6 +466,28 @@ class TestUserDeveloperApps:
 @markers.dont_run_on_prod
 @pytest.mark.usefixtures('must_be_logged_in')
 class TestUserPersonalAccessTokens:
+    @pytest.fixture
+    def all_scopes(self):
+        """Fixture that returns a list of all of the available scopes for Personal
+        Access Tokens
+        """
+        all_scopes = [
+            'osf.full_read',
+            'osf.full_write',
+            'osf.nodes.full_read',
+            'osf.nodes.full_write',
+            'osf.nodes.metadata_read',
+            'osf.nodes.metadata_write',
+            'osf.nodes.access_read',
+            'osf.nodes.access_write',
+            'osf.nodes.data_read',
+            'osf.nodes.data_write',
+            'osf.users.email_read',
+            'osf.users.profile_read',
+            'osf.users.profile_write',
+        ]
+        return all_scopes
+
     def create_scope_dictionary(self, driver):
         """Helper function used to create a dictionary of all of the scope checkboxes on
         the Edit Personal Access Token Page.
@@ -480,22 +502,19 @@ class TestUserPersonalAccessTokens:
             scope_dictionary[scope] = checkbox_element
         return scope_dictionary
 
-    def verify_scope_checkboxes(self, driver, page, scope_list, checked=True):
+    def verify_scope_checkboxes(self, driver, page, scope_perms):
         """Helper function used to verify scope checkboxes on the Edit Personal Access
-        Token Page. For each scope in the scope_list parameter, get the corresponding
-        checkbox element from the scope dictionary. Then verify whether the checkbox
-        should be selected or not based on the checked parameter.
+        Token Page. The scope_perm parameter is a dict with the key being the scope name
+        and the value is a boolean for whether the corresponding checkbox should be
+        checked or not.
         """
         scope_dictionary = self.create_scope_dictionary(driver)
-        for scope in scope_list:
+        for scope, perm in scope_perms.items():
             checkbox = scope_dictionary[scope]
             page.scroll_into_view(checkbox)
-            if checked:
-                assert checkbox.is_selected()
-            else:
-                assert not checkbox.is_selected()
+            assert checkbox.is_selected() == perm
 
-    def test_user_settings_create_PAT(self, driver, session, fake):
+    def test_user_settings_create_PAT(self, driver, session, fake, all_scopes):
         """Create a Personal Access Token from the User Settings Personal Access Tokens
         page in OSF. The test uses the OSF api to delete the personal access token at
         the end of the test as cleanup.
@@ -582,30 +601,16 @@ class TestUserPersonalAccessTokens:
             edit_page = user.EditPersonalAccessTokenPage(driver, verify=True)
             assert edit_page.token_name_input.get_attribute('value') == token_name
 
-            # Use helper function to verify scopes
-            selected_scopes = [
-                'osf.nodes.full_read',
-                'osf.full_read',
-                'osf.nodes.metadata_read',
-                'osf.nodes.access_read',
-                'osf.nodes.data_read',
-                'osf.users.email_read',
-                'osf.users.profile_read',
-            ]
-            self.verify_scope_checkboxes(
-                driver, edit_page, selected_scopes, checked=True
-            )
-            unselected_scopes = [
-                'osf.nodes.full_write',
-                'osf.full_write',
-                'osf.nodes.metadata_write',
-                'osf.nodes.access_write',
-                'osf.nodes.data_write',
-                'osf.users.profile_write',
-            ]
-            self.verify_scope_checkboxes(
-                driver, edit_page, unselected_scopes, checked=False
-            )
+            # Use helper function to verify scopes. Pre-set all scopes to True and then
+            # override the 6 scopes that should be False in the dict.
+            scope_perms = {p: True for p in all_scopes}
+            scope_perms['osf.nodes.full_write'] = False
+            scope_perms['osf.full_write'] = False
+            scope_perms['osf.nodes.metadata_write'] = False
+            scope_perms['osf.nodes.access_write'] = False
+            scope_perms['osf.nodes.data_write'] = False
+            scope_perms['osf.users.profile_write'] = False
+            self.verify_scope_checkboxes(driver, edit_page, scope_perms)
 
         finally:
             # Delete the token using the api as cleanup
@@ -613,7 +618,7 @@ class TestUserPersonalAccessTokens:
                 osf_api.delete_personal_access_token(session, token_id=token_id)
 
     def test_user_settings_delete_PAT_from_edit_page(
-        self, driver, session, fake, default_project
+        self, driver, session, fake, default_project, all_scopes
     ):
         """Delete a Personal Access Token from the User Settings Edit Personal Access
         Token page in OSF. The test uses the OSF api to first create the personal access
@@ -660,30 +665,14 @@ class TestUserPersonalAccessTokens:
             edit_page = user.EditPersonalAccessTokenPage(driver, verify=True)
             assert edit_page.token_name_input.get_attribute('value') == token_name
 
-            # Use helper function to verify scopes
-            selected_scopes = [
-                'osf.nodes.full_read',
-                'osf.nodes.metadata_read',
-                'osf.nodes.access_read',
-                'osf.nodes.data_read',
-            ]
-            self.verify_scope_checkboxes(
-                driver, edit_page, selected_scopes, checked=True
-            )
-            unselected_scopes = [
-                'osf.full_read',
-                'osf.nodes.full_write',
-                'osf.full_write',
-                'osf.nodes.metadata_write',
-                'osf.nodes.access_write',
-                'osf.nodes.data_write',
-                'osf.users.profile_write',
-                'osf.users.email_read',
-                'osf.users.profile_read',
-            ]
-            self.verify_scope_checkboxes(
-                driver, edit_page, unselected_scopes, checked=False
-            )
+            # Use helper function to verify scopes. Pre-set all scopes to False and then
+            # override the 4 scopes that should be True in the dict.
+            scope_perms = {p: False for p in all_scopes}
+            scope_perms['osf.nodes.full_read'] = True
+            scope_perms['osf.nodes.metadata_read'] = True
+            scope_perms['osf.nodes.access_read'] = True
+            scope_perms['osf.nodes.data_read'] = True
+            self.verify_scope_checkboxes(driver, edit_page, scope_perms)
 
             # Click the Delete button
             edit_page.scroll_into_view(edit_page.delete_button.element)
@@ -734,7 +723,9 @@ class TestUserPersonalAccessTokens:
             if pat_data:
                 osf_api.delete_personal_access_token(session, token_id=public_token_id)
 
-    def test_user_settings_delete_PAT_from_list_page(self, driver, session, fake):
+    def test_user_settings_delete_PAT_from_list_page(
+        self, driver, session, fake, all_scopes
+    ):
         """Delete a Personal Access Token from the User Settings Edit Personal Access
         Token page in OSF. The test uses the OSF api to first create the personal access
         token that will then be deleted using the Front End interface.
@@ -783,27 +774,12 @@ class TestUserPersonalAccessTokens:
             edit_page = user.EditPersonalAccessTokenPage(driver, verify=True)
             assert edit_page.token_name_input.get_attribute('value') == token_name
 
-            # Use helper function to verify scopes
-            selected_scopes = ['osf.users.profile_read', 'osf.users.email_read']
-            self.verify_scope_checkboxes(
-                driver, edit_page, selected_scopes, checked=True
-            )
-            unselected_scopes = [
-                'osf.full_read',
-                'osf.nodes.full_write',
-                'osf.full_write',
-                'osf.nodes.metadata_write',
-                'osf.nodes.access_write',
-                'osf.nodes.data_write',
-                'osf.users.profile_write',
-                'osf.nodes.full_read',
-                'osf.nodes.metadata_read',
-                'osf.nodes.access_read',
-                'osf.nodes.data_read',
-            ]
-            self.verify_scope_checkboxes(
-                driver, edit_page, unselected_scopes, checked=False
-            )
+            # Use helper function to verify scopes. Pre-set all scopes to False and then
+            # override the 2 scopes that should be True in the dict.
+            scope_perms = {p: False for p in all_scopes}
+            scope_perms['osf.users.profile_read'] = True
+            scope_perms['osf.users.email_read'] = True
+            self.verify_scope_checkboxes(driver, edit_page, scope_perms)
 
             # Click the Back to list of tokens link
             edit_page.back_to_list_of_tokens_link.click()
@@ -854,7 +830,7 @@ class TestUserPersonalAccessTokens:
             if pat_data:
                 osf_api.delete_personal_access_token(session, token_id=public_token_id)
 
-    def test_user_settings_edit_PAT(self, driver, session, fake):
+    def test_user_settings_edit_PAT(self, driver, session, fake, all_scopes):
         """Edit a Personal Access Token from the User Settings Edit Personal Access
         Token page in OSF. The test uses the OSF api to first create the personal access
         token that will then be edited using the Front End interface. At the end of the
@@ -885,28 +861,11 @@ class TestUserPersonalAccessTokens:
             edit_page = user.EditPersonalAccessTokenPage(driver, verify=True)
             assert edit_page.token_name_input.get_attribute('value') == token_name
 
-            # Use helper function to verify scopes
-            selected_scopes = ['osf.full_read']
-            self.verify_scope_checkboxes(
-                driver, edit_page, selected_scopes, checked=True
-            )
-            unselected_scopes = [
-                'osf.nodes.full_write',
-                'osf.full_write',
-                'osf.nodes.metadata_write',
-                'osf.nodes.access_write',
-                'osf.nodes.data_write',
-                'osf.users.profile_write',
-                'osf.nodes.full_read',
-                'osf.nodes.metadata_read',
-                'osf.nodes.access_read',
-                'osf.nodes.data_read',
-                'osf.users.profile_read',
-                'osf.users.email_read',
-            ]
-            self.verify_scope_checkboxes(
-                driver, edit_page, unselected_scopes, checked=False
-            )
+            # Use helper function to verify scopes. Pre-set all scopes to False and then
+            # override the scope that should be True in the dict.
+            scope_perms = {p: False for p in all_scopes}
+            scope_perms['osf.full_read'] = True
+            self.verify_scope_checkboxes(driver, edit_page, scope_perms)
 
             # Make some Edits - change the token name and change permissions from
             # osf.full_read to osf.full_write
@@ -936,28 +895,11 @@ class TestUserPersonalAccessTokens:
             edit_page = user.EditPersonalAccessTokenPage(driver, verify=True)
             assert edit_page.token_name_input.get_attribute('value') == new_token_name
 
-            # Use helper function to verify scopes
-            selected_scopes = ['osf.full_write']
-            self.verify_scope_checkboxes(
-                driver, edit_page, selected_scopes, checked=True
-            )
-            unselected_scopes = [
-                'osf.nodes.full_write',
-                'osf.full_read',
-                'osf.nodes.metadata_write',
-                'osf.nodes.access_write',
-                'osf.nodes.data_write',
-                'osf.users.profile_write',
-                'osf.nodes.full_read',
-                'osf.nodes.metadata_read',
-                'osf.nodes.access_read',
-                'osf.nodes.data_read',
-                'osf.users.profile_read',
-                'osf.users.email_read',
-            ]
-            self.verify_scope_checkboxes(
-                driver, edit_page, unselected_scopes, checked=False
-            )
+            # Use helper function to verify scopes. Pre-set all scopes to False and then
+            # override the scope that should be True in the dict.
+            scope_perms = {p: False for p in all_scopes}
+            scope_perms['osf.full_write'] = True
+            self.verify_scope_checkboxes(driver, edit_page, scope_perms)
         finally:
             # Delete the token using the api as cleanup
             if public_token_id:

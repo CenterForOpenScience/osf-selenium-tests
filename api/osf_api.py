@@ -831,6 +831,4 @@ def get_user_pat_data(session, token_id=None):
         session = get_default_session()
     url = '/v2/tokens/{}/'.format(token_id)
     data = session.get(url)['data']
-    if data:
-        return data
-    return None
+    return data or None
