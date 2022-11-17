@@ -19,3 +19,9 @@ class DeleteDevAppModal(BaseElement):
     app_name = Locator(By.CSS_SELECTOR, 'div.modal-header > h3 > strong')
     cancel_button = Locator(By.CSS_SELECTOR, 'button[data-test-cancel-delete]')
     delete_button = Locator(By.CSS_SELECTOR, 'button[data-test-confirm-delete]')
+
+
+class DeletePATModal(BaseElement):
+    token_name = Locator(By.CSS_SELECTOR, 'div.modal-header > h3 > strong')
+    cancel_button = Locator(By.CSS_SELECTOR, 'button[data-test-cancel-delete]')
+    delete_button = Locator(By.CSS_SELECTOR, 'button[data-test-confirm-delete]')

@@ -1,6 +1,9 @@
 import os
+import re
+import tkinter
 
 import pytest
+import requests
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
@@ -458,3 +461,451 @@ class TestUserDeveloperApps:
         finally:
             # Lastly use the api to delete the dev app as cleanup
             osf_api.delete_user_developer_app(session, app_id=app_id)
+
+
+@markers.dont_run_on_prod
+@pytest.mark.usefixtures('must_be_logged_in')
+class TestUserPersonalAccessTokens:
+    @pytest.fixture
+    def all_scopes(self):
+        """Fixture that returns a list of all of the available scopes for Personal
+        Access Tokens
+        """
+        all_scopes = [
+            'osf.full_read',
+            'osf.full_write',
+            'osf.nodes.full_read',
+            'osf.nodes.full_write',
+            'osf.nodes.metadata_read',
+            'osf.nodes.metadata_write',
+            'osf.nodes.access_read',
+            'osf.nodes.access_write',
+            'osf.nodes.data_read',
+            'osf.nodes.data_write',
+            'osf.users.email_read',
+            'osf.users.profile_read',
+            'osf.users.profile_write',
+        ]
+        return all_scopes
+
+    def create_scope_dictionary(self, driver):
+        """Helper function used to create a dictionary of all of the scope checkboxes on
+        the Edit Personal Access Token Page.
+        """
+        all_scope_rows = driver.find_elements_by_css_selector(
+            '._Checkboxes_qxt8ij > div'
+        )
+        scope_dictionary = {}
+        for row in all_scope_rows:
+            scope = row.get_attribute('data-test-scope')
+            checkbox_element = row.find_element_by_css_selector('input')
+            scope_dictionary[scope] = checkbox_element
+        return scope_dictionary
+
+    def verify_scope_checkboxes(self, driver, page, scope_perms):
+        """Helper function used to verify scope checkboxes on the Edit Personal Access
+        Token Page. The scope_perm parameter is a dict with the key being the scope name
+        and the value is a boolean for whether the corresponding checkbox should be
+        checked or not.
+        """
+        scope_dictionary = self.create_scope_dictionary(driver)
+        for scope, perm in scope_perms.items():
+            checkbox = scope_dictionary[scope]
+            page.scroll_into_view(checkbox)
+            assert checkbox.is_selected() == perm
+
+    def test_user_settings_create_PAT(self, driver, session, fake, all_scopes):
+        """Create a Personal Access Token from the User Settings Personal Access Tokens
+        page in OSF. The test uses the OSF api to delete the personal access token at
+        the end of the test as cleanup.
+        """
+        pat_page = user.PersonalAccessTokenPage(driver)
+        pat_page.goto()
+        assert user.PersonalAccessTokenPage(driver, verify=True)
+        pat_page.loading_indicator.here_then_gone()
+        pat_page.create_token_button.click()
+        create_page = user.CreatePersonalAccessTokenPage(driver, verify=True)
+
+        try:
+            # Complete the form fields and click the Create token button
+            token_name = fake.sentence(nb_words=3)
+            create_page.token_name_input.send_keys(token_name)
+
+            # Check all the 'read' access checkboxes
+            create_page.scroll_into_view(
+                create_page.osf_nodes_full_read_checkbox.element
+            )
+            create_page.osf_nodes_full_read_checkbox.click()
+            create_page.scroll_into_view(create_page.osf_full_read_checkbox.element)
+            create_page.osf_full_read_checkbox.click()
+            create_page.scroll_into_view(
+                create_page.osf_nodes_metadata_read_checkbox.element
+            )
+            create_page.osf_nodes_metadata_read_checkbox.click()
+            create_page.scroll_into_view(
+                create_page.osf_nodes_access_read_checkbox.element
+            )
+            create_page.osf_nodes_access_read_checkbox.click()
+            create_page.scroll_into_view(
+                create_page.osf_nodes_data_read_checkbox.element
+            )
+            create_page.osf_nodes_data_read_checkbox.click()
+            create_page.scroll_into_view(
+                create_page.osf_users_email_read_checkbox.element
+            )
+            create_page.osf_users_email_read_checkbox.click()
+            create_page.scroll_into_view(
+                create_page.osf_users_profile_read_checkbox.element
+            )
+            create_page.osf_users_profile_read_checkbox.click()
+            create_page.scroll_into_view(create_page.create_token_button.element)
+            create_page.create_token_button.click()
+
+            # Should end up on Token Detail page with newly created token displayed
+            edit_page = user.EditPersonalAccessTokenPage(driver, verify=True)
+
+            # Capture the token id from the url
+            match = re.search(r'tokens/([a-z0-9]{24})\?view_only=', driver.current_url)
+            token_id = match.group(1)
+
+            if settings.DRIVER == 'Remote':
+                # Running on BrowserStack - Can't get value from remote clipboard, so
+                # just verify that New Token Input Box has a value
+                assert edit_page.new_token_input.get_attribute('value') != ''
+            else:
+                # Running locally - click the Copy to Clipboard button and verify that
+                # the value copied to the clipboard matches the value displayed in the
+                # token input box
+                edit_page.copy_to_clipboard_button.click()
+                window = tkinter.Tk()
+                window.withdraw()  # to hide the window
+                token_value = window.clipboard_get()
+                assert edit_page.new_token_input.get_attribute('value') == token_value
+
+            # Click the Back to list of tokens link
+            edit_page.back_to_list_of_tokens_link.click()
+            pat_page = user.PersonalAccessTokenPage(driver, verify=True)
+            pat_page.loading_indicator.here_then_gone()
+
+            # Go through the list of PATs listed on the page to find the one that was
+            # just added
+            pat_card = pat_page.get_pat_card_by_name(token_name)
+            pat_link = pat_card.find_element_by_css_selector('a')
+            link_url = pat_link.get_attribute('href')
+            link_token_id = link_url.split('tokens/', 1)[1]
+            assert link_token_id == token_id
+
+            # Now click the PAT name link to go to the Edit PAT page and verify the
+            # data
+            pat_link.click()
+            edit_page = user.EditPersonalAccessTokenPage(driver, verify=True)
+            edit_page.loading_indicator.here_then_gone()
+            assert edit_page.token_name_input.get_attribute('value') == token_name
+
+            # Use helper function to verify scopes. Pre-set all scopes to True and then
+            # override the 6 scopes that should be False in the dict.
+            scope_perms = {p: True for p in all_scopes}
+            scope_perms['osf.nodes.full_write'] = False
+            scope_perms['osf.full_write'] = False
+            scope_perms['osf.nodes.metadata_write'] = False
+            scope_perms['osf.nodes.access_write'] = False
+            scope_perms['osf.nodes.data_write'] = False
+            scope_perms['osf.users.profile_write'] = False
+            self.verify_scope_checkboxes(driver, edit_page, scope_perms)
+
+        finally:
+            # Delete the token using the api as cleanup
+            if token_id:
+                osf_api.delete_personal_access_token(session, token_id=token_id)
+
+    def test_user_settings_delete_PAT_from_edit_page(
+        self, driver, session, fake, default_project, all_scopes
+    ):
+        """Delete a Personal Access Token from the User Settings Edit Personal Access
+        Token page in OSF. The test uses the OSF api to first create the personal access
+        token that will then be deleted using the Front End interface.
+        """
+        token_name = 'PAT created via api ' + fake.sentence(nb_words=1)
+        token_ids = osf_api.create_personal_access_token(
+            session,
+            name=token_name,
+            scopes='osf.nodes.full_read osf.nodes.metadata_read osf.nodes.access_read osf.nodes.data_read',
+        )
+        public_token_id = token_ids[0]
+        private_token_id = token_ids[1]
+
+        try:
+            # Use the PAT so that it becomes registered in CAS
+            node_url = settings.API_DOMAIN + '/v2/nodes/' + default_project.id
+            headers = {'Authorization': 'Bearer ' + private_token_id}
+            r = requests.get(node_url, headers=headers)
+            # verify the node access response and some of the returned data
+            assert r.status_code == 200
+            assert r.json()['data']['attributes']['title'] == 'OSF Test Project'
+
+            # Go to the Profile Information page first and use the side navigation bar
+            # to then go to the Personal Access Tokens page.
+            profile_settings_page = user.ProfileInformationPage(driver)
+            profile_settings_page.goto()
+            assert user.ProfileInformationPage(driver, verify=True)
+            profile_settings_page.side_navigation.personal_access_tokens_link.click()
+            pat_page = user.PersonalAccessTokenPage(driver, verify=True)
+            pat_page.loading_indicator.here_then_gone()
+
+            # Go through the list of PATs listed on the page to find the one that was
+            # just added via the api
+            pat_card = pat_page.get_pat_card_by_name(token_name)
+            pat_link = pat_card.find_element_by_css_selector('a')
+            link_url = pat_link.get_attribute('href')
+            link_token_id = link_url.split('tokens/', 1)[1]
+            assert link_token_id == public_token_id
+
+            # Now click the PAT name link to go to the Edit PAT page and verify the
+            # data
+            pat_link.click()
+            edit_page = user.EditPersonalAccessTokenPage(driver, verify=True)
+            edit_page.loading_indicator.here_then_gone()
+            assert edit_page.token_name_input.get_attribute('value') == token_name
+
+            # Use helper function to verify scopes. Pre-set all scopes to False and then
+            # override the 4 scopes that should be True in the dict.
+            scope_perms = {p: False for p in all_scopes}
+            scope_perms['osf.nodes.full_read'] = True
+            scope_perms['osf.nodes.metadata_read'] = True
+            scope_perms['osf.nodes.access_read'] = True
+            scope_perms['osf.nodes.data_read'] = True
+            self.verify_scope_checkboxes(driver, edit_page, scope_perms)
+
+            # Click the Delete button
+            edit_page.scroll_into_view(edit_page.delete_button.element)
+            edit_page.delete_button.click()
+
+            # On the Delete Token modal - first click the Cancel button
+            delete_modal = edit_page.delete_pat_modal
+            assert delete_modal.token_name.text == token_name
+            delete_modal.cancel_button.click()
+
+            # Should still be on the Edit page
+            assert user.EditPersonalAccessTokenPage(driver, verify=True)
+
+            # Go back to the Personal Access Tokens list page to make sure the PAT is
+            # still there
+            pat_page = user.PersonalAccessTokenPage(driver)
+            pat_page.goto()
+            assert user.PersonalAccessTokenPage(driver, verify=True)
+            pat_page.loading_indicator.here_then_gone()
+            pat_card = pat_page.get_pat_card_by_name(token_name)
+            assert pat_card
+            pat_link = pat_card.find_element_by_css_selector('a')
+
+            # Now click the PAT name link again to go back to the Edit PAT page
+            pat_link.click()
+            edit_page = user.EditPersonalAccessTokenPage(driver, verify=True)
+            assert edit_page.token_name_input.get_attribute('value') == token_name
+
+            # Click the Delete button again and this time click the Delete button on the
+            # Delete Token Modal
+            edit_page.scroll_into_view(edit_page.delete_button.element)
+            edit_page.delete_button.click()
+            delete_modal = edit_page.delete_pat_modal
+            assert delete_modal.token_name.text == token_name
+            delete_modal.delete_button.click()
+
+            # This time we should end up on the PAT list page
+            pat_page = user.PersonalAccessTokenPage(driver, verify=True)
+            pat_page.loading_indicator.here_then_gone()
+            pat_card = pat_page.get_pat_card_by_name(token_name)
+
+            # Verify that we don't find the PAT card this time since it was deleted
+            assert not pat_card
+        except Exception:
+            # As cleanup, delete the PAT using the api if the test failed for some
+            # reason and the PAT was not actually deleted.
+            pat_data = osf_api.get_user_pat_data(session, token_id=public_token_id)
+            if pat_data:
+                osf_api.delete_personal_access_token(session, token_id=public_token_id)
+
+    def test_user_settings_delete_PAT_from_list_page(
+        self, driver, session, fake, all_scopes
+    ):
+        """Delete a Personal Access Token from the User Settings Edit Personal Access
+        Token page in OSF. The test uses the OSF api to first create the personal access
+        token that will then be deleted using the Front End interface.
+        """
+        token_name = 'PAT created via api ' + fake.sentence(nb_words=1)
+        token_ids = osf_api.create_personal_access_token(
+            session,
+            name=token_name,
+            scopes='osf.users.profile_read osf.users.email_read',
+        )
+        public_token_id = token_ids[0]
+        private_token_id = token_ids[1]
+
+        try:
+            # Use the PAT so that it becomes registered in CAS
+            current_user = osf_api.current_user()
+            user_url = settings.API_DOMAIN + '/v2/users/{}/settings/emails/'.format(
+                current_user.id
+            )
+            headers = {'Authorization': 'Bearer ' + private_token_id}
+            r = requests.get(user_url, headers=headers)
+            # verify the node access response and some of the returned data
+            assert r.status_code == 200
+            assert r.json()['data'][0]['attributes']['confirmed']
+
+            # Go to the Profile Information page first and use the side navigation bar
+            # to then go to the Personal Access Tokens page.
+            profile_settings_page = user.ProfileInformationPage(driver)
+            profile_settings_page.goto()
+            assert user.ProfileInformationPage(driver, verify=True)
+            profile_settings_page.side_navigation.personal_access_tokens_link.click()
+            pat_page = user.PersonalAccessTokenPage(driver, verify=True)
+            pat_page.loading_indicator.here_then_gone()
+
+            # Go through the list of PATs listed on the page to find the one that was
+            # just added via the api
+            pat_card = pat_page.get_pat_card_by_name(token_name)
+            pat_link = pat_card.find_element_by_css_selector('a')
+            link_url = pat_link.get_attribute('href')
+            link_token_id = link_url.split('tokens/', 1)[1]
+            assert link_token_id == public_token_id
+
+            # Now click the PAT name link to go to the Edit PAT page and verify the
+            # data
+            pat_link.click()
+            edit_page = user.EditPersonalAccessTokenPage(driver, verify=True)
+            edit_page.loading_indicator.here_then_gone()
+            assert edit_page.token_name_input.get_attribute('value') == token_name
+
+            # Use helper function to verify scopes. Pre-set all scopes to False and then
+            # override the 2 scopes that should be True in the dict.
+            scope_perms = {p: False for p in all_scopes}
+            scope_perms['osf.users.profile_read'] = True
+            scope_perms['osf.users.email_read'] = True
+            self.verify_scope_checkboxes(driver, edit_page, scope_perms)
+
+            # Click the Back to list of tokens link
+            edit_page.back_to_list_of_tokens_link.click()
+            assert user.PersonalAccessTokenPage(driver, verify=True)
+            pat_page.loading_indicator.here_then_gone()
+
+            # Find the PAT on the list page and click the Delete button on the right
+            # side of the card
+            pat_card = pat_page.get_pat_card_by_name(token_name)
+            assert pat_card
+            delete_button = pat_card.find_element_by_css_selector(
+                '[data-test-delete-button]'
+            )
+            delete_button.click()
+
+            # On the Delete Token modal - first click the Cancel button
+            delete_modal = pat_page.delete_pat_modal
+            assert delete_modal.token_name.text == token_name
+            delete_modal.cancel_button.click()
+
+            # Should still be on the PAT list page and the PAT should still be displayed
+            pat_page = user.PersonalAccessTokenPage(driver, verify=True)
+            pat_page.loading_indicator.here_then_gone()
+            pat_card = pat_page.get_pat_card_by_name(token_name)
+            assert pat_card
+
+            # Click the Delete button again and this time click the Delete button on the
+            # Delete Token Modal
+            delete_button = pat_card.find_element_by_css_selector(
+                '[data-test-delete-button]'
+            )
+            delete_button.click()
+            delete_modal = pat_page.delete_pat_modal
+            assert delete_modal.token_name.text == token_name
+            delete_modal.delete_button.click()
+
+            # Should still be on PAT list page
+            pat_page = user.PersonalAccessTokenPage(driver, verify=True)
+            pat_page.loading_indicator.here_then_gone()
+            pat_card = pat_page.get_pat_card_by_name(token_name)
+
+            # Verify that we don't find the PAT card this time since it was deleted
+            assert not pat_card
+        except Exception:
+            # As cleanup, delete the PAT using the api if the test failed for some
+            # reason and the PAT was not actually deleted.
+            pat_data = osf_api.get_user_pat_data(session, token_id=public_token_id)
+            if pat_data:
+                osf_api.delete_personal_access_token(session, token_id=public_token_id)
+
+    def test_user_settings_edit_PAT(self, driver, session, fake, all_scopes):
+        """Edit a Personal Access Token from the User Settings Edit Personal Access
+        Token page in OSF. The test uses the OSF api to first create the personal access
+        token that will then be edited using the Front End interface. At the end of the
+        test the PAT will be deleted using the api as cleanup.
+        """
+        token_name = 'PAT created via api ' + fake.sentence(nb_words=1)
+        token_ids = osf_api.create_personal_access_token(
+            session, name=token_name, scopes='osf.full_read'
+        )
+        public_token_id = token_ids[0]
+        try:
+            pat_page = user.PersonalAccessTokenPage(driver)
+            pat_page.goto()
+            assert user.PersonalAccessTokenPage(driver, verify=True)
+            pat_page.loading_indicator.here_then_gone()
+
+            # Go through the list of PATs listed on the page to find the one that was
+            # just added via the api
+            pat_card = pat_page.get_pat_card_by_name(token_name)
+            pat_link = pat_card.find_element_by_css_selector('a')
+            link_url = pat_link.get_attribute('href')
+            link_token_id = link_url.split('tokens/', 1)[1]
+            assert link_token_id == public_token_id
+
+            # Now click the PAT name link to go to the Edit PAT page and verify the
+            # data
+            pat_link.click()
+            edit_page = user.EditPersonalAccessTokenPage(driver, verify=True)
+            edit_page.loading_indicator.here_then_gone()
+            assert edit_page.token_name_input.get_attribute('value') == token_name
+
+            # Use helper function to verify scopes. Pre-set all scopes to False and then
+            # override the scope that should be True in the dict.
+            scope_perms = {p: False for p in all_scopes}
+            scope_perms['osf.full_read'] = True
+            self.verify_scope_checkboxes(driver, edit_page, scope_perms)
+
+            # Make some Edits - change the token name and change permissions from
+            # osf.full_read to osf.full_write
+            new_token_name = token_name + ' edited'
+            edit_page.scroll_into_view(edit_page.token_name_input.element)
+            edit_page.token_name_input.clear()
+            edit_page.token_name_input.send_keys(new_token_name)
+            edit_page.scroll_into_view(edit_page.osf_full_read_checkbox.element)
+            edit_page.osf_full_read_checkbox.click()
+            edit_page.scroll_into_view(edit_page.osf_full_write_checkbox.element)
+            edit_page.osf_full_write_checkbox.click()
+
+            # Click the Save button
+            edit_page.scroll_into_view(edit_page.save_button.element)
+            edit_page.save_button.click()
+
+            # Should end up back on PAT list page with new token name listed
+            pat_page = user.PersonalAccessTokenPage(driver, verify=True)
+            pat_page.loading_indicator.here_then_gone()
+            pat_card = pat_page.get_pat_card_by_name(new_token_name)
+            assert pat_card
+
+            # Now click the PAT name link to go back to the Edit PAT page and verify
+            # the data changes
+            pat_link = pat_card.find_element_by_css_selector('a')
+            pat_link.click()
+            edit_page = user.EditPersonalAccessTokenPage(driver, verify=True)
+            edit_page.loading_indicator.here_then_gone()
+            assert edit_page.token_name_input.get_attribute('value') == new_token_name
+
+            # Use helper function to verify scopes. Pre-set all scopes to False and then
+            # override the scope that should be True in the dict.
+            scope_perms = {p: False for p in all_scopes}
+            scope_perms['osf.full_write'] = True
+            self.verify_scope_checkboxes(driver, edit_page, scope_perms)
+        finally:
+            # Delete the token using the api as cleanup
+            if public_token_id:
+                osf_api.delete_personal_access_token(session, token_id=public_token_id)
