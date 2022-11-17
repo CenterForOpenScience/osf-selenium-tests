@@ -599,6 +599,7 @@ class TestUserPersonalAccessTokens:
             # data
             pat_link.click()
             edit_page = user.EditPersonalAccessTokenPage(driver, verify=True)
+            edit_page.loading_indicator.here_then_gone()
             assert edit_page.token_name_input.get_attribute('value') == token_name
 
             # Use helper function to verify scopes. Pre-set all scopes to True and then
@@ -663,6 +664,7 @@ class TestUserPersonalAccessTokens:
             # data
             pat_link.click()
             edit_page = user.EditPersonalAccessTokenPage(driver, verify=True)
+            edit_page.loading_indicator.here_then_gone()
             assert edit_page.token_name_input.get_attribute('value') == token_name
 
             # Use helper function to verify scopes. Pre-set all scopes to False and then
@@ -772,6 +774,7 @@ class TestUserPersonalAccessTokens:
             # data
             pat_link.click()
             edit_page = user.EditPersonalAccessTokenPage(driver, verify=True)
+            edit_page.loading_indicator.here_then_gone()
             assert edit_page.token_name_input.get_attribute('value') == token_name
 
             # Use helper function to verify scopes. Pre-set all scopes to False and then
@@ -859,6 +862,7 @@ class TestUserPersonalAccessTokens:
             # data
             pat_link.click()
             edit_page = user.EditPersonalAccessTokenPage(driver, verify=True)
+            edit_page.loading_indicator.here_then_gone()
             assert edit_page.token_name_input.get_attribute('value') == token_name
 
             # Use helper function to verify scopes. Pre-set all scopes to False and then
@@ -893,6 +897,7 @@ class TestUserPersonalAccessTokens:
             pat_link = pat_card.find_element_by_css_selector('a')
             pat_link.click()
             edit_page = user.EditPersonalAccessTokenPage(driver, verify=True)
+            edit_page.loading_indicator.here_then_gone()
             assert edit_page.token_name_input.get_attribute('value') == new_token_name
 
             # Use helper function to verify scopes. Pre-set all scopes to False and then

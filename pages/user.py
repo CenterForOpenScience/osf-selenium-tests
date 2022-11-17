@@ -220,6 +220,7 @@ class EditPersonalAccessTokenPage(BaseUserSettingsPage):
     base_url = settings.OSF_HOME + '/settings/tokens/'
 
     identity = Locator(By.CSS_SELECTOR, 'div[data-analytics-scope="Edit"]')
+    loading_indicator = Locator(By.CSS_SELECTOR, '.ball-pulse')
     new_token_input = Locator(By.CSS_SELECTOR, 'div[data-test-new-token-value] > input')
     copy_to_clipboard_button = Locator(
         By.CSS_SELECTOR, 'div[data-test-new-token-value] > span > button'
