@@ -25,7 +25,7 @@ def get_registration_version_draft_id(href):
     )
 
     # Group 1 = Test Domain
-    # Group 2 = Draft ID
+    # Group 2 = Draft ID (24 characters long)
     return match.group(2)
 
 
@@ -102,8 +102,7 @@ class TestRegistrationsVersioning:
         my_registrations_page.update_registration_dialogue.present()
         my_registrations_page.update_registration_dialogue_next.click()
 
-        RegistrationJustificationForm(driver, verify=True)
-        justification_page = RegistrationJustificationForm(driver)
+        justification_page = RegistrationJustificationForm(driver, verify=True)
         justification_page.justification_textbox.click()
         justification_page.justification_textbox.send_keys(
             'This justification is provided by selenium test automation.'
@@ -146,19 +145,28 @@ class TestRegistrationsVersioning:
         justification_page.accept_changes.click()
         justification_page.toast_message.here_then_gone()
 
-        JustificationReviewForm(driver, verify=True)
-        justification_review_page = JustificationReviewForm(driver)
+        justification_review_page = JustificationReviewForm(driver, verify=True)
         justification_review_page.link_to_registration.click()
 
-        RegistrationDetailPage(driver, verify=True)
-        registration_detail_page = RegistrationDetailPage(driver)
+        registration_detail_page = RegistrationDetailPage(driver, verify=True)
         registration_detail_page.reload()
 
         assert summary_paragraph in registration_detail_page.narrative_summary.text
 
     def test_delete_versioning(self, driver, must_be_logged_in_as_user_two):
+        session_user_two = osf_api.get_user_two_session()
         my_registrations_page = MyRegistrationsPage(driver)
         my_registrations_page.goto()
+
+        # Delete leftover update in progress
+        if my_registrations_page.continue_update_button.present():
+            update_in_progress_url = (
+                my_registrations_page.continue_update_button.get_attribute('href')
+            )
+            draft_id = get_registration_version_draft_id(update_in_progress_url)
+            api.osf_api.delete_registration_version_draft(session_user_two, draft_id)
+            my_registrations_page.goto()
+
         my_registrations_page.view_button.click()
         registration_detail_page = RegistrationDetailPage(driver)
 
@@ -168,19 +176,17 @@ class TestRegistrationsVersioning:
         # Start the new version update
         registration_detail_page.updates_dropdown.click()
         registration_detail_page.update_registration_button.click()
-        my_registrations_page.update_registration_dialogue.present()
-        my_registrations_page.update_registration_dialogue_next.click()
+        registration_detail_page.update_registration_dialogue.present()
+        registration_detail_page.update_registration_dialogue_next.click()
 
         # Cancel the new version update from the draft page
-        RegistrationJustificationForm(driver, verify=True)
-        justification_page = RegistrationJustificationForm(driver)
+        justification_page = RegistrationJustificationForm(driver, verify=True)
         justification_page.cancel_update_button.click()
         justification_page.cancel_update_modal.present()
         justification_page.confirm_cancel_button.click()
 
         # Use the dropdown modal to verify an update is NOT in progress and the user can start a new version.
-        RegistrationDetailPage(driver, verify=True)
-        registration_detail_page = RegistrationDetailPage(driver)
+        registration_detail_page = RegistrationDetailPage(driver, verify=True)
         registration_detail_page.updates_dropdown.click()
         registration_detail_page.update_registration_button.present()
 

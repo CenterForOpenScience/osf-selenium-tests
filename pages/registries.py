@@ -125,7 +125,6 @@ class JustificationReviewForm(GuidBasePage):
 
 class RegistrationAddNewPage(BaseRegistriesPage):
     url_addition = 'new'
-    url = settings.OSF_HOME + '/registries/osf/new'
     identity = Locator(
         By.CSS_SELECTOR, 'form[data-test-new-registration-form]', settings.LONG_TIMEOUT
     )
