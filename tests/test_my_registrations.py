@@ -29,6 +29,15 @@ def get_registration_version_draft_id(href):
     return match.group(2)
 
 
+def delete_registration_version_draft(my_registrations_page, session_user_two):
+    update_in_progress_url = my_registrations_page.continue_update_button.get_attribute(
+        'href'
+    )
+    draft_id = get_registration_version_draft_id(update_in_progress_url)
+    api.osf_api.delete_registration_version_draft(session_user_two, draft_id)
+    my_registrations_page.goto()
+
+
 @markers.smoke_test
 @markers.core_functionality
 class TestMyRegistrationsPageEmpty:
@@ -85,18 +94,14 @@ class TestRegistrationsVersioning:
     """This test navigates the test user through the entire workflow for updating a registration by creating a new version"""
 
     def test_versioning_workflow(self, driver, must_be_logged_in_as_user_two):
-        session_user_two = osf_api.get_user_two_session()
         my_registrations_page = MyRegistrationsPage(driver)
         my_registrations_page.goto()
 
-        # Delete leftover update in progress
+        # Delete leftover version update in progress
         if my_registrations_page.continue_update_button.present():
-            update_in_progress_url = (
-                my_registrations_page.continue_update_button.get_attribute('href')
+            delete_registration_version_draft(
+                my_registrations_page, osf_api.get_user_two_session()
             )
-            draft_id = get_registration_version_draft_id(update_in_progress_url)
-            api.osf_api.delete_registration_version_draft(session_user_two, draft_id)
-            my_registrations_page.goto()
 
         my_registrations_page.update_button.click()
         my_registrations_page.update_registration_dialogue.present()
@@ -154,18 +159,14 @@ class TestRegistrationsVersioning:
         assert summary_paragraph in registration_detail_page.narrative_summary.text
 
     def test_delete_versioning(self, driver, must_be_logged_in_as_user_two):
-        session_user_two = osf_api.get_user_two_session()
         my_registrations_page = MyRegistrationsPage(driver)
         my_registrations_page.goto()
 
-        # Delete leftover update in progress
+        # Delete leftover version update in progress
         if my_registrations_page.continue_update_button.present():
-            update_in_progress_url = (
-                my_registrations_page.continue_update_button.get_attribute('href')
+            delete_registration_version_draft(
+                my_registrations_page, osf_api.get_user_two_session()
             )
-            draft_id = get_registration_version_draft_id(update_in_progress_url)
-            api.osf_api.delete_registration_version_draft(session_user_two, draft_id)
-            my_registrations_page.goto()
 
         my_registrations_page.view_button.click()
         registration_detail_page = RegistrationDetailPage(driver)
