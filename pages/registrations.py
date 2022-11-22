@@ -1,15 +1,21 @@
 from selenium.webdriver.common.by import By
 
 import settings
-from base.locators import Locator
+from base.locators import (
+    GroupLocator,
+    Locator,
+)
 from pages.base import OSFBasePage
 
 
 class MyRegistrationsPage(OSFBasePage):
     url = settings.OSF_HOME + '/registries/my-registrations/'
     identity = Locator(
-        By.CSS_SELECTOR, 'div[data-analytics-scope="My Registrations page"]'
+        By.CSS_SELECTOR,
+        'div[data-analytics-scope="My Registrations page"]',
+        settings.TIMEOUT,
     )
+    loading_indicator = Locator(By.CSS_SELECTOR, '.ball-pulse')
 
     drafts_tab = Locator(By.CSS_SELECTOR, '[data-test-my-registrations-nav="drafts"]')
     no_drafts_message = Locator(By.CSS_SELECTOR, 'p[data-test-draft-list-no-drafts]')
@@ -40,3 +46,14 @@ class MyRegistrationsPage(OSFBasePage):
     update_registration_dialogue_next = Locator(
         By.CSS_SELECTOR, '[data-test-new-update-dialog-footer-next]'
     )
+    registration_card = Locator(By.CSS_SELECTOR, 'div[data-test-node-card]')
+    registration_cards = GroupLocator(By.CSS_SELECTOR, 'div[data-test-node-card]')
+
+    def get_registration_card_by_title(self, title):
+        for registration_card in self.registration_cards:
+            node_title = registration_card.find_element_by_css_selector(
+                '[data-test-node-title]'
+            )
+
+            if title in node_title.text:
+                return registration_card

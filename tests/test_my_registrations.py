@@ -2,6 +2,7 @@ import re
 
 import pytest
 from faker import Faker
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
@@ -17,25 +18,6 @@ from pages.registries import (
     RegistrationDraftPage,
     RegistrationJustificationForm,
 )
-
-
-def get_registration_version_draft_id(href):
-    match = re.search(
-        r'([a-z0-9]{4,8})\.osf\.io\/registries\/revisions/([a-z0-9]{24})\/review', href
-    )
-
-    # Group 1 = Test Domain
-    # Group 2 = Draft ID (24 characters long)
-    return match.group(2)
-
-
-def delete_registration_version_draft(my_registrations_page, session_user_two):
-    update_in_progress_url = my_registrations_page.continue_update_button.get_attribute(
-        'href'
-    )
-    draft_id = get_registration_version_draft_id(update_in_progress_url)
-    api.osf_api.delete_registration_version_draft(session_user_two, draft_id)
-    my_registrations_page.goto()
 
 
 @markers.smoke_test
@@ -93,16 +75,56 @@ class TestMyRegistrationsUserTwo:
 class TestRegistrationsVersioning:
     """This test navigates the test user through the entire workflow for updating a registration by creating a new version"""
 
+    def get_registration_version_draft_id(self, href):
+        match = re.search(
+            r'([a-z0-9]{4,8})\.osf\.io\/registries\/revisions/([a-z0-9]{24})\/review',
+            href,
+        )
+
+        # Group 1 = Test Domain
+        # Group 2 = Draft ID (24 characters long)
+        return match.group(2)
+
+    def delete_registration_version_draft(self, session_user_two, registration_card):
+        continue_button = registration_card.find_element_by_css_selector(
+            '[data-test-view-changes-button]'
+        )
+        url = continue_button.get_attribute('href')
+        draft_id = self.get_registration_version_draft_id(url)
+        api.osf_api.delete_registration_version_draft(session_user_two, draft_id)
+
     def test_versioning_workflow(self, driver, must_be_logged_in_as_user_two):
         my_registrations_page = MyRegistrationsPage(driver)
         my_registrations_page.goto()
+        my_registrations_page.loading_indicator.here_then_gone()
 
-        # Delete leftover version update in progress
-        if my_registrations_page.continue_update_button.present():
-            delete_registration_version_draft(
-                my_registrations_page, osf_api.get_user_two_session()
-            )
+        # Check for leftover registration version update in progress and delete if present
+        registration_card = my_registrations_page.get_registration_card_by_title(
+            'Versioning'
+        )
+        try:
+            if registration_card.find_element_by_css_selector(
+                '[data-test-view-changes-button]'
+            ):
+                self.delete_registration_version_draft(
+                    osf_api.get_user_two_session(), registration_card
+                )
+                my_registrations_page.reload()
+                my_registrations_page.loading_indicator.here_then_gone()
+                # Re-assign locators because they become stale after a reload()
+                my_registrations_page = MyRegistrationsPage(driver)
+                registration_card = (
+                    my_registrations_page.get_registration_card_by_title('Versioning')
+                )
 
+        except NoSuchElementException:
+            pass
+        except AttributeError:
+            pass
+
+        my_registrations_page.update_button = (
+            registration_card.find_element_by_css_selector('[data-test-update-button]')
+        )
         my_registrations_page.update_button.click()
         my_registrations_page.update_registration_dialogue.present()
         my_registrations_page.update_registration_dialogue_next.click()
@@ -161,13 +183,34 @@ class TestRegistrationsVersioning:
     def test_delete_versioning(self, driver, must_be_logged_in_as_user_two):
         my_registrations_page = MyRegistrationsPage(driver)
         my_registrations_page.goto()
+        my_registrations_page.loading_indicator.here_then_gone()
 
-        # Delete leftover version update in progress
-        if my_registrations_page.continue_update_button.present():
-            delete_registration_version_draft(
-                my_registrations_page, osf_api.get_user_two_session()
-            )
+        # Check for leftover registration version update in progress and delete if present
+        registration_card = my_registrations_page.get_registration_card_by_title(
+            'Versioning'
+        )
+        try:
+            if registration_card.find_element_by_css_selector(
+                '[data-test-view-changes-button]'
+            ):
+                self.delete_registration_version_draft(
+                    osf_api.get_user_two_session(), registration_card
+                )
+                my_registrations_page.reload()
+                my_registrations_page.loading_indicator.here_then_gone()
+                # Re-assign locators because they become stale after a reload()
+                my_registrations_page = MyRegistrationsPage(driver)
+                registration_card = (
+                    my_registrations_page.get_registration_card_by_title('Versioning')
+                )
+        except NoSuchElementException:
+            pass
+        except AttributeError:
+            pass
 
+        my_registrations_page.view_button = (
+            registration_card.find_element_by_css_selector('[data-test-view-button]')
+        )
         my_registrations_page.view_button.click()
         registration_detail_page = RegistrationDetailPage(driver)
 
