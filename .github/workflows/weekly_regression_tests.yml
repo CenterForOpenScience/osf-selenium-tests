@@ -63,6 +63,9 @@ env:
   CAS_TOS_USER_PASSWORD: ${{ secrets.CAS_TOS_USER_PASSWORD }}
   DEVAPP_CLIENT_ID: ${{ secrets.DEVAPP_CLIENT_ID }}
   DEVAPP_CLIENT_SECRET: ${{ secrets.DEVAPP_CLIENT_SECRET }}
+  IMAP_EMAIL: ${{ secrets.IMAP_EMAIL }}
+  IMAP_EMAIL_PASSWORD: ${{ secrets.IMAP_EMAIL_PASSWORD }}
+  IMAP_HOST: ${{ secrets.IMAP_HOST }}
 
 jobs:
 
