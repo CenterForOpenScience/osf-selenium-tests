@@ -76,15 +76,28 @@ class AccountSettingsPage(BaseUserSettingsPage):
     identity = Locator(
         By.CSS_SELECTOR, 'div[data-analytics-scope="Connected emails panel"]'
     )
+    loading_indicator = Locator(By.CSS_SELECTOR, '.ball-pulse')
     email_address_input = Locator(By.NAME, 'emailAddress')
     add_email_button = Locator(By.CSS_SELECTOR, 'button[data-test-add-email-button]')
     storage_location_listbox = Locator(
         By.CSS_SELECTOR, 'div[data-test-region-selector] > div'
     )
+    update_password_button = Locator(
+        By.CSS_SELECTOR, 'button[data-test-update-password-button]'
+    )
+    old_password_error_message = Locator(
+        By.CSS_SELECTOR, 'div[data-test-current-password] > div > div.help-block'
+    )
+    new_password_error_message = Locator(
+        By.CSS_SELECTOR, 'div[data-test-new-password] > div > div.help-block'
+    )
+    confirm_password_error_message = Locator(
+        By.CSS_SELECTOR, 'div[data-test-confirm-password] > div > div.help-block'
+    )
     configure_2fa_button = Locator(
         By.CSS_SELECTOR, 'button[data-test-two-factor-enable-button]'
     )
-    two_facor_qr_code_img = Locator(By.CSS_SELECTOR, 'div[data-test-2f-qr-code] > img')
+    two_factor_qr_code_img = Locator(By.CSS_SELECTOR, 'div[data-test-2f-qr-code] > img')
     cancel_2fa_button = Locator(
         By.CSS_SELECTOR, 'button[data-test-two-factor-verify-cancel-button]'
     )
@@ -105,10 +118,10 @@ class AccountSettingsPage(BaseUserSettingsPage):
     configure_2fa_modal = ComponentLocator(Configure2FAModal)
     confirm_deactivation_modal = ComponentLocator(ConfirmDeactivationRequestModal)
     undo_deactivation_modal = ComponentLocator(UndoDeactivationRequestModal)
-    confrim_email_sent_modal = ComponentLocator(ConfirmEmailSentModal)
-    confrim_remove_email_modal = ComponentLocator(ConfirmRemoveEmailModal)
+    confirm_email_sent_modal = ComponentLocator(ConfirmEmailSentModal)
+    confirm_remove_email_modal = ComponentLocator(ConfirmRemoveEmailModal)
 
-    def get_unconfimred_email_item(self, email_address):
+    def get_unconfirmed_email_item(self, email_address):
         for email_item in self.unconfirmed_emails:
             email_addr = email_item.find_element_by_css_selector(
                 '._email-address_mkik0'

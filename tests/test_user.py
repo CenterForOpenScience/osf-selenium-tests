@@ -8,10 +8,10 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
+import components.email_access as EmailAccess
 import markers
 import settings
 from api import osf_api
-from components.email_access import EmailAccess
 from pages import user
 
 
@@ -125,6 +125,7 @@ class TestUserAccountSettings:
         settings_page = user.AccountSettingsPage(driver)
         settings_page.goto()
         assert user.AccountSettingsPage(driver, verify=True)
+        settings_page.loading_indicator.here_then_gone()
 
         # Enter an IMAP enabled email address in the email address input box and click
         # the Add email button
@@ -133,8 +134,8 @@ class TestUserAccountSettings:
         try:
             # After clicking the Close button on the confirmation modal, verify that the
             # email address is displayed in the Unconfirmed emails list
-            settings_page.confrim_email_sent_modal.close_button.click()
-            unconfirmed_email = settings_page.get_unconfimred_email_item(
+            settings_page.confirm_email_sent_modal.close_button.click()
+            unconfirmed_email = settings_page.get_unconfirmed_email_item(
                 settings.IMAP_EMAIL
             )
             assert unconfirmed_email is not None
@@ -173,7 +174,7 @@ class TestUserAccountSettings:
                 assert str(email_body).find(settings.USER_ONE) > 0
         finally:
             # Lastly delete the unconfirmed email from the account
-            unconfirmed_email = settings_page.get_unconfimred_email_item(
+            unconfirmed_email = settings_page.get_unconfirmed_email_item(
                 settings.IMAP_EMAIL
             )
             if unconfirmed_email is not None:
@@ -183,12 +184,12 @@ class TestUserAccountSettings:
                 delete_button.click()
                 # Verify email address in text of confirmation modal
                 assert (
-                    settings_page.confrim_remove_email_modal.deleted_email.text
+                    settings_page.confirm_remove_email_modal.deleted_email.text
                     == settings.IMAP_EMAIL
                 )
-                settings_page.confrim_remove_email_modal.delete_button.click()
+                settings_page.confirm_remove_email_modal.delete_button.click()
                 settings_page.reload()
-                unconfirmed_email = settings_page.get_unconfimred_email_item(
+                unconfirmed_email = settings_page.get_unconfirmed_email_item(
                     settings.IMAP_EMAIL
                 )
                 assert unconfirmed_email is None
@@ -214,17 +215,38 @@ class TestUserAccountSettings:
             By.CSS_SELECTOR,
             'div.ember-basic-dropdown-content-wormhole-origin > div > ul > li',
         )
-        listbox_regions = []
-        for region in listbox_items:
-            listbox_regions.append(region.text)
-        listbox_regions.sort()
+        listbox_regions = sorted([region.text for region in listbox_items])
         # Get available regions using the api and verify that the lists match
         regions_data = osf_api.get_regions_data(session)
-        api_regions = []
-        for region in regions_data:
-            api_regions.append(region['attributes']['name'])
-        api_regions.sort()
+        api_regions = sorted([region['attributes']['name'] for region in regions_data])
         assert listbox_regions == api_regions
+
+    def test_user_account_settings_update_password(self, driver, session):
+        """Test the Change password section on the User Account Settings page in OSF.
+        This test will NOT actually change the user's password.  It will just click the
+        Update password button without entering any data in the password input fields
+        and then verify the resulting required field error messages.
+        """
+        settings_page = user.AccountSettingsPage(driver)
+        settings_page.goto()
+        assert user.AccountSettingsPage(driver, verify=True)
+        settings_page.scroll_into_view(settings_page.update_password_button.element)
+        settings_page.update_password_button.click()
+        assert settings_page.old_password_error_message.present()
+        assert (
+            settings_page.old_password_error_message.text
+            == "This field can't be blank."
+        )
+        assert settings_page.new_password_error_message.present()
+        assert (
+            settings_page.new_password_error_message.text
+            == "This field can't be blank."
+        )
+        assert settings_page.confirm_password_error_message.present()
+        assert (
+            settings_page.confirm_password_error_message.text
+            == "This field can't be blank."
+        )
 
     def test_user_account_settings_enable_2fa(self, driver, session):
         """Test the process of enabling two factor authentication on the User Account
@@ -242,12 +264,12 @@ class TestUserAccountSettings:
         # On the Configure 2FA Modal, first click the Cancel button and verify that the
         # 2FA QR code is not yet displayed.
         settings_page.configure_2fa_modal.cancel_button.click()
-        assert settings_page.two_facor_qr_code_img.absent()
+        assert settings_page.two_factor_qr_code_img.absent()
         # Click the Configure button again and this time click the Configure button on
         # the modal and then verify that the QR code is now displayed.
         settings_page.configure_2fa_button.click()
         settings_page.configure_2fa_modal.configure_button.click()
-        assert settings_page.two_facor_qr_code_img.present()
+        assert settings_page.two_factor_qr_code_img.present()
         # Finally click the Cancel button to end the enable 2FA process
         settings_page.scroll_into_view(settings_page.cancel_2fa_button.element)
         settings_page.cancel_2fa_button.click()
