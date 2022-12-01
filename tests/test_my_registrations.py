@@ -72,6 +72,8 @@ class TestMyRegistrationsUserTwo:
         RegistrationDetailPage(driver, verify=True)
 
 
+@markers.dont_run_on_prod
+@markers.core_functionality
 class TestRegistrationsVersioning:
     """This test navigates the test user through the entire workflow for updating a registration by creating a new version"""
 
