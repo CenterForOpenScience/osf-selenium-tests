@@ -169,6 +169,7 @@ class TestUserAccountSettings:
                     'SUBJECT',
                     'Confirm account merge',
                 )
+
                 # Search through the email body and verify that the OSF account owner's
                 # email address is in the body of the email
                 assert str(email_body).find(settings.USER_ONE) > 0
@@ -182,6 +183,7 @@ class TestUserAccountSettings:
                     'button[data-test-delete-button]'
                 )
                 delete_button.click()
+
                 # Verify email address in text of confirmation modal
                 assert (
                     settings_page.confirm_remove_email_modal.deleted_email.text
@@ -203,11 +205,13 @@ class TestUserAccountSettings:
         settings_page.goto()
         assert user.AccountSettingsPage(driver, verify=True)
         settings_page.scroll_into_view(settings_page.storage_location_listbox.element)
+
         # Use the api to get the logged in user's default region and verify that it
         # matches the storage location region that is displayed as selected in the
         # listbox
         user_region = osf_api.get_user_region_name(session)
         assert settings_page.storage_location_listbox.text == user_region
+
         # Click the listbox to display all of the storage locations and get a list
         # of the displayed regions
         settings_page.storage_location_listbox.click()
@@ -216,6 +220,7 @@ class TestUserAccountSettings:
             'div.ember-basic-dropdown-content-wormhole-origin > div > ul > li',
         )
         listbox_regions = sorted([region.text for region in listbox_items])
+
         # Get available regions using the api and verify that the lists match
         regions_data = osf_api.get_regions_data(session)
         api_regions = sorted([region['attributes']['name'] for region in regions_data])
@@ -230,8 +235,10 @@ class TestUserAccountSettings:
         settings_page = user.AccountSettingsPage(driver)
         settings_page.goto()
         assert user.AccountSettingsPage(driver, verify=True)
+
         settings_page.scroll_into_view(settings_page.update_password_button.element)
         settings_page.update_password_button.click()
+
         assert settings_page.old_password_error_message.present()
         assert (
             settings_page.old_password_error_message.text
@@ -257,19 +264,23 @@ class TestUserAccountSettings:
         settings_page = user.AccountSettingsPage(driver)
         settings_page.goto()
         assert user.AccountSettingsPage(driver, verify=True)
+
         # Scroll down to the Security settings section near the bottom of the page and
         # click the Configure button
         settings_page.scroll_into_view(settings_page.configure_2fa_button.element)
         settings_page.configure_2fa_button.click()
+
         # On the Configure 2FA Modal, first click the Cancel button and verify that the
         # 2FA QR code is not yet displayed.
         settings_page.configure_2fa_modal.cancel_button.click()
         assert settings_page.two_factor_qr_code_img.absent()
+
         # Click the Configure button again and this time click the Configure button on
         # the modal and then verify that the QR code is now displayed.
         settings_page.configure_2fa_button.click()
         settings_page.configure_2fa_modal.configure_button.click()
         assert settings_page.two_factor_qr_code_img.present()
+
         # Finally click the Cancel button to end the enable 2FA process
         settings_page.scroll_into_view(settings_page.cancel_2fa_button.element)
         settings_page.cancel_2fa_button.click()
@@ -282,27 +293,33 @@ class TestUserAccountSettings:
         settings_page = user.AccountSettingsPage(driver)
         settings_page.goto()
         assert user.AccountSettingsPage(driver, verify=True)
+
         # Scroll down to the Deactivate account section at the bottom of the page and
         # click the Request deactivation button
         settings_page.scroll_into_view(
             settings_page.request_deactivation_button.element
         )
         settings_page.request_deactivation_button.click()
+
         # First click the Cancel button on the Confirmation modal
         settings_page.confirm_deactivation_modal.cancel_button.click()
         assert settings_page.pending_deactivation_message.absent()
+
         # Click the Request deactivation button again and this time click the Request
         # button on the modal
         settings_page.request_deactivation_button.click()
         settings_page.confirm_deactivation_modal.request_button.click()
+
         # Verify that the account pending deactivation message is now displayed
         assert settings_page.pending_deactivation_message.present()
         assert (
             settings_page.pending_deactivation_message.text
             == 'Your account is currently pending deactivation.'
         )
+
         # Click the Undo deactivation request button
         settings_page.undo_deactivation_request_button.click()
+
         # First click Cancel on the Undo Deactivation Request modal
         settings_page.undo_deactivation_modal.cancel_button.click()
         assert settings_page.pending_deactivation_message.present()
@@ -310,6 +327,7 @@ class TestUserAccountSettings:
             settings_page.pending_deactivation_message.text
             == 'Your account is currently pending deactivation.'
         )
+
         # Click the Undo deactivation request button again and this time click the
         # Undo deactivation request button on the modal
         settings_page.undo_deactivation_request_button.click()
