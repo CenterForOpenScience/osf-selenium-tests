@@ -8,6 +8,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
+import components.email_access as EmailAccess
 import markers
 import settings
 from api import osf_api
@@ -109,6 +110,230 @@ class TestUserSettings:
                 new_name,
             )
         )
+
+
+@markers.dont_run_on_prod
+@pytest.mark.usefixtures('must_be_logged_in')
+class TestUserAccountSettings:
+    def test_user_account_settings_connected_email(self, driver, session):
+        """Test the process of adding an alternate email to the user account on the
+        User Account Settings page in OSF. The test will add an email address and
+        verify that a confirmation email is sent to that address, but the email address
+        will NOT be confirmed and permanently merged with the account. Lastly the
+        unconfirmed email will be deleted from the user account as cleanup.
+        """
+        settings_page = user.AccountSettingsPage(driver)
+        settings_page.goto()
+        assert user.AccountSettingsPage(driver, verify=True)
+        settings_page.loading_indicator.here_then_gone()
+
+        # Enter an IMAP enabled email address in the email address input box and click
+        # the Add email button
+        settings_page.email_address_input.send_keys_deliberately(settings.IMAP_EMAIL)
+        settings_page.add_email_button.click()
+        try:
+            # After clicking the Close button on the confirmation modal, verify that the
+            # email address is displayed in the Unconfirmed emails list
+            settings_page.confirm_email_sent_modal.close_button.click()
+            unconfirmed_email = settings_page.get_unconfirmed_email_item(
+                settings.IMAP_EMAIL
+            )
+            assert unconfirmed_email is not None
+
+            # Next connect to the email account and verify that a Confirm account merge
+            # email was actually sent
+            email_count = 0
+            loop_counter = 0
+            while email_count == 0:
+                # Retrieve count of UNSEEN email messages from inbox
+                email_count = EmailAccess.get_count_of_unseen_emails_by_imap(
+                    settings.IMAP_HOST,
+                    settings.IMAP_EMAIL,
+                    settings.IMAP_EMAIL_PASSWORD,
+                )
+                # To prevent an endless loop waiting for the email
+                loop_counter += 1
+                if loop_counter == 90:
+                    raise Exception(
+                        'No unseen emails. Verify that Reset Password email was sent.'
+                    )
+                    break
+
+            if email_count > 0:
+                # Next retrieve the email with subject 'Confirm account merge'
+                email_body = EmailAccess.get_latest_email_body_by_imap(
+                    settings.IMAP_HOST,
+                    settings.IMAP_EMAIL,
+                    settings.IMAP_EMAIL_PASSWORD,
+                    'Inbox',
+                    'SUBJECT',
+                    'Confirm account merge',
+                )
+
+                # Search through the email body and verify that the OSF account owner's
+                # email address is in the body of the email
+                assert str(email_body).find(settings.USER_ONE) > 0
+        finally:
+            # Lastly delete the unconfirmed email from the account
+            unconfirmed_email = settings_page.get_unconfirmed_email_item(
+                settings.IMAP_EMAIL
+            )
+            if unconfirmed_email is not None:
+                delete_button = unconfirmed_email.find_element_by_css_selector(
+                    'button[data-test-delete-button]'
+                )
+                delete_button.click()
+
+                # Verify email address in text of confirmation modal
+                assert (
+                    settings_page.confirm_remove_email_modal.deleted_email.text
+                    == settings.IMAP_EMAIL
+                )
+                settings_page.confirm_remove_email_modal.delete_button.click()
+                settings_page.reload()
+                unconfirmed_email = settings_page.get_unconfirmed_email_item(
+                    settings.IMAP_EMAIL
+                )
+                assert unconfirmed_email is None
+
+    def test_user_account_settings_storage_locations(self, driver, session):
+        """Check the list of storage locations in the dropdown listbox on the User
+        Account Settings page and verify that the correct default storage location
+        is selected.
+        """
+        settings_page = user.AccountSettingsPage(driver)
+        settings_page.goto()
+        assert user.AccountSettingsPage(driver, verify=True)
+        settings_page.scroll_into_view(settings_page.storage_location_listbox.element)
+
+        # Use the api to get the logged in user's default region and verify that it
+        # matches the storage location region that is displayed as selected in the
+        # listbox
+        user_region = osf_api.get_user_region_name(session)
+        assert settings_page.storage_location_listbox.text == user_region
+
+        # Click the listbox to display all of the storage locations and get a list
+        # of the displayed regions
+        settings_page.storage_location_listbox.click()
+        listbox_items = settings_page.storage_location_listbox.find_elements(
+            By.CSS_SELECTOR,
+            'div.ember-basic-dropdown-content-wormhole-origin > div > ul > li',
+        )
+        listbox_regions = sorted([region.text for region in listbox_items])
+
+        # Get available regions using the api and verify that the lists match
+        regions_data = osf_api.get_regions_data(session)
+        api_regions = sorted([region['attributes']['name'] for region in regions_data])
+        assert listbox_regions == api_regions
+
+    def test_user_account_settings_update_password(self, driver, session):
+        """Test the Change password section on the User Account Settings page in OSF.
+        This test will NOT actually change the user's password.  It will just click the
+        Update password button without entering any data in the password input fields
+        and then verify the resulting required field error messages.
+        """
+        settings_page = user.AccountSettingsPage(driver)
+        settings_page.goto()
+        assert user.AccountSettingsPage(driver, verify=True)
+
+        settings_page.scroll_into_view(settings_page.update_password_button.element)
+        settings_page.update_password_button.click()
+
+        assert settings_page.old_password_error_message.present()
+        assert (
+            settings_page.old_password_error_message.text
+            == "This field can't be blank."
+        )
+        assert settings_page.new_password_error_message.present()
+        assert (
+            settings_page.new_password_error_message.text
+            == "This field can't be blank."
+        )
+        assert settings_page.confirm_password_error_message.present()
+        assert (
+            settings_page.confirm_password_error_message.text
+            == "This field can't be blank."
+        )
+
+    def test_user_account_settings_enable_2fa(self, driver, session):
+        """Test the process of enabling two factor authentication on the User Account
+        Settings page in OSF. The test only goes as far as displaying the QR code
+        needed to enable an external 2FA application or device. It does NOT actually
+        enable 2FA for the user.
+        """
+        settings_page = user.AccountSettingsPage(driver)
+        settings_page.goto()
+        assert user.AccountSettingsPage(driver, verify=True)
+
+        # Scroll down to the Security settings section near the bottom of the page and
+        # click the Configure button
+        settings_page.scroll_into_view(settings_page.configure_2fa_button.element)
+        settings_page.configure_2fa_button.click()
+
+        # On the Configure 2FA Modal, first click the Cancel button and verify that the
+        # 2FA QR code is not yet displayed.
+        settings_page.configure_2fa_modal.cancel_button.click()
+        assert settings_page.two_factor_qr_code_img.absent()
+
+        # Click the Configure button again and this time click the Configure button on
+        # the modal and then verify that the QR code is now displayed.
+        settings_page.configure_2fa_button.click()
+        settings_page.configure_2fa_modal.configure_button.click()
+        assert settings_page.two_factor_qr_code_img.present()
+
+        # Finally click the Cancel button to end the enable 2FA process
+        settings_page.scroll_into_view(settings_page.cancel_2fa_button.element)
+        settings_page.cancel_2fa_button.click()
+
+    def test_user_account_settings_deactivate_account(self, driver, session):
+        """Test the process of Requesting Account Deactivation on the User Account
+        Settings page in OSF. The test requests account deactivation and then reverses
+        the request using the 'Undo deactivation request' process as well.
+        """
+        settings_page = user.AccountSettingsPage(driver)
+        settings_page.goto()
+        assert user.AccountSettingsPage(driver, verify=True)
+
+        # Scroll down to the Deactivate account section at the bottom of the page and
+        # click the Request deactivation button
+        settings_page.scroll_into_view(
+            settings_page.request_deactivation_button.element
+        )
+        settings_page.request_deactivation_button.click()
+
+        # First click the Cancel button on the Confirmation modal
+        settings_page.confirm_deactivation_modal.cancel_button.click()
+        assert settings_page.pending_deactivation_message.absent()
+
+        # Click the Request deactivation button again and this time click the Request
+        # button on the modal
+        settings_page.request_deactivation_button.click()
+        settings_page.confirm_deactivation_modal.request_button.click()
+
+        # Verify that the account pending deactivation message is now displayed
+        assert settings_page.pending_deactivation_message.present()
+        assert (
+            settings_page.pending_deactivation_message.text
+            == 'Your account is currently pending deactivation.'
+        )
+
+        # Click the Undo deactivation request button
+        settings_page.undo_deactivation_request_button.click()
+
+        # First click Cancel on the Undo Deactivation Request modal
+        settings_page.undo_deactivation_modal.cancel_button.click()
+        assert settings_page.pending_deactivation_message.present()
+        assert (
+            settings_page.pending_deactivation_message.text
+            == 'Your account is currently pending deactivation.'
+        )
+
+        # Click the Undo deactivation request button again and this time click the
+        # Undo deactivation request button on the modal
+        settings_page.undo_deactivation_request_button.click()
+        settings_page.undo_deactivation_modal.undo_request_button.click()
+        assert settings_page.pending_deactivation_message.absent()
+        assert settings_page.request_deactivation_button.present()
 
 
 @markers.dont_run_on_prod

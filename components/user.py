@@ -25,3 +25,27 @@ class DeletePATModal(BaseElement):
     token_name = Locator(By.CSS_SELECTOR, 'div.modal-header > h3 > strong')
     cancel_button = Locator(By.CSS_SELECTOR, 'button[data-test-cancel-delete]')
     delete_button = Locator(By.CSS_SELECTOR, 'button[data-test-confirm-delete]')
+
+
+class ConfirmDeactivationRequestModal(BaseElement):
+    cancel_button = Locator(By.CSS_SELECTOR, '[data-test-deactivation-cancel]')
+    request_button = Locator(By.CSS_SELECTOR, '[data-test-confirm-deactivation-submit]')
+
+
+class UndoDeactivationRequestModal(BaseElement):
+    cancel_button = Locator(By.CSS_SELECTOR, '[data-test-undo-warning-cancel]')
+    undo_request_button = Locator(By.CSS_SELECTOR, '[data-test-undo-warning-confirm]')
+
+
+class Configure2FAModal(BaseElement):
+    cancel_button = Locator(By.CSS_SELECTOR, '[data-test-enable-warning-cancel]')
+    configure_button = Locator(By.CSS_SELECTOR, '[data-test-enable-warning-confirm]')
+
+
+class ConfirmEmailSentModal(BaseElement):
+    close_button = Locator(By.CSS_SELECTOR, '[data-test-close-modal]')
+
+
+class ConfirmRemoveEmailModal(BaseElement):
+    deleted_email = Locator(By.CSS_SELECTOR, 'div.modal-body > p > strong')
+    delete_button = Locator(By.CSS_SELECTOR, '[data-test-confirm-delete]')

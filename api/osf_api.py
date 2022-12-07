@@ -70,6 +70,22 @@ def get_user_addon(session, provider, user=None):
     return session.get(addon_url)
 
 
+def get_user_region_name(session, user=None):
+    """Return the name of the user's default storage location region"""
+    if not user:
+        user = current_user(session)
+    region_url = user.relationships.default_region['links']['related']['href']
+    data = session.get(region_url)
+    return data['data']['attributes']['name']
+
+
+def get_regions_data(session):
+    """Returns the data for all of the available storage location regions in the
+    environment"""
+    url = '/v2/regions/'
+    return session.get(url)['data']
+
+
 def get_all_institutions(session):
     url = '/v2/institutions/'
     data = session.get(url)

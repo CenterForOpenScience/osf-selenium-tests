@@ -8,9 +8,14 @@ from base.locators import (
     Locator,
 )
 from components.user import (
+    Configure2FAModal,
+    ConfirmDeactivationRequestModal,
+    ConfirmEmailSentModal,
+    ConfirmRemoveEmailModal,
     DeleteDevAppModal,
     DeletePATModal,
     SettingsSideNavigation,
+    UndoDeactivationRequestModal,
 )
 from pages.base import (
     GuidBasePage,
@@ -71,6 +76,58 @@ class AccountSettingsPage(BaseUserSettingsPage):
     identity = Locator(
         By.CSS_SELECTOR, 'div[data-analytics-scope="Connected emails panel"]'
     )
+    loading_indicator = Locator(By.CSS_SELECTOR, '.ball-pulse')
+    email_address_input = Locator(By.NAME, 'emailAddress')
+    add_email_button = Locator(By.CSS_SELECTOR, 'button[data-test-add-email-button]')
+    storage_location_listbox = Locator(
+        By.CSS_SELECTOR, 'div[data-test-region-selector] > div'
+    )
+    update_password_button = Locator(
+        By.CSS_SELECTOR, 'button[data-test-update-password-button]'
+    )
+    old_password_error_message = Locator(
+        By.CSS_SELECTOR, 'div[data-test-current-password] > div > div.help-block'
+    )
+    new_password_error_message = Locator(
+        By.CSS_SELECTOR, 'div[data-test-new-password] > div > div.help-block'
+    )
+    confirm_password_error_message = Locator(
+        By.CSS_SELECTOR, 'div[data-test-confirm-password] > div > div.help-block'
+    )
+    configure_2fa_button = Locator(
+        By.CSS_SELECTOR, 'button[data-test-two-factor-enable-button]'
+    )
+    two_factor_qr_code_img = Locator(By.CSS_SELECTOR, 'div[data-test-2f-qr-code] > img')
+    cancel_2fa_button = Locator(
+        By.CSS_SELECTOR, 'button[data-test-two-factor-verify-cancel-button]'
+    )
+    request_deactivation_button = Locator(
+        By.CSS_SELECTOR, 'button[data-analytics-name="Deactivation request"]'
+    )
+    pending_deactivation_message = Locator(
+        By.CSS_SELECTOR,
+        'div[data-test-deactivation-panel] > div > div.panel-body > p:nth-child(3) > strong',
+    )
+    undo_deactivation_request_button = Locator(
+        By.CSS_SELECTOR, 'button[data-analytics-name="Undo deactivation request"]'
+    )
+    unconfirmed_emails = GroupLocator(
+        By.CSS_SELECTOR, 'div[data-test-unconfirmed-email-item]'
+    )
+
+    configure_2fa_modal = ComponentLocator(Configure2FAModal)
+    confirm_deactivation_modal = ComponentLocator(ConfirmDeactivationRequestModal)
+    undo_deactivation_modal = ComponentLocator(UndoDeactivationRequestModal)
+    confirm_email_sent_modal = ComponentLocator(ConfirmEmailSentModal)
+    confirm_remove_email_modal = ComponentLocator(ConfirmRemoveEmailModal)
+
+    def get_unconfirmed_email_item(self, email_address):
+        for email_item in self.unconfirmed_emails:
+            email_addr = email_item.find_element_by_css_selector(
+                '._email-address_mkik0'
+            )
+            if email_address in email_addr.text:
+                return email_item
 
 
 class ConfigureAddonsPage(BaseUserSettingsPage):
