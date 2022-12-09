@@ -848,3 +848,12 @@ def get_user_pat_data(session, token_id=None):
     url = '/v2/tokens/{}/'.format(token_id)
     data = session.get(url)['data']
     return data or None
+
+
+def delete_registration_version_draft(session, draft_id):
+    """Delete 'in-progress' version update for a given registration."""
+
+    registration_version_url = '{}/v2/schema_responses/{}/'.format(
+        session.api_base_url, draft_id
+    )
+    session.delete(url=registration_version_url, item_type='schema-responses')

@@ -74,6 +74,54 @@ class RegistriesDiscoverPage(BaseRegistriesPage):
 class RegistrationDetailPage(GuidBasePage):
     identity = Locator(By.CSS_SELECTOR, '[data-test-registration-title]')
 
+    narrative_summary = Locator(By.CSS_SELECTOR, '[data-test-read-only-response]')
+    updates_dropdown = Locator(By.CSS_SELECTOR, '[data-test-update-button]')
+    update_registration_button = Locator(
+        By.CSS_SELECTOR, '[data-test-update-dropdown-create-new-revision]'
+    )
+    update_registration_dialogue = Locator(
+        By.CSS_SELECTOR, '[data-test-new-update-dialog-main]'
+    )
+    update_registration_dialogue_next = Locator(
+        By.CSS_SELECTOR, '[data-test-new-update-dialog-footer-next]'
+    )
+
+
+class RegistrationJustificationForm(GuidBasePage):
+    identity = Locator(By.CSS_SELECTOR, '[data-test-link-back-to-registration]')
+
+    justification_textbox = Locator(
+        By.CSS_SELECTOR, 'textarea[name="revisionJustification"]'
+    )
+    justification_next_button = Locator(By.CSS_SELECTOR, '[data-test-goto-next-page]')
+    cancel_update_button = Locator(By.CSS_SELECTOR, '[data-test-delete-button]')
+    cancel_update_modal = Locator(
+        By.CSS_SELECTOR, 'div[data-analytics-scope="Delete button modal"]'
+    )
+    confirm_cancel_button = Locator(By.CSS_SELECTOR, '[data-test-confirm-delete]')
+
+    navbar_justification = Locator(By.CSS_SELECTOR, '[data-test-link="justification"]')
+    navbar_summary = Locator(By.CSS_SELECTOR, '[data-test-link="1-summary"]')
+    navbar_review = Locator(By.CSS_SELECTOR, '[data-test-link="review"]')
+
+    summary_review_questions = Locator(
+        By.CSS_SELECTOR, 'p[data-test-revised-responses-list-no-update]'
+    )
+    summary_textbox = Locator(By.CSS_SELECTOR, 'textarea[name="__responseKey_summary"]')
+    summary_review_button = Locator(By.CSS_SELECTOR, '[data-test-goto-review]')
+
+    submit_revision = Locator(By.CSS_SELECTOR, '[data-test-submit-revision]')
+    accept_changes = Locator(By.CSS_SELECTOR, '[data-test-accept-changes]')
+    toast_message = Locator(By.ID, 'toast-container')
+
+
+class JustificationReviewForm(GuidBasePage):
+    identity = Locator(By.ID, 'JustificationPageLabel')
+
+    link_to_registration = Locator(
+        By.CSS_SELECTOR, '[data-analytics-name="Go to registration"]'
+    )
+
 
 class RegistrationAddNewPage(BaseRegistriesPage):
     url_addition = 'new'
