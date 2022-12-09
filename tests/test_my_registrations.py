@@ -73,7 +73,6 @@ class TestMyRegistrationsUserTwo:
 
 
 @markers.dont_run_on_prod
-@markers.core_functionality
 class TestRegistrationsVersioning:
     """This test navigates the test user through the entire workflow for updating a registration by creating a new version"""
 
@@ -124,10 +123,10 @@ class TestRegistrationsVersioning:
         except AttributeError:
             pass
 
-        my_registrations_page.update_button = (
-            registration_card.find_element_by_css_selector('[data-test-update-button]')
+        update_button = registration_card.find_element_by_css_selector(
+            '[data-test-update-button]'
         )
-        my_registrations_page.update_button.click()
+        update_button.click()
         my_registrations_page.update_registration_dialogue.present()
         my_registrations_page.update_registration_dialogue_next.click()
 
@@ -210,10 +209,10 @@ class TestRegistrationsVersioning:
         except AttributeError:
             pass
 
-        my_registrations_page.view_button = (
-            registration_card.find_element_by_css_selector('[data-test-view-button]')
+        view_button = registration_card.find_element_by_css_selector(
+            '[data-test-view-button]'
         )
-        my_registrations_page.view_button.click()
+        view_button.click()
         registration_detail_page = RegistrationDetailPage(driver)
 
         # Store the narrative summary text of the most recent update

@@ -856,4 +856,4 @@ def delete_registration_version_draft(session, draft_id):
     registration_version_url = '{}/v2/schema_responses/{}/'.format(
         session.api_base_url, draft_id
     )
-    session.delete(url=registration_version_url, item_type=None)
+    session.delete(url=registration_version_url, item_type='schema-responses')

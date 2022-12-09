@@ -36,10 +36,6 @@ class MyRegistrationsPage(OSFBasePage):
         By.CSS_SELECTOR, 'a[data-test-my-reg-registrations-add-new-button]'
     )
     public_registration_title = Locator(By.CSS_SELECTOR, 'a[data-test-node-title]')
-
-    view_button = Locator(By.CSS_SELECTOR, '[data-test-view-button]')
-    update_button = Locator(By.CSS_SELECTOR, '[data-test-update-button]')
-    continue_update_button = Locator(By.CSS_SELECTOR, '[data-test-view-changes-button]')
     update_registration_dialogue = Locator(
         By.CSS_SELECTOR, '[data-test-new-update-dialog-main]'
     )
