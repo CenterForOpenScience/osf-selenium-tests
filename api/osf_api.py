@@ -62,6 +62,32 @@ def get_user_institutions(session, user=None):
     return institutions
 
 
+def get_institution_metrics_summary(session, institution_id='cos'):
+    """Return the metrics summary data for a given institution id"""
+    if not session:
+        session = get_default_session()
+    institution_url = '/v2/institutions/{}/metrics/summary/'.format(institution_id)
+    data = session.get(institution_url)
+    if data:
+        return data['data']
+    return None
+
+
+def get_institution_users_per_department(
+    session, institution_id='cos', department='QA'
+):
+    """Return the users for a given institution id filtered by department"""
+    if not session:
+        session = get_default_session()
+    institution_url = 'v2/institutions/{}/metrics/users/?filter[department]={}'.format(
+        institution_id, department
+    )
+    data = session.get(institution_url)
+    if data:
+        return data['data']
+    return None
+
+
 def get_user_addon(session, provider, user=None):
     """Get list of accounts on the given provider that have already been connected by the user."""
     if not user:
