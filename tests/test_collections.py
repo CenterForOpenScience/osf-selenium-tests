@@ -21,16 +21,12 @@ class TestCollectionDiscoverPages:
     """
 
     def providers():
-        """Return collection providers to be used in Discover page test."""
-        all_providers = osf_api.get_providers_list(type='collections')
-        coll_providers = []
-        # The list of collections in some environments (i.e. Staging2) has gotten very
-        # long, so a way to narrow the list is to set allow_submssions to False in the
-        # admin app and we can then skip those old testing collections.
-        for provider in all_providers:
-            if provider['attributes']['allow_submissions']:
-                coll_providers.append(provider)
-        return coll_providers
+        """Return collection providers to be used in Discover page test. The list of
+        collections in some environments (i.e. Staging2) has gotten very long, so a way
+        to narrow the list is to set allow_submssions to False in the admin app and we
+        can then skip those old testing collections."""
+        all_prov = osf_api.get_providers_list(type='collections')
+        return [prov for prov in all_prov if prov['attributes']['allow_submissions']]
 
     @pytest.fixture(params=providers(), ids=[prov['id'] for prov in providers()])
     def provider(self, request):
