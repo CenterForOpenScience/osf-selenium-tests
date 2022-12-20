@@ -21,8 +21,12 @@ class TestCollectionDiscoverPages:
     """
 
     def providers():
-        """Return all collection providers."""
-        return osf_api.get_providers_list(type='collections')
+        """Return collection providers to be used in Discover page test. The list of
+        collections in some environments (i.e. Staging2) has gotten very long, so a way
+        to narrow the list is to set allow_submssions to False in the admin app and we
+        can then skip those old testing collections."""
+        all_prov = osf_api.get_providers_list(type='collections')
+        return [prov for prov in all_prov if prov['attributes']['allow_submissions']]
 
     @pytest.fixture(params=providers(), ids=[prov['id'] for prov in providers()])
     def provider(self, request):
@@ -93,12 +97,15 @@ class TestCollectionSubmission:
             # the confirmation modal to complete the submission
             submit_page.add_to_collection_button.click()
             submit_page.modal_add_to_collection_button.click()
-            # After submitting we will end up on the Project page - verify this and verify
-            # there is a new section on Project page indicating the project is part of a
-            # collection with a link to the collection.
+            # After submitting we will end up on the Project page - verify this and
+            # verify there is a new section on Project page indicating the project has
+            # been submitted to the collection.
             project_page = ProjectPage(driver, verify=True, guid=project_with_file.id)
             assert project_page.collections_container.present()
-            assert provider['id'] in project_page.collections_link.get_attribute('href')
+            assert (
+                'Pending entry into Selenium Testing Collection'
+                in project_page.pending_collection_display.text
+            )
             # Also verify Project is now Public.
             assert project_page.make_private_link.present()
         finally:
