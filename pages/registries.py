@@ -128,6 +128,45 @@ class RegistrationAddNewPage(BaseRegistriesPage):
     identity = Locator(
         By.CSS_SELECTOR, 'form[data-test-new-registration-form]', settings.LONG_TIMEOUT
     )
+    has_project_button = Locator(
+        By.CSS_SELECTOR, 'form > div > fieldset > div:nth-child(2)'
+    )
+    no_project_button = Locator(
+        By.CSS_SELECTOR, 'form > div > fieldset > div:nth-child(3)'
+    )
+    project_listbox_trigger = Locator(
+        By.CSS_SELECTOR,
+        'label[data-test-project-select] > div.ember-basic-dropdown-trigger.ember-power-select-trigger',
+    )
+    schema_listbox_trigger = Locator(
+        By.CSS_SELECTOR,
+        'label[data-test-schema-select] > div.ember-basic-dropdown-trigger.ember-power-select-trigger',
+    )
+    create_draft_button = Locator(
+        By.CSS_SELECTOR, 'button[data-test-start-registration-button]'
+    )
+
+    # The following generic ember dropdown listbox options locator should work for both
+    # the Project listox and the Schema listbox
+    dropdown_options = GroupLocator(
+        By.CSS_SELECTOR,
+        '#ember-basic-dropdown-wormhole > div > ul >li.ember-power-select-option',
+    )
+
+    @property
+    def url(self):
+        """Have to override the url for the Add New Page since this page does
+        include 'osf' in the url for OSF Registries
+        """
+        if self.provider is None:
+            self.provider_id = 'osf'
+        return urljoin(self.base_url, self.provider_id) + '/' + self.url_addition
+
+    def select_from_dropdown_listbox(self, selection):
+        for option in self.dropdown_options:
+            if option.text == selection:
+                option.click()
+                break
 
 
 class RegistrationDraftPage(BaseRegistriesPage):
@@ -138,15 +177,179 @@ class RegistrationDraftPage(BaseRegistriesPage):
     )
 
 
-class DraftRegistrationMetadataPage(BaseRegistriesPage):
+class BaseRegistrationDraftPage(BaseRegistriesPage):
+    base_url = settings.OSF_HOME + '/registries/drafts/'
+    url_addition = ''
+
+    def __init__(self, driver, verify=False, draft_id=''):
+        self.draft_id = draft_id
+        super().__init__(driver, verify)
+
+    @property
+    def url(self):
+        return self.base_url + self.draft_id + '/' + self.url_addition
+
+    page_heading = Locator(By.CSS_SELECTOR, 'h2[data-test-page-heading]')
+    next_page_button = Locator(By.CSS_SELECTOR, 'a[data-test-goto-next-page] > button')
+    first_file_name = Locator(By.CSS_SELECTOR, 'span[data-test-file-name]')
+    missing_data_ind = Locator(By.CSS_SELECTOR, 'svg[data-icon="exclamation-circle"]')
+    sampling_plan_page_link = Locator(
+        By.CSS_SELECTOR, 'a[data-test-link="3-sampling-plan"]'
+    )
+    review_page_link = Locator(By.CSS_SELECTOR, 'a[data-test-link="review"]')
+
+
+class DraftRegistrationMetadataPage(BaseRegistrationDraftPage):
+    url_addition = 'metadata'
     identity = Locator(
         By.CSS_SELECTOR, 'div[data-test-metadata-title]', settings.LONG_TIMEOUT
     )
+    title_input = Locator(By.NAME, 'title')
+    description_textarea = Locator(
+        By.CSS_SELECTOR, 'div[data-test-metadata-description] > div > textarea'
+    )
+    category_listbox_trigger = Locator(
+        By.CSS_SELECTOR,
+        '#category > div.ember-basic-dropdown-trigger.ember-power-select-trigger',
+    )
+    license_listbox_trigger = Locator(
+        By.CSS_SELECTOR,
+        'div[data-test-select-license] > div.ember-basic-dropdown-trigger.ember-power-select-trigger',
+    )
+    first_selected_subject = Locator(By.CSS_SELECTOR, 'li[data-test-selected-subject]')
+    tags_input_box = Locator(By.CSS_SELECTOR, 'li.emberTagInput-new > input')
+    next_page_button = Locator(By.CSS_SELECTOR, 'a[data-test-goto-next-page] > button')
+
+    # The following generic ember dropdown listbox options locator should work for both
+    # the Category listox and the License listbox
+    dropdown_options = GroupLocator(
+        By.CSS_SELECTOR,
+        '#ember-basic-dropdown-wormhole > div > ul >li.ember-power-select-option',
+    )
+
+    top_level_subjects = GroupLocator(
+        By.CSS_SELECTOR, 'div[data-analytics-scope="Browse"] > ul > li'
+    )
+
+    def select_from_dropdown_listbox(self, selection):
+        for option in self.dropdown_options:
+            if option.text == selection:
+                option.click()
+                break
+
+    def select_top_level_subject(self, selection):
+        for subject in self.top_level_subjects:
+            if subject.text == selection:
+                # Find the checkbox element and click it to select the subject
+                checkbox = subject.find_element_by_css_selector(
+                    'input.ember-checkbox.ember-view'
+                )
+                checkbox.click()
+                break
 
 
-class DraftRegistrationReviewPage(BaseRegistriesPage):
+class DraftRegistrationStudyInfoPage(BaseRegistrationDraftPage):
+    """Draft Study Information Page for an OSF Preregistration Template"""
+
+    url_addition = '1-study-information'
+    identity = Locator(By.NAME, '__responseKey_q2', settings.LONG_TIMEOUT)
+    hypothesis_textbox = Locator(By.NAME, '__responseKey_q2')
+
+
+class DraftRegistrationDesignPlanPage(BaseRegistrationDraftPage):
+    """Draft Design Plan Page for an OSF Preregistration Template"""
+
+    url_addition = '2-design-plan'
+    identity = Locator(
+        By.CSS_SELECTOR, 'input[id^="radio-Experiment"]', settings.LONG_TIMEOUT
+    )
+    other_radio_button = Locator(By.CSS_SELECTOR, 'input[id^="radio-Other"]')
+    no_blinding_checkbox = Locator(
+        By.CSS_SELECTOR, 'div._Checkboxes_qxt8ij > div:nth-child(1) > input'
+    )
+    personnel_who_interact_checkbox = Locator(
+        By.CSS_SELECTOR, 'div._Checkboxes_qxt8ij > div:nth-child(3) > input'
+    )
+    study_design_textbox = Locator(By.NAME, '__responseKey_q6|question')
+
+
+class DraftRegistrationSamplingPlanPage(BaseRegistrationDraftPage):
+    """Draft Sampling Plan Page for an OSF Preregistration Template"""
+
+    url_addition = '3-sampling-plan'
+    identity = Locator(
+        By.CSS_SELECTOR,
+        'input[id^="radio-Registration prior to creation"]',
+        settings.LONG_TIMEOUT,
+    )
+    reg_following_radio_button = Locator(
+        By.CSS_SELECTOR, 'input[id^="radio-Registration following"]'
+    )
+    data_procedures_textbox = Locator(By.NAME, '__responseKey_q10|question')
+    sample_size_textbox = Locator(By.NAME, '__responseKey_q11')
+
+
+class DraftRegistrationVariablesPage(BaseRegistrationDraftPage):
+    """Draft Variables Page for an OSF Preregistration Template"""
+
+    url_addition = '4-variables'
+    identity = Locator(By.NAME, '__responseKey_q14|question', settings.LONG_TIMEOUT)
+    measured_vars_textbox = Locator(By.NAME, '__responseKey_q15|question')
+
+
+class DraftRegistrationAnalysisPlanPage(BaseRegistrationDraftPage):
+    """Draft Analysis Plan Page for an OSF Preregistration Template"""
+
+    url_addition = '5-analysis-plan'
+    identity = Locator(By.NAME, '__responseKey_q17|question', settings.LONG_TIMEOUT)
+    stat_models_textbox = Locator(By.NAME, '__responseKey_q17|question')
+
+
+class DraftRegistrationOtherPage(BaseRegistrationDraftPage):
+    """Draft Other Page for an OSF Preregistration Template"""
+
+    url_addition = '6-other'
+    identity = Locator(By.NAME, '__responseKey_q23', settings.LONG_TIMEOUT)
+    other_textbox = Locator(By.NAME, '__responseKey_q23')
+    review_page_button = Locator(By.CSS_SELECTOR, 'a[data-test-goto-review] > button')
+
+
+class DraftRegistrationReviewPage(BaseRegistrationDraftPage):
+    url_addition = 'review'
     identity = Locator(
         By.CSS_SELECTOR,
         '[data-test-toggle-anchor-nav-button]',
         settings.LONG_TIMEOUT,
     )
+    title = Locator(By.CSS_SELECTOR, 'p[data-test-review-response="title"]')
+    description = Locator(By.CSS_SELECTOR, 'p[data-test-review-response="description"]')
+    category = Locator(By.CSS_SELECTOR, 'p[data-test-review-response="category"]')
+    license = Locator(By.CSS_SELECTOR, 'p[data-test-review-response="license"]')
+    subject = Locator(By.CSS_SELECTOR, 'li[data-test-selected-subject]')
+    tags = Locator(By.CSS_SELECTOR, 'ul[data-test-tags-widget-tag-input]')
+    register_button = Locator(By.CSS_SELECTOR, 'button[data-test-goto-register]')
+    invalid_responses_text = Locator(
+        By.CSS_SELECTOR, 'div[data-test-invalid-responses-text]'
+    )
+    sample_size_question_error = Locator(
+        By.CSS_SELECTOR, 'div[data-test-validation-errors="__responseKey_q11"]'
+    )
+    sample_size_response = Locator(
+        By.CSS_SELECTOR, 'p[data-test-read-only-response="__responseKey_q11"]'
+    )
+    loading_indicator = Locator(By.CSS_SELECTOR, '.ball-scale')
+
+    # Registration Modal
+    immediate_radio_button = Locator(By.CSS_SELECTOR, 'input[value="immediate"]')
+    submit_button = Locator(
+        By.CSS_SELECTOR, 'button[data-test-submit-registration-button]'
+    )
+
+
+class RegistrationTombstonePage(BaseRegistriesPage):
+    identity = Locator(
+        By.CSS_SELECTOR,
+        'div[data-analytics-scope="Tombstone page"]',
+        settings.LONG_TIMEOUT,
+    )
+    tombstone_title = Locator(By.CSS_SELECTOR, 'h2[data-test-tombstone-title]')
