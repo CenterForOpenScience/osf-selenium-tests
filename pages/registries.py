@@ -169,14 +169,6 @@ class RegistrationAddNewPage(BaseRegistriesPage):
                 break
 
 
-class RegistrationDraftPage(BaseRegistriesPage):
-    # This is a very generic draft registration page since it is using the side nav
-    # bar as the locator which is on every draft page.
-    identity = Locator(
-        By.CSS_SELECTOR, 'nav[data-test-side-nav]', settings.LONG_TIMEOUT
-    )
-
-
 class BaseRegistrationDraftPage(BaseRegistriesPage):
     base_url = settings.OSF_HOME + '/registries/drafts/'
     url_addition = ''

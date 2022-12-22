@@ -12,10 +12,10 @@ import markers
 from api import osf_api
 from pages.registrations import MyRegistrationsPage
 from pages.registries import (
+    DraftRegistrationMetadataPage,
     JustificationReviewForm,
     RegistrationAddNewPage,
     RegistrationDetailPage,
-    RegistrationDraftPage,
     RegistrationJustificationForm,
 )
 
@@ -64,7 +64,7 @@ class TestMyRegistrationsUserTwo:
     def test_drafts_tab(self, driver, registrations_page):
         registrations_page.drafts_tab.click()
         registrations_page.draft_registration_title.click()
-        RegistrationDraftPage(driver, verify=True)
+        DraftRegistrationMetadataPage(driver, verify=True)
 
     def test_submissions_tab(self, driver, registrations_page):
         registrations_page.submissions_tab.click()
