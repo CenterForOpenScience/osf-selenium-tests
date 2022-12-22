@@ -1,3 +1,5 @@
+import re
+
 import pytest
 from pythosf import client
 from selenium.webdriver.common.by import By
@@ -17,6 +19,7 @@ from pages.registries import (
     DraftRegistrationReviewPage,
     DraftRegistrationSamplingPlanPage,
     DraftRegistrationStudyInfoPage,
+    DraftRegistrationSummaryPage,
     DraftRegistrationVariablesPage,
     RegistrationAddNewPage,
     RegistrationDetailPage,
@@ -98,7 +101,7 @@ class TestBrandedRegistriesPages:
             assert RegistriesDiscoverPage(driver, verify=True)
 
 
-@pytest.fixture
+@pytest.fixture(scope='class')
 def login_as_user_with_registrations(driver):
     """Logs into OSF as the specific user for creating registrations."""
     safe_login(
@@ -111,17 +114,24 @@ def login_as_user_with_registrations(driver):
 @markers.dont_run_on_prod
 class TestRegistrationSubmission:
     @pytest.fixture
-    def project_with_file_reg(self):
-        """Returns a project with a file using the login session of the Registrations
-        User.
-        """
-        session = client.Session(
+    def registration_user_session(self):
+        return client.Session(
             api_base_url=settings.API_DOMAIN,
             auth=(settings.REGISTRATIONS_USER, settings.REGISTRATIONS_USER_PASSWORD),
         )
-        project = osf_api.create_project(session, title='OSF Registration Project')
+
+    @pytest.fixture
+    def project_with_file_reg(self, registration_user_session):
+        """Returns a project with a file using the login session of the Registrations
+        User.
+        """
+        project = osf_api.create_project(
+            registration_user_session, title='OSF Registration Project'
+        )
         osf_api.upload_fake_file(
-            session, project, name='osf selenium test file for registration.txt'
+            registration_user_session,
+            project,
+            name='osf selenium test file for registration.txt',
         )
         yield project
         project.delete()
@@ -164,7 +174,7 @@ class TestRegistrationSubmission:
         )
         add_new_page.select_from_dropdown_listbox('OSF Registration Project')
 
-        # Select 'Open-Ended Registration' from the Schema listbox
+        # Select 'OSF Preregistration' from the Schema listbox
         add_new_page.scroll_into_view(add_new_page.schema_listbox_trigger.element)
         add_new_page.schema_listbox_trigger.click()
         WebDriverWait(driver, 5).until(
@@ -420,3 +430,135 @@ class TestRegistrationSubmission:
         # and approve the registration. Therefore we will allow the automatic approval
         # process to approve each registration which in the testing environments
         # typically occurs within a few hours.
+
+    def test_submit_no_project_registration(
+        self, driver, registration_user_session, add_new_page
+    ):
+        """This test creates a new 'no project' draft registration starting from the
+        Add New Registration page.  The test uses the Open-Ended schema template and
+        enters data in all of the required template fields while leaving most of the
+        other data fields empty. The completed draft registration is submitted and
+        made public immediately (not embargoed). A project is automatically created
+        as a result of submitting the registration. This associated project is then
+        deleted as cleanup. The registration is permanent and cannot be deleted.
+        """
+
+        # Verify that the Project listbox is not displayed since the No radio button is
+        # selected by default
+        assert add_new_page.project_listbox_trigger.absent()
+
+        # Select 'Open-Ended Registration' from the Schema listbox
+        add_new_page.schema_listbox_trigger.click()
+        WebDriverWait(driver, 5).until(
+            EC.visibility_of_element_located(
+                (
+                    By.CSS_SELECTOR,
+                    '#ember-basic-dropdown-wormhole > div > ul >li.ember-power-select-option',
+                )
+            )
+        )
+        add_new_page.select_from_dropdown_listbox('Open-Ended Registration')
+
+        # Click the Create draft button and verify that we go to the Draft Registration
+        # Metadata page
+        add_new_page.create_draft_button.click()
+        metadata_page = DraftRegistrationMetadataPage(driver, verify=True)
+
+        # Enter data in the input fields on the Draft Metadata page
+        metadata_page.title_input.clear()
+        metadata_page.title_input.send_keys_deliberately(
+            'Selenium Test No Project Registration'
+        )
+
+        metadata_page.description_textarea.click()
+        metadata_page.description_textarea.send_keys_deliberately(
+            'This is a test registration created using Selenium.'
+        )
+
+        metadata_page.scroll_into_view(metadata_page.category_listbox_trigger.element)
+        metadata_page.category_listbox_trigger.click()
+        WebDriverWait(driver, 5).until(
+            EC.visibility_of_element_located(
+                (
+                    By.CSS_SELECTOR,
+                    '#ember-basic-dropdown-wormhole > div > ul >li.ember-power-select-option',
+                )
+            )
+        )
+        metadata_page.select_from_dropdown_listbox('Software')
+
+        metadata_page.scroll_into_view(metadata_page.license_listbox_trigger.element)
+        metadata_page.license_listbox_trigger.click()
+        WebDriverWait(driver, 5).until(
+            EC.visibility_of_element_located(
+                (
+                    By.CSS_SELECTOR,
+                    '#ember-basic-dropdown-wormhole > div > ul >li.ember-power-select-option',
+                )
+            )
+        )
+        metadata_page.select_from_dropdown_listbox('CC0 1.0 Universal')
+
+        metadata_page.scroll_into_view(metadata_page.tags_input_box.element)
+        metadata_page.select_top_level_subject('Engineering')
+        WebDriverWait(driver, 5).until(
+            EC.visibility_of(metadata_page.first_selected_subject)
+        )
+        assert metadata_page.first_selected_subject.text == 'Engineering'
+
+        metadata_page.tags_input_box.click()
+        metadata_page.tags_input_box.send_keys('selenium\r')
+
+        # Click Next button to go to Draft Summary Page
+        metadata_page.scroll_into_view(metadata_page.next_page_button.element)
+        metadata_page.next_page_button.click()
+
+        summary_page = DraftRegistrationSummaryPage(driver, verify=True)
+        assert summary_page.page_heading.text == 'Summary'
+
+        summary_page.summary_textbox.click()
+        summary_page.summary_textbox.send_keys_deliberately(
+            'Summary textbox - regression testing using selenium.'
+        )
+
+        # Click Review button to go to Draft Review Page
+        summary_page.scroll_into_view(summary_page.review_page_button.element)
+        summary_page.review_page_button.click()
+
+        review_page = DraftRegistrationReviewPage(driver, verify=True)
+        review_page.loading_indicator.here_then_gone()
+
+        assert review_page.title.text == 'Selenium Test No Project Registration'
+        assert (
+            review_page.description.text
+            == 'This is a test registration created using Selenium.'
+        )
+        assert review_page.category.text == 'Software'
+        assert review_page.license.text == 'CC0 1.0 Universal'
+        assert review_page.subject.text == 'Engineering'
+        assert review_page.tags.text == 'selenium'
+
+        review_page.register_button.click()
+
+        # On modal - click radio button to make registration public immediately
+        review_page.immediate_radio_button.click()
+        review_page.submit_button.click()
+
+        # Since this registration does not have any files the archiving process should
+        # be very fast in the testing environments and the archiving tombstone page will
+        # be visible for a second or two at most. Then we will be redirected to the
+        # Registrations Detail page.
+        detail_page = RegistrationDetailPage(driver, verify=True)
+
+        # Get the guid for the associated project that was automatically created as a
+        # result of submitting the registration. Then delete the project.
+        match = re.search(
+            r'([a-z0-9]{4,8})\.osf\.io/([a-z0-9]{5})',
+            detail_page.associated_project_link.text,
+        )
+        project_guid = match.group(2)
+        osf_api.delete_project(registration_user_session, project_guid, None)
+
+        # NOTE: As with the Submit Registration with Project test above we will allow
+        # the automatic approval process to approve each registration which in the
+        # testing environments typically occurs within a few hours.

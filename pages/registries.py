@@ -72,7 +72,9 @@ class RegistriesDiscoverPage(BaseRegistriesPage):
 
 
 class RegistrationDetailPage(GuidBasePage):
-    identity = Locator(By.CSS_SELECTOR, '[data-test-registration-title]')
+    identity = Locator(
+        By.CSS_SELECTOR, '[data-test-registration-title]', settings.LONG_TIMEOUT
+    )
 
     narrative_summary = Locator(By.CSS_SELECTOR, '[data-test-read-only-response]')
     updates_dropdown = Locator(By.CSS_SELECTOR, '[data-test-update-button]')
@@ -84,6 +86,9 @@ class RegistrationDetailPage(GuidBasePage):
     )
     update_registration_dialogue_next = Locator(
         By.CSS_SELECTOR, '[data-test-new-update-dialog-footer-next]'
+    )
+    associated_project_link = Locator(
+        By.CSS_SELECTOR, 'a[data-analytics-name="Registered from"]'
     )
 
 
@@ -238,6 +243,15 @@ class DraftRegistrationMetadataPage(BaseRegistrationDraftPage):
                 )
                 checkbox.click()
                 break
+
+
+class DraftRegistrationSummaryPage(BaseRegistrationDraftPage):
+    """Draft Summary Page for an Open Ended Registration Template"""
+
+    url_addition = '1-summary'
+    identity = Locator(By.NAME, '__responseKey_summary', settings.LONG_TIMEOUT)
+    summary_textbox = Locator(By.NAME, '__responseKey_summary')
+    review_page_button = Locator(By.CSS_SELECTOR, 'a[data-test-goto-review] > button')
 
 
 class DraftRegistrationStudyInfoPage(BaseRegistrationDraftPage):
