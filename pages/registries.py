@@ -71,7 +71,18 @@ class RegistriesDiscoverPage(BaseRegistriesPage):
                 )
 
 
-class RegistrationDetailPage(GuidBasePage):
+class BaseSubmittedRegistrationPage(GuidBasePage):
+    base_url = settings.OSF_HOME
+    url_addition = ''
+
+    @property
+    def url(self):
+        return self.base_url + '/' + self.guid + '/' + self.url_addition
+
+
+class RegistrationDetailPage(BaseSubmittedRegistrationPage):
+    """This is the Registration Overview Page"""
+
     identity = Locator(
         By.CSS_SELECTOR, '[data-test-registration-title]', settings.LONG_TIMEOUT
     )
@@ -90,6 +101,21 @@ class RegistrationDetailPage(GuidBasePage):
     associated_project_link = Locator(
         By.CSS_SELECTOR, 'a[data-analytics-name="Registered from"]'
     )
+
+
+class RegistrationFilesListPage(BaseSubmittedRegistrationPage):
+    url_addition = 'files'
+    identity = Locator(By.CSS_SELECTOR, '[data-test-file-providers-list]')
+    file_list_button = Locator(By.CSS_SELECTOR, '[data-test-file-list-link]')
+    loading_indicator = Locator(By.CSS_SELECTOR, '.ball-scale')
+    first_file_name = Locator(By.CSS_SELECTOR, '[data-test-file-name]')
+    first_file_options_button = Locator(
+        By.CSS_SELECTOR, '[data-test-file-download-share-trigger]'
+    )
+    download_link = Locator(By.CSS_SELECTOR, '[data-test-download-button]')
+    embed_link = Locator(By.CSS_SELECTOR, '[data-test-embed-button]')
+    copy_js_link = Locator(By.CSS_SELECTOR, '[data-test-copy-js]')
+    copy_html_link = Locator(By.CSS_SELECTOR, '[data-test-copy-html]')
 
 
 class RegistrationJustificationForm(GuidBasePage):

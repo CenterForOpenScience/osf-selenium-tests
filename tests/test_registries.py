@@ -1,4 +1,7 @@
+import datetime
+import os
 import re
+import tkinter
 
 import pytest
 from pythosf import client
@@ -11,6 +14,7 @@ import markers
 import settings
 from api import osf_api
 from pages.login import safe_login
+from pages.registrations import MyRegistrationsPage
 from pages.registries import (
     DraftRegistrationAnalysisPlanPage,
     DraftRegistrationDesignPlanPage,
@@ -23,6 +27,7 @@ from pages.registries import (
     DraftRegistrationVariablesPage,
     RegistrationAddNewPage,
     RegistrationDetailPage,
+    RegistrationFilesListPage,
     RegistrationTombstonePage,
     RegistriesDiscoverPage,
     RegistriesLandingPage,
@@ -562,3 +567,134 @@ class TestRegistrationSubmission:
         # NOTE: As with the Submit Registration with Project test above we will allow
         # the automatic approval process to approve each registration which in the
         # testing environments typically occurs within a few hours.
+
+
+@markers.dont_run_on_prod
+class TestRegistrationFilesPages:
+    @pytest.fixture
+    def files_list_page(self, driver, login_as_user_with_registrations):
+        """Return the Files List page for a registration with a file"""
+
+        # First start at the My Registrations page
+        my_registrations_page = MyRegistrationsPage(driver)
+        my_registrations_page.goto()
+
+        # Set the cookie that prevents the New Feature popover from appearing on
+        # submitted registration pages since this popover can get in the way of other
+        # actions.
+        driver.add_cookie({'name': 'outputFeaturePopover', 'value': '1'})
+
+        # Wait for registration cards to load on page
+        WebDriverWait(driver, 5).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, '[data-test-node-card]'))
+        )
+        registration_cards = my_registrations_page.registration_cards
+        assert registration_cards
+
+        # Find the first registration card for a registration that has a file
+        registration_card = my_registrations_page.get_registration_card_by_title(
+            'Selenium Test Project With File Registration'
+        )
+
+        # Get the registration's node id from the card's title link and then use the
+        # node id to navigate to the File List page for the registration.
+        url = registration_card.find_element_by_css_selector(
+            '[data-test-node-title]'
+        ).get_attribute('href')
+        node_id = url.split('osf.io/', 1)[1]
+        files_list_page = RegistrationFilesListPage(driver, guid=node_id)
+        files_list_page.goto()
+        assert RegistrationFilesListPage(driver, verify=True)
+
+        # Click the 'Archive of OSF Storage' button to expand the list of files
+        files_list_page.file_list_button.click()
+
+        # Wait for file list items to load on page
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located(
+                (By.CSS_SELECTOR, '[data-test-file-list-item]')
+            )
+        )
+        return files_list_page
+
+    def test_files_list_page(self, driver, files_list_page):
+        """Test the functionality available on the Files List page of a registration
+        with a file.
+        """
+
+        # Click the File Options button for the first file listed
+        files_list_page.first_file_options_button.click()
+
+        # Can't access clipboard on remote machine
+        if settings.DRIVER != 'Remote':
+            # Click Embed link and then click the Copy dynamic JS iFrane link from the
+            # secondary menu
+            files_list_page.embed_link.click()
+            files_list_page.copy_js_link.click()
+            # Verify data copied to clipboard
+            window = tkinter.Tk()
+            window.withdraw()  # to hide the window
+            clipboard_value = window.clipboard_get()
+            assert (
+                files_list_page.copy_js_link.get_attribute('data-clipboard-text')
+                == clipboard_value
+            )
+
+            # Next click the Copy static HTML iFrane link from secondary menu
+            files_list_page.copy_html_link.click()
+            # Verify data copied to clipboard
+            clipboard_value = window.clipboard_get()
+            assert (
+                files_list_page.copy_html_link.get_attribute('data-clipboard-text')
+                == clipboard_value
+            )
+
+        # Get file name of first file listed
+        file_name = files_list_page.first_file_name.text
+
+        # If running on local machine, first check if the file already exists in the
+        # Downloads folder. If so then delete the old copy before attempting to download
+        # a new one.
+        if settings.DRIVER != 'Remote':
+            file_path = os.path.expanduser('~/Downloads/' + file_name)
+            if os.path.exists(file_path):
+                os.remove(file_path)
+
+        # Click Download link from File Options menu
+        files_list_page.download_link.click()
+
+        # The actual file download usually takes a second or two, so we will just
+        # reload the page and wait for the list items to reappear. That should be
+        # plenty of time.
+        files_list_page.reload()
+        WebDriverWait(driver, 10).until(
+            EC.visibility_of_element_located(
+                (By.CSS_SELECTOR, '[data-test-file-list-item]')
+            )
+        )
+
+        # Verify that the file is actually downloaded to user's machine
+        current_date = datetime.datetime.now()
+        if settings.DRIVER == 'Remote':
+            # First verify the downloaded file exists on the virtual remote machine
+            assert driver.execute_script(
+                'browserstack_executor: {"action": "fileExists", "arguments": {"fileName": "%s"}}'
+                % (file_name)
+            )
+            # Next get the file properties and then verify that the file creation date
+            # is today
+            file_props = driver.execute_script(
+                'browserstack_executor: {"action": "getFileProperties", "arguments": {"fileName": "%s"}}'
+                % (file_name)
+            )
+            file_create_date = datetime.datetime.fromtimestamp(
+                file_props['created_time']
+            )
+            assert file_create_date.date() == current_date.date()
+        else:
+            # First verify the downloaded file exists
+            assert os.path.exists(file_path)
+            # Next verify the file was downloaded today
+            file_mtime = os.path.getmtime(file_path)
+            file_mod_date = datetime.datetime.fromtimestamp(file_mtime)
+            assert file_mod_date.date() == current_date.date()
