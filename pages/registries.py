@@ -118,6 +118,40 @@ class RegistrationFilesListPage(BaseSubmittedRegistrationPage):
     copy_html_link = Locator(By.CSS_SELECTOR, '[data-test-copy-html]')
 
 
+class RegistrationFileDetailPage(GuidBasePage):
+    identity = Locator(By.CSS_SELECTOR, '[data-test-file-renderer')
+    file_name = Locator(By.CSS_SELECTOR, 'h2[data-test-filename]')
+    first_file_options_button = Locator(
+        By.CSS_SELECTOR, '[data-test-file-download-share-trigger]'
+    )
+    download_link = Locator(By.CSS_SELECTOR, '[data-test-download-button]')
+    embed_link = Locator(By.CSS_SELECTOR, '[data-test-embed-button]')
+    copy_js_link = Locator(By.CSS_SELECTOR, '[data-test-copy-js]')
+    copy_html_link = Locator(By.CSS_SELECTOR, '[data-test-copy-html]')
+    versions_button = Locator(By.CSS_SELECTOR, '[data-test-versions-button]')
+    first_revision_toggle_button = Locator(
+        By.CSS_SELECTOR, '[data-test-file-version-toggle-button]'
+    )
+    copy_md5_link = Locator(
+        By.CSS_SELECTOR, 'div[data-test-file-version-section="md5"] > button'
+    )
+    copy_sha2_link = Locator(
+        By.CSS_SELECTOR, 'div[data-test-file-version-section="sha2"] > button'
+    )
+    tags_button = Locator(By.CSS_SELECTOR, '[data-test-tags-button]')
+    tags_input_box = Locator(By.CSS_SELECTOR, 'li.emberTagInput-new > input')
+
+    tags = GroupLocator(
+        By.CSS_SELECTOR, 'ul[data-test-tags-widget-tag-input] > li > span'
+    )
+
+    def get_tag(self, tag_value):
+        for tag in self.tags:
+            if tag.text == tag_value:
+                return tag
+        return None
+
+
 class RegistrationJustificationForm(GuidBasePage):
     identity = Locator(By.CSS_SELECTOR, '[data-test-link-back-to-registration]')
 
@@ -244,7 +278,7 @@ class DraftRegistrationMetadataPage(BaseRegistrationDraftPage):
     next_page_button = Locator(By.CSS_SELECTOR, 'a[data-test-goto-next-page] > button')
 
     # The following generic ember dropdown listbox options locator should work for both
-    # the Category listox and the License listbox
+    # the Category listbox and the License listbox
     dropdown_options = GroupLocator(
         By.CSS_SELECTOR,
         '#ember-basic-dropdown-wormhole > div > ul >li.ember-power-select-option',

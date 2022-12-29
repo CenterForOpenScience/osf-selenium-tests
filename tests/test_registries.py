@@ -27,6 +27,7 @@ from pages.registries import (
     DraftRegistrationVariablesPage,
     RegistrationAddNewPage,
     RegistrationDetailPage,
+    RegistrationFileDetailPage,
     RegistrationFilesListPage,
     RegistrationTombstonePage,
     RegistriesDiscoverPage,
@@ -585,7 +586,7 @@ class TestRegistrationFilesPages:
         driver.add_cookie({'name': 'outputFeaturePopover', 'value': '1'})
 
         # Wait for registration cards to load on page
-        WebDriverWait(driver, 5).until(
+        WebDriverWait(driver, 10).until(
             EC.presence_of_element_located((By.CSS_SELECTOR, '[data-test-node-card]'))
         )
         registration_cards = my_registrations_page.registration_cards
@@ -617,40 +618,33 @@ class TestRegistrationFilesPages:
         )
         return files_list_page
 
-    def test_files_list_page(self, driver, files_list_page):
-        """Test the functionality available on the Files List page of a registration
-        with a file.
+    def verify_embed_links(self, page):
+        """Helper function to verify the copy to clipboard functionality of the Embed
+        links on the Registration File pages.
         """
 
-        # Click the File Options button for the first file listed
-        files_list_page.first_file_options_button.click()
+        # Click Embed link and then click the Copy dynamic JS iFrane link from the
+        # secondary menu
+        page.embed_link.click()
+        page.copy_js_link.click()
+        # Verify data copied to clipboard
+        window = tkinter.Tk()
+        window.withdraw()  # to hide the window
+        clipboard_value = window.clipboard_get()
+        assert page.copy_js_link.get_attribute('data-clipboard-text') == clipboard_value
 
-        # Can't access clipboard on remote machine
-        if settings.DRIVER != 'Remote':
-            # Click Embed link and then click the Copy dynamic JS iFrane link from the
-            # secondary menu
-            files_list_page.embed_link.click()
-            files_list_page.copy_js_link.click()
-            # Verify data copied to clipboard
-            window = tkinter.Tk()
-            window.withdraw()  # to hide the window
-            clipboard_value = window.clipboard_get()
-            assert (
-                files_list_page.copy_js_link.get_attribute('data-clipboard-text')
-                == clipboard_value
-            )
+        # Next click the Copy static HTML iFrane link from secondary menu
+        page.copy_html_link.click()
+        # Verify data copied to clipboard
+        clipboard_value = window.clipboard_get()
+        assert (
+            page.copy_html_link.get_attribute('data-clipboard-text') == clipboard_value
+        )
 
-            # Next click the Copy static HTML iFrane link from secondary menu
-            files_list_page.copy_html_link.click()
-            # Verify data copied to clipboard
-            clipboard_value = window.clipboard_get()
-            assert (
-                files_list_page.copy_html_link.get_attribute('data-clipboard-text')
-                == clipboard_value
-            )
-
-        # Get file name of first file listed
-        file_name = files_list_page.first_file_name.text
+    def verify_download_link(self, driver, page, file_name, wait_selector):
+        """Helper function to verify the file download functionality on the Registration
+        File pages.
+        """
 
         # If running on local machine, first check if the file already exists in the
         # Downloads folder. If so then delete the old copy before attempting to download
@@ -661,16 +655,13 @@ class TestRegistrationFilesPages:
                 os.remove(file_path)
 
         # Click Download link from File Options menu
-        files_list_page.download_link.click()
+        page.download_link.click()
 
         # The actual file download usually takes a second or two, so we will just
-        # reload the page and wait for the list items to reappear. That should be
-        # plenty of time.
-        files_list_page.reload()
+        # reload the page.
+        page.reload()
         WebDriverWait(driver, 10).until(
-            EC.visibility_of_element_located(
-                (By.CSS_SELECTOR, '[data-test-file-list-item]')
-            )
+            EC.visibility_of_element_located((By.CSS_SELECTOR, wait_selector))
         )
 
         # Verify that the file is actually downloaded to user's machine
@@ -698,3 +689,99 @@ class TestRegistrationFilesPages:
             file_mtime = os.path.getmtime(file_path)
             file_mod_date = datetime.datetime.fromtimestamp(file_mtime)
             assert file_mod_date.date() == current_date.date()
+
+    def test_files_list_page(self, driver, files_list_page):
+        """Test the functionality available on the Files List page of a registration
+        with a file.
+        """
+
+        # Click the File Options button for the first file listed
+        files_list_page.first_file_options_button.click()
+
+        if settings.DRIVER != 'Remote':  # Can't access clipboard on remote machine
+            self.verify_embed_links(files_list_page)
+
+        # Get file name of first file listed
+        file_name = files_list_page.first_file_name.text
+
+        # Verify file download
+        self.verify_download_link(
+            driver, files_list_page, file_name, '[data-test-file-list-item]'
+        )
+
+    def test_file_detail_page(self, driver, files_list_page):
+        """Test the functionality available on the Registration File Detail page"""
+
+        # Click the first file on the Files List page to open the File Detail page in a
+        # new tab
+        files_list_page.first_file_name.click()
+        try:
+            # Wait for the new tab to open - window count should then = 2
+            WebDriverWait(driver, 5).until(EC.number_of_windows_to_be(2))
+
+            # Switch focus to the new tab
+            driver.switch_to.window(driver.window_handles[1])
+            file_detail_page = RegistrationFileDetailPage(driver, verify=True)
+
+            # Wait for File Renderer to load
+            WebDriverWait(driver, 5).until(
+                EC.visibility_of_element_located((By.CSS_SELECTOR, 'iframe'))
+            )
+
+            # Click the File Options button
+            file_detail_page.first_file_options_button.click()
+
+            if settings.DRIVER != 'Remote':  # Can't access clipboard on remote machine
+                self.verify_embed_links(file_detail_page)
+
+            file_name = file_detail_page.file_name.text
+
+            # Verify file download
+            self.verify_download_link(driver, file_detail_page, file_name, 'iframe')
+
+            # Click the button to reveal the Revisions section of the page
+            file_detail_page.versions_button.click()
+
+            # Next click the toggle button for the first revision line item to reveal
+            # more options
+            file_detail_page.first_revision_toggle_button.click()
+
+            if settings.DRIVER != 'Remote':  # Can't access clipboard on remote machine
+                # Click the Copy MD5 link
+                file_detail_page.copy_md5_link.click()
+                # Verify data copied to clipboard
+                window = tkinter.Tk()
+                window.withdraw()  # to hide the window
+                clipboard_value = window.clipboard_get()
+                assert (
+                    file_detail_page.copy_md5_link.get_attribute('data-clipboard-text')
+                    == clipboard_value
+                )
+
+                # Next click the Copy SHA-2 link
+                file_detail_page.copy_sha2_link.click()
+                # Verify data copied to clipboard
+                clipboard_value = window.clipboard_get()
+                assert (
+                    file_detail_page.copy_sha2_link.get_attribute('data-clipboard-text')
+                    == clipboard_value
+                )
+
+            # Click the button to reveal the Tags section of the page
+            file_detail_page.tags_button.click()
+
+            # Add a timestamp as a new tag
+            timestamp = str(datetime.datetime.now())
+            file_detail_page.tags_input_box.click()
+            file_detail_page.tags_input_box.send_keys_deliberately(timestamp)
+            file_detail_page.tags_input_box.send_keys(Keys.ENTER)
+
+            # Verify timestamp tag was added
+            assert file_detail_page.get_tag(timestamp) is not None
+
+        finally:
+            # Close the second tab that was opened. We do not want subsequent tests to
+            # use the second tab.
+            driver.close()
+            # Switch focus back to the first tab
+            driver.switch_to.window(driver.window_handles[0])
