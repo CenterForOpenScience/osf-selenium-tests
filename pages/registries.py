@@ -71,7 +71,18 @@ class RegistriesDiscoverPage(BaseRegistriesPage):
                 )
 
 
-class RegistrationDetailPage(GuidBasePage):
+class BaseSubmittedRegistrationPage(GuidBasePage):
+    base_url = settings.OSF_HOME
+    url_addition = ''
+
+    @property
+    def url(self):
+        return self.base_url + '/' + self.guid + '/' + self.url_addition
+
+
+class RegistrationDetailPage(BaseSubmittedRegistrationPage):
+    """This is the Registration Overview Page"""
+
     identity = Locator(
         By.CSS_SELECTOR, '[data-test-registration-title]', settings.LONG_TIMEOUT
     )
@@ -90,6 +101,55 @@ class RegistrationDetailPage(GuidBasePage):
     associated_project_link = Locator(
         By.CSS_SELECTOR, 'a[data-analytics-name="Registered from"]'
     )
+
+
+class RegistrationFilesListPage(BaseSubmittedRegistrationPage):
+    url_addition = 'files'
+    identity = Locator(By.CSS_SELECTOR, '[data-test-file-providers-list]')
+    file_list_button = Locator(By.CSS_SELECTOR, '[data-test-file-list-link]')
+    loading_indicator = Locator(By.CSS_SELECTOR, '.ball-scale')
+    first_file_name = Locator(By.CSS_SELECTOR, '[data-test-file-name]')
+    first_file_options_button = Locator(
+        By.CSS_SELECTOR, '[data-test-file-download-share-trigger]'
+    )
+    download_link = Locator(By.CSS_SELECTOR, '[data-test-download-button]')
+    embed_link = Locator(By.CSS_SELECTOR, '[data-test-embed-button]')
+    copy_js_link = Locator(By.CSS_SELECTOR, '[data-test-copy-js]')
+    copy_html_link = Locator(By.CSS_SELECTOR, '[data-test-copy-html]')
+
+
+class RegistrationFileDetailPage(GuidBasePage):
+    identity = Locator(By.CSS_SELECTOR, '[data-test-file-renderer')
+    file_name = Locator(By.CSS_SELECTOR, 'h2[data-test-filename]')
+    first_file_options_button = Locator(
+        By.CSS_SELECTOR, '[data-test-file-download-share-trigger]'
+    )
+    download_link = Locator(By.CSS_SELECTOR, '[data-test-download-button]')
+    embed_link = Locator(By.CSS_SELECTOR, '[data-test-embed-button]')
+    copy_js_link = Locator(By.CSS_SELECTOR, '[data-test-copy-js]')
+    copy_html_link = Locator(By.CSS_SELECTOR, '[data-test-copy-html]')
+    versions_button = Locator(By.CSS_SELECTOR, '[data-test-versions-button]')
+    first_revision_toggle_button = Locator(
+        By.CSS_SELECTOR, '[data-test-file-version-toggle-button]'
+    )
+    copy_md5_link = Locator(
+        By.CSS_SELECTOR, 'div[data-test-file-version-section="md5"] > button'
+    )
+    copy_sha2_link = Locator(
+        By.CSS_SELECTOR, 'div[data-test-file-version-section="sha2"] > button'
+    )
+    tags_button = Locator(By.CSS_SELECTOR, '[data-test-tags-button]')
+    tags_input_box = Locator(By.CSS_SELECTOR, 'li.emberTagInput-new > input')
+
+    tags = GroupLocator(
+        By.CSS_SELECTOR, 'ul[data-test-tags-widget-tag-input] > li > span'
+    )
+
+    def get_tag(self, tag_value):
+        for tag in self.tags:
+            if tag.text == tag_value:
+                return tag
+        return None
 
 
 class RegistrationJustificationForm(GuidBasePage):
@@ -218,7 +278,7 @@ class DraftRegistrationMetadataPage(BaseRegistrationDraftPage):
     next_page_button = Locator(By.CSS_SELECTOR, 'a[data-test-goto-next-page] > button')
 
     # The following generic ember dropdown listbox options locator should work for both
-    # the Category listox and the License listbox
+    # the Category listbox and the License listbox
     dropdown_options = GroupLocator(
         By.CSS_SELECTOR,
         '#ember-basic-dropdown-wormhole > div > ul >li.ember-power-select-option',

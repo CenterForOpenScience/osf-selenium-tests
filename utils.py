@@ -74,6 +74,7 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
         driver = driver_cls(chrome_options=chrome_options)
     elif driver_name == 'Firefox' and not settings.HEADLESS:
         from selenium.webdriver import FirefoxProfile
+        from selenium.webdriver.firefox.options import Options
 
         ffp = FirefoxProfile()
         # Set the default download location [0=Desktop, 1=Downloads, 2=Specified location]
@@ -88,7 +89,12 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
         # Block Third Party Tracking Cookies (Default in Firefox is now 5 which blocks
         # all Cross-site cookies)
         ffp.set_preference('network.cookie.cookieBehavior', 4)
-        driver = driver_cls(firefox_profile=ffp)
+        # Force Firefox to open links in new tab instead of new browser window. Have to
+        # use Options instead of Firefox Profile because the profile preference doesn't
+        # work.
+        ffo = Options()
+        ffo.set_preference('browser.link.open_newwindow', 3)
+        driver = driver_cls(firefox_profile=ffp, options=ffo)
     elif driver_name == 'Edge' and not settings.HEADLESS:
         from msedge.selenium_tools import Edge
 
