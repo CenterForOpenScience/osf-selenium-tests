@@ -6,7 +6,7 @@ on:
     - cron: '0 4 * * 6'
 
   # Allows you to run this workflow manually from the Actions tab and change the
-  # testing environment and OSF service.
+  # testing environment, OSF service, and browser.
   workflow_dispatch:
     inputs:
       domain:
@@ -34,11 +34,23 @@ on:
         - Collections
         - Users
         - Other
+      browser:
+        description: 'Browser'
+        required: true
+        default: 'All'
+        type: choice
+        options:
+        - All
+        - chrome
+        - firefox
+        - edge
 
 env:
   DRIVER: "Remote"
   DEFAULT_DOMAIN: test
   DEFAULT_SERVICE: All
+  DEFAULT_BROWSER: All
+  DEFAULT_MATRIX: "['chrome','firefox','edge']"
   DOMAIN: ${{ github.event.inputs.domain }}
   NEW_USER_EMAIL: ${{ secrets.NEW_USER_EMAIL }}
   BSTACK_USER: ${{ secrets.BROWSERSTACK_USERNAME }}
@@ -99,21 +111,42 @@ jobs:
           pip install -r requirements.txt
           invoke requirements
 
-  # Need to set the Domain and Service values in this job first so that
-  # when the workflow is run from the scheduler the correct default values
+  # Need to set the Domain, Service, and Browser values in this job first so
+  # that when the workflow is run from the scheduler the correct default values
   # will be used since the scheduler does not have inputs.
-  set_domain_and_service:
-    name: Set the Domain and Service for Regression Tests
+  set_variables:
+    name: Set the Domain, Service, and Browser for Regression Tests
     runs-on: ubuntu-20.04
     outputs:
       domain: ${{ github.event.inputs.domain || env.DEFAULT_DOMAIN }}
       service: ${{ github.event.inputs.service || env.DEFAULT_SERVICE }}
+      browser: ${{ github.event.inputs.browser || env.DEFAULT_BROWSER }}
     steps:
-      - run: echo "Set Domain and Service Values"
+      - run: echo "Set Domain, Service, and Browser Values"
+
+  # This job sets the browser(s) that will be used in the regression_test job below.
+  # When run from the scheduler all of the available browsers will be used, and when
+  # run manually from the Actions tab the user can select which browser to use.
+  set_matrix:
+    name: Set Matrix of Browser Values
+    needs: [set_variables]
+    runs-on: ubuntu-20.04
+    outputs:
+      matrix: ${{ steps.set_browser_2.outputs.matrix }}
+    steps:
+     - uses: haya14busa/action-cond@v1
+       id: set_browser_1
+       with:
+          cond: ${{ needs.set_variables.outputs.browser == 'All' }}
+          if_true: "${{ env.DEFAULT_MATRIX }}"
+          if_false: "['${{ github.event.inputs.browser }}']"
+     - id: set_browser_2
+       run: |
+          echo "matrix=${{ steps.set_browser_1.outputs.value }}" >> $GITHUB_OUTPUT
 
   regression_test:
     name: Regression tests (${{ matrix.browser }})
-    needs: [build, set_domain_and_service]
+    needs: [build, set_variables, set_matrix]
     runs-on: ubuntu-20.04
     env:
       GHA_DISTRO: ubuntu-20.04
@@ -121,7 +154,7 @@ jobs:
       fail-fast: false
       max-parallel: 1  # run in series
       matrix:
-        browser: [chrome, firefox, edge]
+        browser: ${{fromJson(needs.set_matrix.outputs.matrix)}}
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python 3.6
@@ -133,11 +166,11 @@ jobs:
         with:
           path: ${{ env.pythonLocation }}
           key: ${{ env.GHA_DISTRO }}-${{ env.pythonLocation }}-${{ hashFiles('requirements.txt') }}
-      - if: ${{ needs.set_domain_and_service.outputs.service == 'All' }}
+      - if: ${{ needs.set_variables.outputs.service == 'All' }}
         name: run all regression tests in ${{ env.DOMAIN }}
         env:
           TEST_BUILD: ${{ matrix.browser }}
-          DOMAIN: ${{ needs.set_domain_and_service.outputs.domain }}
+          DOMAIN: ${{ needs.set_variables.outputs.domain }}
         run: |
           invoke test_all_selenium_part_one
           invoke test_all_selenium_part_two
