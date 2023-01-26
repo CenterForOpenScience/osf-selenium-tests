@@ -49,3 +49,8 @@ class ConfirmEmailSentModal(BaseElement):
 class ConfirmRemoveEmailModal(BaseElement):
     deleted_email = Locator(By.CSS_SELECTOR, 'div.modal-body > p > strong')
     delete_button = Locator(By.CSS_SELECTOR, '[data-test-confirm-delete]')
+
+
+class DeleteAffiliatedInstitutionModal(BaseElement):
+    cancel_button = Locator(By.CSS_SELECTOR, 'button[data-test-cancel-delete]')
+    delete_button = Locator(By.CSS_SELECTOR, 'button[data-test-confirm-delete]')
