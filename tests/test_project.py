@@ -82,7 +82,7 @@ class TestProjectDetailPage:
     def test_file_widget_loads(self, project_page_with_file):
         # Check the uploaded file shows up in the files widget
         project_page_with_file.file_widget.loading_indicator.here_then_gone()
-        assert project_page_with_file.file_widget.component_and_file_titles[3]
+        assert project_page_with_file.file_widget.first_file
 
     @markers.smoke_test
     @pytest.mark.skipif(

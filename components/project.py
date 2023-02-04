@@ -15,6 +15,7 @@ class FileWidget(BaseElement):
     file_expander = Locator(By.CSS_SELECTOR, '.fa-plus')
     filter_button = Locator(By.CSS_SELECTOR, '.fangorn-toolbar-icon .fa-search')
     filter_input = Locator(By.CSS_SELECTOR, '#folderRow .form-control')
+    first_file = Locator(By.CSS_SELECTOR, 'div[data-level="3"] > .td-title')
 
     # Group Locators
     component_and_file_titles = GroupLocator(By.CSS_SELECTOR, '.td-title')
