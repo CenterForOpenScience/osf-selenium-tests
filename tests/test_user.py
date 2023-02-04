@@ -226,6 +226,36 @@ class TestUserAccountSettings:
         api_regions = sorted([region['attributes']['name'] for region in regions_data])
         assert listbox_regions == api_regions
 
+    def test_user_account_settings_delete_affiliated_institution(self, driver, session):
+        """Test the functionality of deleting an affiliated institution. The test will
+        temporarily delete the first (and only) listed affiliated institution for the
+        logged in user account. However, since we are not also deleting any connected
+        emails then the next time we login to OSF with this account the institution will
+        automatically be re-affiliated to the account.
+        """
+        settings_page = user.AccountSettingsPage(driver)
+        settings_page.goto()
+        assert user.AccountSettingsPage(driver, verify=True)
+        settings_page.scroll_into_view(
+            settings_page.first_affiliated_institution.element
+        )
+
+        # Click the Delete button to the far right of the first affiliated institution.
+        # On the Delete modal, first click the Cancel button and verify that the
+        # institution is still listed.
+        settings_page.first_aff_inst_delete_button.click()
+        settings_page.delete_aff_inst_modal.cancel_button.click()
+        settings_page.first_affiliated_institution.present()
+
+        # Click the Delete button again and this time click the Delete button on the
+        # modal and verify that the affiliated institution no longer appears in the
+        # affiliated institutions section.
+        settings_page.first_aff_inst_delete_button.click()
+        settings_page.delete_aff_inst_modal.delete_button.click()
+        settings_page.loading_indicator.here_then_gone()
+        settings_page.first_affiliated_institution.absent()
+        assert settings_page.no_affiliations_message.text == 'You have no affiliations.'
+
     def test_user_account_settings_update_password(self, driver, session):
         """Test the Change password section on the User Account Settings page in OSF.
         This test will NOT actually change the user's password.  It will just click the

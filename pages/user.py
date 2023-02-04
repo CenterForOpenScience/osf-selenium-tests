@@ -12,6 +12,7 @@ from components.user import (
     ConfirmDeactivationRequestModal,
     ConfirmEmailSentModal,
     ConfirmRemoveEmailModal,
+    DeleteAffiliatedInstitutionModal,
     DeleteDevAppModal,
     DeletePATModal,
     SettingsSideNavigation,
@@ -82,6 +83,16 @@ class AccountSettingsPage(BaseUserSettingsPage):
     storage_location_listbox = Locator(
         By.CSS_SELECTOR, 'div[data-test-region-selector] > div'
     )
+    first_affiliated_institution = Locator(
+        By.CSS_SELECTOR, 'span[data-test-affiliated-institutions-item]'
+    )
+    first_aff_inst_delete_button = Locator(
+        By.CSS_SELECTOR, 'span[data-test-affiliated-institutions-delete] > button'
+    )
+    no_affiliations_message = Locator(
+        By.CSS_SELECTOR,
+        'div[data-analytics-scope="User Affiliated Institutions"] > div > div',
+    )
     update_password_button = Locator(
         By.CSS_SELECTOR, 'button[data-test-update-password-button]'
     )
@@ -120,6 +131,7 @@ class AccountSettingsPage(BaseUserSettingsPage):
     undo_deactivation_modal = ComponentLocator(UndoDeactivationRequestModal)
     confirm_email_sent_modal = ComponentLocator(ConfirmEmailSentModal)
     confirm_remove_email_modal = ComponentLocator(ConfirmRemoveEmailModal)
+    delete_aff_inst_modal = ComponentLocator(DeleteAffiliatedInstitutionModal)
 
     def get_unconfirmed_email_item(self, email_address):
         for email_item in self.unconfirmed_emails:
