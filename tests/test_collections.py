@@ -8,6 +8,8 @@ import markers
 from api import osf_api
 from pages.collections import (
     CollectionDiscoverPage,
+    CollectionModerationAcceptedPage,
+    CollectionModerationPendingPage,
     CollectionSubmitPage,
 )
 from pages.project import ProjectPage
@@ -64,7 +66,7 @@ class TestCollectionSubmission:
             submit_page = CollectionSubmitPage(driver, provider=provider)
             submit_page.goto()
             assert CollectionSubmitPage(driver, verify=True)
-            # Select the dummmy project from the listbox in the Select a project section
+            # Select the dummy project from the listbox in the Select a project section
             submit_page.project_selector.click()
             submit_page.project_help_text.here_then_gone()
             submit_page.project_selector_project.click()
@@ -128,3 +130,121 @@ class TestCollectionSubmission:
             osf_api.update_node_public_attribute(
                 session, project_with_file.id, status=False
             )
+
+
+@markers.dont_run_on_prod
+class TestCollectionModeration:
+    @pytest.fixture
+    def collection_project(self):
+        """Returns a public project using the login session of User Two."""
+        session_user_two = osf_api.get_user_two_session()
+        project = osf_api.create_project(
+            session_user_two,
+            title='OSF Collection Project',
+            description='Project created using the OSF api for use with selenium testing',
+            public=True,
+        )
+        yield project
+        project.delete()
+
+    def update_project_node_with_license(self, session, collection_id, node_id):
+        """Helper function that uses the OSF api to update a given project node with a
+        valid license value."""
+
+        # Get the license id for the 'CC0 1.0 Universal' license
+        license_data = osf_api.get_license_data_for_provider(
+            session,
+            provider_type='collections',
+            provider_id=collection_id,
+            license_name='CC0 1.0 Universal',
+        )
+        license_id = license_data[0]
+
+        # Update the project with the license id
+        osf_api.update_node_license(session, node_id, license_id)
+
+    def test_pre_moderation_collection_accept(
+        self, session, driver, must_be_logged_in, collection_project
+    ):
+        """Test the acceptance of a project submission to a public branded collection
+        with a pre-moderation workflow. In this test a project is submitted to a
+        collection and a collection moderator must 'accept' the submission before the
+        project is included in the collection.  NOTE: In this test case User One is
+        used to login to OSF and must therefore be setup through the admin app as a
+        moderator or admin for the collection provider being used.  The test will use
+        the OSF api to create a submitted project using the session credentials of User
+        Two so that the project submitter and moderator are different users.
+        """
+
+        session_user_two = osf_api.get_user_two_session()
+
+        # Update the project to set a valid license value
+        self.update_project_node_with_license(
+            session_user_two, 'selenium', collection_project.id
+        )
+
+        # Get data for the Selenium Collection
+        collection_provider = osf_api.get_provider(
+            session_user_two, type='collections', provider_id='selenium'
+        )
+        collection_guid = collection_provider['relationships']['primary_collection'][
+            'data'
+        ]['id']
+
+        # Use the OSF api to submit the test project to the Selenium Collection
+        osf_api.submit_project_to_collection(
+            session_user_two, collection_guid, collection_project.id
+        )
+
+        # Navigate to the Collections Moderation Pending Page. NOTE: User must be a
+        # Moderator or Admin for the collection.
+        pending_page = CollectionModerationPendingPage(
+            driver, provider=collection_provider
+        )
+        pending_page.goto()
+        assert CollectionModerationPendingPage(driver, verify=True)
+        pending_page.loading_indicator.here_then_gone()
+
+        # Get the card for the project that was just submitted to the collection
+        submisison_card = pending_page.get_submission_card(collection_project.id)
+
+        # Click the Make Decision button on the submission card to reveal the Moderation Dropdown
+        submisison_card.find_element_by_css_selector(
+            '[data-test-moderation-dropdown-button]'
+        ).click()
+
+        # On the Moderation Dropdown, click the Accept Request radio button and enter a
+        # comment and then click the Submit button
+        pending_page.accept_radio_button.click()
+        pending_page.moderation_comment.click()
+        pending_page.moderation_comment.send_keys_deliberately(
+            'Accepting collection submission via selenium automated test.'
+        )
+        pending_page.scroll_into_view(pending_page.submit_button.element)
+        pending_page.submit_button.click()
+        pending_page.loading_indicator.here_then_gone()
+
+        # Navigate to the Accepted Page
+        accepted_page = CollectionModerationAcceptedPage(
+            driver, provider=collection_provider
+        )
+        accepted_page.goto()
+        assert CollectionModerationAcceptedPage(driver, verify=True)
+        accepted_page.loading_indicator.here_then_gone()
+
+        # Find the card for the project that was just accepted and click the link for
+        # this project to go to the Project Overview Page. It should be the first one
+        # in the table since the default sort order is by Date (newest first).
+        accepted_card = accepted_page.get_submission_card(collection_project.id)
+        accepted_card.find_element_by_css_selector(
+            '[data-test-submission-card-title]'
+        ).click()
+
+        # On the Project Overview Page, verify that the Collection Container indicates
+        # that the project has been included in the collection.
+        project_page = ProjectPage(driver, verify=True)
+        assert project_page.collections_container.present()
+        assert (
+            "Included in Selenium Testing Collection's Collection"
+            in project_page.pending_collection_display.text
+        )

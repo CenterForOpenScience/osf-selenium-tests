@@ -5,6 +5,7 @@ from selenium.webdriver.common.by import By
 import settings
 from base.locators import (
     ComponentLocator,
+    GroupLocator,
     Locator,
 )
 from components.navbars import CollectionsNavbar
@@ -84,3 +85,53 @@ class CollectionSubmitPage(BaseCollectionPage):
         By.CSS_SELECTOR,
         '[data-test-collection-submission-confirmation-modal-add-button]',
     )
+
+
+class CollectionModerationPendingPage(BaseCollectionPage):
+    url_addition = 'moderation/all?state=pending#'
+    identity = Locator(
+        By.CSS_SELECTOR, '[data-test-submissions-type="pending"]', settings.LONG_TIMEOUT
+    )
+    loading_indicator = Locator(By.CSS_SELECTOR, '.ball-scale')
+    accept_radio_button = Locator(By.CSS_SELECTOR, 'input[value="accept"]')
+    reject_radio_button = Locator(By.CSS_SELECTOR, 'input[value="reject"]')
+    moderation_comment = Locator(
+        By.CSS_SELECTOR, '[data-test-moderation-dropdown-comment]'
+    )
+    submit_button = Locator(
+        By.CSS_SELECTOR, 'button[data-test-moderation-dropdown-submit]'
+    )
+
+    submission_cards = GroupLocator(By.CSS_SELECTOR, '[data-test-submission-card]')
+
+    def get_submission_card(self, node_id):
+        for card in self.submission_cards:
+            url = card.find_element_by_css_selector(
+                '[data-test-submission-card-title]'
+            ).get_attribute('href')
+            guid = url.split(settings.OSF_HOME + '/', 1)[1]
+            if guid == node_id:
+                return card
+            return None
+
+
+class CollectionModerationAcceptedPage(BaseCollectionPage):
+    url_addition = 'moderation/all?state=accepted#'
+    identity = Locator(
+        By.CSS_SELECTOR,
+        '[data-test-submissions-type="accepted"]',
+        settings.LONG_TIMEOUT,
+    )
+    loading_indicator = Locator(By.CSS_SELECTOR, '.ball-scale')
+
+    submission_cards = GroupLocator(By.CSS_SELECTOR, '[data-test-submission-card]')
+
+    def get_submission_card(self, node_id):
+        for card in self.submission_cards:
+            url = card.find_element_by_css_selector(
+                '[data-test-submission-card-title]'
+            ).get_attribute('href')
+            guid = url.split(settings.OSF_HOME + '/', 1)[1]
+            if guid == node_id:
+                return card
+            return None
