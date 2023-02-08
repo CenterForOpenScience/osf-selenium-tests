@@ -135,3 +135,25 @@ class CollectionModerationAcceptedPage(BaseCollectionPage):
             if guid == node_id:
                 return card
             return None
+
+
+class CollectionModerationRejectedPage(BaseCollectionPage):
+    url_addition = 'moderation/all?state=rejected'
+    identity = Locator(
+        By.CSS_SELECTOR,
+        '[data-test-submissions-type="rejected"]',
+        settings.LONG_TIMEOUT,
+    )
+    loading_indicator = Locator(By.CSS_SELECTOR, '.ball-scale')
+
+    submission_cards = GroupLocator(By.CSS_SELECTOR, '[data-test-submission-card]')
+
+    def get_submission_card(self, node_id):
+        for card in self.submission_cards:
+            url = card.find_element_by_css_selector(
+                '[data-test-submission-card-title]'
+            ).get_attribute('href')
+            guid = url.split(settings.OSF_HOME + '/', 1)[1]
+            if guid == node_id:
+                return card
+            return None

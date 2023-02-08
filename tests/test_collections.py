@@ -10,6 +10,7 @@ from pages.collections import (
     CollectionDiscoverPage,
     CollectionModerationAcceptedPage,
     CollectionModerationPendingPage,
+    CollectionModerationRejectedPage,
     CollectionSubmitPage,
 )
 from pages.project import ProjectPage
@@ -248,3 +249,91 @@ class TestCollectionModeration:
             "Included in Selenium Testing Collection's Collection"
             in project_page.pending_collection_display.text
         )
+
+    def test_pre_moderation_collection_reject(
+        self, session, driver, must_be_logged_in, collection_project
+    ):
+        """Test the rejection of a project submission to a public branded collection
+        with a pre-moderation workflow. In this test a project is submitted to a
+        collection and a collection moderator will 'reject' the submission and the
+        project is not included in the collection.  NOTE: In this test case User One is
+        used to login to OSF and must therefore be setup through the admin app as a
+        moderator or admin for the collection provider being used.  The test will use
+        the OSF api to create a submitted project using the session credentials of User
+        Two so that the project submitter and moderator are different users.
+        """
+
+        session_user_two = osf_api.get_user_two_session()
+
+        # Update the project to set a valid license value
+        self.update_project_node_with_license(
+            session_user_two, 'selenium', collection_project.id
+        )
+
+        # Get data for the Selenium Collection
+        collection_provider = osf_api.get_provider(
+            session_user_two, type='collections', provider_id='selenium'
+        )
+        collection_guid = collection_provider['relationships']['primary_collection'][
+            'data'
+        ]['id']
+
+        # Use the OSF api to submit the test project to the Selenium Collection
+        osf_api.submit_project_to_collection(
+            session_user_two, collection_guid, collection_project.id
+        )
+
+        # Navigate to the Collections Moderation Pending Page. NOTE: User must be a
+        # Moderator or Admin for the collection.
+        pending_page = CollectionModerationPendingPage(
+            driver, provider=collection_provider
+        )
+        pending_page.goto()
+        assert CollectionModerationPendingPage(driver, verify=True)
+        pending_page.loading_indicator.here_then_gone()
+
+        # Get the card for the project that was just submitted to the collection
+        submisison_card = pending_page.get_submission_card(collection_project.id)
+
+        # Click the Make Decision button on the submission card to reveal the Moderation Dropdown
+        submisison_card.find_element_by_css_selector(
+            '[data-test-moderation-dropdown-button]'
+        ).click()
+
+        # On the Moderation Dropdown, click the Reject Request radio button and enter a
+        # comment and then click the Submit button
+        pending_page.reject_radio_button.click()
+        pending_page.moderation_comment.click()
+        pending_page.moderation_comment.send_keys_deliberately(
+            'Rejecting collection submission via selenium automated test.'
+        )
+        pending_page.scroll_into_view(pending_page.submit_button.element)
+        pending_page.submit_button.click()
+        pending_page.loading_indicator.here_then_gone()
+
+        # Navigate to the Rejected Page
+        rejected_page = CollectionModerationRejectedPage(
+            driver, provider=collection_provider
+        )
+        rejected_page.goto()
+        assert CollectionModerationRejectedPage(driver, verify=True)
+        rejected_page.loading_indicator.here_then_gone()
+
+        # Find the card for the project that was just rejected and click the link for
+        # this project to go to the Project Overview Page. It should be the first one
+        # in the table since the default sort order is by Date (newest first).
+        rejected_card = rejected_page.get_submission_card(collection_project.id)
+        assert (
+            rejected_card.find_element_by_css_selector(
+                '[data-test-review-action-comment]'
+            ).text
+            == '— Rejecting collection submission via selenium automated test.'
+        )
+        rejected_card.find_element_by_css_selector(
+            '[data-test-submission-card-title]'
+        ).click()
+
+        # On the Project Overview Page, verify that the Collection Container is absent
+        # since the project is NOT included in the collection.
+        project_page = ProjectPage(driver, verify=True)
+        assert project_page.collections_container.absent()
