@@ -346,8 +346,26 @@ class TestCollectionModeration:
         project_page = ProjectPage(driver, verify=True)
         assert project_page.collections_container.absent()
 
+        # Logout and then login as User Two
+        logout(driver)
+        safe_login(driver, user=settings.USER_TWO, password=settings.USER_TWO_PASSWORD)
+
+        # Navigate to the Project Overview page for the project that was just remjected
+        # from the collection and verify that the user that created and submitted the
+        # project can see the reason that it was rejected.
+        project_page = ProjectPage(driver, guid=collection_project.id)
+        project_page.goto()
+        assert project_page.collections_container.present()
+        project_page.collections_container.click()
+        project_page.collection_justification_link.click()
+        assert (
+            project_page.collection_justification_reason.text
+            == 'Rejecting collection submission via selenium automated test.'
+        )
+        logout(driver)
+
     def test_post_moderation_collection_remove(
-        self, session, driver, must_be_logged_in, collection_project
+        self, session, driver, log_in_if_not_already, collection_project
     ):
         """Test the removal of a project from a public branded collection with a
         post-moderation workflow.  In this test a project is submitted to a collection
