@@ -46,6 +46,8 @@ class ProjectPage(GuidBasePage):
         By.CSS_SELECTOR,
         '#collections-header > div.pull-left > div',
     )
+    collection_justification_link = Locator(By.CSS_SELECTOR, 'a.comment-popover')
+    collection_justification_reason = Locator(By.CSS_SELECTOR, 'div.popover-content')
 
     # Components
     file_widget = ComponentLocator(FileWidget)

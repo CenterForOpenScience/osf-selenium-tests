@@ -5,13 +5,19 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 import markers
+import settings
 from api import osf_api
 from pages.collections import (
     CollectionDiscoverPage,
     CollectionModerationAcceptedPage,
     CollectionModerationPendingPage,
     CollectionModerationRejectedPage,
+    CollectionModerationRemovedPage,
     CollectionSubmitPage,
+)
+from pages.login import (
+    logout,
+    safe_login,
 )
 from pages.project import ProjectPage
 
@@ -168,7 +174,7 @@ class TestCollectionModeration:
         self, session, driver, must_be_logged_in, collection_project
     ):
         """Test the acceptance of a project submission to a public branded collection
-        with a pre-moderation workflow. In this test a project is submitted to a
+        with a pre-moderation workflow.  In this test a project is submitted to a
         collection and a collection moderator must 'accept' the submission before the
         project is included in the collection.  NOTE: In this test case User One is
         used to login to OSF and must therefore be setup through the admin app as a
@@ -209,7 +215,8 @@ class TestCollectionModeration:
         # Get the card for the project that was just submitted to the collection
         submisison_card = pending_page.get_submission_card(collection_project.id)
 
-        # Click the Make Decision button on the submission card to reveal the Moderation Dropdown
+        # Click the Make Decision button on the submission card to reveal the Moderation
+        # Dropdown
         submisison_card.find_element_by_css_selector(
             '[data-test-moderation-dropdown-button]'
         ).click()
@@ -254,7 +261,7 @@ class TestCollectionModeration:
         self, session, driver, must_be_logged_in, collection_project
     ):
         """Test the rejection of a project submission to a public branded collection
-        with a pre-moderation workflow. In this test a project is submitted to a
+        with a pre-moderation workflow.  In this test a project is submitted to a
         collection and a collection moderator will 'reject' the submission and the
         project is not included in the collection.  NOTE: In this test case User One is
         used to login to OSF and must therefore be setup through the admin app as a
@@ -295,7 +302,8 @@ class TestCollectionModeration:
         # Get the card for the project that was just submitted to the collection
         submisison_card = pending_page.get_submission_card(collection_project.id)
 
-        # Click the Make Decision button on the submission card to reveal the Moderation Dropdown
+        # Click the Make Decision button on the submission card to reveal the Moderation
+        # Dropdown
         submisison_card.find_element_by_css_selector(
             '[data-test-moderation-dropdown-button]'
         ).click()
@@ -337,3 +345,111 @@ class TestCollectionModeration:
         # since the project is NOT included in the collection.
         project_page = ProjectPage(driver, verify=True)
         assert project_page.collections_container.absent()
+
+    def test_post_moderation_collection_remove(
+        self, session, driver, must_be_logged_in, collection_project
+    ):
+        """Test the removal of a project from a public branded collection with a
+        post-moderation workflow.  In this test a project is submitted to a collection
+        via the OSF api, and since it is a post-moderation collection the project is
+        automatically accepted as part of the collection.  The collection moderator will
+        then 'remove' the submitted project from the collection.  NOTE: In this test case
+        User One is used to login to OSF and must therefore be setup through the admin
+        app as a moderator or admin for the collection provider being used.  The test
+        will use the OSF api to create a submitted project using the session credentials
+        of User Two so that the project submitter and moderator are different users.
+        """
+
+        session_user_two = osf_api.get_user_two_session()
+
+        # Update the project to set a valid license value
+        self.update_project_node_with_license(
+            session_user_two, 'selpostmod', collection_project.id
+        )
+
+        # Get data for the Selenium Post Moderation Collection
+        collection_provider = osf_api.get_provider(
+            session_user_two, type='collections', provider_id='selpostmod'
+        )
+        collection_guid = collection_provider['relationships']['primary_collection'][
+            'data'
+        ]['id']
+
+        # Use the OSF api to submit the test project to the Selenium Post Moderation
+        # Collection
+        osf_api.submit_project_to_collection(
+            session_user_two, collection_guid, collection_project.id
+        )
+
+        # Navigate to the Collections Moderation Accepted Page. NOTE: User must be a
+        # Moderator or Admin for the collection.
+        accepted_page = CollectionModerationAcceptedPage(
+            driver, provider=collection_provider
+        )
+        accepted_page.goto()
+        assert CollectionModerationAcceptedPage(driver, verify=True)
+        accepted_page.loading_indicator.here_then_gone()
+
+        # Get the card for the project that was just submitted to the collection
+        submisison_card = accepted_page.get_submission_card(collection_project.id)
+
+        # Click the Make Decision button on the submission card to reveal the Moderation
+        # Dropdown
+        submisison_card.find_element_by_css_selector(
+            '[data-test-moderation-dropdown-button]'
+        ).click()
+
+        # On the Moderation Dropdown, click the Remove Item radio button and enter a
+        # comment and then click the Submit button
+        accepted_page.remove_radio_button.click()
+        accepted_page.moderation_comment.click()
+        accepted_page.moderation_comment.send_keys_deliberately(
+            'Removing collection submission via selenium automated test.'
+        )
+        accepted_page.scroll_into_view(accepted_page.submit_button.element)
+        accepted_page.submit_button.click()
+        accepted_page.loading_indicator.here_then_gone()
+
+        # Navigate to the Removed Page
+        removed_page = CollectionModerationRemovedPage(
+            driver, provider=collection_provider
+        )
+        removed_page.goto()
+        assert CollectionModerationRemovedPage(driver, verify=True)
+        removed_page.loading_indicator.here_then_gone()
+
+        # Find the card for the project that was just removed and click the link for
+        # this project to go to the Project Overview Page. It should be the first one
+        # in the table since the default sort order is by Date (newest first).
+        removed_card = removed_page.get_submission_card(collection_project.id)
+        assert (
+            removed_card.find_element_by_css_selector(
+                '[data-test-review-action-comment]'
+            ).text
+            == '— Removing collection submission via selenium automated test.'
+        )
+        removed_card.find_element_by_css_selector(
+            '[data-test-submission-card-title]'
+        ).click()
+
+        # On the Project Overview Page, verify that the Collection Container is absent
+        # since the project is no longer included in the collection.
+        project_page = ProjectPage(driver, verify=True)
+        assert project_page.collections_container.absent()
+
+        # Logout and then login as User Two
+        logout(driver)
+        safe_login(driver, user=settings.USER_TWO, password=settings.USER_TWO_PASSWORD)
+
+        # Navigate to the Project Overview page for the project that was just removed
+        # from the collection and verify that the user that created and submitted the
+        # project can see the reason that it was removed.
+        project_page = ProjectPage(driver, guid=collection_project.id)
+        project_page.goto()
+        assert project_page.collections_container.present()
+        project_page.collections_container.click()
+        project_page.collection_justification_link.click()
+        assert (
+            project_page.collection_justification_reason.text
+            == 'Removing collection submission via selenium automated test.'
+        )
