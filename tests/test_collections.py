@@ -9,6 +9,7 @@ import settings
 from api import osf_api
 from pages.collections import (
     CollectionDiscoverPage,
+    CollectionEditPage,
     CollectionModerationAcceptedPage,
     CollectionModerationPendingPage,
     CollectionModerationRejectedPage,
@@ -348,21 +349,31 @@ class TestCollectionModeration:
 
         # Logout and then login as User Two
         logout(driver)
-        safe_login(driver, user=settings.USER_TWO, password=settings.USER_TWO_PASSWORD)
+        try:
+            safe_login(
+                driver, user=settings.USER_TWO, password=settings.USER_TWO_PASSWORD
+            )
 
-        # Navigate to the Project Overview page for the project that was just remjected
-        # from the collection and verify that the user that created and submitted the
-        # project can see the reason that it was rejected.
-        project_page = ProjectPage(driver, guid=collection_project.id)
-        project_page.goto()
-        assert project_page.collections_container.present()
-        project_page.collections_container.click()
-        project_page.collection_justification_link.click()
-        assert (
-            project_page.collection_justification_reason.text
-            == 'Rejecting collection submission via selenium automated test.'
-        )
-        logout(driver)
+            # Navigate to the Project Overview page for the project that was just rejected
+            # from the collection and verify that the user that created and submitted the
+            # project can see the reason that it was rejected.
+            project_page = ProjectPage(driver, guid=collection_project.id)
+            project_page.goto()
+            assert project_page.collections_container.present()
+            project_page.collections_container.click()
+            assert (
+                project_page.first_collection_label.text
+                == "Rejected from Selenium Testing Collection's Collection"
+            )
+            project_page.collection_justification_link.click()
+            assert (
+                project_page.collection_justification_reason.text
+                == 'Rejecting collection submission via selenium automated test.'
+            )
+        finally:
+            # Since we are switching logins to User Two we must make sure that we are
+            # properly logged out before proceeding to the next test case.
+            logout(driver)
 
     def test_post_moderation_collection_remove(
         self, session, driver, log_in_if_not_already, collection_project
@@ -457,17 +468,110 @@ class TestCollectionModeration:
 
         # Logout and then login as User Two
         logout(driver)
-        safe_login(driver, user=settings.USER_TWO, password=settings.USER_TWO_PASSWORD)
+        try:
+            safe_login(
+                driver, user=settings.USER_TWO, password=settings.USER_TWO_PASSWORD
+            )
 
-        # Navigate to the Project Overview page for the project that was just removed
-        # from the collection and verify that the user that created and submitted the
-        # project can see the reason that it was removed.
+            # Navigate to the Project Overview page for the project that was just removed
+            # from the collection and verify that the user that created and submitted the
+            # project can see the reason that it was removed.
+            project_page = ProjectPage(driver, guid=collection_project.id)
+            project_page.goto()
+            assert project_page.collections_container.present()
+            project_page.collections_container.click()
+            assert (
+                'Removed from Selenium Post Moderation'
+                in project_page.first_collection_label.text
+            )
+            project_page.collection_justification_link.click()
+            assert (
+                project_page.collection_justification_reason.text
+                == 'Removing collection submission via selenium automated test.'
+            )
+        finally:
+            # Since we are switching logins to User Two we must make sure that we are
+            # properly logged out before proceeding to the next test case.
+            logout(driver)
+
+    def test_post_moderation_collection_remove_by_project_admin(
+        self, session, driver, must_be_logged_in_as_user_two, collection_project
+    ):
+        """Test the functionality of a project administrator removing a project from a
+        public branded collection. In this test a project is submitted to a collection
+        via the OSF api, and since it is a post-moderation collection the project is
+        automatically accepted as part of the collection.  The project administrator
+        will then 'remove' the submitted project from the collection.  NOTE: In this
+        test case User Two is used to login to OSF and also to submit the project to
+        the collection via the OSF api.
+        """
+
+        session_user_two = osf_api.get_user_two_session()
+
+        # Update the project to set a valid license value
+        self.update_project_node_with_license(
+            session_user_two, 'selpostmod', collection_project.id
+        )
+
+        # Get data for the Selenium Post Moderation Collection
+        collection_provider = osf_api.get_provider(
+            session_user_two, type='collections', provider_id='selpostmod'
+        )
+        collection_guid = collection_provider['relationships']['primary_collection'][
+            'data'
+        ]['id']
+
+        # Use the OSF api to submit the test project to the Selenium Post Moderation
+        # Collection
+        osf_api.submit_project_to_collection(
+            session_user_two, collection_guid, collection_project.id
+        )
+
+        # Navigate to the Project Overview page for the project that was submitted to
+        # the collection.
         project_page = ProjectPage(driver, guid=collection_project.id)
         project_page.goto()
         assert project_page.collections_container.present()
+        assert (
+            'Included in Selenium Post Moderation'
+            in project_page.pending_collection_display.text
+        )
+
+        # Expand the collection container and click the edit button (pencil icon) to
+        # go to the Edit Collection page.
         project_page.collections_container.click()
+        project_page.first_collection_edit_link.click()
+        edit_page = CollectionEditPage(driver, verify=True)
+
+        # Scroll to the bottom of the page and click the Remove from collection button
+        edit_page.scroll_into_view(edit_page.remove_button.element)
+        edit_page.remove_button.click()
+
+        # On the Remove from collection modal, first click the Cancel button and verify
+        # that you are still on the Edit Collection page.
+        edit_page.modal_cancel_remove_button.click()
+        assert CollectionEditPage(driver, verify=True)
+
+        # Click the Remove from collection button again. This time enter a reason in the
+        # input box and click the Remove from collection button on the modal.
+        edit_page.remove_button.click()
+        edit_page.modal_remove_reason_input.click()
+        edit_page.modal_remove_reason_input.send_keys_deliberately(
+            'Project admin removing project from collection via selenium automated test.'
+        )
+        edit_page.modal_remove_button.click()
+
+        # Verify that you are redirected back to the Project Overview page and that the
+        # remove reason can be seen by the project admin.
+        project_page = ProjectPage(driver, verify=True)
+        assert project_page.collections_container.present()
+        project_page.collections_container.click()
+        assert (
+            'Removed from Selenium Post Moderation'
+            in project_page.first_collection_label.text
+        )
         project_page.collection_justification_link.click()
         assert (
             project_page.collection_justification_reason.text
-            == 'Removing collection submission via selenium automated test.'
+            == 'Project admin removing project from collection via selenium automated test.'
         )

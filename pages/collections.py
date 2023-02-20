@@ -87,6 +87,34 @@ class CollectionSubmitPage(BaseCollectionPage):
     )
 
 
+class CollectionEditPage(BaseCollectionPage):
+    url_addition = '{guid}/edit'
+
+    identity = Locator(By.CSS_SELECTOR, 'div[data-test-submit-section-click-to-edit]')
+    remove_button = Locator(
+        By.CSS_SELECTOR, 'span[data-test-collections-remove-button] > button'
+    )
+    modal_remove_reason_input = Locator(
+        By.CSS_SELECTOR, 'textarea[data-test-collections-remove-reason]'
+    )
+    modal_cancel_remove_button = Locator(
+        By.CSS_SELECTOR, 'button[data-test-cancel-delete]'
+    )
+    modal_remove_button = Locator(By.CSS_SELECTOR, 'button[data-test-confirm-delete]')
+
+    def __init__(self, driver, verify=False, provider=None, guid=''):
+        self.guid = guid
+        super().__init__(driver, verify, provider)
+
+    @property
+    def url(self):
+        return (
+            urljoin(self.base_url, self.provider_id)
+            + '/'
+            + self.url_addition.format(guid=self.guid)
+        )
+
+
 class BaseCollectionModerationPage(BaseCollectionPage):
     loading_indicator = Locator(By.CSS_SELECTOR, '.ball-scale')
 
