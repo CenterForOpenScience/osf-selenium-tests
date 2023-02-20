@@ -155,21 +155,31 @@ class TestCollectionModeration:
         yield project
         project.delete()
 
-    def update_project_node_with_license(self, session, collection_id, node_id):
-        """Helper function that uses the OSF api to update a given project node with a
-        valid license value."""
+    def submit_to_moderated_collection(self, collection_provider, node_id):
+        """Helper function that preps a project and then submits it to a moderated
+        (either pre or post) collection.  All OSF api calls within this function use
+        the session credentials for User Two.
+        """
+        session_user_two = osf_api.get_user_two_session()
 
-        # Get the license id for the 'CC0 1.0 Universal' license
+        # Update the project to set a valid license value for the 'CC0 1.0 Universal'
+        # license
         license_data = osf_api.get_license_data_for_provider(
-            session,
+            session_user_two,
             provider_type='collections',
-            provider_id=collection_id,
+            provider_id=collection_provider['id'],
             license_name='CC0 1.0 Universal',
         )
         license_id = license_data[0]
+        osf_api.update_node_license(session_user_two, node_id, license_id)
 
-        # Update the project with the license id
-        osf_api.update_node_license(session, node_id, license_id)
+        # We need to get the collection guid in order to perform the actual submission
+        collection_guid = collection_provider['relationships']['primary_collection'][
+            'data'
+        ]['id']
+
+        # Use the OSF api to submit the test project to the collection
+        osf_api.submit_project_to_collection(session_user_two, collection_guid, node_id)
 
     def test_pre_moderation_collection_accept(
         self, session, driver, must_be_logged_in, collection_project
@@ -184,25 +194,13 @@ class TestCollectionModeration:
         Two so that the project submitter and moderator are different users.
         """
 
-        session_user_two = osf_api.get_user_two_session()
-
-        # Update the project to set a valid license value
-        self.update_project_node_with_license(
-            session_user_two, 'selenium', collection_project.id
-        )
-
-        # Get data for the Selenium Collection
+        # Get data for the Selenium Pre-moderated Collection
         collection_provider = osf_api.get_provider(
-            session_user_two, type='collections', provider_id='selenium'
+            session, type='collections', provider_id='selenium'
         )
-        collection_guid = collection_provider['relationships']['primary_collection'][
-            'data'
-        ]['id']
 
-        # Use the OSF api to submit the test project to the Selenium Collection
-        osf_api.submit_project_to_collection(
-            session_user_two, collection_guid, collection_project.id
-        )
+        # Submit the project to the Selenium Pre-moderated Collection
+        self.submit_to_moderated_collection(collection_provider, collection_project.id)
 
         # Navigate to the Collections Moderation Pending Page. NOTE: User must be a
         # Moderator or Admin for the collection.
@@ -271,85 +269,75 @@ class TestCollectionModeration:
         Two so that the project submitter and moderator are different users.
         """
 
-        session_user_two = osf_api.get_user_two_session()
-
-        # Update the project to set a valid license value
-        self.update_project_node_with_license(
-            session_user_two, 'selenium', collection_project.id
-        )
-
-        # Get data for the Selenium Collection
-        collection_provider = osf_api.get_provider(
-            session_user_two, type='collections', provider_id='selenium'
-        )
-        collection_guid = collection_provider['relationships']['primary_collection'][
-            'data'
-        ]['id']
-
-        # Use the OSF api to submit the test project to the Selenium Collection
-        osf_api.submit_project_to_collection(
-            session_user_two, collection_guid, collection_project.id
-        )
-
-        # Navigate to the Collections Moderation Pending Page. NOTE: User must be a
-        # Moderator or Admin for the collection.
-        pending_page = CollectionModerationPendingPage(
-            driver, provider=collection_provider
-        )
-        pending_page.goto()
-        assert CollectionModerationPendingPage(driver, verify=True)
-        pending_page.loading_indicator.here_then_gone()
-
-        # Get the card for the project that was just submitted to the collection
-        submisison_card = pending_page.get_submission_card(collection_project.id)
-
-        # Click the Make Decision button on the submission card to reveal the Moderation
-        # Dropdown
-        submisison_card.find_element_by_css_selector(
-            '[data-test-moderation-dropdown-button]'
-        ).click()
-
-        # On the Moderation Dropdown, click the Reject Request radio button and enter a
-        # comment and then click the Submit button
-        pending_page.reject_radio_button.click()
-        pending_page.moderation_comment.click()
-        pending_page.moderation_comment.send_keys_deliberately(
-            'Rejecting collection submission via selenium automated test.'
-        )
-        pending_page.scroll_into_view(pending_page.submit_button.element)
-        pending_page.submit_button.click()
-        pending_page.loading_indicator.here_then_gone()
-
-        # Navigate to the Rejected Page
-        rejected_page = CollectionModerationRejectedPage(
-            driver, provider=collection_provider
-        )
-        rejected_page.goto()
-        assert CollectionModerationRejectedPage(driver, verify=True)
-        rejected_page.loading_indicator.here_then_gone()
-
-        # Find the card for the project that was just rejected and click the link for
-        # this project to go to the Project Overview Page. It should be the first one
-        # in the table since the default sort order is by Date (newest first).
-        rejected_card = rejected_page.get_submission_card(collection_project.id)
-        assert (
-            rejected_card.find_element_by_css_selector(
-                '[data-test-review-action-comment]'
-            ).text
-            == '— Rejecting collection submission via selenium automated test.'
-        )
-        rejected_card.find_element_by_css_selector(
-            '[data-test-submission-card-title]'
-        ).click()
-
-        # On the Project Overview Page, verify that the Collection Container is absent
-        # since the project is NOT included in the collection.
-        project_page = ProjectPage(driver, verify=True)
-        assert project_page.collections_container.absent()
-
-        # Logout and then login as User Two
-        logout(driver)
         try:
+            # Get data for the Selenium Pre-moderated Collection
+            collection_provider = osf_api.get_provider(
+                session, type='collections', provider_id='selenium'
+            )
+
+            # Submit the project to the Selenium Pre-moderated Collection
+            self.submit_to_moderated_collection(
+                collection_provider, collection_project.id
+            )
+
+            # Navigate to the Collections Moderation Pending Page. NOTE: User must be a
+            # Moderator or Admin for the collection.
+            pending_page = CollectionModerationPendingPage(
+                driver, provider=collection_provider
+            )
+            pending_page.goto()
+            assert CollectionModerationPendingPage(driver, verify=True)
+            pending_page.loading_indicator.here_then_gone()
+
+            # Get the card for the project that was just submitted to the collection
+            submisison_card = pending_page.get_submission_card(collection_project.id)
+
+            # Click the Make Decision button on the submission card to reveal the Moderation
+            # Dropdown
+            submisison_card.find_element_by_css_selector(
+                '[data-test-moderation-dropdown-button]'
+            ).click()
+
+            # On the Moderation Dropdown, click the Reject Request radio button and enter a
+            # comment and then click the Submit button
+            pending_page.reject_radio_button.click()
+            pending_page.moderation_comment.click()
+            pending_page.moderation_comment.send_keys_deliberately(
+                'Rejecting collection submission via selenium automated test.'
+            )
+            pending_page.scroll_into_view(pending_page.submit_button.element)
+            pending_page.submit_button.click()
+            pending_page.loading_indicator.here_then_gone()
+
+            # Navigate to the Rejected Page
+            rejected_page = CollectionModerationRejectedPage(
+                driver, provider=collection_provider
+            )
+            rejected_page.goto()
+            assert CollectionModerationRejectedPage(driver, verify=True)
+            rejected_page.loading_indicator.here_then_gone()
+
+            # Find the card for the project that was just rejected and click the link for
+            # this project to go to the Project Overview Page. It should be the first one
+            # in the table since the default sort order is by Date (newest first).
+            rejected_card = rejected_page.get_submission_card(collection_project.id)
+            assert (
+                rejected_card.find_element_by_css_selector(
+                    '[data-test-review-action-comment]'
+                ).text
+                == '— Rejecting collection submission via selenium automated test.'
+            )
+            rejected_card.find_element_by_css_selector(
+                '[data-test-submission-card-title]'
+            ).click()
+
+            # On the Project Overview Page, verify that the Collection Container is absent
+            # since the project is NOT included in the collection.
+            project_page = ProjectPage(driver, verify=True)
+            assert project_page.collections_container.absent()
+
+            # Logout and then login as User Two
+            logout(driver)
             safe_login(
                 driver, user=settings.USER_TWO, password=settings.USER_TWO_PASSWORD
             )
@@ -389,86 +377,76 @@ class TestCollectionModeration:
         of User Two so that the project submitter and moderator are different users.
         """
 
-        session_user_two = osf_api.get_user_two_session()
-
-        # Update the project to set a valid license value
-        self.update_project_node_with_license(
-            session_user_two, 'selpostmod', collection_project.id
-        )
-
-        # Get data for the Selenium Post Moderation Collection
-        collection_provider = osf_api.get_provider(
-            session_user_two, type='collections', provider_id='selpostmod'
-        )
-        collection_guid = collection_provider['relationships']['primary_collection'][
-            'data'
-        ]['id']
-
-        # Use the OSF api to submit the test project to the Selenium Post Moderation
-        # Collection
-        osf_api.submit_project_to_collection(
-            session_user_two, collection_guid, collection_project.id
-        )
-
-        # Navigate to the Collections Moderation Accepted Page. NOTE: User must be a
-        # Moderator or Admin for the collection.
-        accepted_page = CollectionModerationAcceptedPage(
-            driver, provider=collection_provider
-        )
-        accepted_page.goto()
-        assert CollectionModerationAcceptedPage(driver, verify=True)
-        accepted_page.loading_indicator.here_then_gone()
-
-        # Get the card for the project that was just submitted to the collection
-        submisison_card = accepted_page.get_submission_card(collection_project.id)
-
-        # Click the Make Decision button on the submission card to reveal the Moderation
-        # Dropdown
-        submisison_card.find_element_by_css_selector(
-            '[data-test-moderation-dropdown-button]'
-        ).click()
-
-        # On the Moderation Dropdown, click the Remove Item radio button and enter a
-        # comment and then click the Submit button
-        accepted_page.remove_radio_button.click()
-        accepted_page.moderation_comment.click()
-        accepted_page.moderation_comment.send_keys_deliberately(
-            'Removing collection submission via selenium automated test.'
-        )
-        accepted_page.scroll_into_view(accepted_page.submit_button.element)
-        accepted_page.submit_button.click()
-        accepted_page.loading_indicator.here_then_gone()
-
-        # Navigate to the Removed Page
-        removed_page = CollectionModerationRemovedPage(
-            driver, provider=collection_provider
-        )
-        removed_page.goto()
-        assert CollectionModerationRemovedPage(driver, verify=True)
-        removed_page.loading_indicator.here_then_gone()
-
-        # Find the card for the project that was just removed and click the link for
-        # this project to go to the Project Overview Page. It should be the first one
-        # in the table since the default sort order is by Date (newest first).
-        removed_card = removed_page.get_submission_card(collection_project.id)
-        assert (
-            removed_card.find_element_by_css_selector(
-                '[data-test-review-action-comment]'
-            ).text
-            == '— Removing collection submission via selenium automated test.'
-        )
-        removed_card.find_element_by_css_selector(
-            '[data-test-submission-card-title]'
-        ).click()
-
-        # On the Project Overview Page, verify that the Collection Container is absent
-        # since the project is no longer included in the collection.
-        project_page = ProjectPage(driver, verify=True)
-        assert project_page.collections_container.absent()
-
-        # Logout and then login as User Two
-        logout(driver)
         try:
+            # Get data for the Selenium Post-moderated Collection
+            collection_provider = osf_api.get_provider(
+                session, type='collections', provider_id='selpostmod'
+            )
+
+            # Submit the project to the Selenium Post-moderated Collection
+            self.submit_to_moderated_collection(
+                collection_provider, collection_project.id
+            )
+
+            # Navigate to the Collections Moderation Accepted Page. NOTE: User must be a
+            # Moderator or Admin for the collection.
+            accepted_page = CollectionModerationAcceptedPage(
+                driver, provider=collection_provider
+            )
+            accepted_page.goto()
+            assert CollectionModerationAcceptedPage(driver, verify=True)
+            accepted_page.loading_indicator.here_then_gone()
+
+            # Get the card for the project that was just submitted to the collection
+            submisison_card = accepted_page.get_submission_card(collection_project.id)
+
+            # Click the Make Decision button on the submission card to reveal the Moderation
+            # Dropdown
+            submisison_card.find_element_by_css_selector(
+                '[data-test-moderation-dropdown-button]'
+            ).click()
+
+            # On the Moderation Dropdown, click the Remove Item radio button and enter a
+            # comment and then click the Submit button
+            accepted_page.loading_indicator.here_then_gone()
+            accepted_page.remove_radio_button.click()
+            accepted_page.moderation_comment.click()
+            accepted_page.moderation_comment.send_keys_deliberately(
+                'Removing collection submission via selenium automated test.'
+            )
+            accepted_page.scroll_into_view(accepted_page.submit_button.element)
+            accepted_page.submit_button.click()
+            accepted_page.loading_indicator.here_then_gone()
+
+            # Navigate to the Removed Page
+            removed_page = CollectionModerationRemovedPage(
+                driver, provider=collection_provider
+            )
+            removed_page.goto()
+            assert CollectionModerationRemovedPage(driver, verify=True)
+            removed_page.loading_indicator.here_then_gone()
+
+            # Find the card for the project that was just removed and click the link for
+            # this project to go to the Project Overview Page. It should be the first one
+            # in the table since the default sort order is by Date (newest first).
+            removed_card = removed_page.get_submission_card(collection_project.id)
+            assert (
+                removed_card.find_element_by_css_selector(
+                    '[data-test-review-action-comment]'
+                ).text
+                == '— Removing collection submission via selenium automated test.'
+            )
+            removed_card.find_element_by_css_selector(
+                '[data-test-submission-card-title]'
+            ).click()
+
+            # On the Project Overview Page, verify that the Collection Container is absent
+            # since the project is no longer included in the collection.
+            project_page = ProjectPage(driver, verify=True)
+            assert project_page.collections_container.absent()
+
+            # Logout and then login as User Two
+            logout(driver)
             safe_login(
                 driver, user=settings.USER_TWO, password=settings.USER_TWO_PASSWORD
             )
@@ -506,26 +484,13 @@ class TestCollectionModeration:
         the collection via the OSF api.
         """
 
-        session_user_two = osf_api.get_user_two_session()
-
-        # Update the project to set a valid license value
-        self.update_project_node_with_license(
-            session_user_two, 'selpostmod', collection_project.id
-        )
-
-        # Get data for the Selenium Post Moderation Collection
+        # Get data for the Selenium Post-moderated Collection
         collection_provider = osf_api.get_provider(
-            session_user_two, type='collections', provider_id='selpostmod'
+            session, type='collections', provider_id='selpostmod'
         )
-        collection_guid = collection_provider['relationships']['primary_collection'][
-            'data'
-        ]['id']
 
-        # Use the OSF api to submit the test project to the Selenium Post Moderation
-        # Collection
-        osf_api.submit_project_to_collection(
-            session_user_two, collection_guid, collection_project.id
-        )
+        # Submit the project to the Selenium Post-moderated Collection
+        self.submit_to_moderated_collection(collection_provider, collection_project.id)
 
         # Navigate to the Project Overview page for the project that was submitted to
         # the collection.
@@ -564,6 +529,7 @@ class TestCollectionModeration:
         # Verify that you are redirected back to the Project Overview page and that the
         # remove reason can be seen by the project admin.
         project_page = ProjectPage(driver, verify=True)
+        project_page.loading_indicator.here_then_gone()
         assert project_page.collections_container.present()
         project_page.collections_container.click()
         assert (

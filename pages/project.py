@@ -39,6 +39,7 @@ class ProjectPage(GuidBasePage):
     make_private_link = Locator(By.XPATH, '//a[contains(text(), "Make Private")]')
     confirm_privacy_change_link = Locator(By.XPATH, '//a[text()="Confirm"]')
     cancel_privacy_change_link = Locator(By.XPATH, '//a[text()="Cancel"]')
+    loading_indicator = Locator(By.CSS_SELECTOR, '.ball-pulse')
     collections_container = Locator(
         By.CSS_SELECTOR, '#projectBanner > div.row > div.collections-container.col-12'
     )
