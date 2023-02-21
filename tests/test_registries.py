@@ -107,6 +107,54 @@ class TestBrandedRegistriesPages:
             assert RegistriesDiscoverPage(driver, verify=True)
 
 
+@markers.dont_run_on_prod
+class TestDraftRegistration:
+    @pytest.fixture
+    def draft_registration(self, session, driver, default_project):
+        """Return a draft registration created from a temporary project. This fixture
+        uses the Open-Ended Registration schema in the OSF Registry. NOTE: Since the
+        temporary project is deleted at the end of the test, this draft registration
+        will also be automatically deleted.
+        """
+
+        # First get the schema id for an 'Open-Ended Registration'
+        schema_list = osf_api.get_registration_schemas_for_provider(provider_id='osf')
+        for schema in schema_list:
+            if schema[0] == 'Open-Ended Registration':
+                schema_id = schema[1]
+                break
+
+        return osf_api.create_draft_registration(
+            session, node_id=default_project.id, schema_id=schema_id
+        )
+
+    def test_subjects_sort_order(self, driver, draft_registration, must_be_logged_in):
+        """This test verifies that the list of Subjects on the Draft Registration
+        Metadata page is sorted in alphabetical order.
+        """
+
+        # Navigate to the Draft Registration Metadata page
+        metadata_page = DraftRegistrationMetadataPage(
+            driver, draft_id=draft_registration['data']['id']
+        )
+        metadata_page.goto()
+        assert DraftRegistrationMetadataPage(driver, verify=True)
+        metadata_page.loading_indicator.here_then_gone()
+
+        # Scroll down until the Subjects section is in view
+        metadata_page.scroll_into_view(metadata_page.tags_input_box.element)
+
+        # Create a list of the top level subject names as they are displayed on the page
+        subject_list = [subject.text for subject in metadata_page.top_level_subjects]
+
+        # Create a sorted copy of the subject list
+        sorted_subjects = sorted(subject_list.copy())
+
+        # Verify that the sorted list matches the original subject list indicating that
+        # the subject list as displayed on the page is correctly sorted alphabetically.
+        assert sorted_subjects == subject_list
+
+
 @pytest.fixture(scope='class')
 def login_as_user_with_registrations(driver):
     """Logs into OSF as the specific user for creating registrations."""
