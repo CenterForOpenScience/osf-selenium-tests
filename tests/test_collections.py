@@ -222,6 +222,7 @@ class TestCollectionModeration:
 
         # On the Moderation Dropdown, click the Accept Request radio button and enter a
         # comment and then click the Submit button
+        pending_page.loading_indicator.here_then_gone()
         pending_page.accept_radio_button.click()
         pending_page.moderation_comment.click()
         pending_page.moderation_comment.send_keys_deliberately(
@@ -300,6 +301,7 @@ class TestCollectionModeration:
 
             # On the Moderation Dropdown, click the Reject Request radio button and enter a
             # comment and then click the Submit button
+            pending_page.loading_indicator.here_then_gone()
             pending_page.reject_radio_button.click()
             pending_page.moderation_comment.click()
             pending_page.moderation_comment.send_keys_deliberately(
@@ -541,3 +543,41 @@ class TestCollectionModeration:
             project_page.collection_justification_reason.text
             == 'Project admin removing project from collection via selenium automated test.'
         )
+
+    def test_pre_moderation_collection_cancel_pending(
+        self, session, driver, must_be_logged_in_as_user_two, collection_project
+    ):
+        """Test the cancellation of a project submission to a public branded collection
+        with a pre-moderation workflow.  In this test a project is submitted to a
+        collection and the project administrator will 'cancel' the pending submission
+        and the project will net be included in the collection.  NOTE: In this test case
+        User Two is used to login to OSF and also to submit the project to the
+        collection via the OSF api.
+        """
+
+        # Get data for the Selenium Pre-moderated Collection
+        collection_provider = osf_api.get_provider(
+            session, type='collections', provider_id='selenium'
+        )
+
+        # Submit the project to the Selenium Pre-moderated Collection
+        self.submit_to_moderated_collection(collection_provider, collection_project.id)
+
+        # Navigate to the Project Overview page for the project that was submitted to
+        # the collection.
+        project_page = ProjectPage(driver, guid=collection_project.id)
+        project_page.goto()
+        assert project_page.collections_container.present()
+        assert (
+            'Pending entry into Selenium Testing Collection'
+            in project_page.pending_collection_display.text
+        )
+
+        # Expand the collection container and click the cancel link (X icon)
+        project_page.collections_container.click()
+        project_page.first_collection_cancel_link.click()
+
+        # Reload the project page and verify that the collection container disappears
+        project_page.reload()
+        project_page.loading_indicator.here_then_gone()
+        assert project_page.collections_container.absent()

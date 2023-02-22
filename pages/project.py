@@ -53,6 +53,9 @@ class ProjectPage(GuidBasePage):
         By.CSS_SELECTOR, '#collectionList > div > div:nth-child(3)'
     )
     first_collection_edit_link = Locator(By.CSS_SELECTOR, '#collectionList > div > a')
+    first_collection_cancel_link = Locator(
+        By.CSS_SELECTOR, 'a.fa.fa-close.collections-cancel-icon'
+    )
 
     # Components
     file_widget = ComponentLocator(FileWidget)
