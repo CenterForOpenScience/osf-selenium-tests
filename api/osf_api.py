@@ -489,7 +489,7 @@ def create_draft_registration(session, node_id=None, schema_id=None):
             },
         },
     }
-    session.post(
+    return session.post(
         url=url, item_type='draft_registrations', raw_body=json.dumps(raw_payload)
     )
 

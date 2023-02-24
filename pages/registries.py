@@ -254,6 +254,7 @@ class BaseRegistrationDraftPage(BaseRegistriesPage):
     def url(self):
         return self.base_url + self.draft_id + '/' + self.url_addition
 
+    loading_indicator = Locator(By.CSS_SELECTOR, '.ball-scale')
     page_heading = Locator(By.CSS_SELECTOR, 'h2[data-test-page-heading]')
     next_page_button = Locator(By.CSS_SELECTOR, 'a[data-test-goto-next-page] > button')
     first_file_name = Locator(By.CSS_SELECTOR, 'span[data-test-file-name]')
