@@ -14,8 +14,10 @@ from components.dashboard import (
     ProjectCreatedModal,
 )
 from components.project import (
+    ComponentCreatedModal,
     ConfirmDeleteDraftRegistrationModal,
     ConfirmFileDeleteModal,
+    CreateComponentModal,
     CreateRegistrationModal,
     FileWidget,
     LogWidget,
@@ -35,11 +37,16 @@ class ProjectPage(GuidBasePage):
     title_input = Locator(By.CSS_SELECTOR, '.form-inline input')
     title_edit_submit_button = Locator(By.CSS_SELECTOR, '.editable-submit')
     title_edit_cancel_button = Locator(By.CSS_SELECTOR, '.editable-cancel')
-    make_public_link = Locator(By.XPATH, '//a[contains(text(), "Make Public")]')
-    make_private_link = Locator(By.XPATH, '//a[contains(text(), "Make Private")]')
-    confirm_privacy_change_link = Locator(By.XPATH, '//a[text()="Confirm"]')
-    cancel_privacy_change_link = Locator(By.XPATH, '//a[text()="Cancel"]')
+    parent_project_link = Locator(By.CSS_SELECTOR, 'h2.node-parent-title > a')
+    description = Locator(By.ID, 'nodeDescriptionEditable')
+    make_public_link = Locator(By.LINK_TEXT, 'Make Public')
+    make_private_link = Locator(By.LINK_TEXT, 'Make Private')
+    confirm_privacy_change_link = Locator(By.LINK_TEXT, 'Confirm')
+    cancel_privacy_change_link = Locator(By.LINK_TEXT, 'Cancel')
     loading_indicator = Locator(By.CSS_SELECTOR, '.ball-pulse')
+    add_component_button = Locator(
+        By.CSS_SELECTOR, '#newComponent > span > div.btn.btn-sm.btn-default'
+    )
     collections_container = Locator(
         By.CSS_SELECTOR, '#projectBanner > div.row > div.collections-container.col-12'
     )
@@ -57,9 +64,20 @@ class ProjectPage(GuidBasePage):
         By.CSS_SELECTOR, 'a.fa.fa-close.collections-cancel-icon'
     )
 
+    components = GroupLocator(By.ID, 'render-node')
+
     # Components
     file_widget = ComponentLocator(FileWidget)
     log_widget = ComponentLocator(LogWidget)
+    create_component_modal = ComponentLocator(CreateComponentModal)
+    component_created_modal = ComponentLocator(ComponentCreatedModal)
+
+    def get_component_by_node_id(self, node_id):
+        for component in self.components:
+            if node_id == component.find_element_by_css_selector('div').get_attribute(
+                'node_id'
+            ):
+                return component
 
 
 class RequestAccessPage(GuidBasePage):

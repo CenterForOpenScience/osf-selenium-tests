@@ -28,6 +28,25 @@ class LogWidget(BaseElement):
     log_items = GroupLocator(By.CSS_SELECTOR, '#logFeed .db-activity-item')
 
 
+class CreateComponentModal(BaseElement):
+    title_input = Locator(By.NAME, 'projectName')
+    more_link = Locator(
+        By.CSS_SELECTOR, 'div.modal-body > div > div.text-muted.pointer'
+    )
+    description_input = Locator(By.NAME, 'projectDesc')
+    cancel_button = Locator(
+        By.CSS_SELECTOR, 'div.modal-footer > button.btn.btn-default'
+    )
+    create_component_button = Locator(
+        By.CSS_SELECTOR, 'div.modal-footer > button.btn.btn-success'
+    )
+
+
+class ComponentCreatedModal(BaseElement):
+    keep_working_here_button = Locator(By.CSS_SELECTOR, 'button[data-dismiss="modal"]')
+    go_to_new_component_link = Locator(By.LINK_TEXT, 'Go to new component')
+
+
 class CreateRegistrationModal(BaseElement):
     modal_window = Locator(By.CSS_SELECTOR, '[data-test-new-registration-modal]')
     cancel_button = Locator(
