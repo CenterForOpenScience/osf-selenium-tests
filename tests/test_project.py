@@ -229,6 +229,100 @@ class TestProjectComponents:
             # But it cannot be deleted if the component is not deleted first.
             osf_api.delete_project(session, component_guid, None)
 
+    def test_delete_component_from_project(self, driver, session, default_project):
+        """Test the functionality of deleting a child component node from the parent
+        project's Project Overview page.
+        """
+
+        # First use the api to create a child node for the dummy temporary project
+        component = osf_api.create_child_node(
+            session, node=default_project, title='API Created Component'
+        )
+
+        try:
+            # Navigate to the parent Project Overview page and verify the existence of the
+            # component
+            project_page = ProjectPage(driver, guid=default_project.id)
+            project_page.goto()
+            assert ProjectPage(driver, verify=True)
+            assert len(project_page.components) == 1
+            component_card = project_page.get_component_by_node_id(component.id)
+            assert (
+                component_card.find_element_by_css_selector('div > h4 > span > a').text
+                == 'API Created Component'
+            )
+
+            # Click the button on the right side of the component card to reveal a dropdown
+            # options menu
+            component_card.find_element_by_css_selector(
+                'div > h4 > div > div > button'
+            ).click()
+
+            # Click the Delete menu option
+            component_card.find_element_by_css_selector(
+                'div > h4 > div > div > ul > li:nth-child(3) > a'
+            ).click()
+
+            # On the Delete Component Confirmation Modal, first verify that the Delete
+            # button is disabled. Then click the Cancel button to go back to the Project
+            # Overview page again and verify the component card is still there.
+            WebDriverWait(driver, 3).until(
+                EC.visibility_of_element_located((By.ID, 'nodesDelete'))
+            )
+            assert driver.find_element(
+                By.CSS_SELECTOR,
+                '#nodesDelete > div > div > div > div.modal-footer > span:nth-child(3) > a.btn.btn-danger.disabled',
+            )
+            project_page.delete_component_modal.cancel_link.click()
+            WebDriverWait(driver, 3).until(
+                EC.invisibility_of_element_located(
+                    (By.CSS_SELECTOR, 'div.modal-backdrop.fade')
+                )
+            )
+            assert len(project_page.components) == 1
+
+            # Select the Component Delete menu option again and this time enter the
+            # confirmation text value in the input field and click the Delete button to
+            # actually delete the component.
+            component_card.find_element_by_css_selector(
+                'div > h4 > div > div > button'
+            ).click()
+            component_card.find_element_by_css_selector(
+                'div > h4 > div > div > ul > li:nth-child(3) > a'
+            ).click()
+            WebDriverWait(driver, 3).until(
+                EC.visibility_of_element_located((By.ID, 'nodesDelete'))
+            )
+            project_page.delete_component_modal.confirmation_input.send_keys_deliberately(
+                project_page.delete_component_modal.confirmation_text.text
+            )
+            WebDriverWait(driver, 3).until(
+                EC.invisibility_of_element_located(
+                    (
+                        By.CSS_SELECTOR,
+                        '#nodesDelete > div > div > div > div.modal-footer > span:nth-child(3) > a.btn.btn-danger.disabled',
+                    )
+                )
+            )
+            project_page.delete_component_modal.delete_link.click()
+
+            # Verify that back on the Project Overview page an alert message appears at the
+            # top of the page indicating that the component was deleted and the Component
+            # section no longer has the card for the deleted component.
+            WebDriverWait(driver, 5).until(
+                EC.visibility_of(project_page.alert_message.element)
+            )
+            assert (
+                project_page.alert_message.text
+                == 'Component has been successfully deleted.'
+            )
+            assert len(project_page.components) == 0
+        finally:
+            # We must make sure that in the event of an error that we delete the
+            # component so that the dummy project can also be deleted.
+            if osf_api.get_node(session, node_id=component.id):
+                osf_api.delete_project(session, component.id, None)
+
 
 class TestAnalyticsPage:
     @markers.core_functionality

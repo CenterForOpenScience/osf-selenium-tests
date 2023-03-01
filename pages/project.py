@@ -19,6 +19,7 @@ from components.project import (
     ConfirmFileDeleteModal,
     CreateComponentModal,
     CreateRegistrationModal,
+    DeleteComponentModal,
     FileWidget,
     LogWidget,
     MoveCopyFileModal,
@@ -37,6 +38,7 @@ class ProjectPage(GuidBasePage):
     title_input = Locator(By.CSS_SELECTOR, '.form-inline input')
     title_edit_submit_button = Locator(By.CSS_SELECTOR, '.editable-submit')
     title_edit_cancel_button = Locator(By.CSS_SELECTOR, '.editable-cancel')
+    alert_message = Locator(By.CSS_SELECTOR, '#alert-container > p')
     parent_project_link = Locator(By.CSS_SELECTOR, 'h2.node-parent-title > a')
     description = Locator(By.ID, 'nodeDescriptionEditable')
     make_public_link = Locator(By.LINK_TEXT, 'Make Public')
@@ -71,6 +73,7 @@ class ProjectPage(GuidBasePage):
     log_widget = ComponentLocator(LogWidget)
     create_component_modal = ComponentLocator(CreateComponentModal)
     component_created_modal = ComponentLocator(ComponentCreatedModal)
+    delete_component_modal = ComponentLocator(DeleteComponentModal)
 
     def get_component_by_node_id(self, node_id):
         for component in self.components:

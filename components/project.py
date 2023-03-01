@@ -47,6 +47,23 @@ class ComponentCreatedModal(BaseElement):
     go_to_new_component_link = Locator(By.LINK_TEXT, 'Go to new component')
 
 
+class DeleteComponentModal(BaseElement):
+    confirmation_text = Locator(
+        By.CSS_SELECTOR,
+        'div.modal-body > div:nth-child(3) > div:nth-child(1) > p:nth-child(2) > strong',
+    )
+    confirmation_input = Locator(
+        By.CSS_SELECTOR, 'div.modal-body > div:nth-child(3) > div.form-control'
+    )
+    cancel_link = Locator(
+        By.CSS_SELECTOR, '#nodesDelete > div > div > div > div.modal-footer > a'
+    )
+    delete_link = Locator(
+        By.CSS_SELECTOR,
+        '#nodesDelete > div > div > div > div.modal-footer > span:nth-child(3) > a',
+    )
+
+
 class CreateRegistrationModal(BaseElement):
     modal_window = Locator(By.CSS_SELECTOR, '[data-test-new-registration-modal]')
     cancel_button = Locator(

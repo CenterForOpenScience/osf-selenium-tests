@@ -39,6 +39,22 @@ def create_project(session, title='osf selenium test', tags=None, **kwargs):
     return node
 
 
+def create_child_node(
+    session,
+    node=None,
+    node_id=None,
+    title='osf selenium child node',
+    tags=None,
+    **kwargs
+):
+    """Create a child node (a.k.a. component) of a given project node."""
+    if tags is None:
+        tags = ['qatest', os.environ['PYTEST_CURRENT_TEST']]
+    if not node:
+        node = get_node(session, node_id=node_id)
+    return node.create_child(title=title, tags=tags, **kwargs)
+
+
 def current_user(session=None):
     if not session:
         session = get_default_session()
