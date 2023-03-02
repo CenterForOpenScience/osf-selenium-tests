@@ -72,11 +72,22 @@ class TestProjectDetailPage:
             )
         )
         project_page.make_public_link.click()
+
+        # First click the Cancel link on the Confirm Modal and verify that the project
+        # is still private.
+        project_page.confirm_privacy_change_modal.cancel_link.click()
+        assert project_page.make_private_link.absent()
+
+        # Click the Make Public link again and this time click the Confirm link on the
+        # modal to actually make the project public.
+        project_page.make_public_link.click()
         project_page.confirm_privacy_change_modal.confirm_link.click()
         assert project_page.make_private_link.present()
+
         # Confirm logged out user can now see project
         logout(driver)
         project_page.goto()
+        assert ProjectPage(driver, verify=True)
         login(driver)
 
     @markers.smoke_test
