@@ -15,8 +15,10 @@ from components.dashboard import (
 )
 from components.project import (
     ComponentCreatedModal,
+    ComponentsPrivacyChangeModal,
     ConfirmDeleteDraftRegistrationModal,
     ConfirmFileDeleteModal,
+    ConfirmPrivacyChangeModal,
     CreateComponentModal,
     CreateRegistrationModal,
     DeleteComponentModal,
@@ -43,8 +45,6 @@ class ProjectPage(GuidBasePage):
     description = Locator(By.ID, 'nodeDescriptionEditable')
     make_public_link = Locator(By.LINK_TEXT, 'Make Public')
     make_private_link = Locator(By.LINK_TEXT, 'Make Private')
-    confirm_privacy_change_link = Locator(By.LINK_TEXT, 'Confirm')
-    cancel_privacy_change_link = Locator(By.LINK_TEXT, 'Cancel')
     loading_indicator = Locator(By.CSS_SELECTOR, '.ball-pulse')
     add_component_button = Locator(
         By.CSS_SELECTOR, '#newComponent > span > div.btn.btn-sm.btn-default'
@@ -71,6 +71,8 @@ class ProjectPage(GuidBasePage):
     # Components
     file_widget = ComponentLocator(FileWidget)
     log_widget = ComponentLocator(LogWidget)
+    confirm_privacy_change_modal = ComponentLocator(ConfirmPrivacyChangeModal)
+    components_privacy_change_modal = ComponentLocator(ComponentsPrivacyChangeModal)
     create_component_modal = ComponentLocator(CreateComponentModal)
     component_created_modal = ComponentLocator(ComponentCreatedModal)
     delete_component_modal = ComponentLocator(DeleteComponentModal)

@@ -72,7 +72,7 @@ class TestProjectDetailPage:
             )
         )
         project_page.make_public_link.click()
-        project_page.confirm_privacy_change_link.click()
+        project_page.confirm_privacy_change_modal.confirm_link.click()
         assert project_page.make_private_link.present()
         # Confirm logged out user can now see project
         logout(driver)
@@ -240,8 +240,8 @@ class TestProjectComponents:
         )
 
         try:
-            # Navigate to the parent Project Overview page and verify the existence of the
-            # component
+            # Navigate to the parent Project Overview page and verify the existence of
+            # the component
             project_page = ProjectPage(driver, guid=default_project.id)
             project_page.goto()
             assert ProjectPage(driver, verify=True)
@@ -252,8 +252,8 @@ class TestProjectComponents:
                 == 'API Created Component'
             )
 
-            # Click the button on the right side of the component card to reveal a dropdown
-            # options menu
+            # Click the button on the right side of the component card to reveal a
+            # dropdown options menu
             component_card.find_element_by_css_selector(
                 'div > h4 > div > div > button'
             ).click()
@@ -306,9 +306,9 @@ class TestProjectComponents:
             )
             project_page.delete_component_modal.delete_link.click()
 
-            # Verify that back on the Project Overview page an alert message appears at the
-            # top of the page indicating that the component was deleted and the Component
-            # section no longer has the card for the deleted component.
+            # Verify that back on the Project Overview page an alert message appears at
+            # the top of the page indicating that the component was deleted and the
+            # Component section no longer has the card for the deleted component.
             WebDriverWait(driver, 5).until(
                 EC.visibility_of(project_page.alert_message.element)
             )
@@ -317,6 +317,69 @@ class TestProjectComponents:
                 == 'Component has been successfully deleted.'
             )
             assert len(project_page.components) == 0
+        finally:
+            # We must make sure that in the event of an error that we delete the
+            # component so that the dummy project can also be deleted.
+            if osf_api.get_node(session, node_id=component.id):
+                osf_api.delete_project(session, component.id, None)
+
+    def test_make_public_project_with_component(self, driver, session, default_project):
+        """Test the functionality of making Public a project that has a child component
+        node.
+        """
+
+        # First use the api to create a child node for the dummy temporary project
+        component = osf_api.create_child_node(
+            session, node=default_project, title='API Created Component'
+        )
+
+        try:
+            # Navigate to the parent Project Overview page and verify the existence of
+            # the component
+            project_page = ProjectPage(driver, guid=default_project.id)
+            project_page.goto()
+            assert ProjectPage(driver, verify=True)
+            assert len(project_page.components) == 1
+            component_card = project_page.get_component_by_node_id(component.id)
+            assert (
+                component_card.find_element_by_css_selector('div > h4 > span > a').text
+                == 'API Created Component'
+            )
+
+            # Click the Make Public link at the top of the page and then click the
+            # Continue link on the first confirmation modal.
+            project_page.make_public_link.click()
+            project_page.confirm_privacy_change_modal.continue_link.click()
+
+            # On the Change privacy settings for components modal, first click the
+            # Cancel link and verify you are back on the Project Overview page and
+            # the project is still private.
+            project_page.components_privacy_change_modal.cancel_link.click()
+            assert project_page.make_public_link.present()
+
+            # Click the Make Public link again and this time follow through with
+            # making the project public.
+            project_page.make_public_link.click()
+            project_page.confirm_privacy_change_modal.continue_link.click()
+
+            # Back on the Change privacy settings for components modal, click the
+            # checkbox for the component and then click the Continue link.
+            project_page.components_privacy_change_modal.first_component_checkbox.click()
+            project_page.components_privacy_change_modal.continue_link.click()
+
+            # Click the Confirm link on the final modal
+            project_page.confirm_privacy_change_modal.confirm_link.click()
+            assert project_page.make_private_link.present()
+
+            # Verify logged out user can now see project
+            logout(driver)
+            project_page.goto()
+            assert ProjectPage(driver, verify=True)
+
+            # Also navigate to Component and verify logged out user can see it as well
+            component_page = ProjectPage(driver, guid=component.id)
+            component_page.goto()
+            assert ProjectPage(driver, verify=True)
         finally:
             # We must make sure that in the event of an error that we delete the
             # component so that the dummy project can also be deleted.

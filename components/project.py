@@ -28,6 +28,21 @@ class LogWidget(BaseElement):
     log_items = GroupLocator(By.CSS_SELECTOR, '#logFeed .db-activity-item')
 
 
+class ConfirmPrivacyChangeModal(BaseElement):
+    cancel_link = Locator(By.LINK_TEXT, 'Cancel')
+    confirm_link = Locator(By.LINK_TEXT, 'Confirm')
+    continue_link = Locator(By.LINK_TEXT, 'Continue')
+
+
+class ComponentsPrivacyChangeModal(BaseElement):
+    first_component_checkbox = Locator(
+        By.CSS_SELECTOR,
+        '#tb-tbody > div > div > div.tb-row.tb-odd > div.tb-td.tb-col-0 > input[type=checkbox]',
+    )
+    cancel_link = Locator(By.LINK_TEXT, 'Cancel')
+    continue_link = Locator(By.LINK_TEXT, 'Continue')
+
+
 class CreateComponentModal(BaseElement):
     title_input = Locator(By.NAME, 'projectName')
     more_link = Locator(
