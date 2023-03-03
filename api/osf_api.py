@@ -951,6 +951,9 @@ def submit_project_to_collection(
             },
         },
     }
-    session.post(
+    return session.post(
         url=url, item_type='collection_submissions', raw_body=json.dumps(raw_payload)
     )
+    # Note: We are not currently checking for any potential api request failure. We
+    # don't typically handle failures unless they are a recurring issue and in this
+    # case this post request has yet to fail in any of the testing environments.

@@ -128,7 +128,7 @@ class BaseCollectionModerationPage(BaseCollectionPage):
             guid = url.split(settings.OSF_HOME + '/', 1)[1]
             if guid == node_id:
                 return card
-            return None
+        return None
 
 
 class CollectionModerationPendingPage(BaseCollectionModerationPage):
