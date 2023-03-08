@@ -417,6 +417,32 @@ def update_node_public_attribute(session, node_id, status=False):
     )
 
 
+def update_node_license(session, node_id, license_id, copyright_holders=[], year=2023):
+    """Update the license on a given project node."""
+    url = '/v2/nodes/{}/'.format(node_id)
+    raw_payload = {
+        'data': {
+            'type': 'nodes',
+            'id': node_id,
+            'attributes': {
+                'node_license': {
+                    'copyright_holders': copyright_holders,
+                    'year': year,
+                },
+            },
+            'relationships': {
+                'license': {'data': {'type': 'licenses', 'id': license_id}}
+            },
+        },
+    }
+    session.patch(
+        url=url,
+        item_type='nodes',
+        item_id=node_id,
+        raw_body=json.dumps(raw_payload),
+    )
+
+
 def get_most_recent_preprint_node_id(session=None):
     """Return the most recently published preprint node id"""
     if not session:
@@ -883,3 +909,51 @@ def delete_registration_version_draft(session, draft_id):
         session.api_base_url, draft_id
     )
     session.delete(url=registration_version_url, item_type='schema-responses')
+
+
+def submit_project_to_collection(
+    session, collection_guid, node_id, collected_type='selenium'
+):
+    """Submit a given project node to a collection.  This applies to branded public
+    collections and not a user's private custom collection.  NOTE: This function will
+    only work for collections using the 'collected_type' attribute.  Some collections
+    use different attributes (ex: 'school_type', 'study_design', 'status', etc.). If
+    this function will be used in the future to submit to a collection that uses one
+    of the other attributes, then the raw_payload below will need to be updated to add
+    those specific attributes.
+    """
+    if not session:
+        session = get_default_session()
+    user = current_user(session)
+
+    url = '/v2/collections/{}/collection_submissions/'.format(collection_guid)
+
+    raw_payload = {
+        'data': {
+            'type': 'collection_submissions',
+            'attributes': {
+                'collected_type': collected_type,
+                'guid': node_id,
+            },
+            'relationships': {
+                'collection': {
+                    'data': {
+                        'id': collection_guid,
+                        'type': 'collections',
+                    }
+                },
+                'creator': {
+                    'data': {
+                        'id': user.id,
+                        'type': 'users',
+                    }
+                },
+            },
+        },
+    }
+    return session.post(
+        url=url, item_type='collection_submissions', raw_body=json.dumps(raw_payload)
+    )
+    # Note: We are not currently checking for any potential api request failure. We
+    # don't typically handle failures unless they are a recurring issue and in this
+    # case this post request has yet to fail in any of the testing environments.

@@ -105,6 +105,18 @@ def must_be_logged_in_as_user_two(driver):
     safe_login(driver, user=settings.USER_TWO, password=settings.USER_TWO_PASSWORD)
 
 
+@pytest.fixture
+def log_in_as_user_two_if_not_already(driver):
+    """This fixture is similar to the must_be_logged_in_as_user_two fixture above.
+    Where it differs is that it first checks to see if the user is already logged in
+    before it attempts to login again. Also the scope of this fixture is 'function' by
+    default instead of 'class' so it will be executed with every test function within
+    a class.
+    """
+    if not user_logged_in(driver):
+        safe_login(driver, user=settings.USER_TWO, password=settings.USER_TWO_PASSWORD)
+
+
 @pytest.fixture(scope='class')
 def delete_user_projects_at_setup(session):
     osf_api.delete_all_user_projects(session=session)

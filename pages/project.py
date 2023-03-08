@@ -39,12 +39,22 @@ class ProjectPage(GuidBasePage):
     make_private_link = Locator(By.XPATH, '//a[contains(text(), "Make Private")]')
     confirm_privacy_change_link = Locator(By.XPATH, '//a[text()="Confirm"]')
     cancel_privacy_change_link = Locator(By.XPATH, '//a[text()="Cancel"]')
+    loading_indicator = Locator(By.CSS_SELECTOR, '.ball-pulse')
     collections_container = Locator(
         By.CSS_SELECTOR, '#projectBanner > div.row > div.collections-container.col-12'
     )
     pending_collection_display = Locator(
         By.CSS_SELECTOR,
         '#collections-header > div.pull-left > div',
+    )
+    collection_justification_link = Locator(By.CSS_SELECTOR, 'a.comment-popover')
+    collection_justification_reason = Locator(By.CSS_SELECTOR, 'div.popover-content')
+    first_collection_label = Locator(
+        By.CSS_SELECTOR, '#collectionList > div > div:nth-child(3)'
+    )
+    first_collection_edit_link = Locator(By.CSS_SELECTOR, '#collectionList > div > a')
+    first_collection_cancel_link = Locator(
+        By.CSS_SELECTOR, 'a.fa.fa-close.collections-cancel-icon'
     )
 
     # Components
