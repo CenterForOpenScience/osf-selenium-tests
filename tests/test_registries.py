@@ -53,19 +53,7 @@ class TestRegistriesDiscoverPage:
         assert len(discover_page.search_results) > 0
 
     @markers.smoke_test
-    # NOTE: 03/10/2023 - This test is now consistently failing in the Test environment
-    # due to some old registrations that have been re-indexed in the only SHARE server
-    # that all testing environments use. These old registrations that are actually in
-    # other testing environments (i.e. Stage3) are now showing in the search results
-    # in the Test environment. When the test attempts to navigate to the detail page
-    # for the registration the test fails. Since the OSF Registries Discover page will
-    # be deprecated and replaced by the new OSF Search page in a few months we are
-    # going to skip the test in all of the testing environments and only run it in
-    # Production until the test is removed/replaced around July 2023.
-    @pytest.mark.skipif(
-        not settings.PRODUCTION,
-        reason='Single SHARE server in testing environments causes test failure.',
-    )
+    @markers.core_functionality
     def test_detail_page(self, driver):
         """Test a registration detail page by grabbing the first search result from the discover page."""
         discover_page = RegistriesDiscoverPage(driver)
@@ -84,6 +72,10 @@ class TestRegistriesDiscoverPage:
             search_text = 'affiliations:' + environment
             discover_page.search_box.send_keys_deliberately(search_text)
             discover_page.search_box.send_keys(Keys.ENTER)
+            # Update 3/10/2023 - Adding sorting by date (newest to oldest) to eliminate
+            # search result issues due to re-indexing of SHARE.
+            discover_page.sort_by_button.click()
+            discover_page.sort_by_date_newest.click()
         discover_page.loading_indicator.here_then_gone()
         search_results = discover_page.search_results
         assert search_results
