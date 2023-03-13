@@ -72,6 +72,10 @@ class TestRegistriesDiscoverPage:
             search_text = 'affiliations:' + environment
             discover_page.search_box.send_keys_deliberately(search_text)
             discover_page.search_box.send_keys(Keys.ENTER)
+            # Update 3/10/2023 - Adding sorting by date (newest to oldest) to eliminate
+            # search result issues due to re-indexing of SHARE.
+            discover_page.sort_by_button.click()
+            discover_page.sort_by_date_newest.click()
         discover_page.loading_indicator.here_then_gone()
         search_results = discover_page.search_results
         assert search_results

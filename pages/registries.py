@@ -55,6 +55,10 @@ class RegistriesDiscoverPage(BaseRegistriesPage):
     osf_filter = Locator(
         By.CSS_SELECTOR, '[data-test-source-filter-id$="OSF Registries"]'
     )
+    sort_by_button = Locator(By.CSS_SELECTOR, 'div[data-test-sort-dropdown]')
+    sort_by_date_newest = Locator(
+        By.CSS_SELECTOR, 'button[data-test-sort-option-id="2"]'
+    )
 
     # Group Locators
     search_results = GroupLocator(
