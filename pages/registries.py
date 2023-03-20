@@ -10,6 +10,7 @@ from base.locators import (
     Locator,
 )
 from components.navbars import RegistriesNavbar
+from components.registration import SubmittedSideNavbar
 from pages.base import (
     GuidBasePage,
     OSFBasePage,
@@ -78,6 +79,7 @@ class RegistriesDiscoverPage(BaseRegistriesPage):
 class BaseSubmittedRegistrationPage(GuidBasePage):
     base_url = settings.OSF_HOME
     url_addition = ''
+    side_navbar = ComponentLocator(SubmittedSideNavbar)
 
     def __init__(self, driver, verify=False, guid=''):
         # Set the cookie that prevents the New Feature popover from appearing on
@@ -96,7 +98,7 @@ class RegistrationDetailPage(BaseSubmittedRegistrationPage):
     """This is the Registration Overview Page"""
 
     identity = Locator(
-        By.CSS_SELECTOR, '[data-test-registration-title]', settings.LONG_TIMEOUT
+        By.CSS_SELECTOR, '[data-test-page-heading]', settings.LONG_TIMEOUT
     )
 
     narrative_summary = Locator(By.CSS_SELECTOR, '[data-test-read-only-response]')
@@ -113,6 +115,11 @@ class RegistrationDetailPage(BaseSubmittedRegistrationPage):
     associated_project_link = Locator(
         By.CSS_SELECTOR, 'a[data-analytics-name="Registered from"]'
     )
+
+
+class RegistrationMetadataPage(BaseSubmittedRegistrationPage):
+    url_addition = 'metadata'
+    identity = Locator(By.CSS_SELECTOR, '[data-test-display-resource-type-general]')
 
 
 class RegistrationFilesListPage(BaseSubmittedRegistrationPage):
@@ -162,6 +169,36 @@ class RegistrationFileDetailPage(GuidBasePage):
             if tag.text == tag_value:
                 return tag
         return None
+
+
+class RegistrationResourcesPage(BaseSubmittedRegistrationPage):
+    url_addition = 'resources'
+    identity = Locator(By.CSS_SELECTOR, '[data-test-add-resource-section]')
+
+
+class RegistrationWikiPage(BaseSubmittedRegistrationPage):
+    url_addition = 'wiki'
+    identity = Locator(By.ID, 'wikiName')
+
+
+class RegistrationComponentsPage(BaseSubmittedRegistrationPage):
+    url_addition = 'components'
+    identity = Locator(By.XPATH, '//h3[text()="Components"]')
+
+
+class RegistrationLinksPage(BaseSubmittedRegistrationPage):
+    url_addition = 'links'
+    identity = Locator(By.XPATH, '//h3[text()="Linked projects and components"]')
+
+
+class RegistrationAnalyticsPage(BaseSubmittedRegistrationPage):
+    url_addition = 'analytics'
+    identity = Locator(By.CSS_SELECTOR, '._Counts_1mhar6')
+
+
+class RegistrationCommentsPage(BaseSubmittedRegistrationPage):
+    url_addition = 'comments'
+    identity = Locator(By.CSS_SELECTOR, '._CommentsList_kh9x27')
 
 
 class RegistrationJustificationForm(GuidBasePage):
