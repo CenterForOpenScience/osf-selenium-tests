@@ -1,3 +1,5 @@
+import re
+
 import pytest
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -70,11 +72,22 @@ class TestProjectDetailPage:
             )
         )
         project_page.make_public_link.click()
-        project_page.confirm_privacy_change_link.click()
+
+        # First click the Cancel link on the Confirm Modal and verify that the project
+        # is still private.
+        project_page.confirm_privacy_change_modal.cancel_link.click()
+        assert project_page.make_private_link.absent()
+
+        # Click the Make Public link again and this time click the Confirm link on the
+        # modal to actually make the project public.
+        project_page.make_public_link.click()
+        project_page.confirm_privacy_change_modal.confirm_link.click()
         assert project_page.make_private_link.present()
+
         # Confirm logged out user can now see project
         logout(driver)
         project_page.goto()
+        assert ProjectPage(driver, verify=True)
         login(driver)
 
     @markers.smoke_test
@@ -150,6 +163,239 @@ class TestForksPage:
         # Clean-up leftover fork
         fork_guid = forks_page.fork_link.get_attribute('data-test-node-title')
         osf_api.delete_project(session, fork_guid, None)
+
+
+@markers.dont_run_on_prod
+@pytest.mark.usefixtures('must_be_logged_in')
+class TestProjectComponents:
+    def test_add_component(self, driver, session, project_page):
+        """Test the functionality of adding a new child component node to a project"""
+
+        # Click Add Component button and on the Create Component Modal, first click the
+        # Cancel button and verify that there are no components listed on the Project
+        # Overview page.
+        project_page.loading_indicator.here_then_gone()
+        project_page.add_component_button.click()
+        project_page.create_component_modal.cancel_button.click()
+        WebDriverWait(driver, 3).until(
+            EC.invisibility_of_element_located(
+                (By.CSS_SELECTOR, 'div.modal-backdrop.fade')
+            )
+        )
+        assert len(project_page.components) == 0
+
+        # Click the Add Component button again and this time enter data on the modal to
+        # add a new component
+        project_page.add_component_button.click()
+        project_page.create_component_modal.title_input.click()
+        project_page.create_component_modal.title_input.send_keys_deliberately(
+            'Selenium Component'
+        )
+        project_page.create_component_modal.more_link.click()
+        project_page.create_component_modal.description_input.click()
+        project_page.create_component_modal.description_input.send_keys_deliberately(
+            'This component was added by an automated selenium test.'
+        )
+        project_page.scroll_into_view(
+            project_page.create_component_modal.create_component_button.element
+        )
+        project_page.create_component_modal.create_component_button.click()
+
+        # Get the guid for the component from the Go to new component link on the
+        # Component Created Confirmation modal
+        match = re.search(
+            r'([a-z0-9]{4,8})\.osf\.io/([a-z0-9]{5})',
+            project_page.component_created_modal.go_to_new_component_link.get_attribute(
+                'href'
+            ),
+        )
+        component_guid = match.group(2)
+
+        try:
+            # Click the Go to new component link and verify that you are navigated to
+            # the Overview page of a new node
+            project_page.component_created_modal.go_to_new_component_link.click()
+            component_page = ProjectPage(driver, verify=True)
+            assert component_page.title.text == 'Selenium Component'
+            assert (
+                component_page.description.text
+                == 'This component was added by an automated selenium test.'
+            )
+
+            # Click the link to the parent project at the top of the page to navigate
+            # back to the original parent Project Overview page.
+            component_page.parent_project_link.click()
+            assert project_page
+
+            # Verify that the Components section of the parent Project now lists the
+            # new component
+            assert len(project_page.components) == 1
+            component = project_page.get_component_by_node_id(component_guid)
+            assert (
+                component.find_element_by_css_selector('div > h4 > span > a').text
+                == 'Selenium Component'
+            )
+        finally:
+            # The parent project should be automatically deleted by the fixture code.
+            # But it cannot be deleted if the component is not deleted first.
+            osf_api.delete_project(session, component_guid, None)
+
+    def test_delete_component_from_project(self, driver, session, default_project):
+        """Test the functionality of deleting a child component node from the parent
+        project's Project Overview page.
+        """
+
+        # First use the api to create a child node for the dummy temporary project
+        component = osf_api.create_child_node(
+            session, node=default_project, title='API Created Component'
+        )
+
+        try:
+            # Navigate to the parent Project Overview page and verify the existence of
+            # the component
+            project_page = ProjectPage(driver, guid=default_project.id)
+            project_page.goto()
+            assert ProjectPage(driver, verify=True)
+            assert len(project_page.components) == 1
+            component_card = project_page.get_component_by_node_id(component.id)
+            assert (
+                component_card.find_element_by_css_selector('div > h4 > span > a').text
+                == 'API Created Component'
+            )
+
+            # Click the button on the right side of the component card to reveal a
+            # dropdown options menu
+            component_card.find_element_by_css_selector(
+                'div > h4 > div > div > button'
+            ).click()
+
+            # Click the Delete menu option
+            component_card.find_element_by_css_selector(
+                'div > h4 > div > div > ul > li:nth-child(3) > a'
+            ).click()
+
+            # On the Delete Component Confirmation Modal, first verify that the Delete
+            # button is disabled. Then click the Cancel button to go back to the Project
+            # Overview page again and verify the component card is still there.
+            WebDriverWait(driver, 3).until(
+                EC.visibility_of_element_located((By.ID, 'nodesDelete'))
+            )
+            assert driver.find_element(
+                By.CSS_SELECTOR,
+                '#nodesDelete > div > div > div > div.modal-footer > span:nth-child(3) > a.btn.btn-danger.disabled',
+            )
+            project_page.delete_component_modal.cancel_link.click()
+            WebDriverWait(driver, 3).until(
+                EC.invisibility_of_element_located(
+                    (By.CSS_SELECTOR, 'div.modal-backdrop.fade')
+                )
+            )
+            assert len(project_page.components) == 1
+
+            # Select the Component Delete menu option again and this time enter the
+            # confirmation text value in the input field and click the Delete button to
+            # actually delete the component.
+            component_card.find_element_by_css_selector(
+                'div > h4 > div > div > button'
+            ).click()
+            component_card.find_element_by_css_selector(
+                'div > h4 > div > div > ul > li:nth-child(3) > a'
+            ).click()
+            WebDriverWait(driver, 3).until(
+                EC.visibility_of_element_located((By.ID, 'nodesDelete'))
+            )
+            project_page.delete_component_modal.confirmation_input.send_keys_deliberately(
+                project_page.delete_component_modal.confirmation_text.text
+            )
+            WebDriverWait(driver, 3).until(
+                EC.invisibility_of_element_located(
+                    (
+                        By.CSS_SELECTOR,
+                        '#nodesDelete > div > div > div > div.modal-footer > span:nth-child(3) > a.btn.btn-danger.disabled',
+                    )
+                )
+            )
+            project_page.delete_component_modal.delete_link.click()
+
+            # Verify that back on the Project Overview page an alert message appears at
+            # the top of the page indicating that the component was deleted and the
+            # Component section no longer has the card for the deleted component.
+            WebDriverWait(driver, 5).until(
+                EC.visibility_of(project_page.alert_message.element)
+            )
+            assert (
+                project_page.alert_message.text
+                == 'Component has been successfully deleted.'
+            )
+            assert len(project_page.components) == 0
+        finally:
+            # We must make sure that in the event of an error that we delete the
+            # component so that the dummy project can also be deleted.
+            if osf_api.get_node(session, node_id=component.id):
+                osf_api.delete_project(session, component.id, None)
+
+    def test_make_public_project_with_component(self, driver, session, default_project):
+        """Test the functionality of making Public a project that has a child component
+        node.
+        """
+
+        # First use the api to create a child node for the dummy temporary project
+        component = osf_api.create_child_node(
+            session, node=default_project, title='API Created Component'
+        )
+
+        try:
+            # Navigate to the parent Project Overview page and verify the existence of
+            # the component
+            project_page = ProjectPage(driver, guid=default_project.id)
+            project_page.goto()
+            assert ProjectPage(driver, verify=True)
+            assert len(project_page.components) == 1
+            component_card = project_page.get_component_by_node_id(component.id)
+            assert (
+                component_card.find_element_by_css_selector('div > h4 > span > a').text
+                == 'API Created Component'
+            )
+
+            # Click the Make Public link at the top of the page and then click the
+            # Continue link on the first confirmation modal.
+            project_page.make_public_link.click()
+            project_page.confirm_privacy_change_modal.continue_link.click()
+
+            # On the Change privacy settings for components modal, first click the
+            # Cancel link and verify you are back on the Project Overview page and
+            # the project is still private.
+            project_page.components_privacy_change_modal.cancel_link.click()
+            assert project_page.make_public_link.present()
+
+            # Click the Make Public link again and this time follow through with
+            # making the project public.
+            project_page.make_public_link.click()
+            project_page.confirm_privacy_change_modal.continue_link.click()
+
+            # Back on the Change privacy settings for components modal, click the
+            # checkbox for the component and then click the Continue link.
+            project_page.components_privacy_change_modal.first_component_checkbox.click()
+            project_page.components_privacy_change_modal.continue_link.click()
+
+            # Click the Confirm link on the final modal
+            project_page.confirm_privacy_change_modal.confirm_link.click()
+            assert project_page.make_private_link.present()
+
+            # Verify logged out user can now see project
+            logout(driver)
+            project_page.goto()
+            assert ProjectPage(driver, verify=True)
+
+            # Also navigate to Component and verify logged out user can see it as well
+            component_page = ProjectPage(driver, guid=component.id)
+            component_page.goto()
+            assert ProjectPage(driver, verify=True)
+        finally:
+            # We must make sure that in the event of an error that we delete the
+            # component so that the dummy project can also be deleted.
+            if osf_api.get_node(session, node_id=component.id):
+                osf_api.delete_project(session, component.id, None)
 
 
 class TestAnalyticsPage:

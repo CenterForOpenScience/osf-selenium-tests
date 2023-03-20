@@ -28,6 +28,57 @@ class LogWidget(BaseElement):
     log_items = GroupLocator(By.CSS_SELECTOR, '#logFeed .db-activity-item')
 
 
+class ConfirmPrivacyChangeModal(BaseElement):
+    cancel_link = Locator(By.LINK_TEXT, 'Cancel')
+    confirm_link = Locator(By.LINK_TEXT, 'Confirm')
+    continue_link = Locator(By.LINK_TEXT, 'Continue')
+
+
+class ComponentsPrivacyChangeModal(BaseElement):
+    first_component_checkbox = Locator(
+        By.CSS_SELECTOR,
+        '#tb-tbody > div > div > div.tb-row.tb-odd > div.tb-td.tb-col-0 > input[type=checkbox]',
+    )
+    cancel_link = Locator(By.LINK_TEXT, 'Cancel')
+    continue_link = Locator(By.LINK_TEXT, 'Continue')
+
+
+class CreateComponentModal(BaseElement):
+    title_input = Locator(By.NAME, 'projectName')
+    more_link = Locator(
+        By.CSS_SELECTOR, 'div.modal-body > div > div.text-muted.pointer'
+    )
+    description_input = Locator(By.NAME, 'projectDesc')
+    cancel_button = Locator(
+        By.CSS_SELECTOR, 'div.modal-footer > button.btn.btn-default'
+    )
+    create_component_button = Locator(
+        By.CSS_SELECTOR, 'div.modal-footer > button.btn.btn-success'
+    )
+
+
+class ComponentCreatedModal(BaseElement):
+    keep_working_here_button = Locator(By.CSS_SELECTOR, 'button[data-dismiss="modal"]')
+    go_to_new_component_link = Locator(By.LINK_TEXT, 'Go to new component')
+
+
+class DeleteComponentModal(BaseElement):
+    confirmation_text = Locator(
+        By.CSS_SELECTOR,
+        'div.modal-body > div:nth-child(3) > div:nth-child(1) > p:nth-child(2) > strong',
+    )
+    confirmation_input = Locator(
+        By.CSS_SELECTOR, 'div.modal-body > div:nth-child(3) > div.form-control'
+    )
+    cancel_link = Locator(
+        By.CSS_SELECTOR, '#nodesDelete > div > div > div > div.modal-footer > a'
+    )
+    delete_link = Locator(
+        By.CSS_SELECTOR,
+        '#nodesDelete > div > div > div > div.modal-footer > span:nth-child(3) > a',
+    )
+
+
 class CreateRegistrationModal(BaseElement):
     modal_window = Locator(By.CSS_SELECTOR, '[data-test-new-registration-modal]')
     cancel_button = Locator(
