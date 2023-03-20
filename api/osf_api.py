@@ -496,6 +496,23 @@ def get_preprint_downloads_count(session=None, node_id=None):
         return None
 
 
+def get_most_recent_registration_node_id(session=None):
+    """Return the most recently approved public registration node id"""
+    if not session:
+        session = get_default_session()
+    url = '/v2/registrations/'
+    data = session.get(url)['data']
+    if data:
+        for registration in data:
+            if (
+                registration['attributes']['public']
+                and (registration['attributes']['revision_state'] == 'approved')
+                and not registration['attributes']['withdrawn']
+            ):
+                return registration['id']
+    return None
+
+
 def get_registration_schemas_for_provider(session=None, provider_id='osf'):
     """Returns a list of allowed registration schemas for an individual provider.  The
     list will be a paired list of schema names and ids.  The The default provider_id is
