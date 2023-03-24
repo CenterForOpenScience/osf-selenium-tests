@@ -1,3 +1,5 @@
+import re
+
 import pytest
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -22,16 +24,26 @@ def dashboard_page(driver, must_be_logged_in):
 class TestDashboardPage:
     @markers.dont_run_on_prod
     @markers.core_functionality
-    def test_create_project(self, driver, dashboard_page):
+    def test_create_project(self, driver, session, dashboard_page):
         title = 'New Project'
         dashboard_page.create_project_button.click()
         create_project_modal = dashboard_page.create_project_modal
         create_project_modal.title_input.clear()
         create_project_modal.title_input.send_keys(title)
         create_project_modal.create_project_button.click()
+        # Get guid of newly created project from link on modal
+        match = re.search(
+            r'([a-z0-9]{4,8})\.osf\.io/([a-z0-9]{5})',
+            dashboard_page.project_created_modal.go_to_project_href_link.get_attribute(
+                'href'
+            ),
+        )
+        project_guid = match.group(2)
         dashboard_page.project_created_modal.go_to_project_href_link.click()
         project_page = ProjectPage(driver, verify=True)
         assert project_page.title.text == title, 'Project title incorrect.'
+        # Delete the project as cleanup
+        osf_api.delete_project(session, project_guid, None)
 
     @markers.core_functionality
     def test_create_project_modal_buttons(self, dashboard_page, session):
