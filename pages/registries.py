@@ -287,6 +287,10 @@ class DraftRegistrationMetadataPage(BaseRegistrationDraftPage):
         'div[data-test-select-license] > div.ember-basic-dropdown-trigger.ember-power-select-trigger',
     )
     first_selected_subject = Locator(By.CSS_SELECTOR, 'li[data-test-selected-subject]')
+    expand_first_subject_button = Locator(
+        By.CSS_SELECTOR, 'label[data-test-subject-browse-label] > button'
+    )
+
     tags_input_box = Locator(By.CSS_SELECTOR, 'li.emberTagInput-new > input')
     next_page_button = Locator(By.CSS_SELECTOR, 'a[data-test-goto-next-page] > button')
 
@@ -299,6 +303,12 @@ class DraftRegistrationMetadataPage(BaseRegistrationDraftPage):
 
     top_level_subjects = GroupLocator(
         By.CSS_SELECTOR, 'div[data-analytics-scope="Browse"] > ul > li'
+    )
+    # The following is for the list of second level subjects for the first top level
+    # subject. NOTE: The first top level subject must be expanded (click the downward
+    # caret to the right of the subject name) before this list is populated on the page.
+    first_subject_second_level_subjects = GroupLocator(
+        By.CSS_SELECTOR, 'div[data-analytics-scope="Browse"] > ul > li > div > ul > li'
     )
 
     def select_from_dropdown_listbox(self, selection):

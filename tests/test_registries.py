@@ -158,6 +158,20 @@ class TestDraftRegistration:
         # the subject list as displayed on the page is correctly sorted alphabetically.
         assert sorted_subjects == subject_list
 
+        # Expand the first top level subject to show the list of secondary subjects
+        metadata_page.expand_first_subject_button.click()
+        metadata_page.loading_indicator.here_then_gone()
+
+        # Create a list of the expanded second level subject names and a sorted copy
+        # of the list and verify that the second level subject list is also sorted
+        # correctly.
+        sec_subject_list = [
+            subject.text
+            for subject in metadata_page.first_subject_second_level_subjects
+        ]
+        sec_sorted_subjects = sorted(sec_subject_list.copy())
+        assert sec_sorted_subjects == sec_subject_list
+
 
 @pytest.fixture(scope='class')
 def login_as_user_with_registrations(driver):
