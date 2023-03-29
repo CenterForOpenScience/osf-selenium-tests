@@ -224,8 +224,17 @@ class AnalyticsPage(GuidBasePage):
     base_url = settings.OSF_HOME + '/{guid}/analytics/'
 
     identity = Locator(By.CSS_SELECTOR, '._Counts_1mhar6')
+    loading_indicator = Locator(By.CSS_SELECTOR, '.ball-pulse')
     private_project_message = Locator(By.CSS_SELECTOR, '._PrivateProject_1mhar6')
     disabled_chart = Locator(By.CSS_SELECTOR, '._Chart_1hff7g _Blurred_1hff7g')
+
+    unique_visits_week_current_day_point = Locator(
+        By.CSS_SELECTOR, 'circle.c3-shape.c3-shape-7.c3-circle.c3-circle-7'
+    )
+    unique_visits_tooltip_value = Locator(
+        By.CSS_SELECTOR,
+        'div.panel-body._ChartContainer_1hff7g > div > div > table > tbody > tr.c3-tooltip-name--count > td.value',
+    )
 
 
 class ForksPage(GuidBasePage):
