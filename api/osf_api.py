@@ -75,6 +75,17 @@ def get_node_logs(session, node_id):
     return session.get(url)['data']
 
 
+def get_most_recent_public_node_id(session):
+    """Return the most recent public project node id"""
+    url = '/v2/nodes/'
+    data = session.get(url)['data']
+    if data:
+        for node in data:
+            if node['attributes']['public']:
+                return node['id']
+    return None
+
+
 def get_user_institutions(session, user=None):
     if not user:
         user = current_user(session)
@@ -1003,3 +1014,15 @@ def submit_project_to_collection(
     # Note: We are not currently checking for any potential api request failure. We
     # don't typically handle failures unless they are a recurring issue and in this
     # case this post request has yet to fail in any of the testing environments.
+
+
+def get_project_node_analytics_data(session, node_id=None, timespan='week'):
+    """Return the data from the metrics Node Analytics query for a given project node.
+    There are also three timespans available: 'week', 'fortnight', and 'month'.
+    """
+    url = '_/metrics/query/node_analytics/{}/{}/'.format(node_id, timespan)
+    data = session.get(url)['data']
+    if data:
+        return data
+    else:
+        return None
