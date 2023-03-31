@@ -1030,6 +1030,7 @@ class TestPreprintModeration:
 
 @markers.core_functionality
 class TestPreprintSearch:
+    @markers.two_minute_drill
     @markers.smoke_test
     def test_search_results_exist(self, driver, landing_page):
         landing_page.search_button.click()
