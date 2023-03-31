@@ -83,6 +83,17 @@ def test_selenium_on_prod(ctx):
 
 
 @task
+def test_two_minute_drill(ctx):
+    """Run Two Minute Drill Tests on the browser defined by TEST_BUILD."""
+    test_selenium_with_retries(
+        ctx,
+        'Two Minute Drill',
+        _get_test_file_list(),
+        module=['-m', 'two_minute_drill'],
+    )
+
+
+@task
 def test_core_functionality_part_one(ctx):
     """Run first group of Core Functionality tests on the browser defined by TEST_BUILD."""
     all_test_files = _get_test_file_list()
