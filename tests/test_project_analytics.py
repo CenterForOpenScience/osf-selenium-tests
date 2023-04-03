@@ -118,6 +118,10 @@ class TestNodeAnalytics:
         analytics_page.goto()
         analytics_page.loading_indicator.here_then_gone()
 
+        analytics_page.scroll_into_view(
+            analytics_page.unique_visits_week_current_day_point.element
+        )
+
         # Hover the mouse over the point on the Unique Visits graph that represents the
         # current day and get the value that is displayed in the tool tip.
         action_chains = ActionChains(driver)
@@ -139,3 +143,47 @@ class TestNodeAnalytics:
             after_data, 'unique_visits_count', date=date_today
         )
         assert after_visits_count == before_visits_count + 1
+
+    def test_tod_visits_graph(self, session, driver, public_project_node):
+        """Test the Time of Day of Visits Graph on the Project Analytics page. First
+        retrieve the metrics data for a public project using the OSF api and then go to
+        the Analytics page for the project.  Verify that the value displayed for the
+        current time of day on the Time of Day of Visits Graph matches the expected
+        value from the api. NOTE: For this test we will change the date range to Two
+        Weeks (aka fortnight).
+        """
+
+        # Navigate to the Analytics page for the project. No need to go to another page
+        # first since we are changing the date range which will refresh the graph data
+        # and ensure that we register the current visit to the Analytics page.
+        analytics_page = AnalyticsPage(driver, guid=public_project_node)
+        analytics_page.goto()
+        analytics_page.loading_indicator.here_then_gone()
+
+        # Get the Time of Day visits count data from the api
+        visit_data = osf_api.get_project_node_analytics_data(
+            session, node_id=public_project_node, timespan='fortnight'
+        )
+        now = datetime.now(timezone.utc)
+        current_hour = int(now.strftime('%H'))
+        tod_count = parse_node_analytics_data(
+            visit_data, 'time_of_day_count', hour=current_hour
+        )
+
+        # Change the analytics date range to 'Past Two Weeks'
+        analytics_page.date_range_button.click()
+        analytics_page.two_weeks_menu_option.click()
+        analytics_page.loading_indicator.here_then_gone()
+
+        # Hover the mouse over the bar on the Time of Day of Visits graph that
+        # represents the current hour of the day and get the value that is displayed
+        # in the tool tip.
+        current_hour_bar = analytics_page.get_tod_bar_by_hour(current_hour)
+        analytics_page.scroll_into_view(current_hour_bar)
+        action_chains = ActionChains(driver)
+        action_chains.move_to_element(current_hour_bar).perform()
+        WebDriverWait(driver, 3).until(
+            EC.visibility_of(analytics_page.tod_visits_tooltip_value)
+        )
+        tod_visits_display = int(analytics_page.tod_visits_tooltip_value.text)
+        assert tod_visits_display == tod_count

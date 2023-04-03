@@ -227,6 +227,13 @@ class AnalyticsPage(GuidBasePage):
     loading_indicator = Locator(By.CSS_SELECTOR, '.ball-pulse')
     private_project_message = Locator(By.CSS_SELECTOR, '._PrivateProject_1mhar6')
     disabled_chart = Locator(By.CSS_SELECTOR, '._Chart_1hff7g _Blurred_1hff7g')
+    date_range_button = Locator(
+        By.CSS_SELECTOR, 'div._PickDateRange_1mhar6 > label > div > button'
+    )
+    two_weeks_menu_option = Locator(
+        By.CSS_SELECTOR,
+        'div.ember-view.btn-group > div > ul > li:nth-child(2) > button',
+    )
 
     unique_visits_week_current_day_point = Locator(
         By.CSS_SELECTOR, 'circle.c3-shape.c3-shape-7.c3-circle.c3-circle-7'
@@ -235,6 +242,20 @@ class AnalyticsPage(GuidBasePage):
         By.CSS_SELECTOR,
         'div.panel-body._ChartContainer_1hff7g > div > div > table > tbody > tr.c3-tooltip-name--count > td.value',
     )
+    tod_visits_tooltip_value = Locator(
+        By.CSS_SELECTOR,
+        'div.container._PageContainer_1mhar6 > div:nth-child(4) > div > div:nth-child(2) > div > div.panel-body._ChartContainer_1hff7g > div > div > table > tbody > tr.c3-tooltip-name--count > td.value',
+    )
+
+    tod_bars = GroupLocator(
+        By.CSS_SELECTOR,
+        'div.container._PageContainer_1mhar6 > div:nth-child(4) > div > div:nth-child(2) > div > div.panel-body._ChartContainer_1hff7g > div > svg > g:nth-child(2) > g.c3-chart > g.c3-chart-bars > g > g > path',
+    )
+
+    def get_tod_bar_by_hour(self, hour):
+        for bar in self.tod_bars:
+            if 'bar-' + str(hour) in bar.get_attribute('class'):
+                return bar
 
 
 class ForksPage(GuidBasePage):
