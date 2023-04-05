@@ -234,6 +234,10 @@ class AnalyticsPage(GuidBasePage):
         By.CSS_SELECTOR,
         'div.ember-view.btn-group > div > ul > li:nth-child(2) > button',
     )
+    month_menu_option = Locator(
+        By.CSS_SELECTOR,
+        'div.ember-view.btn-group > div > ul > li:nth-child(3) > button',
+    )
 
     unique_visits_week_current_day_point = Locator(
         By.CSS_SELECTOR, 'circle.c3-shape.c3-shape-7.c3-circle.c3-circle-7'
@@ -245,6 +249,18 @@ class AnalyticsPage(GuidBasePage):
     tod_visits_tooltip_value = Locator(
         By.CSS_SELECTOR,
         'div.container._PageContainer_1mhar6 > div:nth-child(4) > div > div:nth-child(2) > div > div.panel-body._ChartContainer_1hff7g > div > div > table > tbody > tr.c3-tooltip-name--count > td.value',
+    )
+    most_visited_page_label = Locator(
+        By.CSS_SELECTOR,
+        'div.container._PageContainer_1mhar6 > div:nth-child(4) > div > div:nth-child(4) > div > div.panel-body._ChartContainer_1hff7g > div > svg > g:nth-child(2) > g.c3-axis.c3-axis-x > g:nth-child(2) > text > tspan',
+    )
+    most_visited_page_bar = Locator(
+        By.CSS_SELECTOR,
+        'div.container._PageContainer_1mhar6 > div:nth-child(4) > div > div:nth-child(4) > div > div.panel-body._ChartContainer_1hff7g > div > svg > g:nth-child(2) > g.c3-chart > g.c3-chart-bars > g > g > path.c3-shape.c3-shape-0.c3-bar.c3-bar-0',
+    )
+    popular_pages_tooltip_value = Locator(
+        By.CSS_SELECTOR,
+        'div.container._PageContainer_1mhar6 > div:nth-child(4) > div > div:nth-child(4) > div > div.panel-body._ChartContainer_1hff7g > div > div > table > tbody > tr.c3-tooltip-name--count > td.value',
     )
 
     tod_bars = GroupLocator(
