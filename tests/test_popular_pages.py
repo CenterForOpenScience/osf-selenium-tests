@@ -16,48 +16,39 @@ from pages.registries import RegistrationDetailPage
 class TestPopularPages:
     def test_popular_pages_load(self, driver):
         """Test that ensures certain popular pages in OSF Production load correctly.
-        The list of pages are contained in an external text file to make it easier to
-        maintain.  Only one page should be entered on each line in the file and each
-        line should begin with the OSF object type (project, preprint, or registration)
-        followed by a : and then the guid of the object. EX: 'project:ef53g'. The test
-        will process every line in the file and attempt to load every page before any
-        error is thrown.  After the entire file has been read, if there were any errors
-        the test will fail and display a list of all of the pages that failed to load.
+        The list of pages are contained in the environment variable POPULAR_PAGES.
+        Each page in the list should begin with the OSF object type (project, preprint,
+        or registration) followed by a : and then the guid of the object. EX: 'project:abcde'.
+        The test will process every list item and attempt to load every page before any
+        error is thrown.  After the entire list has been processed, if there were any
+        errors the test will fail and display a list of all of the pages that failed
+        to load.
         """
-        file = open('test_data/popular_pages.txt')
+        popular_pages = settings.POPULAR_PAGES
 
         failed_list = []
-        for line in file.readlines():
-            segments = line.split(':')
+        for page in popular_pages:
+            segments = page.split(':')
             page_type = segments[0]
             guid = segments[1]
+
+            # Set page class type
             if page_type == 'project':
-                try:
-                    project_page = ProjectPage(driver, guid=guid)
-                    project_page.goto()
-                    assert ProjectPage(driver, verify=True)
-                except PageException:
-                    failed_list.append(line)
+                page_class = ProjectPage(driver, guid=guid)
             elif page_type == 'preprint':
-                try:
-                    preprint_page = PreprintDetailPage(driver, guid=guid)
-                    preprint_page.goto()
-                    assert PreprintDetailPage(driver, verify=True)
-                except PageException:
-                    failed_list.append(line)
+                page_class = PreprintDetailPage(driver, guid=guid)
             elif page_type == 'registration':
-                try:
-                    registration_page = RegistrationDetailPage(driver, guid=guid)
-                    registration_page.goto()
-                    assert RegistrationDetailPage(driver, verify=True)
-                except PageException:
-                    failed_list.append(line)
+                page_class = RegistrationDetailPage(driver, guid=guid)
             else:
                 # Not one of the valid object types so add to the error list
-                failed_list.append('Not a valid object type - ' + line)
+                failed_list.append('Not a valid object type - ' + page)
+
+            try:
+                page_class.goto()
+                assert page_class.verify()
+            except PageException:
+                failed_list.append(page)
 
         # If there were any page load failures then fail the test and print the lines
         # that failed
         assert len(failed_list) == 0, 'The following Pages Failed: ' + str(failed_list)
-
-        file.close()

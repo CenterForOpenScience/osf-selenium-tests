@@ -46,6 +46,8 @@ env:
   IMAP_HOST: ${{ secrets.IMAP_HOST }}
   REGISTRATIONS_USER: ${{ secrets.REGISTRATIONS_USER }}
   REGISTRATIONS_USER_PASSWORD: ${{ secrets.REGISTRATIONS_USER_PASSWORD }}
+  PREFERRED_NODE: ${{ secrets.PREFERRED_NODE }}
+  POPULAR_PAGES: ${{ secrets.POPULAR_PAGES }}
 
 jobs:
 
@@ -99,7 +101,6 @@ jobs:
           key: ${{ env.GHA_DISTRO }}-${{ env.pythonLocation }}-${{ hashFiles('requirements.txt') }}
       - name: run two minute drill tests
         env:
-          PREFERRED_NODE: ra4bf
           TEST_BUILD: ${{ github.event.inputs.browser }}
         run: |
           invoke test_two_minute_drill
