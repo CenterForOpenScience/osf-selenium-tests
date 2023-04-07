@@ -497,7 +497,12 @@ def get_preprint_downloads_count(session=None, node_id=None):
 
 
 def get_most_recent_registration_node_id(session=None):
-    """Return the most recently approved public registration node id"""
+    """Return the most recently approved public registration node id. The
+    /v2/registrations endpoint currently returns the most recently modified
+    registration sorted first. But we still need to check for a public and
+    approved registration that has not been withdrawn in order to get a
+    registration that is fully accessible.
+    """
     if not session:
         session = get_default_session()
     url = '/v2/registrations/'
