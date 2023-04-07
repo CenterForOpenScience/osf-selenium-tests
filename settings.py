@@ -71,6 +71,9 @@ PREFERRED_NODE = env('PREFERRED_NODE', None)
 if DOMAIN == 'prod':
     PREFERRED_NODE = env('PREFERRED_NODE')
 
+# List of popular pages in Production to test as part of the 2 Minute Drill
+POPULAR_PAGES = env.list('POPULAR_PAGES')
+
 EXPECTED_PROVIDERS = env.list(
     'EXPECTED_PROVIDERS',
     [

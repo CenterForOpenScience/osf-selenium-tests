@@ -43,6 +43,7 @@ def landing_page(driver):
 
 
 class TestRegistriesDiscoverPage:
+    @markers.two_minute_drill
     @markers.smoke_test
     @markers.core_functionality
     def test_search_results_exist(self, driver, landing_page):

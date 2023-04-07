@@ -23,6 +23,7 @@ from pages.login import (
 from pages.project import ProjectPage
 
 
+@markers.two_minute_drill
 @markers.smoke_test
 @markers.core_functionality
 class TestCollectionDiscoverPages:
