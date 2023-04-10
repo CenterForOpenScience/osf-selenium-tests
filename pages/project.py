@@ -105,6 +105,9 @@ def verify_log_entry(session, driver, node_id, action, **kwargs):
     # Get log entries for the project from the api
     logs = osf_api.get_node_logs(session, node_id=node_id)
 
+    if action == 'osfstorage_file_removed':
+        action = 'osf_storage_file_removed'
+
     # Look for the appropriate log entry and verify relevant details specific to the
     # log action type
     for entry in logs:
@@ -119,11 +122,48 @@ def verify_log_entry(session, driver, node_id, action, **kwargs):
                 # file deletion action
                 if provider == 'Owncloud':
                     log_text = 'removed file ' + file_name + ' from ownCloud'
+                elif provider == 'Osfstorage':
+                    log_text = 'removed file ' + file_name + ' from OSF Storage'
                 elif provider == 'S3':
                     log_text = 'removed ' + file_name + ' in Amazon S3 bucket'
                 else:
                     log_text = 'removed file ' + file_name + ' from ' + provider
-                assert log_text in log_item_1_text
+            elif action == 'addon_file_moved':
+                # For File Move actions
+                file_name = kwargs.get('file_name')
+                source = kwargs.get('source')
+                if source == 'Owncloud':
+                    source = 'ownCloud'
+                elif source == 'S3':
+                    source = 'Amazon S3'
+                destination = kwargs.get('destination')
+                # Verify move specific attributes in the api log entry
+                assert (
+                    entry['attributes']['params']['destination']['materialized']
+                    == file_name
+                )
+                assert (
+                    entry['attributes']['params']['destination']['addon'] == destination
+                )
+                assert (
+                    entry['attributes']['params']['source']['materialized'] == file_name
+                )
+                assert entry['attributes']['params']['source']['addon'] == source
+                # Verify that the first log item in the log widget describes the correct
+                # file move action
+                log_text = (
+                    action[11:]
+                    + ' '
+                    + file_name
+                    + ' in '
+                    + source
+                    + ' to '
+                    + file_name
+                    + ' in '
+                    + destination
+                )
+
+            assert log_text in log_item_1_text
             break
 
     # The following data should be in all log entries:
