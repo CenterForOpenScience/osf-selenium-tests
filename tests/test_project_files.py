@@ -440,6 +440,16 @@ class TestFilesPage:
             files_page.loading_indicator.here_then_gone()
             destination_row = find_row_by_name(files_page, new_file)
             assert new_file in destination_row.text
+            # Verify Project Log Entry
+            verify_log_entry(
+                session,
+                driver,
+                node_id,
+                'addon_file_copied',
+                file_name=new_file,
+                source=provider.capitalize(),
+                destination='OSF Storage',
+            )
         finally:
             osf_api.delete_addon_files(session, provider, current_browser, guid=node_id)
 

@@ -128,8 +128,8 @@ def verify_log_entry(session, driver, node_id, action, **kwargs):
                     log_text = 'removed ' + file_name + ' in Amazon S3 bucket'
                 else:
                     log_text = 'removed file ' + file_name + ' from ' + provider
-            elif action == 'addon_file_moved':
-                # For File Move actions
+            elif action == 'addon_file_moved' or action == 'addon_file_copied':
+                # For File Move or Copy actions
                 file_name = kwargs.get('file_name')
                 source = kwargs.get('source')
                 if source == 'Owncloud':
@@ -137,7 +137,7 @@ def verify_log_entry(session, driver, node_id, action, **kwargs):
                 elif source == 'S3':
                     source = 'Amazon S3'
                 destination = kwargs.get('destination')
-                # Verify move specific attributes in the api log entry
+                # Verify move or copy specific attributes in the api log entry
                 assert (
                     entry['attributes']['params']['destination']['materialized']
                     == file_name
@@ -150,7 +150,7 @@ def verify_log_entry(session, driver, node_id, action, **kwargs):
                 )
                 assert entry['attributes']['params']['source']['addon'] == source
                 # Verify that the first log item in the log widget describes the correct
-                # file move action
+                # file move or copy action
                 log_text = (
                     action[11:]
                     + ' '
