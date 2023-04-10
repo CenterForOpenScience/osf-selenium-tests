@@ -33,6 +33,7 @@ env:
   IMAP_HOST: ${{ secrets.IMAP_HOST }}
   REGISTRATIONS_USER: ${{ secrets.REGISTRATIONS_USER }}
   REGISTRATIONS_USER_PASSWORD: ${{ secrets.REGISTRATIONS_USER_PASSWORD }}
+  PREFERRED_NODE: ${{ secrets.PREFERRED_NODE }}
   POPULAR_PAGES: ${{ secrets.POPULAR_PAGES }}
 
 jobs:
@@ -89,7 +90,6 @@ jobs:
           key: ${{ env.GHA_DISTRO }}-${{ env.pythonLocation }}-${{ hashFiles('requirements.txt') }}
       - name: run smoke tests
         env:
-          PREFERRED_NODE: ra4bf
           TEST_BUILD: ${{ matrix.browser }}
         run: |
           invoke test_selenium_on_prod
