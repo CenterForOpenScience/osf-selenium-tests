@@ -23,6 +23,7 @@ class FileWidget(BaseElement):
 
 class LogWidget(BaseElement):
     loading_indicator = Locator(By.CSS_SELECTOR, '#logFeed .ball-scale')
+    log_feed = Locator(By.ID, 'logFeed')
 
     # Group Locators
     log_items = GroupLocator(By.CSS_SELECTOR, '#logFeed .db-activity-item')

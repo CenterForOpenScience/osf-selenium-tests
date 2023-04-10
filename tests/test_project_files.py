@@ -10,7 +10,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 import markers
 import settings
 from api import osf_api
-from pages.project import FilesPage
+from pages.project import (
+    FilesPage,
+    verify_log_entry,
+)
 from utils import find_current_browser
 
 
@@ -158,6 +161,15 @@ class TestFilesPage:
             # Verify file has been deleted from the files list
             deleted_row = find_row_by_name(files_page, new_file)
             assert deleted_row is None
+            # Verify Project Log Entry
+            verify_log_entry(
+                session,
+                driver,
+                node_id,
+                provider + '_file_removed',
+                file_name=new_file,
+                provider=provider.capitalize(),
+            )
         finally:
             osf_api.delete_addon_files(session, provider, current_browser, guid=node_id)
 

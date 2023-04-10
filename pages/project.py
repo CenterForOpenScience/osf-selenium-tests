@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from selenium.webdriver.common.by import By
 
 import settings
@@ -83,6 +85,60 @@ class ProjectPage(GuidBasePage):
                 'node_id'
             ):
                 return component
+
+
+def verify_log_entry(session, driver, node_id, action, **kwargs):
+    """Helper function that verifies the most recent log entry in the log widget on a
+    given project node. The log entry in the OSF api is also verified.
+    """
+
+    # Navigate to the Project Overview page
+    project_page = ProjectPage(driver, guid=node_id)
+    project_page.goto()
+    project_page.loading_indicator.here_then_gone()
+    project_title = project_page.title.text
+
+    # Scroll down to the Log Widget and get the text from the first log entry
+    project_page.scroll_into_view(project_page.log_widget.log_feed.element)
+    log_item_1_text = project_page.log_widget.log_items[0].text
+
+    # Get log entries for the project from the api
+    logs = osf_api.get_node_logs(session, node_id=node_id)
+
+    # Look for the appropriate log entry and verify relevant details specific to the
+    # log action type
+    for entry in logs:
+        if entry['attributes']['action'] == action:
+            if 'file_removed' in action:
+                # For File Deletion actions
+                file_name = kwargs.get('file_name')
+                provider = kwargs.get('provider')
+                # Verify file name is in the path parameter attribute
+                assert file_name in entry['attributes']['params']['path']
+                # Verify that the first log item in the log widget describes the correct
+                # file deletion action
+                if provider == 'Owncloud':
+                    log_text = 'removed file ' + file_name + ' from ownCloud'
+                elif provider == 'S3':
+                    log_text = 'removed ' + file_name + ' in Amazon S3 bucket'
+                else:
+                    log_text = 'removed file ' + file_name + ' from ' + provider
+                assert log_text in log_item_1_text
+            break
+
+    # The following data should be in all log entries:
+    # Verify the log entry begins with the user name
+    user = osf_api.current_user()
+    assert log_item_1_text.startswith(user.full_name)
+    assert entry['relationships']['user']['data']['id'] == user.id
+    # Verify project title is in the log entry
+    assert project_title in log_item_1_text
+    assert entry['attributes']['params']['params_node']['title'] == project_title
+    # Verify current date is also in the log entry
+    now = datetime.now()
+    date_today = now.strftime('%Y-%m-%d')
+    assert date_today in log_item_1_text
+    assert date_today in entry['attributes']['date']
 
 
 class RequestAccessPage(GuidBasePage):
