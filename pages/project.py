@@ -162,6 +162,46 @@ def verify_log_entry(session, driver, node_id, action, **kwargs):
                     + ' in '
                     + destination
                 )
+            elif action == 'addon_file_renamed':
+                # For File Rename actions
+                file_name = kwargs.get('file_name')
+                renamed_file = kwargs.get('renamed_file')
+                source = kwargs.get('source')
+                destination = kwargs.get('destination')
+                if source == 'Osfstorage':
+                    source = 'OSF Storage'
+                    destination = 'OSF Storage'
+                elif source == 'Owncloud':
+                    source = 'ownCloud'
+                    destination = 'ownCloud'
+                elif source == 'S3':
+                    source = 'Amazon S3'
+                    destination = 'Amazon S3'
+                # Verify rename specific attributes in the api log entry
+                assert (
+                    entry['attributes']['params']['destination']['materialized']
+                    == renamed_file
+                )
+                assert (
+                    entry['attributes']['params']['destination']['addon'] == destination
+                )
+                assert (
+                    entry['attributes']['params']['source']['materialized'] == file_name
+                )
+                assert entry['attributes']['params']['source']['addon'] == source
+                # Verify that the first log item in the log widget describes the correct
+                # file rename action
+                log_text = (
+                    action[11:]
+                    + ' '
+                    + file_name
+                    + ' in '
+                    + source
+                    + ' to '
+                    + renamed_file
+                    + ' in '
+                    + destination
+                )
 
             assert log_text in log_item_1_text
             break

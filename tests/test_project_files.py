@@ -114,6 +114,17 @@ class TestFilesPage:
             # Test that new file name is present and visible
             renamed_file = find_row_by_name(files_page, new_name)
             assert new_name in renamed_file.text
+            # Verify Project Log Entry
+            verify_log_entry(
+                session,
+                driver,
+                node_id,
+                'addon_file_renamed',
+                file_name=new_file,
+                renamed_file=new_name,
+                source=provider.capitalize(),
+                destination=provider.capitalize(),
+            )
         finally:
             osf_api.delete_addon_files(session, provider, current_browser, guid=node_id)
 
