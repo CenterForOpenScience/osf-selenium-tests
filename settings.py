@@ -68,11 +68,13 @@ NEW_USER_EMAIL = env('NEW_USER_EMAIL')
 
 # Preferred node must be set to run tests on production
 PREFERRED_NODE = env('PREFERRED_NODE', None)
+# Initialize Popular Pages environment variable to None which is what it should be for
+# all environments except Production which is set below.
+POPULAR_PAGES = None
 if DOMAIN == 'prod':
     PREFERRED_NODE = env('PREFERRED_NODE')
-
-# List of popular pages in Production to test as part of the 2 Minute Drill
-POPULAR_PAGES = env.list('POPULAR_PAGES')
+    # List of popular pages in Production to test as part of the 2 Minute Drill
+    POPULAR_PAGES = env.list('POPULAR_PAGES')
 
 EXPECTED_PROVIDERS = env.list(
     'EXPECTED_PROVIDERS',
