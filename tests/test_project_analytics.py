@@ -15,6 +15,20 @@ from pages.project import (
 )
 
 
+class TestAnalyticsPage:
+    def test_private_project(self, driver, default_project, must_be_logged_in):
+        """Test the Analytics page on a Private Project. A message should display at the
+        top of the page indicating that the project is Private and that Analytics are not
+        available and the graphs should be disabled and blurred.
+        """
+        analytics_page = AnalyticsPage(driver, guid=default_project.id)
+        analytics_page.goto()
+        analytics_page.loading_indicator.here_then_gone()
+        assert analytics_page.private_project_message.present()
+        # Existing bug - ENG-4456 - Graphs on Private Projects should be Disabled
+        # assert analytics_page.disabled_chart.present()
+
+
 def parse_node_analytics_data(raw_data, request, **kwargs):
     """Helper function that takes the raw data from the OSF api metrics Node Analytics
     query and returns a specific piece of data. The Node Analytics query is meant to be

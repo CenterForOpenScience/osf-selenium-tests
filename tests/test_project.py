@@ -14,7 +14,6 @@ from pages.login import (
     logout,
 )
 from pages.project import (
-    AnalyticsPage,
     ForksPage,
     ProjectPage,
     RequestAccessPage,
@@ -396,11 +395,3 @@ class TestProjectComponents:
             # component so that the dummy project can also be deleted.
             if osf_api.get_node(session, node_id=component.id):
                 osf_api.delete_project(session, component.id, None)
-
-
-class TestAnalyticsPage:
-    @markers.core_functionality
-    def private_project(self, default_project):
-        analytics_page = AnalyticsPage(default_project.id)
-        assert analytics_page.private_project_message.present()
-        assert analytics_page.disabled_chart.present()
