@@ -55,6 +55,33 @@ def create_child_node(
     return node.create_child(title=title, tags=tags, **kwargs)
 
 
+def create_project_view_only_link(
+    session, node_id, name='API created VOL', anonymous=False
+):
+    """Create a view only link for a given project node.  The VOL can be Anonymous if
+    requested.
+    """
+    if not session:
+        session = get_default_session()
+    url = '/v2/nodes/{}/view_only_links/'.format(node_id)
+    raw_payload = {
+        'data': {
+            'type': 'view-only-links',
+            'attributes': {
+                'name': name,
+                'anonymous': anonymous,
+            },
+        },
+    }
+    data = session.post(
+        url=url, item_type='view-only-links', raw_body=json.dumps(raw_payload)
+    )
+    # return just the key value (i.e. access token)
+    if data:
+        return data['data']['attributes']['key']
+    return None
+
+
 def current_user(session=None):
     if not session:
         session = get_default_session()
