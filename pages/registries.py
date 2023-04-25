@@ -80,6 +80,7 @@ class BaseSubmittedRegistrationPage(GuidBasePage):
     base_url = settings.OSF_HOME
     url_addition = ''
     side_navbar = ComponentLocator(SubmittedSideNavbar)
+    title = Locator(By.CSS_SELECTOR, '[data-test-registration-title]')
 
     def __init__(self, driver, verify=False, guid=''):
         # Set the cookie that prevents the New Feature popover from appearing on

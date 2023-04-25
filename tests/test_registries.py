@@ -87,7 +87,7 @@ class TestRegistriesDiscoverPage:
         detail_page = RegistrationDetailPage(driver)
         detail_page.identity.present()
         assert RegistrationDetailPage(driver, verify=True)
-        assert detail_page.identity.text in target_registration_title
+        assert detail_page.title.text in target_registration_title
 
 
 @markers.smoke_test
