@@ -184,12 +184,12 @@ class RegistrationWikiPage(BaseSubmittedRegistrationPage):
 
 class RegistrationComponentsPage(BaseSubmittedRegistrationPage):
     url_addition = 'components'
-    identity = Locator(By.XPATH, '//h3[text()="Components"]')
+    identity = Locator(By.CSS_SELECTOR, '[data-test-components-page-heading]')
 
 
 class RegistrationLinksPage(BaseSubmittedRegistrationPage):
     url_addition = 'links'
-    identity = Locator(By.XPATH, '//h3[text()="Linked projects and components"]')
+    identity = Locator(By.CSS_SELECTOR, '[data-test-links-page-heading]')
 
 
 class RegistrationAnalyticsPage(BaseSubmittedRegistrationPage):
