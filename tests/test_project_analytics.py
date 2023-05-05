@@ -8,6 +8,7 @@ from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
+import markers
 from api import osf_api
 from pages.project import (
     AnalyticsPage,
@@ -15,6 +16,7 @@ from pages.project import (
 )
 
 
+@markers.smoke_test
 class TestAnalyticsPage:
     def test_private_project(self, driver, default_project, must_be_logged_in):
         """Test the Analytics page on a Private Project. A message should display at the
@@ -105,6 +107,7 @@ def public_project_node(session, driver):
     return osf_api.get_most_recent_public_node_id(session)
 
 
+@markers.smoke_test
 @pytest.mark.usefixtures('hide_footer_slide_in')
 class TestNodeAnalytics:
     def test_unique_visits_graph(self, session, driver, public_project_node):

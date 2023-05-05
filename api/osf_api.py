@@ -1022,7 +1022,4 @@ def get_project_node_analytics_data(session, node_id=None, timespan='week'):
     """
     url = '_/metrics/query/node_analytics/{}/{}/'.format(node_id, timespan)
     data = session.get(url)['data']
-    if data:
-        return data
-    else:
-        return None
+    return data or None
