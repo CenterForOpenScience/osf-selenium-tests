@@ -223,7 +223,7 @@ class MyProjectsPage(OSFBasePage):
 class AnalyticsPage(GuidBasePage):
     base_url = settings.OSF_HOME + '/{guid}/analytics/'
 
-    identity = Locator(By.CSS_SELECTOR, '._Counts_1mhar6')
+    identity = Locator(By.CSS_SELECTOR, '._Counts_1mhar6', settings.LONG_TIMEOUT)
     loading_indicator = Locator(By.CSS_SELECTOR, '.ball-pulse')
     private_project_message = Locator(By.CSS_SELECTOR, '._PrivateProject_1mhar6')
     disabled_chart = Locator(By.CSS_SELECTOR, '._Chart_1hff7g _Blurred_1hff7g')
