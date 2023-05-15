@@ -223,7 +223,10 @@ class TestNodeAnalytics:
             EC.visibility_of(analytics_page.tod_visits_tooltip_value)
         )
         tod_visits_display = int(analytics_page.tod_visits_tooltip_value.text)
-        assert tod_visits_display == tod_count
+        # When running remotely via BrowserStack or when running the first time in an
+        # environment there may be timing issues with registering the visit to the
+        # Analytics page which may cause the visit count to be off by 1.
+        assert tod_visits_display == tod_count or tod_visits_display == tod_count + 1
 
     # NOTE: At this time we are not creating a test for the Top Referrers Graph. The
     # primary reason is that through Selenium there is no referrer registered. So there
@@ -294,4 +297,7 @@ class TestNodeAnalytics:
             # count by 1 in order to count the current visit
             visit_display = visit_display + 1
 
-        assert visit_display == visit_count
+        # When running remotely via BrowserStack, the goto_with_reload() may cause the
+        # Analytics page to be reloaded in which case the visit count may have one more
+        # additional visit.
+        assert visit_display == visit_count or visit_display == visit_count + 1
