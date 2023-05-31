@@ -122,8 +122,8 @@ class TestFilesPage:
                 'addon_file_renamed',
                 file_name=new_file,
                 renamed_file=new_name,
-                source=provider.capitalize(),
-                destination=provider.capitalize(),
+                source=provider,
+                destination=provider,
             )
         finally:
             osf_api.delete_addon_files(session, provider, current_browser, guid=node_id)
@@ -179,7 +179,7 @@ class TestFilesPage:
                 node_id,
                 provider + '_file_removed',
                 file_name=new_file,
-                provider=provider.capitalize(),
+                provider=provider,
             )
         finally:
             osf_api.delete_addon_files(session, provider, current_browser, guid=node_id)
@@ -315,8 +315,8 @@ class TestFilesPage:
                 node_id,
                 'addon_file_moved',
                 file_name=new_file,
-                source=provider.capitalize(),
-                destination='OSF Storage',
+                source=provider,
+                destination='osfstorage',
             )
         finally:
             osf_api.delete_addon_files(session, provider, current_browser, guid=node_id)
@@ -458,8 +458,8 @@ class TestFilesPage:
                 node_id,
                 'addon_file_copied',
                 file_name=new_file,
-                source=provider.capitalize(),
-                destination='OSF Storage',
+                source=provider,
+                destination='osfstorage',
             )
         finally:
             osf_api.delete_addon_files(session, provider, current_browser, guid=node_id)

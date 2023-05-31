@@ -15,6 +15,7 @@ from components.dashboard import (
     DeleteCollectionModal,
     ProjectCreatedModal,
 )
+from components.helpers import format_addon_name
 from components.project import (
     ComponentCreatedModal,
     ComponentsPrivacyChangeModal,
@@ -108,117 +109,74 @@ def verify_log_entry(session, driver, node_id, action, **kwargs):
     if action == 'osfstorage_file_removed':
         action = 'osf_storage_file_removed'
 
-    # Look for the appropriate log entry and verify relevant details specific to the
-    # log action type
+    # Look for the appropriate log entry in the api data
     for entry in logs:
         if entry['attributes']['action'] == action:
-            if 'file_removed' in action:
-                # For File Deletion actions
-                file_name = kwargs.get('file_name')
-                provider = kwargs.get('provider')
-                # Verify file name is in the path parameter attribute
-                assert file_name in entry['attributes']['params']['path']
-                # Verify that the first log item in the log widget describes the correct
-                # file deletion action
-                if provider == 'Owncloud':
-                    log_text = 'removed file ' + file_name + ' from ownCloud'
-                elif provider == 'Osfstorage':
-                    log_text = 'removed file ' + file_name + ' from OSF Storage'
-                elif provider == 'S3':
-                    log_text = 'removed ' + file_name + ' in Amazon S3 bucket'
-                else:
-                    log_text = 'removed file ' + file_name + ' from ' + provider
-            elif action == 'addon_file_moved' or action == 'addon_file_copied':
-                # For File Move or Copy actions
-                file_name = kwargs.get('file_name')
-                source = kwargs.get('source')
-                if source == 'Owncloud':
-                    source = 'ownCloud'
-                elif source == 'S3':
-                    source = 'Amazon S3'
-                destination = kwargs.get('destination')
-                # Verify move or copy specific attributes in the api log entry
-                assert (
-                    entry['attributes']['params']['destination']['materialized']
-                    == file_name
-                )
-                assert (
-                    entry['attributes']['params']['destination']['addon'] == destination
-                )
-                assert (
-                    entry['attributes']['params']['source']['materialized'] == file_name
-                )
-                assert entry['attributes']['params']['source']['addon'] == source
-                # Verify that the first log item in the log widget describes the correct
-                # file move or copy action
-                log_text = (
-                    action[11:]
-                    + ' '
-                    + file_name
-                    + ' in '
-                    + source
-                    + ' to '
-                    + file_name
-                    + ' in '
-                    + destination
-                )
-            elif action == 'addon_file_renamed':
-                # For File Rename actions
-                file_name = kwargs.get('file_name')
-                renamed_file = kwargs.get('renamed_file')
-                source = kwargs.get('source')
-                destination = kwargs.get('destination')
-                if source == 'Osfstorage':
-                    source = 'OSF Storage'
-                    destination = 'OSF Storage'
-                elif source == 'Owncloud':
-                    source = 'ownCloud'
-                    destination = 'ownCloud'
-                elif source == 'S3':
-                    source = 'Amazon S3'
-                    destination = 'Amazon S3'
-                # Verify rename specific attributes in the api log entry
-                assert (
-                    entry['attributes']['params']['destination']['materialized']
-                    == renamed_file
-                )
-                assert (
-                    entry['attributes']['params']['destination']['addon'] == destination
-                )
-                assert (
-                    entry['attributes']['params']['source']['materialized'] == file_name
-                )
-                assert entry['attributes']['params']['source']['addon'] == source
-                # Verify that the first log item in the log widget describes the correct
-                # file rename action
-                log_text = (
-                    action[11:]
-                    + ' '
-                    + file_name
-                    + ' in '
-                    + source
-                    + ' to '
-                    + renamed_file
-                    + ' in '
-                    + destination
-                )
-
-            assert log_text in log_item_1_text
+            log_data = entry
+            log_params = entry['attributes']['params']
             break
+
+    # Verify relevant details specific to the log action type
+    if 'file_removed' in action:
+        # For File Deletion actions
+        file_name = kwargs.get('file_name')
+        provider = format_addon_name(kwargs.get('provider'))
+        # Verify file name is in the path parameter attribute
+        assert file_name in log_params['path']
+        # Build the expected text string to find in the Log Widget text line
+        # EX: 'removed file delete_chrome_box.txt from Box'
+        if provider == 'Amazon S3':
+            log_text = 'removed {} in {} bucket'.format(file_name, provider)
+        else:
+            log_text = 'removed file {} from {}'.format(file_name, provider)
+    elif action == 'addon_file_moved' or action == 'addon_file_copied':
+        # For File Move or Copy actions
+        file_name = kwargs.get('file_name')
+        source = format_addon_name(kwargs.get('source'))
+        destination = format_addon_name(kwargs.get('destination'))
+        # Verify move or copy specific attributes in the api log entry
+        assert log_params['destination']['materialized'] == file_name
+        assert log_params['destination']['addon'] == destination
+        assert log_params['source']['materialized'] == file_name
+        assert log_params['source']['addon'] == source
+        # Build the expected text string to find in the Log Widget text line
+        # EX: 'moved move_chrome_box.txt in Box to move_chrome_box.txt in OSF Storage'
+        log_text = '{} {} in {} to {} in {}'.format(
+            action[11:], file_name, source, file_name, destination
+        )
+    elif action == 'addon_file_renamed':
+        # For File Rename actions
+        file_name = kwargs.get('file_name')
+        renamed_file = kwargs.get('renamed_file')
+        source = format_addon_name(kwargs.get('source'))
+        destination = format_addon_name(kwargs.get('destination'))
+        # Verify rename specific attributes in the api log entry
+        assert log_params['destination']['materialized'] == renamed_file
+        assert log_params['destination']['addon'] == destination
+        assert log_params['source']['materialized'] == file_name
+        assert log_params['source']['addon'] == source
+        # Build the expected text string to find in the Log Widget text line
+        # EX: 'renamed rename_chrome_box.txt in Box to chrome_box_renamed.txt in Box'
+        log_text = 'renamed {} in {} to {} in {}'.format(
+            file_name, source, renamed_file, destination
+        )
+
+    # Verify the text displayed in the Log Widget
+    assert log_text in log_item_1_text
 
     # The following data should be in all log entries:
     # Verify the log entry begins with the user name
     user = osf_api.current_user()
     assert log_item_1_text.startswith(user.full_name)
-    assert entry['relationships']['user']['data']['id'] == user.id
+    assert log_data['relationships']['user']['data']['id'] == user.id
     # Verify project title is in the log entry
     assert project_title in log_item_1_text
-    assert entry['attributes']['params']['params_node']['title'] == project_title
+    assert log_params['params_node']['title'] == project_title
     # Verify current date is also in the log entry
     now = datetime.now()
     date_today = now.strftime('%Y-%m-%d')
     assert date_today in log_item_1_text
-    assert date_today in entry['attributes']['date']
+    assert date_today in log_data['attributes']['date']
 
 
 class RequestAccessPage(GuidBasePage):
