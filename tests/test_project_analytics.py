@@ -9,10 +9,12 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 import markers
+import settings
 from api import osf_api
 from pages.project import (
     AnalyticsPage,
     FilesPage,
+    ProjectPage,
 )
 
 
@@ -126,14 +128,14 @@ class TestNodeAnalytics:
         files_page.goto()
         files_page.loading_indicator.here_then_gone()
 
-        # Get the Before unique visits count data from the api
-        before_data = osf_api.get_project_node_analytics_data(
+        # Get the unique visits count data from the api
+        visit_data = osf_api.get_project_node_analytics_data(
             session, node_id=public_project_node
         )
         now = datetime.now(timezone.utc)
         date_today = now.strftime('%Y-%m-%d')
-        before_visits_count = parse_node_analytics_data(
-            before_data, 'unique_visits_count', date=date_today
+        visits_count = parse_node_analytics_data(
+            visit_data, 'unique_visits_count', date=date_today
         )
 
         # Next navigate to the Analytics page for the project.
@@ -155,31 +157,12 @@ class TestNodeAnalytics:
             EC.visibility_of(analytics_page.unique_visits_tooltip_value)
         )
         unique_visits_display = int(analytics_page.unique_visits_tooltip_value.text)
-        # When running locally the graph on the Analytics page loads fast enough that
-        # it does not register the visit to the Analytics page. However, when running
-        # remotely through BrowserStack the graph can sometimes load slower and then
-        # it may include the count of the Analytics page visit.
-        assert (
-            unique_visits_display == before_visits_count
-            or unique_visits_display == before_visits_count + 1
-        )
 
-        # Retrieve the metrics data again and verify that it now registers an additional
-        # unique visit since we went to the Analytics page.
-        after_data = osf_api.get_project_node_analytics_data(
-            session, node_id=public_project_node
-        )
-        after_visits_count = parse_node_analytics_data(
-            after_data, 'unique_visits_count', date=date_today
-        )
-        # When running locally the graph on the Analytics page loads fast enough that
-        # it does not register the visit to the Analytics page. However, when running
-        # remotely through BrowserStack the graph can sometimes load slower and then
-        # it may include the count of the Analytics page visit.
-        assert (
-            after_visits_count == before_visits_count
-            or after_visits_count == before_visits_count + 1
-        )
+        # Verify that the value displayed in the tool tip matches the value from the api
+        # allowing for a difference of up to 1 since slower machines (i.e. BrowserStack)
+        # may cause the graph to load slower and thus may include the current visit to
+        # the Analytics page.
+        assert abs(unique_visits_display - visits_count) <= 1
 
     def test_tod_visits_graph(self, session, driver, public_project_node):
         """Test the Time of Day of Visits Graph on the Project Analytics page. First
@@ -190,12 +173,11 @@ class TestNodeAnalytics:
         Weeks (aka fortnight).
         """
 
-        # Navigate to the Analytics page for the project. No need to go to another page
-        # first since we are changing the date range which will refresh the graph data
-        # and ensure that we register the current visit to the Analytics page.
-        analytics_page = AnalyticsPage(driver, guid=public_project_node)
-        analytics_page.goto_with_reload()
-        analytics_page.loading_indicator.here_then_gone()
+        # First navigate to the Project Overview page for the project so that there
+        # will be at least 1 registered visit for the current time of day on the graph.
+        project_page = ProjectPage(driver, guid=public_project_node)
+        project_page.goto()
+        project_page.loading_indicator.here_then_gone()
 
         # Get the Time of Day visits count data from the api
         visit_data = osf_api.get_project_node_analytics_data(
@@ -207,9 +189,14 @@ class TestNodeAnalytics:
             visit_data, 'time_of_day_count', hour=current_hour
         )
 
-        # Change the analytics date range to 'Past Two Weeks'
-        analytics_page.date_range_button.click()
-        analytics_page.two_weeks_menu_option.click()
+        # Navigate to the Analytics page for the project using the Two Weeks (fortnight)
+        # time span parameter in order to avoid the Analytics page reload that occurs
+        # when the date range is changed on the page.
+        url = settings.OSF_HOME + '/{}/analytics?timespan=fortnight'.format(
+            public_project_node
+        )
+        driver.get(url)
+        analytics_page = AnalyticsPage(driver, verify=True)
         analytics_page.loading_indicator.here_then_gone()
 
         # Hover the mouse over the bar on the Time of Day of Visits graph that
@@ -223,10 +210,12 @@ class TestNodeAnalytics:
             EC.visibility_of(analytics_page.tod_visits_tooltip_value)
         )
         tod_visits_display = int(analytics_page.tod_visits_tooltip_value.text)
-        # When running remotely via BrowserStack or when running the first time in an
-        # environment there may be timing issues with registering the visit to the
-        # Analytics page which may cause the visit count to be off by 1.
-        assert tod_visits_display == tod_count or tod_visits_display == tod_count + 1
+
+        # Verify that the value displayed in the tool tip matches the value from the api
+        # allowing for a difference of up to 1 since slower machines (i.e. BrowserStack)
+        # may cause the graph to load slower and thus may include the current visit to
+        # the Analytics page.
+        assert abs(tod_visits_display - tod_count) <= 1
 
     # NOTE: At this time we are not creating a test for the Top Referrers Graph. The
     # primary reason is that through Selenium there is no referrer registered. So there
@@ -246,13 +235,14 @@ class TestNodeAnalytics:
         range to 1 month.
         """
 
-        # Navigate to the Analytics page for the project.
-        analytics_page = AnalyticsPage(driver, guid=public_project_node)
-        analytics_page.goto_with_reload()
-
-        # Change the analytics date range to 'Past Month'
-        analytics_page.date_range_button.click()
-        analytics_page.month_menu_option.click()
+        # Navigate to the Analytics page for the project using the month time span
+        # parameter in order to avoid the Analytics page reload that occurs when the
+        # date range is changed on the page.
+        url = settings.OSF_HOME + '/{}/analytics?timespan=month'.format(
+            public_project_node
+        )
+        driver.get(url)
+        analytics_page = AnalyticsPage(driver, verify=True)
         analytics_page.loading_indicator.here_then_gone()
 
         # Scroll down and get the label for the most popular page (top bar) from the
@@ -297,7 +287,4 @@ class TestNodeAnalytics:
             # count by 1 in order to count the current visit
             visit_display = visit_display + 1
 
-        # When running remotely via BrowserStack, the goto_with_reload() may cause the
-        # Analytics page to be reloaded in which case the visit count may have one more
-        # additional visit.
-        assert visit_display == visit_count or visit_display == visit_count + 1
+        assert abs(visit_display - visit_count) <= 1

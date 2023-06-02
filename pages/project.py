@@ -227,17 +227,6 @@ class AnalyticsPage(GuidBasePage):
     loading_indicator = Locator(By.CSS_SELECTOR, '.ball-pulse')
     private_project_message = Locator(By.CSS_SELECTOR, '._PrivateProject_1mhar6')
     disabled_chart = Locator(By.CSS_SELECTOR, '._Chart_1hff7g _Blurred_1hff7g')
-    date_range_button = Locator(
-        By.CSS_SELECTOR, 'div._PickDateRange_1mhar6 > label > div > button'
-    )
-    two_weeks_menu_option = Locator(
-        By.CSS_SELECTOR,
-        'div.ember-view.btn-group > div > ul > li:nth-child(2) > button',
-    )
-    month_menu_option = Locator(
-        By.CSS_SELECTOR,
-        'div.ember-view.btn-group > div > ul > li:nth-child(3) > button',
-    )
 
     unique_visits_week_current_day_point = Locator(
         By.CSS_SELECTOR, 'circle.c3-shape.c3-shape-7.c3-circle.c3-circle-7'
