@@ -67,6 +67,14 @@ def get_node(session, node_id=settings.PREFERRED_NODE):
     return client.Node(session=session, id=node_id)
 
 
+def get_node_logs(session, node_id):
+    """Return the log entries for a given node"""
+    if not session:
+        session = get_default_session()
+    url = '/v2/nodes/{}/logs'.format(node_id)
+    return session.get(url)['data']
+
+
 def get_user_institutions(session, user=None):
     if not user:
         user = current_user(session)
