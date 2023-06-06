@@ -50,12 +50,22 @@ def waffled_pages(session):
 
 @pytest.fixture(scope='session', autouse=True)
 def hide_cookie_banner(driver):
-    """Set the cookieconsent cookie so that that cookie banner doesn't show up
+    """Set the cookieconsent cookie so that the cookie banner doesn't show up
     (as it can obscure other UI elements).
      Note: If we ever want to test that banner will need to stop this cookie from being set.
     """
     driver.get(settings.OSF_HOME)
     driver.add_cookie({'name': 'osf_cookieconsent', 'value': '1', 'domain': '.osf.io'})
+
+
+@pytest.fixture(scope='session')
+def hide_footer_slide_in(driver):
+    """Set the browser local storage flag so that the Footer Slide In doesn't show up
+    (i.e. overlay that displays at the bottom of the OSF page when you are not logged
+    in. The slide in heading is: 'Start managing your projects on the OSF today.').
+    This slide in can obscure other elements.
+    """
+    driver.execute_script('window.localStorage.setItem("slide", 0);')
 
 
 @pytest.fixture(scope='class', autouse=True)
