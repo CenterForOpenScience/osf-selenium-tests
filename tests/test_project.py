@@ -17,6 +17,7 @@ from pages.project import (
     ForksPage,
     ProjectPage,
     RequestAccessPage,
+    verify_log_entry,
 )
 
 
@@ -433,6 +434,15 @@ class TestProjectVOLs:
 
         # Verify Log Widget loads
         assert project_page.log_widget.log_items
+
+        # Verify log entry for creation of view only link
+        verify_log_entry(
+            session,
+            driver,
+            project_with_file.id,
+            'view_only_link_added',
+            anonymous=False,
+        )
 
     def test_avol_project_overview_page(self, driver, session, project_with_file):
         """Test that creates an Anonymous View Only Link using the OSF api and then uses

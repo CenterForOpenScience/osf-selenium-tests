@@ -95,10 +95,11 @@ def verify_log_entry(session, driver, node_id, action, **kwargs):
     given project node. The log entry in the OSF api is also verified.
     """
 
-    # Navigate to the Project Overview page
+    # Navigate to the Project Overview page if you are not already on it
     project_page = ProjectPage(driver, guid=node_id)
-    project_page.goto()
-    project_page.loading_indicator.here_then_gone()
+    if project_page.identity.absent():
+        project_page.goto()
+        project_page.loading_indicator.here_then_gone()
     project_title = project_page.title.text
 
     # Scroll down to the Log Widget and get the text from the first log entry
@@ -162,6 +163,13 @@ def verify_log_entry(session, driver, node_id, action, **kwargs):
         log_text = 'renamed {} in {} to {} in {}'.format(
             file_name, source, renamed_file, destination
         )
+    elif 'view_only_link_added':
+        # For VOLs or AVOLs, although we are not going to verify the log entries for
+        # AVOLs since they are generally pointless and don't give enough information
+        # to be worthwhile to anyone. EX: 'A user created a view-only link to a project'
+        anonymous = kwargs.get('anonymous')
+        assert log_params['anonymous_link'] == anonymous
+        log_text = 'created a view-only link to'
 
     # Verify the text displayed in the Log Widget
     assert log_text in log_item_1_text
