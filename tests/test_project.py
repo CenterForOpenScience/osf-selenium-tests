@@ -395,3 +395,76 @@ class TestProjectComponents:
             # component so that the dummy project can also be deleted.
             if osf_api.get_node(session, node_id=component.id):
                 osf_api.delete_project(session, component.id, None)
+
+
+@markers.dont_run_on_prod
+@pytest.mark.usefixtures('hide_footer_slide_in')
+class TestProjectVOLs:
+    def test_vol_project_overview_page(self, driver, session, project_with_file):
+        """Test that creates a View Only Link using the OSF api and then uses that VOL
+        to navigate to the Project Overview page for the project.
+        """
+
+        vol_key = osf_api.create_project_view_only_link(session, project_with_file.id)
+        # Create the VOL URL for the Project and use the link to navigate to the Project
+        # Overview page
+        vol_url = (
+            settings.OSF_HOME + '/' + project_with_file.id + '/?view_only=' + vol_key
+        )
+        driver.get(vol_url)
+        project_page = ProjectPage(driver, verify=True)
+        project_page.loading_indicator.here_then_gone()
+
+        # Verify that we are not logged in
+        assert project_page.is_logged_out()
+
+        # Verify VOL message at the top of the page
+        assert (
+            project_page.alert_info_message.text
+            == 'This project is being viewed through a private, view-only link. Anyone with the link can view this project. Keep the link safe.'
+        )
+
+        # Verify Contributor is visible
+        user = osf_api.current_user()
+        assert project_page.contributors_list.text == user.full_name
+
+        # Verify File Widget loads
+        assert project_page.file_widget.first_file
+
+        # Verify Log Widget loads
+        assert project_page.log_widget.log_items
+
+    def test_avol_project_overview_page(self, driver, session, project_with_file):
+        """Test that creates an Anonymous View Only Link using the OSF api and then uses
+        that AVOL to navigate to the Project Overview page for the project.
+        """
+
+        avol_key = osf_api.create_project_view_only_link(
+            session, project_with_file.id, anonymous=True
+        )
+        # Create the AVOL URL for the Project and use the link to navigate to the Project
+        # Overview page
+        avol_url = (
+            settings.OSF_HOME + '/' + project_with_file.id + '/?view_only=' + avol_key
+        )
+        driver.get(avol_url)
+        project_page = ProjectPage(driver, verify=True)
+        project_page.loading_indicator.here_then_gone()
+
+        # Verify that we are not logged in
+        assert project_page.is_logged_out()
+
+        # Verify VOL message at the top of the page
+        assert (
+            project_page.alert_info_message.text
+            == 'This project is being viewed through a private, view-only link. Anyone with the link can view this project. Keep the link safe.'
+        )
+
+        # Verify Contributor is NOT visible
+        assert project_page.contributors_list.text == 'Anonymous Contributors'
+
+        # Verify File Widget loads
+        assert project_page.file_widget.first_file
+
+        # Verify Log Widget loads
+        assert project_page.log_widget.log_items
