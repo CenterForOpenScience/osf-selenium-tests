@@ -9,9 +9,7 @@ from base.locators import (
 # This is the navbar for legacy non-ember pages
 class HomeNavbar(BaseElement):
     service_dropdown = Locator(By.CSS_SELECTOR, '.fa-caret-down')
-    home_link = Locator(
-        By.CSS_SELECTOR, '.service-dropdown [data-analytics-name="HOME"]'
-    )
+    home_link = Locator(By.CSS_SELECTOR, 'a[data-analytics-name="HOME"]')
     preprints_link = Locator(By.CSS_SELECTOR, 'a[data-analytics-name="PREPRINTS"]')
     registries_link = Locator(By.CSS_SELECTOR, 'a[data-analytics-name="REGISTRIES"]')
     meetings_link = Locator(By.CSS_SELECTOR, 'a[data-analytics-name="MEETINGS"]')
@@ -22,22 +20,12 @@ class HomeNavbar(BaseElement):
     support_link = Locator(By.ID, 'navbar-support')
     donate_link = Locator(By.ID, 'navbar-donate')
 
-    user_dropdown = Locator(
-        By.CSS_SELECTOR, 'ul.navbar-nav > li.secondary-nav-dropdown'
-    )
-    user_dropdown_profile = Locator(
-        By.CSS_SELECTOR, 'ul.dropdown-menu-right > li:nth-child(1)'
-    )
-    user_dropdown_support = Locator(
-        By.CSS_SELECTOR, 'ul.dropdown-menu-right > li:nth-child(2)'
-    )
-    user_dropdown_settings = Locator(
-        By.CSS_SELECTOR, 'ul.dropdown-menu-right > li:nth-child(3)'
-    )
-    logout_link = Locator(
-        By.CSS_SELECTOR,
-        '#secondary-navigation > ul > li.dropdown.open > ul > li:nth-child(4) > a',
-    )
+    user_dropdown = Locator(By.CSS_SELECTOR, '[data-test-auth-dropdown-toggle]')
+    user_dropdown_profile = Locator(By.CSS_SELECTOR, '[data-test-ad-my-profile]')
+    user_dropdown_support = Locator(By.CSS_SELECTOR, '[data-test-ad-support]')
+    user_dropdown_settings = Locator(By.CSS_SELECTOR, '[data-test-ad-settings]')
+    logout_link = Locator(By.CSS_SELECTOR, '[data-test-ad-logout]')
+
     sign_up_button = Locator(By.CSS_SELECTOR, 'a.btn-success:nth-child(1)')
     sign_in_button = Locator(By.CSS_SELECTOR, '.btn-top-login')
     current_service = Locator(By.CSS_SELECTOR, '#navbarScope .current-service > strong')
@@ -58,6 +46,11 @@ class EmberNavbar(HomeNavbar):
     donate_link = Locator(By.CSS_SELECTOR, '[data-test-nav-donate-link]')
     sign_up_button = Locator(By.CSS_SELECTOR, '[data-test-ad-sign-up-button]')
     sign_in_button = Locator(By.CSS_SELECTOR, '[data-test-sign-in-button]')
+
+    user_dropdown = Locator(By.CSS_SELECTOR, '[data-test-auth-dropdown]')
+    user_dropdown_profile = Locator(By.CSS_SELECTOR, '[data-test-ad-my-profile]')
+    user_dropdown_support = Locator(By.CSS_SELECTOR, '[data-test-ad-support]')
+    user_dropdown_settings = Locator(By.CSS_SELECTOR, '[data-test-ad-settings]')
 
     logout_link = Locator(By.CSS_SELECTOR, '[data-test-ad-logout]')
     my_projects_link = Locator(By.CSS_SELECTOR, '[data-test-nav-my-projects-link]')
@@ -91,6 +84,8 @@ class PreprintsNavbar(EmberNavbar):
     sign_up_button = Locator(By.LINK_TEXT, 'Sign Up')
     sign_in_button = Locator(By.LINK_TEXT, 'Sign In')
 
+    # Request a new locator from devs
+    user_dropdown = Locator(By.CSS_SELECTOR, '.nav-profile-name')
     user_dropdown_profile = Locator(By.LINK_TEXT, 'My Profile')
     user_dropdown_support = Locator(By.LINK_TEXT, 'OSF Support')
     user_dropdown_settings = Locator(By.LINK_TEXT, 'Settings')
@@ -101,20 +96,12 @@ class PreprintsNavbar(EmberNavbar):
 
 
 class RegistriesNavbar(EmberNavbar):
-    home_link = Locator(
-        By.CSS_SELECTOR, 'ul._ServiceDropdownMenu_nar5mu > li:nth-child(1) > a'
-    )
-    preprints_link = Locator(
-        By.CSS_SELECTOR, 'ul._ServiceDropdownMenu_nar5mu > li:nth-child(2) > a'
-    )
-    registries_link = Locator(
-        By.CSS_SELECTOR, 'ul._ServiceDropdownMenu_nar5mu > li:nth-child(3) > a'
-    )
-    meetings_link = Locator(
-        By.CSS_SELECTOR, 'ul._ServiceDropdownMenu_nar5mu > li:nth-child(4) > a'
-    )
+    home_link = Locator(By.CSS_SELECTOR, 'a[data-analytics-name="HOME"]')
+    preprints_link = Locator(By.CSS_SELECTOR, 'a[data-analytics-name="PREPRINTS"]')
+    registries_link = Locator(By.CSS_SELECTOR, 'a[data-analytics-name="REGISTRIES"]')
+    meetings_link = Locator(By.CSS_SELECTOR, 'a[data-analytics-name="MEETINGS"]')
     institutions_link = Locator(
-        By.CSS_SELECTOR, 'ul._ServiceDropdownMenu_nar5mu > li:nth-child(5) > a'
+        By.CSS_SELECTOR, 'a[data-analytics-name="INSTITUTIONS"]'
     )
 
     help_link = Locator(By.CSS_SELECTOR, 'a[data-test-help]')
@@ -124,15 +111,6 @@ class RegistriesNavbar(EmberNavbar):
 
     # For Registries Only -> This clicks the gravatar image. (Same effect)
     user_dropdown = Locator(By.CSS_SELECTOR, 'img[data-test-gravatar]')
-    user_dropdown_profile = Locator(
-        By.CSS_SELECTOR, 'ul.dropdown-menu-right > li:nth-child(1) > a'
-    )
-    user_dropdown_support = Locator(
-        By.CSS_SELECTOR, 'ul.dropdown-menu-right > li:nth-child(2) > a'
-    )
-    user_dropdown_settings = Locator(
-        By.CSS_SELECTOR, 'a[data-analytics-name="Settings"]'
-    )
 
     add_new_link = Locator(
         By.CSS_SELECTOR, 'a[data-test-add-new-button][href="/registries/osf/new"]'

@@ -27,8 +27,9 @@ class BaseDashboardPage(OSFBasePage):
 class DashboardPage(BaseDashboardPage):
     url = settings.OSF_HOME + '/dashboard/'
 
+    # Request a new locator from devs
     identity = Locator(
-        By.CSS_SELECTOR, '._institutions-panel_1b28t4', settings.LONG_TIMEOUT
+        By.CSS_SELECTOR, 'div[data-analytics-scope="Dashboard"]', settings.LONG_TIMEOUT
     )
     create_project_button = Locator(
         By.CSS_SELECTOR,
