@@ -316,8 +316,11 @@ class FilesPage(GuidBasePage):
 
     identity = Locator(By.CSS_SELECTOR, '[data-test-file-search]')
     session = osf_api.get_default_session()
+    alert_info_message = Locator(By.CSS_SELECTOR, 'div._Banner_1acc8u > p')
+    leave_vol_button = Locator(By.CSS_SELECTOR, '[data-test-view-normally]')
     file_rows = GroupLocator(By.CSS_SELECTOR, '[data-test-file-list-item]')
     loading_indicator = Locator(By.CSS_SELECTOR, '.ball-pulse')
+    add_file_folder_button = Locator(By.CSS_SELECTOR, '[data-test-add-new-trigger]')
     file_selected_text = Locator(By.CSS_SELECTOR, '[data-test-file-selected-count]')
     file_list_move_button = Locator(By.CSS_SELECTOR, '[data-test-bulk-move-trigger]')
     file_list_copy_button = Locator(By.CSS_SELECTOR, '[data-test-bulk-copy-trigger]')
