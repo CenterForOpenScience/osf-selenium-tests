@@ -1,4 +1,5 @@
 import re
+from urllib.parse import urljoin
 
 import pytest
 from selenium.webdriver.common.by import By
@@ -409,9 +410,8 @@ class TestProjectVOLs:
         vol_key = osf_api.create_project_view_only_link(session, project_with_file.id)
         # Create the VOL URL for the Project and use the link to navigate to the Project
         # Overview page
-        vol_url = (
-            settings.OSF_HOME + '/' + project_with_file.id + '/?view_only=' + vol_key
-        )
+        url_addition = '{}/?view_only={}'.format(project_with_file.id, vol_key)
+        vol_url = urljoin(settings.OSF_HOME, url_addition)
         driver.get(vol_url)
         project_page = ProjectPage(driver, verify=True)
         project_page.loading_indicator.here_then_gone()
@@ -454,9 +454,8 @@ class TestProjectVOLs:
         )
         # Create the AVOL URL for the Project and use the link to navigate to the Project
         # Overview page
-        avol_url = (
-            settings.OSF_HOME + '/' + project_with_file.id + '/?view_only=' + avol_key
-        )
+        url_addition = '{}/?view_only={}'.format(project_with_file.id, avol_key)
+        avol_url = urljoin(settings.OSF_HOME, url_addition)
         driver.get(avol_url)
         project_page = ProjectPage(driver, verify=True)
         project_page.loading_indicator.here_then_gone()
