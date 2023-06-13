@@ -267,18 +267,20 @@ class ForksPage(GuidBasePage):
     base_url = settings.OSF_HOME + '/{guid}/forks/'
 
     identity = Locator(By.CSS_SELECTOR, '._Forks_1xlord')
-    new_fork_button = Locator(By.CSS_SELECTOR, '._Forks__new-fork_1xlord .btn-success')
-    create_fork_modal_button = Locator(By.CSS_SELECTOR, '.modal-footer .btn-info')
-    cancel_modal_button = Locator(By.CSS_SELECTOR, '.modal-footer .btn-default')
+    new_fork_button = Locator(By.CSS_SELECTOR, '[data-test-new-fork-button]')
+    create_fork_modal_button = Locator(
+        By.CSS_SELECTOR, '[data-test-confirm-create-fork]'
+    )
+    cancel_modal_button = Locator(By.CSS_SELECTOR, '[data-test-cancel-create-fork]')
     info_toast = Locator(By.CSS_SELECTOR, '.toast-info')
     fork_link = Locator(By.CSS_SELECTOR, 'a[data-analytics-name="Title"]')
-    fork_authors = Locator(By.CSS_SELECTOR, 'div[class="_NodeCard__authors_1i3kzz"]')
+    fork_authors = Locator(By.CSS_SELECTOR, '[data-test-contributor-name]')
     placeholder_text = Locator(
         By.CSS_SELECTOR, 'div[class="_Forks__placeholder_1xlord"]'
     )
 
     # Group Locators
-    listed_forks = GroupLocator(By.CSS_SELECTOR, '.list-group-item')
+    listed_forks = GroupLocator(By.CSS_SELECTOR, '[data-test-node-card]')
 
 
 class FilesPage(GuidBasePage):
