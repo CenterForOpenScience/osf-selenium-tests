@@ -332,7 +332,7 @@ class RegistrationsPage(GuidBasePage):
     base_url = settings.OSF_HOME + '/{guid}/registrations/'
 
     identity = Locator(By.CSS_SELECTOR, '[data-test-registrations-container]')
-    registrations_tab = Locator(By.CSS_SELECTOR, 'ul._TabList_ojvago > li')
+    registrations_tab = Locator(By.CSS_SELECTOR, 'ul._tab-list_ojvago > li')
     draft_registrations_tab = Locator(By.CSS_SELECTOR, '[data-test-drafts-tab]')
     registration_card = Locator(By.CSS_SELECTOR, '[data-test-node-card]')
     draft_registration_card = Locator(
@@ -340,27 +340,27 @@ class RegistrationsPage(GuidBasePage):
     )
     no_registrations_message_1 = Locator(
         By.CSS_SELECTOR,
-        'div._RegistrationsPane_ojvago > div > div > div > div > p:nth-child(1)',
+        'div[data-test-registrations-pane] > div > div > div > div > p:nth-child(1)',
     )
     no_registrations_message_2 = Locator(
         By.CSS_SELECTOR,
-        'div._RegistrationsPane_ojvago > div > div > div > div > p:nth-child(2)',
+        'div[data-test-registrations-pane] > div > div > div > div > p:nth-child(2)',
     )
     no_registrations_message_3 = Locator(
         By.CSS_SELECTOR,
-        'div._RegistrationsPane_ojvago > div > div > div > div > p:nth-child(3)',
+        'div[data-test-registrations-pane] > div > div > div > div > p:nth-child(3)',
     )
     no_draft_registrations_message_1 = Locator(
         By.CSS_SELECTOR,
-        'div._RegistrationsPane_ojvago > div > div > div > p:nth-child(1)',
+        'div[data-test-draft-registrations-pane] > div > div > div > p:nth-child(1)',
     )
     no_draft_registrations_message_2 = Locator(
         By.CSS_SELECTOR,
-        'div._RegistrationsPane_ojvago > div > div > div > p:nth-child(2)',
+        'div[data-test-draft-registrations-pane] > div > div > div > p:nth-child(2)',
     )
     no_draft_registrations_message_3 = Locator(
         By.CSS_SELECTOR,
-        'div._RegistrationsPane_ojvago > div > div > div > p:nth-child(3)',
+        'div[data-test-draft-registrations-pane] > div > div > div > p:nth-child(3)',
     )
     here_support_link = Locator(By.LINK_TEXT, 'here')
     new_registration_button = Locator(
