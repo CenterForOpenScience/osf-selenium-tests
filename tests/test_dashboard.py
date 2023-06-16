@@ -9,9 +9,11 @@ import markers
 import settings
 from api import osf_api
 from pages.dashboard import DashboardPage
+from pages.institutions import InstitutionsLandingPage
 from pages.meetings import MeetingsPage
 from pages.preprints import PreprintLandingPage
 from pages.project import ProjectPage
+from pages.registries import RegistriesLandingPage
 
 
 @pytest.fixture()
@@ -72,12 +74,39 @@ class TestDashboardPage:
 
     @markers.smoke_test
     @markers.core_functionality
-    def test_institution_logos(self, dashboard_page, session):
-        api_institution_names = osf_api.get_all_institutions(session)
-        page_institutions = dashboard_page.get_institutions()
-        assert page_institutions, 'Institution logos missing.'
-        page_institution_names = [i.get_property('name') for i in page_institutions]
-        assert set(page_institution_names) == set(api_institution_names)
+    def test_collections_link(self, driver, dashboard_page):
+        dashboard_page.collections_link.click()
+        # Link opens COS Collections page in new tab, so wait for the second tab to open
+        # and switch focus to it.
+        WebDriverWait(driver, 3).until(EC.number_of_windows_to_be(2))
+        driver.switch_to.window(driver.window_handles[1])
+        WebDriverWait(driver, 3).until(
+            EC.visibility_of_element_located((By.CLASS_NAME, 'hs-menu-wrapper'))
+        )
+        assert driver.current_url == 'https://www.cos.io/products/osf-collections'
+        # Close the second tab that was opened. We do not want subsequent tests to use
+        # the second tab.
+        driver.close()
+        # Switch focus back to the first tab
+        driver.switch_to.window(driver.window_handles[0])
+
+    @markers.smoke_test
+    @markers.core_functionality
+    def test_registries_link(self, driver, dashboard_page):
+        dashboard_page.registries_link.click()
+        RegistriesLandingPage(driver, verify=True)
+
+    @markers.smoke_test
+    @markers.core_functionality
+    def test_institutions_link(self, driver, dashboard_page):
+        dashboard_page.institutions_link.click()
+        InstitutionsLandingPage(driver, verify=True)
+
+    @markers.smoke_test
+    @markers.core_functionality
+    def test_first_preprints_link(self, driver, dashboard_page):
+        dashboard_page.preprints_link.click()
+        PreprintLandingPage(driver, verify=True)
 
     # There is some setup involved (not a waffle flag) with getting projects to display in the New and noteworthy
     # section. Currently this only works in the Stage 1 and Stage 3 environments.

@@ -96,16 +96,17 @@ class TestMeetingDetailPage:
 
         assert meeting_detail_page.entry_download_button.present()
         entry_title = meeting_detail_page.first_entry_link.text
-        # Need to scroll down since the first entry link is obscured by the Dev mode warning in staging environments
-        # and need to use second project entry to scroll to since scrolling to first entry sometimes still leaves it
-        # partially obscured in some environments (stage 1).
+        # Need to scroll down since the first entry link is obscured by the Dev mode
+        # warning in staging environments and need to use second project entry to scroll
+        # to since scrolling to first entry sometimes still leaves it  partially obscured
+        # in some environments (stage 1).
         WebDriverWait(driver, 5).until(
             EC.element_to_be_clickable(
-                (By.CSS_SELECTOR, 'li.list-group-item:nth-child(2)')
+                (By.CSS_SELECTOR, 'li._list-group-item_8wsr4d:nth-child(2)')
             )
         )
         second_entry = driver.find_element_by_css_selector(
-            'li.list-group-item:nth-child(2) > div:nth-child(2)'
+            'li._list-group-item_8wsr4d:nth-child(2) > div:nth-child(2)'
         )
         meeting_detail_page.scroll_into_view(second_entry)
         meeting_detail_page.first_entry_link.click()

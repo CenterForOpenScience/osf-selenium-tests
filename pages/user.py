@@ -97,13 +97,15 @@ class AccountSettingsPage(BaseUserSettingsPage):
         By.CSS_SELECTOR, 'button[data-test-update-password-button]'
     )
     old_password_error_message = Locator(
-        By.CSS_SELECTOR, 'div[data-test-current-password] > div > div.help-block'
+        By.CSS_SELECTOR,
+        'div[data-test-current-password] > div > div[data-test-help-block]',
     )
     new_password_error_message = Locator(
-        By.CSS_SELECTOR, 'div[data-test-new-password] > div > div.help-block'
+        By.CSS_SELECTOR, 'div[data-test-new-password] > div > div[data-test-help-block]'
     )
     confirm_password_error_message = Locator(
-        By.CSS_SELECTOR, 'div[data-test-confirm-password] > div > div.help-block'
+        By.CSS_SELECTOR,
+        'div[data-test-confirm-password] > div > div[data-test-help-block]',
     )
     configure_2fa_button = Locator(
         By.CSS_SELECTOR, 'button[data-test-two-factor-enable-button]'
@@ -117,7 +119,7 @@ class AccountSettingsPage(BaseUserSettingsPage):
     )
     pending_deactivation_message = Locator(
         By.CSS_SELECTOR,
-        'div[data-test-deactivation-panel] > div > div.panel-body > p:nth-child(3) > strong',
+        'div[data-test-deactivation-panel] > div > div._panel-body_1lht4i > p:nth-child(3) > strong',
     )
     undo_deactivation_request_button = Locator(
         By.CSS_SELECTOR, 'button[data-analytics-name="Undo deactivation request"]'
