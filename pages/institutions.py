@@ -65,11 +65,11 @@ class InstitutionAdminDashboardPage(BaseInstitutionPage):
     )
     total_user_count = Locator(
         By.CSS_SELECTOR,
-        'div.ember-view._panel_1dj7yu._sso-users-connected_1w5vdt > div > div._panel-body_1lht4i > h3',
+        'div.ember-view._panel_1dj7yu._sso-users-connected_1w5vdt > div > div._panel-body_1lht4i > div > h3',
     )
     total_project_count = Locator(
         By.CSS_SELECTOR,
-        'div.ember-view._panel_1dj7yu._projects_1w5vdt > div > div._panel-body_1lht4i > div > h3',
+        'div.ember-view._panel_1dj7yu._projects_1w5vdt > div > div._panel-body_1lht4i > div > div > h3',
     )
     public_project_count = Locator(
         By.CSS_SELECTOR, 'div._projects-count_1ky9tx > span:nth-child(1) > strong'
