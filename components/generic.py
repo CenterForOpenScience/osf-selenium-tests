@@ -17,7 +17,7 @@ class SignUpForm(BaseElement):
     terms_of_service_checkbox = Locator(By.NAME, 'acceptedTermsOfService')
     sign_up_button = Locator(By.CSS_SELECTOR, '[data-test-sign-up-button]')
     registration_success = Locator(
-        By.CSS_SELECTOR, '.ext-success', settings.LONG_TIMEOUT
+        By.CSS_SELECTOR, '[data-test-help-block]', settings.LONG_TIMEOUT
     )
 
     def click_recaptcha(self):

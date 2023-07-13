@@ -30,10 +30,10 @@ class MeetingsPage(BaseMeetingsPage):
     upload_text = Locator(By.CSS_SELECTOR, 'div[data-test-upload-panel-text]')
     top_meeting_link = Locator(
         By.CSS_SELECTOR,
-        'li.list-group-item:nth-child(2) > div:nth-child(1) > a:nth-child(1)',
+        'div[data-test-meetings-list-item-name] > a',
     )
     filter_input = Locator(
-        By.CSS_SELECTOR, 'input[class="ember-text-field ember-view"]'
+        By.CSS_SELECTOR, 'div[data-test-meetings-list-search] > div > input'
     )
     sort_caret_name_asc = Locator(
         By.CSS_SELECTOR, 'button[data-test-ascending-sort="name"]'
@@ -60,11 +60,11 @@ class MeetingDetailPage(BaseMeetingsPage):
     meeting_title = Locator(By.CSS_SELECTOR, 'h1[data-test-meeting-name]')
     entry_download_button = Locator(
         By.CSS_SELECTOR,
-        'li.list-group-item:nth-child(2) > div:nth-child(5) > button:nth-child(1)',
+        'div[data-test-submissions-list-item-download] > button',
     )
     first_entry_link = Locator(
         By.CSS_SELECTOR,
-        'li.list-group-item:nth-child(2) > div:nth-child(1) > a:nth-child(1)',
+        'div[data-test-submissions-list-item-title] > a',
     )
     title = Locator(By.CSS_SELECTOR, '#nodeTitleEditable', settings.LONG_TIMEOUT)
     filter_input = Locator(By.CSS_SELECTOR, 'input[placeholder="Search"]')

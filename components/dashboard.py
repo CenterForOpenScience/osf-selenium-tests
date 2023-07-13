@@ -12,7 +12,7 @@ from base.locators import (
 
 class EmberCreateProjectModal(BaseElement):
 
-    modal = Locator(By.CLASS_NAME, 'modal-dialog')
+    modal = Locator(By.CSS_SELECTOR, '[data-test-dialog]')
     create_project_button = Locator(
         By.CSS_SELECTOR, '[data-test-create-project-submit]'
     )
@@ -37,9 +37,9 @@ class EmberCreateProjectModal(BaseElement):
 class EmberProjectCreatedModal(BaseElement):
 
     go_to_project_href_link = Locator(
-        By.CSS_SELECTOR, '.modal-dialog a', settings.LONG_TIMEOUT
+        By.CSS_SELECTOR, '[data-test-go-to-new]', settings.LONG_TIMEOUT
     )
-    keep_working_here_button = Locator(By.CSS_SELECTOR, 'button.btn-default')
+    keep_working_here_button = Locator(By.CSS_SELECTOR, '[data-test-stay-here]')
 
 
 class EmberProjectList(BaseElement):
@@ -48,19 +48,19 @@ class EmberProjectList(BaseElement):
     top_project_link = Locator(By.CLASS_NAME, '_DashboardItem_17nn6d')
     sort_title_asc_button = Locator(
         By.CSS_SELECTOR,
-        '._quick-search-col_1b28t4 ._SortButton_1ifm79 [title~="ascending"]',
+        'div._table-header-container_1b28t4 > div:nth-child(1) ._SortButton_1ifm79 [title~="ascending"]',
     )
     sort_title_dsc_button = Locator(
         By.CSS_SELECTOR,
-        '._quick-search-col_1b28t4 ._SortButton_1ifm79 [title~="descending"]',
+        'div._table-header-container_1b28t4 > div:nth-child(1) ._SortButton_1ifm79 [title~="descending"]',
     )
     sort_date_asc_button = Locator(
         By.CSS_SELECTOR,
-        '.col-md-3 ._quick-search-col_1b28t4 ._SortButton_1ifm79 [title~="ascending"]',
+        'div._table-header-container_1b28t4 > div:nth-child(3) > ._SortButton_1ifm79 > [title~="ascending"]',
     )
     sort_date_dsc_button = Locator(
         By.CSS_SELECTOR,
-        '.col-md-3 ._quick-search-col_1b28t4 ._SortButton_1ifm79 [title~="descending"]',
+        'div._table-header-container_1b28t4 > div:nth-child(3) > ._SortButton_1ifm79 > [title~="descending"]',
     )
     loading_dashboard_item = Locator(
         By.CLASS_NAME, '_loading-dashboard-item_1b28t4', settings.QUICK_TIMEOUT

@@ -59,7 +59,9 @@ class CollectionSubmitPage(BaseCollectionPage):
         By.CSS_SELECTOR, '.ember-power-select-option--search-message'
     )
     project_selector_project = Locator(By.CSS_SELECTOR, '.ember-power-select-option')
-    license_dropdown_trigger = Locator(By.CLASS_NAME, 'ember-basic-dropdown-trigger')
+    license_dropdown_trigger = Locator(
+        By.CSS_SELECTOR, '[data-test-power-select-dropdown]'
+    )
     first_license_option = Locator(
         By.CSS_SELECTOR, '.ember-power-select-options > li:nth-child(1)'
     )
@@ -71,7 +73,10 @@ class CollectionSubmitPage(BaseCollectionPage):
     project_contributors_continue = Locator(
         By.CSS_SELECTOR, '[data-test-submit-section-continue]'
     )
-    type_dropdown_trigger = Locator(By.CLASS_NAME, 'ember-basic-dropdown-trigger')
+    type_dropdown_trigger = Locator(
+        By.CLASS_NAME,
+        'ember-view.ember-basic-dropdown-trigger.ember-power-select-trigger',
+    )
     first_type_option = Locator(
         By.CSS_SELECTOR, '.ember-power-select-options > li:nth-child(1)'
     )

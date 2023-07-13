@@ -28,13 +28,17 @@ class DeletePATModal(BaseElement):
 
 
 class ConfirmDeactivationRequestModal(BaseElement):
-    cancel_button = Locator(By.CSS_SELECTOR, '[data-test-deactivation-cancel]')
-    request_button = Locator(By.CSS_SELECTOR, '[data-test-confirm-deactivation-submit]')
+    cancel_button = Locator(By.CSS_SELECTOR, 'button[data-test-deactivation-cancel]')
+    request_button = Locator(
+        By.CSS_SELECTOR, 'button[data-test-confirm-deactivation-submit]'
+    )
 
 
 class UndoDeactivationRequestModal(BaseElement):
-    cancel_button = Locator(By.CSS_SELECTOR, '[data-test-undo-warning-cancel]')
-    undo_request_button = Locator(By.CSS_SELECTOR, '[data-test-undo-warning-confirm]')
+    cancel_button = Locator(By.CSS_SELECTOR, 'button[data-test-undo-warning-cancel]')
+    undo_request_button = Locator(
+        By.CSS_SELECTOR, 'button[data-test-undo-warning-confirm]'
+    )
 
 
 class Configure2FAModal(BaseElement):
@@ -47,7 +51,9 @@ class ConfirmEmailSentModal(BaseElement):
 
 
 class ConfirmRemoveEmailModal(BaseElement):
-    deleted_email = Locator(By.CSS_SELECTOR, 'div.modal-body > p > strong')
+    deleted_email = Locator(
+        By.CSS_SELECTOR, '[data-test-delete-modal-body] > p > strong'
+    )
     delete_button = Locator(By.CSS_SELECTOR, '[data-test-confirm-delete]')
 
 

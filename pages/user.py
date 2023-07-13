@@ -97,13 +97,15 @@ class AccountSettingsPage(BaseUserSettingsPage):
         By.CSS_SELECTOR, 'button[data-test-update-password-button]'
     )
     old_password_error_message = Locator(
-        By.CSS_SELECTOR, 'div[data-test-current-password] > div > div.help-block'
+        By.CSS_SELECTOR,
+        'div[data-test-current-password] > div > div[data-test-help-block]',
     )
     new_password_error_message = Locator(
-        By.CSS_SELECTOR, 'div[data-test-new-password] > div > div.help-block'
+        By.CSS_SELECTOR, 'div[data-test-new-password] > div > div[data-test-help-block]'
     )
     confirm_password_error_message = Locator(
-        By.CSS_SELECTOR, 'div[data-test-confirm-password] > div > div.help-block'
+        By.CSS_SELECTOR,
+        'div[data-test-confirm-password] > div > div[data-test-help-block]',
     )
     configure_2fa_button = Locator(
         By.CSS_SELECTOR, 'button[data-test-two-factor-enable-button]'
@@ -117,7 +119,7 @@ class AccountSettingsPage(BaseUserSettingsPage):
     )
     pending_deactivation_message = Locator(
         By.CSS_SELECTOR,
-        'div[data-test-deactivation-panel] > div > div.panel-body > p:nth-child(3) > strong',
+        'div[data-test-deactivation-panel] > div > div._panel-body_1lht4i > p:nth-child(3) > strong',
     )
     undo_deactivation_request_button = Locator(
         By.CSS_SELECTOR, 'button[data-analytics-name="Undo deactivation request"]'
@@ -193,9 +195,9 @@ class EditDeveloperAppPage(BaseUserSettingsPage):
     base_url = settings.OSF_HOME + '/settings/applications/'
 
     identity = Locator(By.CSS_SELECTOR, '[data-test-client-id]')
-    client_id_input = Locator(By.CSS_SELECTOR, 'div[data-test-client-id] > input')
+    client_id_input = Locator(By.CSS_SELECTOR, 'div[data-test-client-id] > div > input')
     client_secret_input = Locator(
-        By.CSS_SELECTOR, 'div[data-test-client-secret] > input'
+        By.CSS_SELECTOR, 'div[data-test-client-secret] > div > input'
     )
     show_client_secret_button = Locator(
         By.CSS_SELECTOR, '[data-test-toggle-client-secret]'
@@ -290,9 +292,11 @@ class EditPersonalAccessTokenPage(BaseUserSettingsPage):
 
     identity = Locator(By.CSS_SELECTOR, 'div[data-analytics-scope="Edit"]')
     loading_indicator = Locator(By.CSS_SELECTOR, '.ball-pulse')
-    new_token_input = Locator(By.CSS_SELECTOR, 'div[data-test-new-token-value] > input')
+    new_token_input = Locator(
+        By.CSS_SELECTOR, 'div[data-test-new-token-value] > div > input'
+    )
     copy_to_clipboard_button = Locator(
-        By.CSS_SELECTOR, 'div[data-test-new-token-value] > span > button'
+        By.CSS_SELECTOR, 'div[data-test-new-token-value] > div > span > button'
     )
     back_to_list_of_tokens_link = Locator(
         By.CSS_SELECTOR, 'a[data-test-back-to-tokens]'

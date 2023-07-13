@@ -223,9 +223,11 @@ class MyProjectsPage(OSFBasePage):
 class AnalyticsPage(GuidBasePage):
     base_url = settings.OSF_HOME + '/{guid}/analytics/'
 
-    identity = Locator(By.CSS_SELECTOR, '._Counts_1mhar6', settings.LONG_TIMEOUT)
+    identity = Locator(
+        By.CSS_SELECTOR, '[data-test-analytics-page-heading]', settings.LONG_TIMEOUT
+    )
     loading_indicator = Locator(By.CSS_SELECTOR, '.ball-pulse')
-    private_project_message = Locator(By.CSS_SELECTOR, '._PrivateProject_1mhar6')
+    private_project_message = Locator(By.CSS_SELECTOR, '._private-project_1mhar6')
     disabled_chart = Locator(By.CSS_SELECTOR, '._Chart_1hff7g _Blurred_1hff7g')
 
     unique_visits_week_current_day_point = Locator(
@@ -233,28 +235,28 @@ class AnalyticsPage(GuidBasePage):
     )
     unique_visits_tooltip_value = Locator(
         By.CSS_SELECTOR,
-        'div.panel-body._ChartContainer_1hff7g > div > div > table > tbody > tr.c3-tooltip-name--count > td.value',
+        'div._ChartContainer_1hff7g._panel-body_1hff7g > div > div > table > tbody > tr.c3-tooltip-name--count > td.value',
     )
     tod_visits_tooltip_value = Locator(
         By.CSS_SELECTOR,
-        'div.container._PageContainer_1mhar6 > div:nth-child(4) > div > div:nth-child(2) > div > div.panel-body._ChartContainer_1hff7g > div > div > table > tbody > tr.c3-tooltip-name--count > td.value',
+        'div[data-test-analytics-page-heading] > div:nth-child(3) > div > div:nth-child(2) > div > div._ChartContainer_1hff7g._panel-body_1hff7g > div > div > table > tbody > tr.c3-tooltip-name--count > td.value',
     )
     most_visited_page_label = Locator(
         By.CSS_SELECTOR,
-        'div.container._PageContainer_1mhar6 > div:nth-child(4) > div > div:nth-child(4) > div > div.panel-body._ChartContainer_1hff7g > div > svg > g:nth-child(2) > g.c3-axis.c3-axis-x > g:nth-child(2) > text > tspan',
+        'div[data-test-analytics-page-heading] > div:nth-child(3) > div > div:nth-child(4) > div > div._ChartContainer_1hff7g._panel-body_1hff7g > div > svg > g:nth-child(2) > g.c3-axis.c3-axis-x > g:nth-child(2) > text > tspan',
     )
     most_visited_page_bar = Locator(
         By.CSS_SELECTOR,
-        'div.container._PageContainer_1mhar6 > div:nth-child(4) > div > div:nth-child(4) > div > div.panel-body._ChartContainer_1hff7g > div > svg > g:nth-child(2) > g.c3-chart > g.c3-chart-bars > g > g > path.c3-shape.c3-shape-0.c3-bar.c3-bar-0',
+        'div[data-test-analytics-page-heading]> div:nth-child(3) > div > div:nth-child(4) > div > div._ChartContainer_1hff7g._panel-body_1hff7g > div > svg > g:nth-child(2) > g.c3-chart > g.c3-chart-bars > g > g > path.c3-shape.c3-shape-0.c3-bar.c3-bar-0',
     )
     popular_pages_tooltip_value = Locator(
         By.CSS_SELECTOR,
-        'div.container._PageContainer_1mhar6 > div:nth-child(4) > div > div:nth-child(4) > div > div.panel-body._ChartContainer_1hff7g > div > div > table > tbody > tr.c3-tooltip-name--count > td.value',
+        'div.container._page-container_1mhar6 > div:nth-child(3) > div > div:nth-child(4) > div > div._ChartContainer_1hff7g._panel-body_1hff7g > div > div > table > tbody > tr.c3-tooltip-name--count > td.value',
     )
 
     tod_bars = GroupLocator(
         By.CSS_SELECTOR,
-        'div.container._PageContainer_1mhar6 > div:nth-child(4) > div > div:nth-child(2) > div > div.panel-body._ChartContainer_1hff7g > div > svg > g:nth-child(2) > g.c3-chart > g.c3-chart-bars > g > g > path',
+        'div[data-test-analytics-page-heading] > div:nth-child(3) > div > div:nth-child(2) > div > div._ChartContainer_1hff7g._panel-body_1hff7g > div > svg > g:nth-child(2) > g.c3-chart > g.c3-chart-bars > g > g > path',
     )
 
     def get_tod_bar_by_hour(self, hour):
@@ -267,18 +269,20 @@ class ForksPage(GuidBasePage):
     base_url = settings.OSF_HOME + '/{guid}/forks/'
 
     identity = Locator(By.CSS_SELECTOR, '._Forks_1xlord')
-    new_fork_button = Locator(By.CSS_SELECTOR, '._Forks__new-fork_1xlord .btn-success')
-    create_fork_modal_button = Locator(By.CSS_SELECTOR, '.modal-footer .btn-info')
-    cancel_modal_button = Locator(By.CSS_SELECTOR, '.modal-footer .btn-default')
+    new_fork_button = Locator(By.CSS_SELECTOR, '[data-test-new-fork-button]')
+    create_fork_modal_button = Locator(
+        By.CSS_SELECTOR, '[data-test-confirm-create-fork]'
+    )
+    cancel_modal_button = Locator(By.CSS_SELECTOR, '[data-test-cancel-create-fork]')
     info_toast = Locator(By.CSS_SELECTOR, '.toast-info')
     fork_link = Locator(By.CSS_SELECTOR, 'a[data-analytics-name="Title"]')
-    fork_authors = Locator(By.CSS_SELECTOR, 'div[class="_NodeCard__authors_1i3kzz"]')
+    fork_authors = Locator(By.CSS_SELECTOR, '[data-test-contributor-name]')
     placeholder_text = Locator(
         By.CSS_SELECTOR, 'div[class="_Forks__placeholder_1xlord"]'
     )
 
     # Group Locators
-    listed_forks = GroupLocator(By.CSS_SELECTOR, '.list-group-item')
+    listed_forks = GroupLocator(By.CSS_SELECTOR, '[data-test-node-card]')
 
 
 class FilesPage(GuidBasePage):
@@ -330,7 +334,7 @@ class RegistrationsPage(GuidBasePage):
     base_url = settings.OSF_HOME + '/{guid}/registrations/'
 
     identity = Locator(By.CSS_SELECTOR, '[data-test-registrations-container]')
-    registrations_tab = Locator(By.CSS_SELECTOR, 'ul._TabList_ojvago > li')
+    registrations_tab = Locator(By.CSS_SELECTOR, 'ul._tab-list_ojvago > li')
     draft_registrations_tab = Locator(By.CSS_SELECTOR, '[data-test-drafts-tab]')
     registration_card = Locator(By.CSS_SELECTOR, '[data-test-node-card]')
     draft_registration_card = Locator(
@@ -338,27 +342,27 @@ class RegistrationsPage(GuidBasePage):
     )
     no_registrations_message_1 = Locator(
         By.CSS_SELECTOR,
-        'div._RegistrationsPane_ojvago > div > div > div > div > p:nth-child(1)',
+        'div[data-test-registrations-pane] > div > div > div > div > div > p:nth-child(1)',
     )
     no_registrations_message_2 = Locator(
         By.CSS_SELECTOR,
-        'div._RegistrationsPane_ojvago > div > div > div > div > p:nth-child(2)',
+        'div[data-test-registrations-pane] > div > div > div > div > div > p:nth-child(2)',
     )
     no_registrations_message_3 = Locator(
         By.CSS_SELECTOR,
-        'div._RegistrationsPane_ojvago > div > div > div > div > p:nth-child(3)',
+        'div[data-test-registrations-pane] > div > div > div > div > div > p:nth-child(3)',
     )
     no_draft_registrations_message_1 = Locator(
         By.CSS_SELECTOR,
-        'div._RegistrationsPane_ojvago > div > div > div > p:nth-child(1)',
+        'div[data-test-draft-registrations-pane] > div > div > div > div > p:nth-child(1)',
     )
     no_draft_registrations_message_2 = Locator(
         By.CSS_SELECTOR,
-        'div._RegistrationsPane_ojvago > div > div > div > p:nth-child(2)',
+        'div[data-test-draft-registrations-pane] > div > div > div > div > p:nth-child(2)',
     )
     no_draft_registrations_message_3 = Locator(
         By.CSS_SELECTOR,
-        'div._RegistrationsPane_ojvago > div > div > div > p:nth-child(3)',
+        'div[data-test-draft-registrations-pane] > div > div > div > div > p:nth-child(3)',
     )
     here_support_link = Locator(By.LINK_TEXT, 'here')
     new_registration_button = Locator(

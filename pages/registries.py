@@ -62,14 +62,12 @@ class RegistriesDiscoverPage(BaseRegistriesPage):
     )
 
     # Group Locators
-    search_results = GroupLocator(
-        By.CSS_SELECTOR, '._RegistriesSearchResult__Title_1wvii8'
-    )
+    search_results = GroupLocator(By.CSS_SELECTOR, '._title_1wvii8')
 
     def get_first_non_withdrawn_registration(self):
         for result in self.search_results:
             try:
-                result.find_element_by_class_name('label-default')
+                result.find_element_by_class_name('_label_1wvii8')
             except NoSuchElementException:
                 return result.find_element_by_css_selector(
                     '[data-test-result-title-id]'
@@ -194,7 +192,7 @@ class RegistrationLinksPage(BaseSubmittedRegistrationPage):
 
 class RegistrationAnalyticsPage(BaseSubmittedRegistrationPage):
     url_addition = 'analytics'
-    identity = Locator(By.CSS_SELECTOR, '._Counts_1mhar6')
+    identity = Locator(By.CSS_SELECTOR, '[data-test-analytics-page-heading]')
 
 
 class RegistrationCommentsPage(BaseSubmittedRegistrationPage):
