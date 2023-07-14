@@ -1,5 +1,4 @@
 import pytest
-from selenium.webdriver.common.action_chains import ActionChains
 
 import markers
 from api import osf_api
@@ -131,20 +130,7 @@ class TestProjectRegistrationsPage:
         modal_schema_list.sort()
         assert api_schema_list == modal_schema_list
         # Click the Cancel button to close the modal window
-        try:
-            create_registration_modal.cancel_button.click()
-        except ValueError:
-            # In some environments there may be several schemas listed on the modal
-            # which may push the Cancel button below the visible part of the screen
-            # depending on the screen resolution. Currently this modal window does
-            # not have the ability to vertically scroll, so the scroll_into_view
-            # method will not work. There is an open ticket for the scrolling issue:
-            # ENG-3740.
-            cancel_button = driver.find_element_by_css_selector(
-                'button[data-test-new-registration-modal-cancel-button]'
-            )
-            ActionChains(driver).move_to_element(cancel_button).perform()
-            cancel_button.click()
+        create_registration_modal.cancel_button.click()
         # Verify the modal window has closed
         assert create_registration_modal.modal_window.absent()
 
@@ -160,20 +146,7 @@ class TestProjectRegistrationsPage:
         create_registration_modal.select_schema_radio_button(
             schema_name='Open-Ended Registration'
         )
-        try:
-            create_registration_modal.create_draft_button.click()
-        except ValueError:
-            # In some environments there may be several schemas listed on the modal
-            # which may push the Create draft button below the visible part of the
-            # screen depending on the screen resolution. Currently this modal window
-            # does not have the ability to vertically scroll, so the scroll_into_view
-            # method will not work. There is an open ticket for the scrolling issue:
-            # ENG-3740.
-            create_draft_button = driver.find_element_by_css_selector(
-                'button[data-test-new-registration-modal-create-draft-button]'
-            )
-            ActionChains(driver).move_to_element(create_draft_button).perform()
-            create_draft_button.click()
+        create_registration_modal.create_draft_button.click()
         # Verify that you are redirected to the Draft Registration Metadata page
         DraftRegistrationMetadataPage(driver, verify=True)
 
