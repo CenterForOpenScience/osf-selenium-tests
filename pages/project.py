@@ -163,7 +163,7 @@ def verify_log_entry(session, driver, node_id, action, **kwargs):
         log_text = 'renamed {} in {} to {} in {}'.format(
             file_name, source, renamed_file, destination
         )
-    elif 'view_only_link_added':
+    elif action == 'view_only_link_added':
         # For VOLs or AVOLs, although we are not going to verify the log entries for
         # AVOLs since they are generally pointless and don't give enough information
         # to be worthwhile to anyone. EX: 'A user created a view-only link to a project'
@@ -316,7 +316,7 @@ class FilesPage(GuidBasePage):
 
     identity = Locator(By.CSS_SELECTOR, '[data-test-file-search]')
     session = osf_api.get_default_session()
-    alert_info_message = Locator(By.CSS_SELECTOR, 'div._Banner_1acc8u > p')
+    alert_info_message = Locator(By.CSS_SELECTOR, 'div._banner_1acc8u > p')
     leave_vol_button = Locator(By.CSS_SELECTOR, '[data-test-view-normally]')
     file_rows = GroupLocator(By.CSS_SELECTOR, '[data-test-file-list-item]')
     loading_indicator = Locator(By.CSS_SELECTOR, '.ball-pulse')
