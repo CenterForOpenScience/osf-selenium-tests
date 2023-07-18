@@ -627,89 +627,30 @@ class TestFilesPage:
 
 @markers.dont_run_on_prod
 @pytest.mark.usefixtures('hide_footer_slide_in')
+@pytest.mark.parametrize('anonymous', [False, True])
 class TestProjectVOLs:
-    def test_vol_project_files_page(self, driver, session, project_with_file):
+    def test_vol_project_files_page(
+        self, driver, session, project_with_file, anonymous
+    ):
         """Test that creates a View Only Link using the OSF api and then uses that VOL
         to navigate to the Project Files page for the project. On the Files page the
         test then performs actions that are allowed for a View Only user such as
-        downloading a file.
+        downloading a file. This test uses the 'anonymous' parameter to create either
+        a regular VOL or an Anonymous View Only Link (AVOL) so that this test will run
+        two times (once for each type of VOL).
         """
         file_name = 'osf selenium test file for testing because its fake.txt'
 
-        # Create the VOL URL for the Project and use the link to navigate to the Project
-        # Overview page
-        vol_key = osf_api.create_project_view_only_link(session, project_with_file.id)
+        # Create the VOL or AVOL URL for the Project and use the link to navigate to the
+        # Project Files page
+        vol_key = osf_api.create_project_view_only_link(
+            session, project_with_file.id, anonymous=anonymous
+        )
         url_addition = '{}/files/osfstorage?view_only={}'.format(
             project_with_file.id, vol_key
         )
         vol_url = urljoin(settings.OSF_HOME, url_addition)
         driver.get(vol_url)
-        files_page = FilesPage(driver, verify=True)
-
-        # Wait for File List items to load
-        WebDriverWait(driver, 5).until(
-            EC.visibility_of_element_located(
-                (By.CSS_SELECTOR, '[data-test-file-list-item]')
-            )
-        )
-
-        # Verify that we are not logged in
-        assert files_page.is_logged_out()
-
-        # Verify VOL message at the top of the page
-        assert (
-            files_page.alert_info_message.text
-            == 'You are viewing OSF through a view-only link, which may limit the data you have permission to see.'
-        )
-
-        # Verify that the Add New File or Folder button is not available
-        assert files_page.add_file_folder_button.absent()
-
-        # Get the file row object
-        row = find_row_by_name(files_page, file_name)
-
-        # Get initial Download Count for the file (should be 0)
-        initial_download_count = int(
-            row.find_element_by_css_selector(
-                '[data-test-file-list-download-count]'
-            ).text[:2]
-        )
-        assert initial_download_count == 0
-
-        # Verify File Download Functionality
-        verify_file_download(driver, files_page, file_name)
-
-        # Verify Download Count has incremented by 1
-        row = find_row_by_name(files_page, file_name)
-        new_download_count = int(
-            row.find_element_by_css_selector(
-                '[data-test-file-list-download-count]'
-            ).text[:2]
-        )
-        assert new_download_count == initial_download_count + 1
-
-        # Click the Leave this View button and verify we are navigated to OSF Home page
-        files_page.leave_vol_button.click()
-        assert LandingPage(driver, verify=True)
-
-    def test_avol_project_files_page(self, driver, session, project_with_file):
-        """Test that creates an Anonymous View Only Link using the OSF api and then uses
-        that AVOL to navigate to the Project Files page for the project. On the Files
-        page the test then performs actions that are allowed for a View Only user such
-        as downloading a file.
-        """
-        file_name = 'osf selenium test file for testing because its fake.txt'
-
-        # Create the VOL URL for the Project and use the link to navigate to the Project
-        # Overview page
-        avol_key = osf_api.create_project_view_only_link(
-            session, project_with_file.id, anonymous=True
-        )
-        url_addition = '{}/files/osfstorage?view_only={}'.format(
-            project_with_file.id, avol_key
-        )
-        avol_url = urljoin(settings.OSF_HOME, url_addition)
-        driver.get(avol_url)
         files_page = FilesPage(driver, verify=True)
 
         # Wait for File List items to load
