@@ -44,8 +44,10 @@ class ProjectPage(GuidBasePage):
     title_edit_submit_button = Locator(By.CSS_SELECTOR, '.editable-submit')
     title_edit_cancel_button = Locator(By.CSS_SELECTOR, '.editable-cancel')
     alert_message = Locator(By.CSS_SELECTOR, '#alert-container > p')
+    alert_info_message = Locator(By.CSS_SELECTOR, 'div.subhead > div.alert.alert-info')
     parent_project_link = Locator(By.CSS_SELECTOR, 'h2.node-parent-title > a')
     description = Locator(By.ID, 'nodeDescriptionEditable')
+    contributors_list = Locator(By.CSS_SELECTOR, '#contributorsList > ol')
     make_public_link = Locator(By.LINK_TEXT, 'Make Public')
     make_private_link = Locator(By.LINK_TEXT, 'Make Private')
     loading_indicator = Locator(By.CSS_SELECTOR, '.ball-pulse')
@@ -93,10 +95,11 @@ def verify_log_entry(session, driver, node_id, action, **kwargs):
     given project node. The log entry in the OSF api is also verified.
     """
 
-    # Navigate to the Project Overview page
+    # Navigate to the Project Overview page if you are not already on it
     project_page = ProjectPage(driver, guid=node_id)
-    project_page.goto()
-    project_page.loading_indicator.here_then_gone()
+    if project_page.identity.absent():
+        project_page.goto()
+        project_page.loading_indicator.here_then_gone()
     project_title = project_page.title.text
 
     # Scroll down to the Log Widget and get the text from the first log entry
@@ -160,6 +163,13 @@ def verify_log_entry(session, driver, node_id, action, **kwargs):
         log_text = 'renamed {} in {} to {} in {}'.format(
             file_name, source, renamed_file, destination
         )
+    elif action == 'view_only_link_added':
+        # For VOLs or AVOLs, although we are not going to verify the log entries for
+        # AVOLs since they are generally pointless and don't give enough information
+        # to be worthwhile to anyone. EX: 'A user created a view-only link to a project'
+        anonymous = kwargs.get('anonymous')
+        assert log_params['anonymous_link'] == anonymous
+        log_text = 'created a view-only link to'
 
     # Verify the text displayed in the Log Widget
     assert log_text in log_item_1_text
@@ -306,8 +316,11 @@ class FilesPage(GuidBasePage):
 
     identity = Locator(By.CSS_SELECTOR, '[data-test-file-search]')
     session = osf_api.get_default_session()
+    alert_info_message = Locator(By.CSS_SELECTOR, 'div._banner_1acc8u > p')
+    leave_vol_button = Locator(By.CSS_SELECTOR, '[data-test-view-normally]')
     file_rows = GroupLocator(By.CSS_SELECTOR, '[data-test-file-list-item]')
     loading_indicator = Locator(By.CSS_SELECTOR, '.ball-pulse')
+    add_file_folder_button = Locator(By.CSS_SELECTOR, '[data-test-add-new-trigger]')
     file_selected_text = Locator(By.CSS_SELECTOR, '[data-test-file-selected-count]')
     file_list_move_button = Locator(By.CSS_SELECTOR, '[data-test-bulk-move-trigger]')
     file_list_copy_button = Locator(By.CSS_SELECTOR, '[data-test-bulk-copy-trigger]')

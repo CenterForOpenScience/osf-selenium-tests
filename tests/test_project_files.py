@@ -1,5 +1,6 @@
 import datetime
 import os
+from urllib.parse import urljoin
 
 import pytest
 from selenium.webdriver.common.by import By
@@ -10,6 +11,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 import markers
 import settings
 from api import osf_api
+from pages.landing import LandingPage
 from pages.project import (
     FilesPage,
     verify_log_entry,
@@ -40,6 +42,62 @@ def connect_addon_to_node(session, provider, node_id):
     osf_api.connect_provider_root_to_node(
         session, provider, addon_account_id, node_id=node_id
     )
+
+
+def verify_file_download(driver, files_page, file_name):
+    """Helper function to verify the file download functionality on the Project Files
+    page.
+    """
+
+    # If running on local machine, first check if the download file already exists
+    # in the Downloads folder. If so then delete the old copy before attempting to
+    # download a new one.
+    if settings.DRIVER != 'Remote':
+        file_path = os.path.expanduser('~/Downloads/' + file_name)
+        if os.path.exists(file_path):
+            os.remove(file_path)
+
+    row = find_row_by_name(files_page, file_name)
+
+    # Click the File Action menu button at the far right side of the row to show the
+    # menu options. Then click the Download option from this menu.
+    menu_button = row.find_element_by_css_selector(
+        '[data-test-file-download-share-trigger]'
+    )
+    menu_button.click()
+    download_button = row.find_element_by_css_selector('[data-test-download-button]')
+    download_button.click()
+
+    # Reload the page to allow time for the download to complete
+    files_page.reload()
+    WebDriverWait(driver, 5).until(
+        EC.visibility_of_element_located(
+            (By.CSS_SELECTOR, '[data-test-file-list-item]')
+        )
+    )
+
+    current_date = datetime.datetime.now()
+    if settings.DRIVER == 'Remote':
+        # First verify the downloaded file exists on the virtual remote machine
+        assert driver.execute_script(
+            'browserstack_executor: {"action": "fileExists", "arguments": {"fileName": "%s"}}'
+            % (file_name)
+        )
+        # Next get the file properties and then verify that the file creation date is today
+        file_props = driver.execute_script(
+            'browserstack_executor: {"action": "getFileProperties", "arguments": {"fileName": "%s"}}'
+            % (file_name)
+        )
+        file_create_date = datetime.datetime.fromtimestamp(file_props['created_time'])
+        assert file_create_date.date() == current_date.date()
+    else:
+        # First verify the downloaded file exists
+        file_path = os.path.expanduser('~/Downloads/' + file_name)
+        assert os.path.exists(file_path)
+        # Next verify the file was downloaded today
+        file_mtime = os.path.getmtime(file_path)
+        file_mod_date = datetime.datetime.fromtimestamp(file_mtime)
+        assert file_mod_date.date() == current_date.date()
 
 
 @markers.dont_run_on_prod
@@ -553,13 +611,6 @@ class TestFilesPage:
             session=session, node=node, name=file_name, provider=provider
         )
         try:
-            # If running on local machine, first check if the download file already
-            # exists in the Downloads folder. If so then delete the old copy before
-            # attempting to download a new one.
-            if settings.DRIVER != 'Remote':
-                file_path = os.path.expanduser('~/Downloads/' + file_name)
-                if os.path.exists(file_path):
-                    os.remove(file_path)
             files_page = FilesPage(driver, guid=node_id, addon_provider=provider)
             files_page.goto()
             # Wait for File List items to load
@@ -568,53 +619,85 @@ class TestFilesPage:
                     (By.CSS_SELECTOR, '[data-test-file-list-item]')
                 )
             )
-            row = find_row_by_name(files_page, new_file)
-            # Once we have found the right row we need to click the File Action menu
-            # button at the far right side of the row to show the menu options. Then we
-            # can click the Download option from this menu.
-            menu_button = row.find_element_by_css_selector(
-                '[data-test-file-download-share-trigger]'
-            )
-            menu_button.click()
-            download_button = row.find_element_by_css_selector(
-                '[data-test-download-button]'
-            )
-            download_button.click()
-            # The actual file download usually takes a second or two, so instead of
-            # using time.sleep() here we will just reload the page and wait for the
-            # list items to reappear. That should be plenty of time.
-            files_page.reload()
-            WebDriverWait(driver, 5).until(
-                EC.visibility_of_element_located(
-                    (By.CSS_SELECTOR, '[data-test-file-list-item]')
-                )
-            )
-            # Verify that the file is actually downloaded to user's machine
-            current_date = datetime.datetime.now()
-            if settings.DRIVER == 'Remote':
-                # First verify the downloaded file exists on the virtual remote machine
-                assert driver.execute_script(
-                    'browserstack_executor: {"action": "fileExists", "arguments": {"fileName": "%s"}}'
-                    % (file_name)
-                )
-                # Next get the file properties and then verify that the file creation date is today
-                file_props = driver.execute_script(
-                    'browserstack_executor: {"action": "getFileProperties", "arguments": {"fileName": "%s"}}'
-                    % (file_name)
-                )
-                file_create_date = datetime.datetime.fromtimestamp(
-                    file_props['created_time']
-                )
-                assert file_create_date.date() == current_date.date()
-            else:
-                # First verify the downloaded file exists
-                assert os.path.exists(file_path)
-                # Next verify the file was downloaded today
-                file_mtime = os.path.getmtime(file_path)
-                file_mod_date = datetime.datetime.fromtimestamp(file_mtime)
-                assert file_mod_date.date() == current_date.date()
+            # Verify File Download Functionality
+            verify_file_download(driver, files_page, new_file)
         finally:
             osf_api.delete_addon_files(session, provider, current_browser, guid=node_id)
+
+
+@markers.dont_run_on_prod
+@pytest.mark.usefixtures('hide_footer_slide_in')
+@pytest.mark.parametrize('anonymous', [False, True])
+class TestProjectVOLs:
+    def test_vol_project_files_page(
+        self, driver, session, project_with_file, anonymous
+    ):
+        """Test that creates a View Only Link using the OSF api and then uses that VOL
+        to navigate to the Project Files page for the project. On the Files page the
+        test then performs actions that are allowed for a View Only user such as
+        downloading a file. This test uses the 'anonymous' parameter to create either
+        a regular VOL or an Anonymous View Only Link (AVOL) so that this test will run
+        two times (once for each type of VOL).
+        """
+        file_name = 'osf selenium test file for testing because its fake.txt'
+
+        # Create the VOL or AVOL URL for the Project and use the link to navigate to the
+        # Project Files page
+        vol_key = osf_api.create_project_view_only_link(
+            session, project_with_file.id, anonymous=anonymous
+        )
+        url_addition = '{}/files/osfstorage?view_only={}'.format(
+            project_with_file.id, vol_key
+        )
+        vol_url = urljoin(settings.OSF_HOME, url_addition)
+        driver.get(vol_url)
+        files_page = FilesPage(driver, verify=True)
+
+        # Wait for File List items to load
+        WebDriverWait(driver, 5).until(
+            EC.visibility_of_element_located(
+                (By.CSS_SELECTOR, '[data-test-file-list-item]')
+            )
+        )
+
+        # Verify that we are not logged in
+        assert files_page.is_logged_out()
+
+        # Verify VOL message at the top of the page
+        assert (
+            files_page.alert_info_message.text
+            == 'You are viewing OSF through a view-only link, which may limit the data you have permission to see.'
+        )
+
+        # Verify that the Add New File or Folder button is not available
+        assert files_page.add_file_folder_button.absent()
+
+        # Get the file row object
+        row = find_row_by_name(files_page, file_name)
+
+        # Get initial Download Count for the file (should be 0)
+        initial_download_count = int(
+            row.find_element_by_css_selector(
+                '[data-test-file-list-download-count]'
+            ).text[:2]
+        )
+        assert initial_download_count == 0
+
+        # Verify File Download Functionality
+        verify_file_download(driver, files_page, file_name)
+
+        # Verify Download Count has incremented by 1
+        row = find_row_by_name(files_page, file_name)
+        new_download_count = int(
+            row.find_element_by_css_selector(
+                '[data-test-file-list-download-count]'
+            ).text[:2]
+        )
+        assert new_download_count == initial_download_count + 1
+
+        # Click the Leave this View button and verify we are navigated to OSF Home page
+        files_page.leave_vol_button.click()
+        assert LandingPage(driver, verify=True)
 
 
 """
