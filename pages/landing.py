@@ -40,26 +40,3 @@ class LandingPage(OSFBasePage):
     # Components
     navbar = ComponentLocator(EmberNavbar)
     sign_up_form = ComponentLocator(SignUpForm)
-
-
-class RegisteredReportsLandingPage(OSFBasePage):
-    url = settings.OSF_HOME + '/rr/'
-
-    identity = Locator(By.CSS_SELECTOR, '.reg-landing-page-logo')
-
-    create_registered_report_button = Locator(
-        By.CSS_SELECTOR,
-        'body > div.watermarked > div > div > div.row.hidden-xs > table > tbody > tr:nth-child(1) > td > a > div',
-    )
-    cos_rr_link = Locator(
-        By.CSS_SELECTOR,
-        'body > div.watermarked > div > div > div:nth-child(8) > a:nth-child(1)',
-    )
-    osf_registries_link = Locator(
-        By.CSS_SELECTOR,
-        'body > div.watermarked > div > div > div:nth-child(8) > a:nth-child(2)',
-    )
-    cos_prereg_link = Locator(
-        By.CSS_SELECTOR,
-        'body > div.watermarked > div > div > div:nth-child(8) > a:nth-child(3)',
-    )
