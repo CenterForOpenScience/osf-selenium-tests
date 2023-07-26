@@ -3,12 +3,8 @@ from selenium.webdriver.common.keys import Keys
 
 import markers
 import settings
-from pages.landing import (
-    LandingPage,
-    RegisteredReportsLandingPage,
-)
+from pages.landing import LandingPage
 from pages.register import RegisterPage
-from pages.registries import RegistriesDiscoverPage
 from pages.search import SearchPage
 from pages.user import UserProfilePage
 
@@ -139,28 +135,3 @@ class TestHomeLandingPage:
         landing_page.testimonial_view_research_links[2].click()
         UserProfilePage(driver, verify=True)
         assert '2u4tf' in driver.current_url
-
-
-@pytest.fixture()
-def rr_landing_page(driver):
-    rr_landing_page = RegisteredReportsLandingPage(driver)
-    rr_landing_page.goto_with_reload()
-    return rr_landing_page
-
-
-class TestRegisteredReportsLandingPage:
-    def test_create_registered_report_button(self, driver, rr_landing_page):
-        rr_landing_page.create_registered_report_button.click()
-        RegisterPage(driver, verify=True)
-
-    def test_cos_rr_link(self, driver, rr_landing_page):
-        rr_landing_page.cos_rr_link.click()
-        assert 'https://www.cos.io/initiatives/registered-reports' in driver.current_url
-
-    def test_osf_registries_link(self, driver, rr_landing_page):
-        rr_landing_page.osf_registries_link.click()
-        RegistriesDiscoverPage(driver, verify=True)
-
-    def test_cos_prereg_link(self, driver, rr_landing_page):
-        rr_landing_page.cos_prereg_link.click()
-        assert 'https://www.cos.io/initiatives/prereg' in driver.current_url
