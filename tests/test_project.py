@@ -252,8 +252,29 @@ class TestProjectComponents:
                 == 'This component was added by an automated selenium test.'
             )
 
+            # Verify log entries for creating component and its institution affiliation
+            verify_log_entry(
+                session,
+                driver,
+                component_guid,
+                'project_created',
+                node_guid=component_guid,
+                node_title='Selenium Component',
+            )
+            institution_names = osf_api.get_user_institutions(session)
+            verify_log_entry(
+                session,
+                driver,
+                component_guid,
+                'affiliated_institution_added',
+                node_guid=component_guid,
+                node_title='Selenium Component',
+                institution_name=institution_names[0],
+            )
+
             # Click the link to the parent project at the top of the page to navigate
             # back to the original parent Project Overview page.
+            component_page.scroll_into_view(component_page.parent_project_link.element)
             component_page.parent_project_link.click()
             assert project_page
 

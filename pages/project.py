@@ -190,6 +190,27 @@ def verify_log_entry(session, driver, node_id, action, **kwargs):
         # override project_title since the log entry has title of the original project
         # node not the new forked node
         project_title = orig_title
+    elif action == 'affiliated_institution_added':
+        # For when a Project is affiliated with an institution. Typically this happens
+        # upon creation of the node.
+        node_guid = kwargs.get('node_guid')
+        node_title = kwargs.get('node_title')
+        institution_name = kwargs.get('institution_name')
+        assert log_params['params_node']['id'] == node_guid
+        assert log_params['params_node']['title'] == node_title
+        assert log_params['institution']['name'] == institution_name
+        log_text = 'added {} affiliation to {}'.format(institution_name, node_title)
+    elif action == 'project_created':
+        # For the creation of a new Project or Component node
+        node_guid = kwargs.get('node_guid')
+        node_title = kwargs.get('node_title')
+        assert log_params['params_node']['id'] == node_guid
+        assert log_params['params_node']['title'] == node_title
+        log_text = 'created {}'.format(node_title)
+        # Need to override the log item text with the 2nd log item row since the first
+        # log item row is always the add affiliation log entry whenever we create a new
+        # project or node in OSF.
+        log_item_1_text = project_page.log_widget.log_items[1].text
 
     # Verify the text displayed in the Log Widget
     assert log_text in log_item_1_text
