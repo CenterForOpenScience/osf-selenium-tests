@@ -39,10 +39,11 @@ def project_page_with_file(driver, project_with_file):
 class TestProjectDetailPage:
     @markers.smoke_test
     @markers.core_functionality
-    def test_change_title(self, project_page, fake):
+    def test_change_title(self, session, driver, project_page, fake):
 
         new_title = fake.sentence(nb_words=4)
-        assert project_page.title.text != new_title
+        orig_title = project_page.title.text
+        assert orig_title != new_title
         # In some cases (especially with Chrome) the test steps are executed faster than the web page is
         # really ready for them.  In this particular case the test clicks the title of the project which
         # is supposed to then produce an input box in which you can change the title.  If the click is
@@ -55,6 +56,15 @@ class TestProjectDetailPage:
         project_page.title_edit_submit_button.click()
         project_page.verify()  # Wait for the page to reload
         assert project_page.title.text == new_title
+        # Verify log entry for changing project title
+        verify_log_entry(
+            session,
+            driver,
+            project_page.guid,
+            'edit_title',
+            orig_title=orig_title,
+            new_title=new_title,
+        )
 
     @markers.smoke_test
     @markers.core_functionality
