@@ -379,6 +379,16 @@ class TestProjectComponents:
                 == 'Component has been successfully deleted.'
             )
             assert len(project_page.components) == 0
+
+            # Verify log entry for deleting the component
+            verify_log_entry(
+                session,
+                driver,
+                default_project.id,
+                'node_removed',
+                node_guid=component.id,
+                node_title='API Created Component',
+            )
         finally:
             # We must make sure that in the event of an error that we delete the
             # component so that the dummy project can also be deleted.

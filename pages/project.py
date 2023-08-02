@@ -211,6 +211,16 @@ def verify_log_entry(session, driver, node_id, action, **kwargs):
         # log item row is always the add affiliation log entry whenever we create a new
         # project or node in OSF.
         log_item_1_text = project_page.log_widget.log_items[1].text
+    elif action == 'node_removed':
+        # For the deletion of a Component node from a Project
+        node_guid = kwargs.get('node_guid')
+        node_title = kwargs.get('node_title')
+        assert log_params['params_node']['id'] == node_guid
+        assert log_params['params_node']['title'] == node_title
+        log_text = 'removed {}'.format(node_title)
+        # override project_title since the log entry has title of the component node
+        # not the parent project
+        project_title = node_title
 
     # Verify the text displayed in the Log Widget
     assert log_text in log_item_1_text
