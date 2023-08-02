@@ -180,6 +180,16 @@ def verify_log_entry(session, driver, node_id, action, **kwargs):
     elif action == 'made_public':
         # For making a Project node Public
         log_text = 'made {} public'.format(project_title)
+    elif action == 'node_forked':
+        # For a node that has been Forked from another Project node
+        orig_guid = kwargs.get('orig_guid')
+        orig_title = kwargs.get('orig_title')
+        assert log_params['params_node']['id'] == orig_guid
+        assert log_params['params_node']['title'] == orig_title
+        log_text = 'created fork from {}'.format(orig_title)
+        # override project_title since the log entry has title of the original project
+        # node not the new forked node
+        project_title = orig_title
 
     # Verify the text displayed in the Log Widget
     assert log_text in log_item_1_text
@@ -289,6 +299,7 @@ class ForksPage(GuidBasePage):
     base_url = settings.OSF_HOME + '/{guid}/forks/'
 
     identity = Locator(By.CSS_SELECTOR, '._Forks_1xlord')
+    project_title = Locator(By.CSS_SELECTOR, 'div.ember-view._Hero_widcfp > h1')
     new_fork_button = Locator(By.CSS_SELECTOR, '[data-test-new-fork-button]')
     create_fork_modal_button = Locator(
         By.CSS_SELECTOR, '[data-test-confirm-create-fork]'

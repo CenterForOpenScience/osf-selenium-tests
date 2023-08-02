@@ -174,8 +174,24 @@ class TestForksPage:
         forks_page.fork_authors.present()
         assert len(forks_page.listed_forks) == 1
 
-        # Clean-up leftover fork
+        orig_title = forks_page.project_title.text
         fork_guid = forks_page.fork_link.get_attribute('data-test-node-title')
+
+        # Click the Title link on the Fork Card to navigate to the new Forked Project
+        forks_page.fork_link.click()
+        assert ProjectPage(driver, verify=True)
+
+        # Verify log entry for the new Forked Project
+        verify_log_entry(
+            session,
+            driver,
+            fork_guid,
+            'node_forked',
+            orig_guid=forks_page.guid,
+            orig_title=orig_title,
+        )
+
+        # Clean-up leftover fork
         osf_api.delete_project(session, fork_guid, None)
 
 
