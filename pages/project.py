@@ -177,6 +177,9 @@ def verify_log_entry(session, driver, node_id, action, **kwargs):
         assert log_params['title_original'] == orig_title
         assert log_params['title_new'] == new_title
         log_text = 'changed the title from {} to {}'.format(orig_title, new_title)
+    elif action == 'made_public':
+        # For making a Project node Public
+        log_text = 'made {} public'.format(project_title)
 
     # Verify the text displayed in the Log Widget
     assert log_text in log_item_1_text

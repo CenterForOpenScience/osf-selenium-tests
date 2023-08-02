@@ -75,7 +75,7 @@ class TestProjectDetailPage:
     @markers.dont_run_on_prod
     @markers.dont_run_on_preferred_node
     @markers.core_functionality
-    def test_make_public(self, driver, project_page):
+    def test_make_public(self, session, driver, project_page):
         # Set project to public
         WebDriverWait(driver, 5).until(
             EC.element_to_be_clickable(
@@ -94,6 +94,9 @@ class TestProjectDetailPage:
         project_page.make_public_link.click()
         project_page.confirm_privacy_change_modal.confirm_link.click()
         assert project_page.make_private_link.present()
+
+        # Verify log entry for making the project public
+        verify_log_entry(session, driver, project_page.guid, 'made_public')
 
         # Confirm logged out user can now see project
         logout(driver)
