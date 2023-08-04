@@ -39,10 +39,11 @@ def project_page_with_file(driver, project_with_file):
 class TestProjectDetailPage:
     @markers.smoke_test
     @markers.core_functionality
-    def test_change_title(self, project_page, fake):
+    def test_change_title(self, session, driver, project_page, fake):
 
         new_title = fake.sentence(nb_words=4)
-        assert project_page.title.text != new_title
+        orig_title = project_page.title.text
+        assert orig_title != new_title
         # In some cases (especially with Chrome) the test steps are executed faster than the web page is
         # really ready for them.  In this particular case the test clicks the title of the project which
         # is supposed to then produce an input box in which you can change the title.  If the click is
@@ -55,6 +56,15 @@ class TestProjectDetailPage:
         project_page.title_edit_submit_button.click()
         project_page.verify()  # Wait for the page to reload
         assert project_page.title.text == new_title
+        # Verify log entry for changing project title
+        verify_log_entry(
+            session,
+            driver,
+            project_page.guid,
+            'edit_title',
+            orig_title=orig_title,
+            new_title=new_title,
+        )
 
     @markers.smoke_test
     @markers.core_functionality
@@ -65,7 +75,7 @@ class TestProjectDetailPage:
     @markers.dont_run_on_prod
     @markers.dont_run_on_preferred_node
     @markers.core_functionality
-    def test_make_public(self, driver, project_page):
+    def test_make_public(self, session, driver, project_page):
         # Set project to public
         WebDriverWait(driver, 5).until(
             EC.element_to_be_clickable(
@@ -84,6 +94,9 @@ class TestProjectDetailPage:
         project_page.make_public_link.click()
         project_page.confirm_privacy_change_modal.confirm_link.click()
         assert project_page.make_private_link.present()
+
+        # Verify log entry for making the project public
+        verify_log_entry(session, driver, project_page.guid, 'made_public')
 
         # Confirm logged out user can now see project
         logout(driver)
@@ -161,8 +174,24 @@ class TestForksPage:
         forks_page.fork_authors.present()
         assert len(forks_page.listed_forks) == 1
 
-        # Clean-up leftover fork
+        orig_title = forks_page.project_title.text
         fork_guid = forks_page.fork_link.get_attribute('data-test-node-title')
+
+        # Click the Title link on the Fork Card to navigate to the new Forked Project
+        forks_page.fork_link.click()
+        assert ProjectPage(driver, verify=True)
+
+        # Verify log entry for the new Forked Project
+        verify_log_entry(
+            session,
+            driver,
+            fork_guid,
+            'node_forked',
+            orig_guid=forks_page.guid,
+            orig_title=orig_title,
+        )
+
+        # Clean-up leftover fork
         osf_api.delete_project(session, fork_guid, None)
 
 
@@ -223,8 +252,29 @@ class TestProjectComponents:
                 == 'This component was added by an automated selenium test.'
             )
 
+            # Verify log entries for creating component and its institution affiliation
+            verify_log_entry(
+                session,
+                driver,
+                component_guid,
+                'project_created',
+                node_guid=component_guid,
+                node_title='Selenium Component',
+            )
+            institution_names = osf_api.get_user_institutions(session)
+            verify_log_entry(
+                session,
+                driver,
+                component_guid,
+                'affiliated_institution_added',
+                node_guid=component_guid,
+                node_title='Selenium Component',
+                institution_name=institution_names[0],
+            )
+
             # Click the link to the parent project at the top of the page to navigate
             # back to the original parent Project Overview page.
+            component_page.scroll_into_view(component_page.parent_project_link.element)
             component_page.parent_project_link.click()
             assert project_page
 
@@ -329,6 +379,16 @@ class TestProjectComponents:
                 == 'Component has been successfully deleted.'
             )
             assert len(project_page.components) == 0
+
+            # Verify log entry for deleting the component
+            verify_log_entry(
+                session,
+                driver,
+                default_project.id,
+                'node_removed',
+                node_guid=component.id,
+                node_title='API Created Component',
+            )
         finally:
             # We must make sure that in the event of an error that we delete the
             # component so that the dummy project can also be deleted.
