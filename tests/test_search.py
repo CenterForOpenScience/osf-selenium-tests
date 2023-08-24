@@ -43,7 +43,7 @@ class TestSearchPage:
         )
         assert len(search_page.search_results) > 0
         # Verify that first search result is of Project type
-        assert search_page.first_card_object_type_label.text[:7] == 'Project'
+        assert search_page.first_card_object_type_label.text[:7] == 'PROJECT'
 
     def test_search_results_exist_registrations_tab(self, driver, search_page):
         search_page.search_input.send_keys('test')
@@ -59,7 +59,7 @@ class TestSearchPage:
         )
         assert len(search_page.search_results) > 0
         # Verify that first search result is of Registration type
-        assert search_page.first_card_object_type_label.text[:12] == 'Registration'
+        assert search_page.first_card_object_type_label.text[:12] == 'REGISTRATION'
 
     def test_search_results_exist_preprints_tab(self, driver, search_page):
         search_page.search_input.send_keys('test')
@@ -75,7 +75,7 @@ class TestSearchPage:
         )
         assert len(search_page.search_results) > 0
         # Verify that first search result is of Preprint type
-        assert search_page.first_card_object_type_label.text == 'Preprint'
+        assert search_page.first_card_object_type_label.text == 'PREPRINT'
 
     def test_search_results_exist_files_tab(self, driver, search_page):
         search_page.search_input.send_keys('test')
@@ -91,7 +91,7 @@ class TestSearchPage:
         )
         assert len(search_page.search_results) > 0
         # Verify that first search result is of File type
-        assert search_page.first_card_object_type_label.text == 'File'
+        assert search_page.first_card_object_type_label.text == 'FILE'
 
     def test_search_results_exist_users_tab(self, driver, search_page):
         search_page.loading_indicator.here_then_gone()
@@ -105,4 +105,4 @@ class TestSearchPage:
         )
         assert len(search_page.search_results) > 0
         # Verify that first search result is of User type
-        assert search_page.first_card_object_type_label.text == 'User'
+        assert search_page.first_card_object_type_label.text == 'USER'
