@@ -33,6 +33,8 @@ from pages.registries import (
     RegistriesDiscoverPage,
     RegistriesLandingPage,
 )
+from pages.search import SearchPage
+from utils import find_current_browser
 
 
 @pytest.fixture
@@ -42,52 +44,90 @@ def landing_page(driver):
     return landing_page
 
 
-class TestRegistriesDiscoverPage:
+class TestRegistriesSearch:
     @markers.two_minute_drill
     @markers.smoke_test
     @markers.core_functionality
     def test_search_results_exist(self, driver, landing_page):
         landing_page.search_box.send_keys_deliberately('QA Test')
         landing_page.search_box.send_keys(Keys.ENTER)
-        discover_page = RegistriesDiscoverPage(driver, verify=True)
-        discover_page.loading_indicator.here_then_gone()
-        assert len(discover_page.search_results) > 0
+        # OSF Registries Discover page has been deprecated. So now searching from the
+        # OSF Registries Landing page routes to the OSF Search page.
+        search_page = SearchPage(driver, verify=True)
+        search_page.loading_indicator.here_then_gone()
+        WebDriverWait(driver, 10).until(
+            EC.visibility_of_element_located(
+                (By.CSS_SELECTOR, '._result-card-container_qeqpmj')
+            )
+        )
+        assert search_page.search_input.get_attribute('value') == 'QA Test'
+        assert len(search_page.search_results) > 0
+        assert search_page.first_card_object_type_label.text[:12] == 'REGISTRATION'
 
     @markers.smoke_test
     @markers.core_functionality
     def test_detail_page(self, driver):
-        """Test a registration detail page by grabbing the first search result from the discover page."""
-        discover_page = RegistriesDiscoverPage(driver)
-        discover_page.goto()
-        if not settings.PRODUCTION:
-            # Since all of the testing environments use the same SHARE server, we need to enter a value in the search
-            # input box that will ensure that the results are specific to the current environment.  We can do this by
-            # searching for the test environment in the affiliations metadata field.  The affiliated institutions as
-            # setup in the testing environments typically include the specific environment in their names.
-            # EX: The Center For Open Science [Stage2]
-            if settings.STAGE1:
-                # need to drop the 1 since they usually just use 'Stage' instead of 'Stage1'
-                environment = 'stage'
-            else:
-                environment = settings.DOMAIN
-            search_text = 'affiliations:' + environment
-            discover_page.search_box.send_keys_deliberately(search_text)
-            discover_page.search_box.send_keys(Keys.ENTER)
-            # Update 3/10/2023 - Adding sorting by date (newest to oldest) to eliminate
-            # search result issues due to re-indexing of SHARE.
-            discover_page.sort_by_button.click()
-            discover_page.sort_by_date_newest.click()
-        discover_page.loading_indicator.here_then_gone()
-        search_results = discover_page.search_results
-        assert search_results
+        """Test a Registration Detail page by opening the first search result from the
+        Registrations tab on the OSF Search page.
+        """
+        search_page = SearchPage(driver)
+        search_page.goto()
+        assert SearchPage(driver, verify=True)
+        search_page.loading_indicator.here_then_gone()
 
-        target_registration = discover_page.get_first_non_withdrawn_registration()
-        target_registration_title = target_registration.text
-        target_registration.click()
-        detail_page = RegistrationDetailPage(driver)
-        detail_page.identity.present()
-        assert RegistrationDetailPage(driver, verify=True)
-        assert detail_page.title.text in target_registration_title
+        # Switch to the Registrations Tab
+        search_page.registrations_tab_link.click()
+        search_page.loading_indicator.here_then_gone()
+
+        if not settings.PRODUCTION:
+            # To avoid old registrations that may not have been properly converted to
+            # new templates (especially in the staging environments) we want to sort the
+            # results newest to oldest.
+            search_page.sort_by_button.click()
+            search_page.sort_by_date_newest.click()
+            # Since all of the testing environments use the same SHARE server, we need
+            # to enter a value in the search input box that will ensure that the results
+            # are specific to the current environment.  We can do this by searching for
+            # the test environment url in the identifiers metadata field.
+            search_text = settings.OSF_HOME[8:]  # strip out "https://" from the url
+        else:
+            search_text = 'test'
+
+        search_page.search_input.send_keys_deliberately(search_text)
+        search_page.search_button.click()
+        search_page.loading_indicator.here_then_gone()
+        WebDriverWait(driver, 10).until(
+            EC.visibility_of_element_located(
+                (By.CSS_SELECTOR, '._result-card-container_qeqpmj')
+            )
+        )
+        assert len(search_page.search_results) > 0
+
+        # Skip any Withdrawn Registrations
+        target_registration_link = search_page.get_first_non_withdrawn_registration()
+        target_registration_title = target_registration_link.text
+        target_registration_link.click()
+
+        # This is a hack. For some reason the new tab takes a couple of extra seconds
+        # to open with Firefox and the number_of_windows_to_be expected condition
+        # below isn't catching it.
+        if 'firefox' in find_current_browser(driver):
+            search_page.loading_indicator.here_then_gone()
+
+        # Registration will open in a new tab
+        try:
+            # Wait for the new tab to open - window count should then = 2
+            WebDriverWait(driver, 5).until(EC.number_of_windows_to_be(2))
+            # Switch focus to the new tab
+            driver.switch_to.window(driver.window_handles[1])
+            detail_page = RegistrationDetailPage(driver, verify=True)
+            assert detail_page.title.text in target_registration_title
+        finally:
+            # Close the second tab that was opened. We do not want subsequent tests to
+            # use the second tab.
+            driver.close()
+            # Switch focus back to the first tab
+            driver.switch_to.window(driver.window_handles[0])
 
 
 @markers.smoke_test

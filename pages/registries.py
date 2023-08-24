@@ -1,6 +1,5 @@
 from urllib.parse import urljoin
 
-from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 
 import settings
@@ -40,7 +39,7 @@ class BaseRegistriesPage(OSFBasePage):
 
 class RegistriesLandingPage(BaseRegistriesPage):
     identity = Locator(
-        By.CSS_SELECTOR, '._RegistriesHeader_3zbd8x', settings.LONG_TIMEOUT
+        By.CSS_SELECTOR, '[data-test-registries-list-paragraph]', settings.LONG_TIMEOUT
     )
     search_box = Locator(By.ID, 'search')
 
@@ -51,27 +50,11 @@ class RegistriesDiscoverPage(BaseRegistriesPage):
     identity = Locator(
         By.CSS_SELECTOR, 'div[data-analytics-scope="Registries Discover page"]'
     )
-    search_box = Locator(By.ID, 'search')
+    search_box = Locator(By.ID, 'search-input')
     loading_indicator = Locator(By.CSS_SELECTOR, '.ball-scale', settings.LONG_TIMEOUT)
-    osf_filter = Locator(
-        By.CSS_SELECTOR, '[data-test-source-filter-id$="OSF Registries"]'
-    )
-    sort_by_button = Locator(By.CSS_SELECTOR, 'div[data-test-sort-dropdown]')
-    sort_by_date_newest = Locator(
-        By.CSS_SELECTOR, 'button[data-test-sort-option-id="2"]'
-    )
 
     # Group Locators
     search_results = GroupLocator(By.CSS_SELECTOR, '._title_1wvii8')
-
-    def get_first_non_withdrawn_registration(self):
-        for result in self.search_results:
-            try:
-                result.find_element_by_class_name('_label_1wvii8')
-            except NoSuchElementException:
-                return result.find_element_by_css_selector(
-                    '[data-test-result-title-id]'
-                )
 
 
 class BaseSubmittedRegistrationPage(GuidBasePage):

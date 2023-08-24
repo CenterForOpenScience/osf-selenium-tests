@@ -1,3 +1,4 @@
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.by import By
 
 import settings
@@ -43,3 +44,10 @@ class SearchPage(OSFBasePage):
 
     # Group Locators
     search_results = GroupLocator(By.CSS_SELECTOR, '._result-card-container_qeqpmj')
+
+    def get_first_non_withdrawn_registration(self):
+        for result in self.search_results:
+            try:
+                result.find_element_by_class_name('_withdrawn-label_qeqpmj')
+            except NoSuchElementException:
+                return result.find_element_by_css_selector('div:nth-child(1) > h4 > a')
