@@ -24,7 +24,7 @@ class TestSearchPage:
         search_page.loading_indicator.here_then_gone()
         WebDriverWait(driver, 10).until(
             EC.visibility_of_element_located(
-                (By.CSS_SELECTOR, '._result-card-container_qeqpmj')
+                (By.CSS_SELECTOR, 'div[data-test-search-result-card]')
             )
         )
         assert len(search_page.search_results) > 0
@@ -38,7 +38,7 @@ class TestSearchPage:
         search_page.loading_indicator.here_then_gone()
         WebDriverWait(driver, 10).until(
             EC.visibility_of_element_located(
-                (By.CSS_SELECTOR, '._result-card-container_qeqpmj')
+                (By.CSS_SELECTOR, 'div[data-test-search-result-card]')
             )
         )
         assert len(search_page.search_results) > 0
@@ -54,7 +54,7 @@ class TestSearchPage:
         search_page.loading_indicator.here_then_gone()
         WebDriverWait(driver, 10).until(
             EC.visibility_of_element_located(
-                (By.CSS_SELECTOR, '._result-card-container_qeqpmj')
+                (By.CSS_SELECTOR, 'div[data-test-search-result-card]')
             )
         )
         assert len(search_page.search_results) > 0
@@ -70,7 +70,7 @@ class TestSearchPage:
         search_page.loading_indicator.here_then_gone()
         WebDriverWait(driver, 10).until(
             EC.visibility_of_element_located(
-                (By.CSS_SELECTOR, '._result-card-container_qeqpmj')
+                (By.CSS_SELECTOR, 'div[data-test-search-result-card]')
             )
         )
         assert len(search_page.search_results) > 0
@@ -86,7 +86,7 @@ class TestSearchPage:
         search_page.loading_indicator.here_then_gone()
         WebDriverWait(driver, 10).until(
             EC.visibility_of_element_located(
-                (By.CSS_SELECTOR, '._result-card-container_qeqpmj')
+                (By.CSS_SELECTOR, 'div[data-test-search-result-card]')
             )
         )
         assert len(search_page.search_results) > 0
@@ -100,7 +100,7 @@ class TestSearchPage:
         search_page.loading_indicator.here_then_gone()
         WebDriverWait(driver, 10).until(
             EC.visibility_of_element_located(
-                (By.CSS_SELECTOR, '._result-card-container_qeqpmj')
+                (By.CSS_SELECTOR, 'div[data-test-search-result-card]')
             )
         )
         assert len(search_page.search_results) > 0
