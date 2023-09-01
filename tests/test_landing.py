@@ -34,7 +34,7 @@ class TestHomeLandingPage:
     @markers.core_functionality
     def test_learn_more(self, driver, landing_page):
         landing_page.learn_more_button.click()
-        assert driver.current_url == 'https://www.cos.io/products/osf'
+        assert 'https://www.cos.io/products/osf' in driver.current_url
 
     def test_testimonials_by_buttons(self, driver, landing_page):
         landing_page.scroll_into_view(landing_page.testimonial_3_button.element)

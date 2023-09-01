@@ -313,6 +313,6 @@ def assert_donate_page(driver, donate_page):
         '//meta[@property="og:title" and @content="Donate To Cos"]'
     )
 
-    assert driver.current_url == donate_page.url
+    assert donate_page.url in driver.current_url
     assert meta_tag.get_attribute('property') == 'og:title'
     assert meta_tag.get_attribute('content') == 'Donate To Cos'

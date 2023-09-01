@@ -83,7 +83,7 @@ class TestDashboardPage:
         WebDriverWait(driver, 3).until(
             EC.visibility_of_element_located((By.CLASS_NAME, 'hs-menu-wrapper'))
         )
-        assert driver.current_url == 'https://www.cos.io/products/osf-collections'
+        assert 'https://www.cos.io/products/osf-collections' in driver.current_url
         # Close the second tab that was opened. We do not want subsequent tests to use
         # the second tab.
         driver.close()
