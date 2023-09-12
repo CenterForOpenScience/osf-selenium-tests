@@ -120,7 +120,7 @@ class TestProjectRegistrationsPage:
         assert create_registration_modal.modal_window.present()
         # Verify that the first schema in the list is pre-selected
         first_schema = create_registration_modal.schema_list[0]
-        assert first_schema.find_element_by_css_selector('.ember-view').is_selected()
+        assert first_schema.find_element_by_css_selector('[type="radio"]').is_selected()
         # Get list of allowed schema names for OSF Registries from the api and verify
         # the list on the modal matches the api list
         api_schemas = osf_api.get_registration_schemas_for_provider(provider_id='osf')

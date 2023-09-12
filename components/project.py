@@ -102,7 +102,7 @@ class CreateRegistrationModal(BaseElement):
         """Selects the radio button corresponding to the given schema name"""
         for schema in self.schema_list:
             if schema.text == schema_name:
-                schema.find_element_by_css_selector('.ember-view').click()
+                schema.find_element_by_css_selector('[type="radio"]').click()
                 break
 
 
