@@ -310,9 +310,9 @@ def assert_donate_page(driver, donate_page):
     # locators.py does not currently support invisible elements as identity
     # https://github.com/cos-qa/osf-selenium-tests/blob/b7f3f21376b7d6f751993cdcffea9262856263e3/base/locators.py#L138
     meta_tag = driver.find_element_by_xpath(
-        '//meta[@property="og:title" and @content="Donate To Cos"]'
+        '//meta[@property="og:title" and contains(@content, "Donate to COS")]'
     )
 
     assert donate_page.url in driver.current_url
     assert meta_tag.get_attribute('property') == 'og:title'
-    assert meta_tag.get_attribute('content') == 'Donate To Cos'
+    assert meta_tag.get_attribute('content') == 'Donate to COS'
