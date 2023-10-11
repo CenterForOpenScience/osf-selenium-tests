@@ -108,3 +108,25 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
 def find_current_browser(driver):
     current_browser = driver.desired_capabilities.get('browserName')
     return current_browser
+
+
+def switch_to_new_tab(driver):
+    # Took this snippet from browserstack support docs
+    # https://www.browserstack.com/guide/how-to-switch-tabs-in-selenium-python
+
+    # get current window handle
+    main_window = driver.current_window_handle
+    # get first child window
+    all_windows = driver.window_handles
+    for new_tab in all_windows:
+        # switch focus to child window
+        if new_tab != main_window:
+            driver.switch_to.window(new_tab)
+    return main_window
+
+
+def close_current_tab(driver, main_window):
+    # close browser tab window
+    driver.close()
+    # switch to parent window
+    driver.switch_to.window(main_window)

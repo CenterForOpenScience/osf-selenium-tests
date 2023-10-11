@@ -27,7 +27,11 @@ from pages.preprints import (
     ReviewsSubmissionsPage,
     ReviewsWithdrawalsPage,
 )
-from utils import find_current_browser
+from utils import (
+    close_current_tab,
+    find_current_browser,
+    switch_to_new_tab,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -1214,7 +1218,7 @@ class TestBrandedProviders:
         # provider.
         # UPDATE 10/26/2022 - the status of 'engrxiv' has not changed and now another
         # provider - 'ecoevorxiv' is also leaving OSF.
-        providers_leaving_OSF = ['ecoevorxiv', 'engrxiv']
+        providers_leaving_OSF = ['ecoevorxiv', 'engrxiv', 'livedata', 'osf']
         if provider['id'] not in providers_leaving_OSF:
             discover_page.goto()
             discover_page.verify()
@@ -1227,8 +1231,14 @@ class TestBrandedProviders:
             if osf_api.get_providers_total(provider['id'], session=session):
                 search_results = discover_page.search_results
                 assert search_results
-                search_results[0].click()
+                search_results[0].find_element_by_css_selector(
+                    '[data-test-search-result-card-title]'
+                ).click()
+
+                main_window = switch_to_new_tab(driver)
                 PreprintDetailPage(driver, verify=True)
+                close_current_tab(driver, main_window)
+
             elif not provider['attributes']['additional_providers']:
                 # Some Preprint Providers may also display preprints from other sources not
                 # just OSF. So we do not want to assert that there are No Results when there

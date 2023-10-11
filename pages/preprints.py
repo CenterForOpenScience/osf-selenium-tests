@@ -227,17 +227,17 @@ class PreprintWithdrawPage(GuidBasePage, BasePreprintPage):
 class PreprintDiscoverPage(BasePreprintPage):
     url_addition = 'discover'
 
-    identity = Locator(By.ID, 'share-logo')
+    identity = Locator(By.CSS_SELECTOR, '[data-test-search-provider-logo]')
     loading_indicator = Locator(By.CSS_SELECTOR, '.ball-scale')
-    search_box = Locator(By.ID, 'searchBox')
-    sort_button = Locator(By.ID, 'sortBy')
+    search_box = Locator(By.CSS_SELECTOR, 'input[data-test-search-input]')
+    sort_button = Locator(By.CSS_SELECTOR, 'div[data-test-topbar-sort-dropdown]')
     sort_option_newest_to_oldest = Locator(
         By.CSS_SELECTOR, '#sortByOptionList > li:nth-child(3) > button'
     )
+    no_results = Locator(By.CSS_SELECTOR, 'div[_no-results_fvrbco]')
 
     # Group Locators
-    search_results = GroupLocator(By.CSS_SELECTOR, '.search-result h4 > a')
-    no_results = GroupLocator(By.CSS_SELECTOR, '.search-results-section .text-muted')
+    search_results = GroupLocator(By.CSS_SELECTOR, 'div[data-test-search-result-card]')
 
 
 class PreprintDetailPage(GuidBasePage, BasePreprintPage):
