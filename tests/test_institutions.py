@@ -36,7 +36,7 @@ class TestInstitutionsPage:
 class TestCustomDomains:
     @markers.smoke_test
     @pytest.mark.parametrize('domain', settings.CUSTOM_INSTITUTION_DOMAINS)
-    def test_arrive_at_myprojects_page(self, driver, domain):
+    def test_institution_search_page(self, driver, domain):
         """Test custom institutional domains. Skipped on any server that has no custom
         domains. Currently only Production and Stage 1 have custom domains.
         """
@@ -44,16 +44,7 @@ class TestCustomDomains:
         driver.get(domain)
         institution_page = InstitutionBrandedPage(driver, verify=True)
         assert domain in driver.current_url
-        # First check if the collection is empty - this may often be the case in the
-        # test environments
-        if institution_page.empty_collection_indicator.absent():
-            # Wait for projects table to start loading and verify that there is at
-            # least one project listed
-            WebDriverWait(driver, 40).until(
-                EC.presence_of_element_located(
-                    (By.CSS_SELECTOR, '#tb-tbody > div > div > div.tb-row')
-                )
-            )
+        assert institution_page.empty_collection_indicator.absent()
 
 
 # Can't run this is Production since we don't have admin access to any institutions in
