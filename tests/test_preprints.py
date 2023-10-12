@@ -16,6 +16,7 @@ import settings
 from api import osf_api
 from pages.login import logout
 from pages.preprints import (
+    BrandedPreprintsDiscoverPage,
     PreprintDetailPage,
     PreprintDiscoverPage,
     PreprintEditPage,
@@ -1054,7 +1055,7 @@ class TestPreprintSearch:
             environment_url = settings.OSF_HOME[
                 8:
             ]  # Need to strip out "https://" from the url
-            search_text = 'identifiers:"' + environment_url + '"'
+            search_text = environment_url
             discover_page.search_box.send_keys_deliberately(search_text)
             discover_page.search_box.send_keys(Keys.ENTER)
             if settings.STAGE2:
@@ -1067,8 +1068,12 @@ class TestPreprintSearch:
         search_results = discover_page.search_results
         assert search_results
         # Click on first entry in search results to open the Preprint Detail page
-        search_results[0].click()
+        search_results[0].find_element_by_css_selector(
+            'a[data-test-search-result-card-title]'
+        ).click()
+        main_window = switch_to_new_tab(driver)
         assert PreprintDetailPage(driver, verify=True)
+        close_current_tab(driver, main_window)
 
 
 @markers.smoke_test
@@ -1200,7 +1205,7 @@ class TestBrandedProviders:
 
     def test_detail_page(self, session, driver, provider):
         """Test a preprint detail page by grabbing the first search result from the discover page."""
-        discover_page = PreprintDiscoverPage(driver, provider=provider)
+        discover_page = BrandedPreprintsDiscoverPage(driver, provider=provider)
 
         # This fails only in firefox because of selenium incompatibilities with right-left languages
         if 'firefox' in find_current_browser(driver) and 'arabixiv' in provider['id']:
