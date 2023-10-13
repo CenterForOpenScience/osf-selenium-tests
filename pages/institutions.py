@@ -42,15 +42,16 @@ class BaseInstitutionPage(OSFBasePage):
 
 class InstitutionBrandedPage(BaseInstitutionPage):
 
-    identity = Locator(
-        By.CSS_SELECTOR,
-        '#fileBrowser > div.db-header.row > div.db-buttonRow.col-xs-12.col-sm-4.col-lg-3 > div > input',
+    identity = Locator(By.CSS_SELECTOR, 'img[data-test-institution-banner]')
+
+    empty_collection_indicator = Locator(
+        By.CLASS_NAME, 'div[class="_no-results_fvrbco"]'
     )
 
-    empty_collection_indicator = Locator(By.CLASS_NAME, 'db-non-load-template')
-
     # Group Locators
-    project_list = GroupLocator(By.CSS_SELECTOR, '#tb-tbody > div > div > div.tb-row')
+    project_list = GroupLocator(
+        By.CSS_SELECTOR, 'a[data-test-search-result-card-title]'
+    )
 
 
 class InstitutionAdminDashboardPage(BaseInstitutionPage):

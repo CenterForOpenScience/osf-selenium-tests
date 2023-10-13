@@ -38,19 +38,7 @@ domains = {
         'api': 'https://api.osf.io',
         'files': 'https://files.osf.io',
         'cas': 'https://accounts.osf.io',
-        'custom_institution_domains': [
-            'https://open.uwstout.edu',
-            'https://osf.arizona.edu',
-            'https://osf.asu.edu',
-            'https://osf.fsu.edu',
-            'https://osf.jmu.edu',
-            'https://osf.nd.edu',
-            'https://osf.nyu.edu',
-            'https://osf.sc.edu',
-            'https://osf.uc.edu',
-            'https://osf.ucla.edu',
-            'https://osf.research.vcu.edu',
-        ],
+        'custom_institution_domains': [],
     },
 }
 

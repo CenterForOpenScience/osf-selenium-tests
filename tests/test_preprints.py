@@ -16,6 +16,7 @@ import settings
 from api import osf_api
 from pages.login import logout
 from pages.preprints import (
+    BrandedPreprintsDiscoverPage,
     PreprintDetailPage,
     PreprintDiscoverPage,
     PreprintEditPage,
@@ -27,7 +28,11 @@ from pages.preprints import (
     ReviewsSubmissionsPage,
     ReviewsWithdrawalsPage,
 )
-from utils import find_current_browser
+from utils import (
+    close_current_tab,
+    find_current_browser,
+    switch_to_new_tab,
+)
 
 
 logger = logging.getLogger(__name__)
@@ -1050,7 +1055,7 @@ class TestPreprintSearch:
             environment_url = settings.OSF_HOME[
                 8:
             ]  # Need to strip out "https://" from the url
-            search_text = 'identifiers:"' + environment_url + '"'
+            search_text = environment_url
             discover_page.search_box.send_keys_deliberately(search_text)
             discover_page.search_box.send_keys(Keys.ENTER)
             if settings.STAGE2:
@@ -1063,8 +1068,12 @@ class TestPreprintSearch:
         search_results = discover_page.search_results
         assert search_results
         # Click on first entry in search results to open the Preprint Detail page
-        search_results[0].click()
+        search_results[0].find_element_by_css_selector(
+            'a[data-test-search-result-card-title]'
+        ).click()
+        main_window = switch_to_new_tab(driver)
         assert PreprintDetailPage(driver, verify=True)
+        close_current_tab(driver, main_window)
 
 
 @markers.smoke_test
@@ -1196,7 +1205,7 @@ class TestBrandedProviders:
 
     def test_detail_page(self, session, driver, provider):
         """Test a preprint detail page by grabbing the first search result from the discover page."""
-        discover_page = PreprintDiscoverPage(driver, provider=provider)
+        discover_page = BrandedPreprintsDiscoverPage(driver, provider=provider)
 
         # This fails only in firefox because of selenium incompatibilities with right-left languages
         if 'firefox' in find_current_browser(driver) and 'arabixiv' in provider['id']:
@@ -1214,7 +1223,9 @@ class TestBrandedProviders:
         # provider.
         # UPDATE 10/26/2022 - the status of 'engrxiv' has not changed and now another
         # provider - 'ecoevorxiv' is also leaving OSF.
-        providers_leaving_OSF = ['ecoevorxiv', 'engrxiv']
+        # UPDATE 10/13/2023 - After the Search Improvements project release, OSF and other providers
+        # that have moved away from OSF now redirect to https://osf.io/search?q=&resourceType=Preprint&q=
+        providers_leaving_OSF = ['ecoevorxiv', 'engrxiv', 'livedata', 'osf']
         if provider['id'] not in providers_leaving_OSF:
             discover_page.goto()
             discover_page.verify()
@@ -1227,8 +1238,14 @@ class TestBrandedProviders:
             if osf_api.get_providers_total(provider['id'], session=session):
                 search_results = discover_page.search_results
                 assert search_results
-                search_results[0].click()
+                search_results[0].find_element_by_css_selector(
+                    '[data-test-search-result-card-title]'
+                ).click()
+
+                main_window = switch_to_new_tab(driver)
                 PreprintDetailPage(driver, verify=True)
+                close_current_tab(driver, main_window)
+
             elif not provider['attributes']['additional_providers']:
                 # Some Preprint Providers may also display preprints from other sources not
                 # just OSF. So we do not want to assert that there are No Results when there
