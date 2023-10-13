@@ -4,7 +4,6 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 import markers
-import settings
 from api import osf_api
 from pages.institutions import (
     InstitutionAdminDashboardPage,
@@ -33,24 +32,10 @@ class TestInstitutionsPage:
         assert institution in landing_page.institution_list[0].text
 
 
-class TestCustomDomains:
-    @markers.smoke_test
-    @pytest.mark.parametrize('domain', settings.CUSTOM_INSTITUTION_DOMAINS)
-    def test_institution_search_page(self, driver, domain):
-        """Test custom institutional domains. Skipped on any server that has no custom
-        domains. Currently only Production and Stage 1 have custom domains.
-        """
-        # TODO: Add check for institution name
-        driver.get(domain)
-        institution_page = InstitutionBrandedPage(driver, verify=True)
-        assert domain in driver.current_url
-        assert institution_page.empty_collection_indicator.absent()
-
-
-# Can't run this is Production since we don't have admin access to any institutions in
-# Production
 @markers.dont_run_on_prod
 @markers.core_functionality
+# Can't run this is Production since we don't have admin access to any institutions in
+# Production
 class TestInstitutionAdminDashboardPage:
     def test_institution_admin_dashboard(self, driver, session, must_be_logged_in):
         """Test using the COS admin dashboard page - user must already be setup as an

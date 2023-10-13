@@ -1223,6 +1223,8 @@ class TestBrandedProviders:
         # provider.
         # UPDATE 10/26/2022 - the status of 'engrxiv' has not changed and now another
         # provider - 'ecoevorxiv' is also leaving OSF.
+        # UPDATE 10/13/2023 - After the Search Improvements project release, OSF and other providers
+        # that have moved away from OSF now redirect to https://osf.io/search?q=&resourceType=Preprint&q=
         providers_leaving_OSF = ['ecoevorxiv', 'engrxiv', 'livedata', 'osf']
         if provider['id'] not in providers_leaving_OSF:
             discover_page.goto()

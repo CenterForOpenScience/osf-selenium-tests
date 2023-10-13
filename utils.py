@@ -122,6 +122,8 @@ def switch_to_new_tab(driver):
         # switch focus to child window
         if new_tab != main_window:
             driver.switch_to.window(new_tab)
+    # We need to return the main_window so we can keep track
+    # of it and when we close the newly opened tab
     return main_window
 
 

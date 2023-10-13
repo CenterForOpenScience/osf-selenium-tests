@@ -242,7 +242,6 @@ class PreprintDiscoverPage(BasePreprintPage):
     sort_options = GroupLocator(
         By.CSS_SELECTOR, 'ul[class="ember-power-select-options"]'
     )
-    no_results = GroupLocator(By.CSS_SELECTOR, 'p[data-test-left-search-count]')
 
 
 @pytest.mark.usefixtures('must_be_logged_in')
