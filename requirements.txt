@@ -1,7 +1,3 @@
-# to build ipdb on python3.9
-# https://stackoverflow.com/questions/72414481/error-in-anyjson-setup-command-use-2to3-is-invalid
-setuptools<58.0.0
-
 invoke==0.15.0
 selenium==3.141.0
 pytest==3.5.0
