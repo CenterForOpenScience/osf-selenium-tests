@@ -55,14 +55,16 @@ class BasePreprintPage(OSFBasePage):
 
 class PreprintLandingPage(BasePreprintPage):
     identity = Locator(
-        By.CSS_SELECTOR, '.ember-application .preprint-header', settings.LONG_TIMEOUT
+        By.CSS_SELECTOR,
+        '[data-analytics-scope="preprints landing page"]',
+        settings.LONG_TIMEOUT,
     )
     add_preprint_button = Locator(
-        By.CLASS_NAME, 'preprint-submit-button', settings.LONG_TIMEOUT
+        By.CLASS_NAME, '[data-analytics-name="Add a preprint"]', settings.LONG_TIMEOUT
     )
-    search_button = Locator(By.CSS_SELECTOR, '.preprint-search .btn-default')
-    submit_navbar = Locator(By.CSS_SELECTOR, '.branded-nav > :nth-child(2)')
-    submit_button = Locator(By.CSS_SELECTOR, '.btn.btn-success')
+    search_button = Locator(By.CSS_SELECTOR, '[data-analytics-name="Search"]')
+    # submit_navbar = Locator(By.CSS_SELECTOR, '.branded-nav > :nth-child(2)')
+    submit_button = Locator(By.CSS_SELECTOR, '[data-test-submit-button]')
 
 
 class PreprintSubmitPage(BasePreprintPage):
@@ -263,7 +265,11 @@ class BrandedPreprintsDiscoverPage(BasePreprintPage):
 
 class PreprintDetailPage(GuidBasePage, BasePreprintPage):
     url_base = urljoin(settings.OSF_HOME, '{guid}')
-    identity = Locator(By.CSS_SELECTOR, '[data-analytics-scope="preprints detail page"]', settings.LONG_TIMEOUT)
+    identity = Locator(
+        By.CSS_SELECTOR,
+        '[data-analytics-scope="preprints detail page"]',
+        settings.LONG_TIMEOUT,
+    )
 
     # This locator needs a data-test-selector from software devs
     title = Locator(By.CSS_SELECTOR, 'h1', settings.LONG_TIMEOUT)

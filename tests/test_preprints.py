@@ -1245,7 +1245,9 @@ class TestBrandedProviders:
                 # Save the target preprints link and get the guid in the href attribute
                 # Note: This test currently only runs on prod so this regex does not support test env urls
                 first_preprint_link = first_preprint.get_attribute('href')
-                match = re.search(r'(^https://osf\.io/([a-z0-9]{5}))', first_preprint_link)
+                match = re.search(
+                    r'(^https://osf\.io/([a-z0-9]{5}))', first_preprint_link
+                )
                 preprint_guid = match.group(2)
 
                 first_preprint.click()
