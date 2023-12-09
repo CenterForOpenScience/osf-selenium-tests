@@ -91,12 +91,7 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
         ffo.set_preference('browser.link.open_newwindow', 3)
         driver = driver_cls(options=ffo)
     elif driver_name == 'Edge' and not settings.HEADLESS:
-        from msedge.selenium_tools import Edge
-
-        # Need to set the flag so that we use the newer Chromium based version of Edge
-        # instead of older IE based version of Edge
-        desired_capabilities = {'ms:edgeChromium': True}
-        driver = Edge(desired_capabilities=desired_capabilities)
+        driver = webdriver.Edge()
 
     else:
         driver = driver_cls()
