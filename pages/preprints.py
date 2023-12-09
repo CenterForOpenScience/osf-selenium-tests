@@ -263,9 +263,10 @@ class BrandedPreprintsDiscoverPage(BasePreprintPage):
 
 class PreprintDetailPage(GuidBasePage, BasePreprintPage):
     url_base = urljoin(settings.OSF_HOME, '{guid}')
+    identity = Locator(By.CSS_SELECTOR, '[data-analytics-scope="preprints detail page"]', settings.LONG_TIMEOUT)
 
-    identity = Locator(By.ID, 'preprintTitle', settings.LONG_TIMEOUT)
-    title = Locator(By.ID, 'preprintTitle', settings.LONG_TIMEOUT)
+    # This locator needs a data-test-selector from software devs
+    title = Locator(By.CSS_SELECTOR, 'h1', settings.LONG_TIMEOUT)
     status = Locator(By.CSS_SELECTOR, 'span._status-badge_7ivjq4')
     status_explanation = Locator(By.CSS_SELECTOR, 'div.status-explanation')
     make_decision_button = Locator(

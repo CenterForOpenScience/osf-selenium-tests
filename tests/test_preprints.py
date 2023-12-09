@@ -1238,12 +1238,23 @@ class TestBrandedProviders:
             if osf_api.get_providers_total(provider['id'], session=session):
                 search_results = discover_page.search_results
                 assert search_results
-                search_results[0].find_element_by_css_selector(
+                first_preprint = search_results[0].find_element_by_css_selector(
                     '[data-test-search-result-card-title]'
-                ).click()
+                )
 
+                # Save the target preprints link and get the guid in the href attribute
+                # Note: This test currently only runs on prod so this regex does not support test env urls
+                first_preprint_link = first_preprint.get_attribute('href')
+                match = re.search(r'(^https://osf\.io/([a-z0-9]{5}))', first_preprint_link)
+                preprint_guid = match.group(2)
+
+                first_preprint.click()
                 main_window = switch_to_new_tab(driver)
+
                 PreprintDetailPage(driver, verify=True)
+                assert provider['id'] in driver.current_url
+                assert preprint_guid in driver.current_url
+
                 close_current_tab(driver, main_window)
 
             elif not provider['attributes']['additional_providers']:
