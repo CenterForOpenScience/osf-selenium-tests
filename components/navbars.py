@@ -71,15 +71,9 @@ class PreprintsNavbar(EmberNavbar):
     search_link = Locator(By.LINK_TEXT, 'Search')
     support_link = Locator(By.LINK_TEXT, 'Support')
     donate_link = Locator(By.LINK_TEXT, 'Donate')
-    sign_up_button = Locator(By.LINK_TEXT, 'Sign Up')
-    sign_in_button = Locator(By.LINK_TEXT, 'Sign In')
 
-    # Request a new locator from devs
-    user_dropdown = Locator(By.CSS_SELECTOR, '.nav-profile-name')
-    user_dropdown_profile = Locator(By.LINK_TEXT, 'My Profile')
-    user_dropdown_support = Locator(By.LINK_TEXT, 'OSF Support')
-    user_dropdown_settings = Locator(By.LINK_TEXT, 'Settings')
-    logout_link = Locator(By.LINK_TEXT, 'Log Out')
+    sign_up_button = Locator(By.CSS_SELECTOR, '[data-test-ad-sign-up-button]')
+    sign_in_button = Locator(By.CSS_SELECTOR, '[data-test-sign-in-button]')
 
     def verify(self):
         return self.current_service.text == 'PREPRINTS'

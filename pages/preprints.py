@@ -63,7 +63,6 @@ class PreprintLandingPage(BasePreprintPage):
         By.CLASS_NAME, '[data-analytics-name="Add a preprint"]', settings.LONG_TIMEOUT
     )
     search_button = Locator(By.CSS_SELECTOR, '[data-analytics-name="Search"]')
-    # submit_navbar = Locator(By.CSS_SELECTOR, '.branded-nav > :nth-child(2)')
     submit_button = Locator(By.CSS_SELECTOR, '[data-test-submit-button]')
 
 
