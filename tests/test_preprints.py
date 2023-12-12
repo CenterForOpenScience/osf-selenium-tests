@@ -17,6 +17,7 @@ from api import osf_api
 from pages.login import logout
 from pages.preprints import (
     BrandedPreprintsDiscoverPage,
+    PendingPreprintDetailPage,
     PreprintDetailPage,
     PreprintDiscoverPage,
     PreprintEditPage,
@@ -55,11 +56,15 @@ class TestPreprintWorkflow:
     ):
         supplemental_guid = None
         try:
+            landing_page = PreprintLandingPage(driver, verify=True)
             # Create a date and time stamp before starting the creation of the preprint.
             # This may be used later to find the guid for the preprint.
             now = datetime.utcnow()
             date_time_stamp = now.strftime('%Y-%m-%dT%H:%M:%S')
-
+            # need to figure why this locator needs to be added manually
+            landing_page.add_preprint_button = driver.find_element_by_css_selector(
+                '[data-analytics-name="Add a preprint"]'
+            )
             landing_page.add_preprint_button.click()
             submit_page = PreprintSubmitPage(driver, verify=True)
 
@@ -147,7 +152,7 @@ class TestPreprintWorkflow:
             submit_page.create_preprint_button.click()
             submit_page.modal_create_preprint_button.click()
 
-            preprint_detail = PreprintDetailPage(driver, verify=True)
+            preprint_detail = PendingPreprintDetailPage(driver, verify=True)
             WebDriverWait(driver, 10).until(EC.visibility_of(preprint_detail.title))
 
             assert preprint_detail.title.text == project_with_file.title
@@ -245,7 +250,7 @@ class TestPreprintWorkflow:
         # Click Return to preprint button to go back to Preprint Detail page
         edit_page.scroll_into_view(edit_page.return_to_preprint_button.element)
         edit_page.return_to_preprint_button.click()
-        detail_page = PreprintDetailPage(driver, verify=True)
+        detail_page = PendingPreprintDetailPage(driver, verify=True)
         # Verify new Subject appears on the page
         subjects = detail_page.subjects
         subject_found = False
@@ -289,7 +294,7 @@ class TestPreprintWorkflow:
         )
         withdraw_page.request_withdrawal_button.click()
         # Should be redirected back to Preprint Detail page
-        assert PreprintDetailPage(driver, verify=True)
+        assert PendingPreprintDetailPage(driver, verify=True)
         # Verify via the api that the Withdrawal Request record was created
         requests = osf_api.get_preprint_requests_records(
             node_id=preprint_detail_page.guid

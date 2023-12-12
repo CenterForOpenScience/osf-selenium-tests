@@ -289,7 +289,39 @@ class PreprintDetailPage(GuidBasePage, BasePreprintPage):
     download_button = Locator(
         By.CSS_SELECTOR, 'div.share-row.p-sm.osf-box-lt.clearfix > a'
     )
-    edit_preprint_button = Locator(By.LINK_TEXT, 'Edit preprint')
+    edit_preprint_button = Locator(By.CSS_SELECTOR, 'div[class="edit-preprint-button"]')
+
+    # Group Locators
+    subjects = GroupLocator(
+        By.CSS_SELECTOR,
+        '#view-page > div.container > div > div.col-md-5 > div:nth-child(6) > span',
+    )
+    tags = GroupLocator(By.CSS_SELECTOR, 'div.tag-section.p-t-xs > span')
+
+
+class PendingPreprintDetailPage(GuidBasePage, BasePreprintPage):
+    # This class is for preprints that are pending moderation
+    url_base = urljoin(settings.OSF_HOME, '{guid}')
+    identity = Locator(
+        By.ID,
+        'preprintTitle',
+        settings.LONG_TIMEOUT,
+    )
+
+    # This locator needs a data-test-selector from software devs
+    title = Locator(By.ID, 'preprintTitle', settings.LONG_TIMEOUT)
+    status_explanation = Locator(By.CSS_SELECTOR, 'div.status-explanation')
+
+    view_page = Locator(By.ID, 'view-page')
+    views_downloads_counts = Locator(
+        By.CSS_SELECTOR, 'div.share-row.p-sm.osf-box-lt.clearfix > div'
+    )
+    download_button = Locator(
+        By.CSS_SELECTOR, 'div.share-row.p-sm.osf-box-lt.clearfix > a'
+    )
+    edit_preprint_button = Locator(
+        By.CSS_SELECTOR, 'a[class="btn btn-success edit-btn"]'
+    )
 
     # Group Locators
     subjects = GroupLocator(
