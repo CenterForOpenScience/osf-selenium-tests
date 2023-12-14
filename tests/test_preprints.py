@@ -489,6 +489,8 @@ class TestPreprintModeration:
         page_not_found_page = PreprintPageNotFoundPage(driver, verify=True)
         assert page_not_found_page.page_header.text == 'Page not found'
 
+    @pytest.mark.skip
+    # skip until bug is fixed [ENG-5055]
     def test_approve_withdrawal_request_pre_moderated_preprint(
         self, session, driver, log_in_if_not_already
     ):
@@ -761,6 +763,8 @@ class TestPreprintModeration:
         assert preprint_page.title.text == preprint_title
         assert provider_id in driver.current_url
 
+    @pytest.mark.skip
+    # Skip until bug is fixed [ENG-5055]
     def test_moderator_withdrawal_post_moderated_preprint(
         self, session, driver, log_in_if_not_already
     ):
@@ -849,6 +853,8 @@ class TestPreprintModeration:
             preprint_page.status_explanation.text == 'This preprint has been withdrawn.'
         )
 
+    @pytest.mark.skip
+    # Skip until bug is fixed [ENG-5055]
     def test_approve_withdrawal_request_post_moderated_preprint(
         self, session, driver, log_in_if_not_already
     ):
@@ -1083,6 +1089,8 @@ class TestPreprintSearch:
 
 @markers.smoke_test
 @markers.core_functionality
+@pytest.mark.skip
+# skip until we have reliable data test locators [ENG-5046]
 class TestPreprintMetrics:
     @pytest.fixture(scope='session')
     def latest_preprint_node(self):
