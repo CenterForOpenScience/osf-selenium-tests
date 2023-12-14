@@ -299,9 +299,8 @@ class PreprintDetailPage(GuidBasePage, BasePreprintPage):
     tags = GroupLocator(By.CSS_SELECTOR, 'div.tag-section.p-t-xs > span')
 
 
-class PendingPreprintDetailPage(GuidBasePage, BasePreprintPage):
+class PendingPreprintDetailPage(PreprintDetailPage):
     # This class is for preprints that are pending moderation
-    url_base = urljoin(settings.OSF_HOME, '{guid}')
     identity = Locator(
         By.ID,
         'preprintTitle',
@@ -310,25 +309,6 @@ class PendingPreprintDetailPage(GuidBasePage, BasePreprintPage):
 
     # This locator needs a data-test-selector from software devs
     title = Locator(By.ID, 'preprintTitle', settings.LONG_TIMEOUT)
-    status_explanation = Locator(By.CSS_SELECTOR, 'div.status-explanation')
-
-    view_page = Locator(By.ID, 'view-page')
-    views_downloads_counts = Locator(
-        By.CSS_SELECTOR, 'div.share-row.p-sm.osf-box-lt.clearfix > div'
-    )
-    download_button = Locator(
-        By.CSS_SELECTOR, 'div.share-row.p-sm.osf-box-lt.clearfix > a'
-    )
-    edit_preprint_button = Locator(
-        By.CSS_SELECTOR, 'a[class="btn btn-success edit-btn"]'
-    )
-
-    # Group Locators
-    subjects = GroupLocator(
-        By.CSS_SELECTOR,
-        '#view-page > div.container > div > div.col-md-5 > div:nth-child(6) > span',
-    )
-    tags = GroupLocator(By.CSS_SELECTOR, 'div.tag-section.p-t-xs > span')
 
 
 class ReviewsDashboardPage(OSFBasePage):
@@ -436,8 +416,8 @@ class ReviewsWithdrawalsPage(BaseReviewsPage):
 
 
 class PreprintPageNotFoundPage(OSFBasePage):
-    identity = Locator(By.CSS_SELECTOR, 'div.preprint-header.preprint-header-error')
+    identity = Locator(By.CSS_SELECTOR, '[data-analytics-scope="404"]')
     page_header = Locator(
         By.CSS_SELECTOR,
-        'div.preprint-header.preprint-header-error > div > div > div > h1',
+        '[data-analytics-scope="404"] > h2',
     )

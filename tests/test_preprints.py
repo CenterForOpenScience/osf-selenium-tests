@@ -370,7 +370,7 @@ class TestPreprintModeration:
         # submitted above. It should be the first in the list since they are sorted
         # newest to oldest.
         submissions_page.click_submission_row(provider_id, preprint_node)
-        preprint_detail_page = PreprintDetailPage(driver, verify=True)
+        preprint_detail_page = PendingPreprintDetailPage(driver, verify=True)
         WebDriverWait(driver, 5).until(
             EC.element_to_be_clickable(
                 (By.CSS_SELECTOR, 'button.btn.dropdown-toggle.btn-success')
@@ -455,7 +455,7 @@ class TestPreprintModeration:
         # submitted above. It should be the first in the list since they are sorted
         # newest to oldest.
         submissions_page.click_submission_row(provider_id, preprint_node)
-        preprint_detail_page = PreprintDetailPage(driver, verify=True)
+        preprint_detail_page = PendingPreprintDetailPage(driver, verify=True)
         WebDriverWait(driver, 5).until(
             EC.element_to_be_clickable(
                 (By.CSS_SELECTOR, 'button.btn.dropdown-toggle.btn-success')
@@ -484,7 +484,7 @@ class TestPreprintModeration:
         # Logout and attempt to navigate to the Preprint Detail page. We should get a
         # Page Not Found page since the rejected preprint is not public.
         logout(driver)
-        preprint_page = PreprintDetailPage(driver, guid=preprint_node)
+        preprint_page = PendingPreprintDetailPage(driver, guid=preprint_node)
         preprint_page.goto(expect_redirect_to=PreprintPageNotFoundPage)
         page_not_found_page = PreprintPageNotFoundPage(driver, verify=True)
         assert page_not_found_page.page_header.text == 'Page not found'
@@ -545,7 +545,7 @@ class TestPreprintModeration:
         # submitted above. It should be the first in the list since they are sorted
         # newest to oldest.
         withdrawals_page.click_requests_row(provider_id, preprint_node)
-        preprint_detail_page = PreprintDetailPage(driver, verify=True)
+        preprint_detail_page = PendingPreprintDetailPage(driver, verify=True)
         WebDriverWait(driver, 5).until(
             EC.element_to_be_clickable(
                 (By.CSS_SELECTOR, 'button.btn.dropdown-toggle.btn-success')
@@ -640,7 +640,7 @@ class TestPreprintModeration:
         # submitted above. It should be the first in the list since they are sorted
         # newest to oldest.
         withdrawals_page.click_requests_row(provider_id, preprint_node)
-        preprint_detail_page = PreprintDetailPage(driver, verify=True)
+        preprint_detail_page = PendingPreprintDetailPage(driver, verify=True)
         WebDriverWait(driver, 5).until(
             EC.element_to_be_clickable(
                 (By.CSS_SELECTOR, 'button.btn.dropdown-toggle.btn-success')
@@ -726,7 +726,7 @@ class TestPreprintModeration:
         # submitted above. It should be the first in the list since they are sorted
         # newest to oldest.
         submissions_page.click_submission_row(provider_id, preprint_node)
-        preprint_detail_page = PreprintDetailPage(driver, verify=True)
+        preprint_detail_page = PendingPreprintDetailPage(driver, verify=True)
         WebDriverWait(driver, 5).until(
             EC.element_to_be_clickable(
                 (By.CSS_SELECTOR, 'button.btn.dropdown-toggle.btn-success')
@@ -811,7 +811,7 @@ class TestPreprintModeration:
         # submitted above. It should be the first in the list since they are sorted
         # newest to oldest.
         submissions_page.click_submission_row(provider_id, preprint_node)
-        preprint_detail_page = PreprintDetailPage(driver, verify=True)
+        preprint_detail_page = PendingPreprintDetailPage(driver, verify=True)
         WebDriverWait(driver, 5).until(
             EC.element_to_be_clickable(
                 (By.CSS_SELECTOR, 'button.btn.dropdown-toggle.btn-success')
@@ -905,7 +905,7 @@ class TestPreprintModeration:
         # submitted above. It should be the first in the list since they are sorted
         # newest to oldest.
         withdrawals_page.click_requests_row(provider_id, preprint_node)
-        preprint_detail_page = PreprintDetailPage(driver, verify=True)
+        preprint_detail_page = PendingPreprintDetailPage(driver, verify=True)
         WebDriverWait(driver, 5).until(
             EC.element_to_be_clickable(
                 (By.CSS_SELECTOR, 'button.btn.dropdown-toggle.btn-success')
@@ -1000,7 +1000,7 @@ class TestPreprintModeration:
         # submitted above. It should be the first in the list since they are sorted
         # newest to oldest.
         withdrawals_page.click_requests_row(provider_id, preprint_node)
-        preprint_detail_page = PreprintDetailPage(driver, verify=True)
+        preprint_detail_page = PendingPreprintDetailPage(driver, verify=True)
         WebDriverWait(driver, 5).until(
             EC.element_to_be_clickable(
                 (By.CSS_SELECTOR, 'button.btn.dropdown-toggle.btn-success')
