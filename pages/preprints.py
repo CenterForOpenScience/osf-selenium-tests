@@ -55,14 +55,15 @@ class BasePreprintPage(OSFBasePage):
 
 class PreprintLandingPage(BasePreprintPage):
     identity = Locator(
-        By.CSS_SELECTOR, '.ember-application .preprint-header', settings.LONG_TIMEOUT
+        By.CSS_SELECTOR,
+        '[data-analytics-scope="preprints landing page"]',
+        settings.LONG_TIMEOUT,
     )
     add_preprint_button = Locator(
-        By.CLASS_NAME, 'preprint-submit-button', settings.LONG_TIMEOUT
+        By.CLASS_NAME, '[data-analytics-name="Add a preprint"]', settings.LONG_TIMEOUT
     )
-    search_button = Locator(By.CSS_SELECTOR, '.preprint-search .btn-default')
-    submit_navbar = Locator(By.CSS_SELECTOR, '.branded-nav > :nth-child(2)')
-    submit_button = Locator(By.CSS_SELECTOR, '.btn.btn-success')
+    search_button = Locator(By.CSS_SELECTOR, '[data-analytics-name="Search"]')
+    submit_button = Locator(By.CSS_SELECTOR, '[data-test-submit-button]')
 
 
 class PreprintSubmitPage(BasePreprintPage):
@@ -263,9 +264,14 @@ class BrandedPreprintsDiscoverPage(BasePreprintPage):
 
 class PreprintDetailPage(GuidBasePage, BasePreprintPage):
     url_base = urljoin(settings.OSF_HOME, '{guid}')
+    identity = Locator(
+        By.CSS_SELECTOR,
+        '[data-analytics-scope="preprints detail page"]',
+        settings.LONG_TIMEOUT,
+    )
 
-    identity = Locator(By.ID, 'preprintTitle', settings.LONG_TIMEOUT)
-    title = Locator(By.ID, 'preprintTitle', settings.LONG_TIMEOUT)
+    # This locator needs a data-test-selector from software devs
+    title = Locator(By.CSS_SELECTOR, 'h1', settings.LONG_TIMEOUT)
     status = Locator(By.CSS_SELECTOR, 'span._status-badge_7ivjq4')
     status_explanation = Locator(By.CSS_SELECTOR, 'div.status-explanation')
     make_decision_button = Locator(
@@ -283,7 +289,7 @@ class PreprintDetailPage(GuidBasePage, BasePreprintPage):
     download_button = Locator(
         By.CSS_SELECTOR, 'div.share-row.p-sm.osf-box-lt.clearfix > a'
     )
-    edit_preprint_button = Locator(By.LINK_TEXT, 'Edit preprint')
+    edit_preprint_button = Locator(By.CSS_SELECTOR, 'div[class="edit-preprint-button"]')
 
     # Group Locators
     subjects = GroupLocator(
@@ -291,6 +297,18 @@ class PreprintDetailPage(GuidBasePage, BasePreprintPage):
         '#view-page > div.container > div > div.col-md-5 > div:nth-child(6) > span',
     )
     tags = GroupLocator(By.CSS_SELECTOR, 'div.tag-section.p-t-xs > span')
+
+
+class PendingPreprintDetailPage(PreprintDetailPage):
+    # This class is for preprints that are pending moderation
+    identity = Locator(
+        By.ID,
+        'preprintTitle',
+        settings.LONG_TIMEOUT,
+    )
+
+    # This locator needs a data-test-selector from software devs
+    title = Locator(By.ID, 'preprintTitle', settings.LONG_TIMEOUT)
 
 
 class ReviewsDashboardPage(OSFBasePage):
@@ -398,8 +416,8 @@ class ReviewsWithdrawalsPage(BaseReviewsPage):
 
 
 class PreprintPageNotFoundPage(OSFBasePage):
-    identity = Locator(By.CSS_SELECTOR, 'div.preprint-header.preprint-header-error')
+    identity = Locator(By.CSS_SELECTOR, '[data-analytics-scope="404"]')
     page_header = Locator(
         By.CSS_SELECTOR,
-        'div.preprint-header.preprint-header-error > div > div > div > h1',
+        '[data-analytics-scope="404"] > h2',
     )

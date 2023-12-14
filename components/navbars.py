@@ -59,21 +59,11 @@ class EmberNavbar(HomeNavbar):
 class PreprintsNavbar(EmberNavbar):
     title = Locator(By.CSS_SELECTOR, '.navbar-title')
 
-    home_link = Locator(
-        By.CSS_SELECTOR, 'ul.dropdown-menu.service-dropdown > li:nth-child(1) > a'
-    )
-    preprints_link = Locator(
-        By.CSS_SELECTOR, 'ul.dropdown-menu.service-dropdown > li:nth-child(2) > a'
-    )
-    registries_link = Locator(
-        By.CSS_SELECTOR, 'ul.dropdown-menu.service-dropdown > li:nth-child(3) > a'
-    )
-    meetings_link = Locator(
-        By.CSS_SELECTOR, 'ul.dropdown-menu.service-dropdown > li:nth-child(4) > a'
-    )
-    institutions_link = Locator(
-        By.CSS_SELECTOR, 'ul.dropdown-menu.service-dropdown > li:nth-child(5) > a'
-    )
+    home_link = Locator(By.CSS_SELECTOR, '[data-analytics-name="HOME"]')
+    preprints_link = Locator(By.CSS_SELECTOR, '[data-analytics-name="PREPRINTS"]')
+    registries_link = Locator(By.CSS_SELECTOR, '[data-analytics-name="REGISTRIES"]')
+    meetings_link = Locator(By.CSS_SELECTOR, '[data-analytics-name="MEETINGS"]')
+    institutions_link = Locator(By.CSS_SELECTOR, '[data-analytics-name="INSTITUTIONS"]')
 
     my_preprints_link = Locator(By.LINK_TEXT, 'My Preprints')
     my_reviewing_link = Locator(By.LINK_TEXT, 'My Reviewing')
@@ -81,15 +71,9 @@ class PreprintsNavbar(EmberNavbar):
     search_link = Locator(By.LINK_TEXT, 'Search')
     support_link = Locator(By.LINK_TEXT, 'Support')
     donate_link = Locator(By.LINK_TEXT, 'Donate')
-    sign_up_button = Locator(By.LINK_TEXT, 'Sign Up')
-    sign_in_button = Locator(By.LINK_TEXT, 'Sign In')
 
-    # Request a new locator from devs
-    user_dropdown = Locator(By.CSS_SELECTOR, '.nav-profile-name')
-    user_dropdown_profile = Locator(By.LINK_TEXT, 'My Profile')
-    user_dropdown_support = Locator(By.LINK_TEXT, 'OSF Support')
-    user_dropdown_settings = Locator(By.LINK_TEXT, 'Settings')
-    logout_link = Locator(By.LINK_TEXT, 'Log Out')
+    sign_up_button = Locator(By.CSS_SELECTOR, '[data-test-ad-sign-up-button]')
+    sign_in_button = Locator(By.CSS_SELECTOR, '[data-test-sign-in-button]')
 
     def verify(self):
         return self.current_service.text == 'PREPRINTS'

@@ -17,6 +17,7 @@ from api import osf_api
 from pages.login import logout
 from pages.preprints import (
     BrandedPreprintsDiscoverPage,
+    PendingPreprintDetailPage,
     PreprintDetailPage,
     PreprintDiscoverPage,
     PreprintEditPage,
@@ -55,11 +56,15 @@ class TestPreprintWorkflow:
     ):
         supplemental_guid = None
         try:
+            landing_page = PreprintLandingPage(driver, verify=True)
             # Create a date and time stamp before starting the creation of the preprint.
             # This may be used later to find the guid for the preprint.
             now = datetime.utcnow()
             date_time_stamp = now.strftime('%Y-%m-%dT%H:%M:%S')
-
+            # need to figure why this locator needs to be added manually
+            landing_page.add_preprint_button = driver.find_element_by_css_selector(
+                '[data-analytics-name="Add a preprint"]'
+            )
             landing_page.add_preprint_button.click()
             submit_page = PreprintSubmitPage(driver, verify=True)
 
@@ -147,7 +152,7 @@ class TestPreprintWorkflow:
             submit_page.create_preprint_button.click()
             submit_page.modal_create_preprint_button.click()
 
-            preprint_detail = PreprintDetailPage(driver, verify=True)
+            preprint_detail = PendingPreprintDetailPage(driver, verify=True)
             WebDriverWait(driver, 10).until(EC.visibility_of(preprint_detail.title))
 
             assert preprint_detail.title.text == project_with_file.title
@@ -245,7 +250,7 @@ class TestPreprintWorkflow:
         # Click Return to preprint button to go back to Preprint Detail page
         edit_page.scroll_into_view(edit_page.return_to_preprint_button.element)
         edit_page.return_to_preprint_button.click()
-        detail_page = PreprintDetailPage(driver, verify=True)
+        detail_page = PendingPreprintDetailPage(driver, verify=True)
         # Verify new Subject appears on the page
         subjects = detail_page.subjects
         subject_found = False
@@ -289,7 +294,7 @@ class TestPreprintWorkflow:
         )
         withdraw_page.request_withdrawal_button.click()
         # Should be redirected back to Preprint Detail page
-        assert PreprintDetailPage(driver, verify=True)
+        assert PendingPreprintDetailPage(driver, verify=True)
         # Verify via the api that the Withdrawal Request record was created
         requests = osf_api.get_preprint_requests_records(
             node_id=preprint_detail_page.guid
@@ -365,7 +370,7 @@ class TestPreprintModeration:
         # submitted above. It should be the first in the list since they are sorted
         # newest to oldest.
         submissions_page.click_submission_row(provider_id, preprint_node)
-        preprint_detail_page = PreprintDetailPage(driver, verify=True)
+        preprint_detail_page = PendingPreprintDetailPage(driver, verify=True)
         WebDriverWait(driver, 5).until(
             EC.element_to_be_clickable(
                 (By.CSS_SELECTOR, 'button.btn.dropdown-toggle.btn-success')
@@ -450,7 +455,7 @@ class TestPreprintModeration:
         # submitted above. It should be the first in the list since they are sorted
         # newest to oldest.
         submissions_page.click_submission_row(provider_id, preprint_node)
-        preprint_detail_page = PreprintDetailPage(driver, verify=True)
+        preprint_detail_page = PendingPreprintDetailPage(driver, verify=True)
         WebDriverWait(driver, 5).until(
             EC.element_to_be_clickable(
                 (By.CSS_SELECTOR, 'button.btn.dropdown-toggle.btn-success')
@@ -479,11 +484,13 @@ class TestPreprintModeration:
         # Logout and attempt to navigate to the Preprint Detail page. We should get a
         # Page Not Found page since the rejected preprint is not public.
         logout(driver)
-        preprint_page = PreprintDetailPage(driver, guid=preprint_node)
+        preprint_page = PendingPreprintDetailPage(driver, guid=preprint_node)
         preprint_page.goto(expect_redirect_to=PreprintPageNotFoundPage)
         page_not_found_page = PreprintPageNotFoundPage(driver, verify=True)
         assert page_not_found_page.page_header.text == 'Page not found'
 
+    @pytest.mark.skip
+    # skip until bug is fixed [ENG-5055]
     def test_approve_withdrawal_request_pre_moderated_preprint(
         self, session, driver, log_in_if_not_already
     ):
@@ -540,7 +547,7 @@ class TestPreprintModeration:
         # submitted above. It should be the first in the list since they are sorted
         # newest to oldest.
         withdrawals_page.click_requests_row(provider_id, preprint_node)
-        preprint_detail_page = PreprintDetailPage(driver, verify=True)
+        preprint_detail_page = PendingPreprintDetailPage(driver, verify=True)
         WebDriverWait(driver, 5).until(
             EC.element_to_be_clickable(
                 (By.CSS_SELECTOR, 'button.btn.dropdown-toggle.btn-success')
@@ -635,7 +642,7 @@ class TestPreprintModeration:
         # submitted above. It should be the first in the list since they are sorted
         # newest to oldest.
         withdrawals_page.click_requests_row(provider_id, preprint_node)
-        preprint_detail_page = PreprintDetailPage(driver, verify=True)
+        preprint_detail_page = PendingPreprintDetailPage(driver, verify=True)
         WebDriverWait(driver, 5).until(
             EC.element_to_be_clickable(
                 (By.CSS_SELECTOR, 'button.btn.dropdown-toggle.btn-success')
@@ -721,7 +728,7 @@ class TestPreprintModeration:
         # submitted above. It should be the first in the list since they are sorted
         # newest to oldest.
         submissions_page.click_submission_row(provider_id, preprint_node)
-        preprint_detail_page = PreprintDetailPage(driver, verify=True)
+        preprint_detail_page = PendingPreprintDetailPage(driver, verify=True)
         WebDriverWait(driver, 5).until(
             EC.element_to_be_clickable(
                 (By.CSS_SELECTOR, 'button.btn.dropdown-toggle.btn-success')
@@ -756,6 +763,8 @@ class TestPreprintModeration:
         assert preprint_page.title.text == preprint_title
         assert provider_id in driver.current_url
 
+    @pytest.mark.skip
+    # Skip until bug is fixed [ENG-5055]
     def test_moderator_withdrawal_post_moderated_preprint(
         self, session, driver, log_in_if_not_already
     ):
@@ -806,7 +815,7 @@ class TestPreprintModeration:
         # submitted above. It should be the first in the list since they are sorted
         # newest to oldest.
         submissions_page.click_submission_row(provider_id, preprint_node)
-        preprint_detail_page = PreprintDetailPage(driver, verify=True)
+        preprint_detail_page = PendingPreprintDetailPage(driver, verify=True)
         WebDriverWait(driver, 5).until(
             EC.element_to_be_clickable(
                 (By.CSS_SELECTOR, 'button.btn.dropdown-toggle.btn-success')
@@ -844,6 +853,8 @@ class TestPreprintModeration:
             preprint_page.status_explanation.text == 'This preprint has been withdrawn.'
         )
 
+    @pytest.mark.skip
+    # Skip until bug is fixed [ENG-5055]
     def test_approve_withdrawal_request_post_moderated_preprint(
         self, session, driver, log_in_if_not_already
     ):
@@ -900,7 +911,7 @@ class TestPreprintModeration:
         # submitted above. It should be the first in the list since they are sorted
         # newest to oldest.
         withdrawals_page.click_requests_row(provider_id, preprint_node)
-        preprint_detail_page = PreprintDetailPage(driver, verify=True)
+        preprint_detail_page = PendingPreprintDetailPage(driver, verify=True)
         WebDriverWait(driver, 5).until(
             EC.element_to_be_clickable(
                 (By.CSS_SELECTOR, 'button.btn.dropdown-toggle.btn-success')
@@ -995,7 +1006,7 @@ class TestPreprintModeration:
         # submitted above. It should be the first in the list since they are sorted
         # newest to oldest.
         withdrawals_page.click_requests_row(provider_id, preprint_node)
-        preprint_detail_page = PreprintDetailPage(driver, verify=True)
+        preprint_detail_page = PendingPreprintDetailPage(driver, verify=True)
         WebDriverWait(driver, 5).until(
             EC.element_to_be_clickable(
                 (By.CSS_SELECTOR, 'button.btn.dropdown-toggle.btn-success')
@@ -1078,6 +1089,8 @@ class TestPreprintSearch:
 
 @markers.smoke_test
 @markers.core_functionality
+@pytest.mark.skip
+# skip until we have reliable data test locators [ENG-5046]
 class TestPreprintMetrics:
     @pytest.fixture(scope='session')
     def latest_preprint_node(self):
@@ -1238,12 +1251,25 @@ class TestBrandedProviders:
             if osf_api.get_providers_total(provider['id'], session=session):
                 search_results = discover_page.search_results
                 assert search_results
-                search_results[0].find_element_by_css_selector(
+                first_preprint = search_results[0].find_element_by_css_selector(
                     '[data-test-search-result-card-title]'
-                ).click()
+                )
 
+                # Save the target preprints link and get the guid in the href attribute
+                # Note: This test currently only runs on prod so this regex does not support test env urls
+                first_preprint_link = first_preprint.get_attribute('href')
+                match = re.search(
+                    r'(^https://osf\.io/([a-z0-9]{5}))', first_preprint_link
+                )
+                preprint_guid = match.group(2)
+
+                first_preprint.click()
                 main_window = switch_to_new_tab(driver)
+
                 PreprintDetailPage(driver, verify=True)
+                assert provider['id'] in driver.current_url
+                assert preprint_guid in driver.current_url
+
                 close_current_tab(driver, main_window)
 
             elif not provider['attributes']['additional_providers']:

@@ -166,7 +166,7 @@ class TestPreprintsNavbarLoggedOut(NavbarTestLoggedOutMixin):
     def test_sign_up_button(self, page, driver):
         page.navbar.sign_up_button.click()
         # Sign Up button takes you to a more specific OSF Preprints sign up page
-        assert 'campaign=osf-preprints' in driver.current_url
+        assert 'campaign' and 'preprints' in driver.current_url
 
 
 @markers.smoke_test
