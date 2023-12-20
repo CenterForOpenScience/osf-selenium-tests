@@ -70,7 +70,8 @@ class PreprintsNavbar(EmberNavbar):
     add_a_preprint_link = Locator(By.LINK_TEXT, 'Add a Preprint')
     search_link = Locator(By.LINK_TEXT, 'Search')
     support_link = Locator(By.LINK_TEXT, 'Support')
-    donate_link = Locator(By.CSS_SELECTOR, '[data-analytics-name="Donate"]')
+    donate_link = Locator(By.LINK_TEXT, 'Donate')
+
     sign_up_button = Locator(By.CSS_SELECTOR, '[data-test-ad-sign-up-button]')
     sign_in_button = Locator(By.CSS_SELECTOR, '[data-test-sign-in-button]')
 
