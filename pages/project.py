@@ -235,9 +235,16 @@ def verify_log_entry(session, driver, node_id, action, **kwargs):
     assert log_params['params_node']['title'] == project_title
     # Verify current date is also in the log entry
     now = datetime.now()
+    utc_now = datetime.utcnow()
+
+    # The front end uses whatever time zone your web browser is synced to
     date_today = now.strftime('%Y-%m-%d')
     assert date_today in log_item_1_text
     assert date_today in log_data['attributes']['date']
+
+    # The API logs time in UTC
+    utc_date_today = utc_now.strftime('%Y-%m-%d')
+    assert utc_date_today in log_data['attributes']['date']
 
 
 class RequestAccessPage(GuidBasePage):
