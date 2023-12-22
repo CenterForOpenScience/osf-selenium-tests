@@ -6,6 +6,6 @@ from pages.base import BasePage
 
 
 class COSDonatePage(BasePage):
-    url = 'https://www.cos.io/donate-to-cos'
+    url = 'https://www.cos.io/support-cos'
 
     identity = Locator(By.ID, 'Yourdonationtitle', settings.LONG_TIMEOUT)

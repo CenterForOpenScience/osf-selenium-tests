@@ -26,6 +26,8 @@ authorized in user settings, or else the test will fail to run:
     - 'box', 'dropbox', 's3', 'owncloud'
 """
 
+testable_addons = ['box', 'dropbox', 'owncloud', 's3']
+
 
 def find_row_by_name(files_page, file_name):
     all_files = files_page.file_rows
@@ -108,7 +110,7 @@ class TestFilesPage:
     node_id from each test.
     """
 
-    @pytest.mark.parametrize('provider', ['box', 'dropbox', 'osfstorage', 's3'])
+    @pytest.mark.parametrize('provider', testable_addons + ['osfstorage'])
     def test_rename_file(self, driver, default_project, session, provider):
         """Test that renames a single file from one of the storage providers on the
         Project Files List page.
@@ -184,7 +186,7 @@ class TestFilesPage:
         finally:
             osf_api.delete_addon_files(session, provider, current_browser, guid=node_id)
 
-    @pytest.mark.parametrize('provider', ['box', 'dropbox', 'osfstorage', 's3'])
+    @pytest.mark.parametrize('provider', testable_addons + ['osfstorage'])
     def test_delete_single_file(self, driver, default_project, session, provider):
         """Test that deletes a single file from one of the storage providers on the
         Project Files List page.
@@ -238,7 +240,7 @@ class TestFilesPage:
         finally:
             osf_api.delete_addon_files(session, provider, current_browser, guid=node_id)
 
-    @pytest.mark.parametrize('provider', ['box', 'dropbox', 'osfstorage', 's3'])
+    @pytest.mark.parametrize('provider', testable_addons + ['osfstorage'])
     def test_delete_multiple_files(self, driver, default_project, session, provider):
         """Test that deletes multiple files (2) from one of the storage providers on the
         Project Files List page.
@@ -301,7 +303,7 @@ class TestFilesPage:
         finally:
             osf_api.delete_addon_files(session, provider, current_browser, guid=node_id)
 
-    @pytest.mark.parametrize('provider', ['box', 'dropbox', 's3'])
+    @pytest.mark.parametrize('provider', testable_addons)
     def test_move_single_file(self, driver, default_project, session, provider):
         """Test that moves a single file from one of the storage providers on the
         Project Files List page to OSF Storage.
@@ -373,7 +375,7 @@ class TestFilesPage:
         finally:
             osf_api.delete_addon_files(session, provider, current_browser, guid=node_id)
 
-    @pytest.mark.parametrize('provider', ['box', 'dropbox', 's3'])
+    @pytest.mark.parametrize('provider', testable_addons)
     def test_move_multiple_files(self, driver, default_project, session, provider):
         """Test that moves multiple files from one of the storage providers on the
         Project Files List page to OSF Storage.
@@ -444,7 +446,7 @@ class TestFilesPage:
         finally:
             osf_api.delete_addon_files(session, provider, current_browser, guid=node_id)
 
-    @pytest.mark.parametrize('provider', ['box', 'dropbox', 's3'])
+    @pytest.mark.parametrize('provider', testable_addons)
     def test_copy_single_file(self, driver, default_project, session, provider):
         """Test that copies a single file from one of the storage providers on the
         Project Files List page to OSF Storage.
@@ -516,7 +518,7 @@ class TestFilesPage:
         finally:
             osf_api.delete_addon_files(session, provider, current_browser, guid=node_id)
 
-    @pytest.mark.parametrize('provider', ['box', 'dropbox', 's3'])
+    @pytest.mark.parametrize('provider', testable_addons)
     def test_copy_multiple_files(self, driver, default_project, session, provider):
         """Test that copies multiple files from one of the storage providers on the
         Project Files List page to OSF Storage.
@@ -587,7 +589,7 @@ class TestFilesPage:
         finally:
             osf_api.delete_addon_files(session, provider, current_browser, guid=node_id)
 
-    @pytest.mark.parametrize('provider', ['box', 'dropbox', 'osfstorage', 's3'])
+    @pytest.mark.parametrize('provider', testable_addons + ['osfstorage'])
     def test_download_file(self, driver, default_project, session, provider):
         """Test that downloads a single file from one of the storage providers on the
         Project Files List page.
