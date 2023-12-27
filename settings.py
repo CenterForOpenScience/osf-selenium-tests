@@ -77,6 +77,7 @@ EXPECTED_PROVIDERS = env.list(
         'googledrive',
         'osfstorage',
         'onedrive',
+        'owncloud',
         's3',
     ],
 )
