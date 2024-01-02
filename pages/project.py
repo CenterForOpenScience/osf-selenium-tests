@@ -51,6 +51,9 @@ class ProjectPage(GuidBasePage):
     make_public_link = Locator(By.LINK_TEXT, 'Make Public')
     make_private_link = Locator(By.LINK_TEXT, 'Make Private')
     loading_indicator = Locator(By.CSS_SELECTOR, '.ball-pulse')
+
+    # top level files & folders
+    fangorn_row = Locator(By.CSS_SELECTOR, '[data-level="3"]')
     add_component_button = Locator(
         By.CSS_SELECTOR, '#newComponent > span > div.btn.btn-sm.btn-default'
     )
