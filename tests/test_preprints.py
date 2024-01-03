@@ -489,8 +489,6 @@ class TestPreprintModeration:
         page_not_found_page = PreprintPageNotFoundPage(driver, verify=True)
         assert page_not_found_page.page_header.text == 'Page not found'
 
-    @pytest.mark.skip
-    # skip until bug is fixed [ENG-5055]
     def test_approve_withdrawal_request_pre_moderated_preprint(
         self, session, driver, log_in_if_not_already
     ):
@@ -582,9 +580,8 @@ class TestPreprintModeration:
         assert PreprintDetailPage(driver, verify=True)
         WebDriverWait(driver, 5).until(EC.visibility_of(preprint_page.title))
         assert preprint_page.title.text == preprint_title
-        assert (
-            preprint_page.status_explanation.text == 'This preprint has been withdrawn.'
-        )
+        # Add assert for "This preprint has been withdrawn" after [ENG-5092] is fixed.
+        assert preprint_page.withdraw_reason.present()
 
     def test_decline_withdrawal_request_pre_moderated_preprint(
         self, session, driver, log_in_if_not_already
@@ -763,8 +760,6 @@ class TestPreprintModeration:
         assert preprint_page.title.text == preprint_title
         assert provider_id in driver.current_url
 
-    @pytest.mark.skip
-    # Skip until bug is fixed [ENG-5055]
     def test_moderator_withdrawal_post_moderated_preprint(
         self, session, driver, log_in_if_not_already
     ):
@@ -849,12 +844,9 @@ class TestPreprintModeration:
         assert PreprintDetailPage(driver, verify=True)
         WebDriverWait(driver, 5).until(EC.visibility_of(preprint_page.title))
         assert preprint_page.title.text == preprint_title
-        assert (
-            preprint_page.status_explanation.text == 'This preprint has been withdrawn.'
-        )
+        # Add assert for "This preprint has been withdrawn" after [ENG-5092] is fixed.
+        assert preprint_page.withdraw_reason.present()
 
-    @pytest.mark.skip
-    # Skip until bug is fixed [ENG-5055]
     def test_approve_withdrawal_request_post_moderated_preprint(
         self, session, driver, log_in_if_not_already
     ):
@@ -946,9 +938,8 @@ class TestPreprintModeration:
         assert PreprintDetailPage(driver, verify=True)
         WebDriverWait(driver, 5).until(EC.visibility_of(preprint_page.title))
         assert preprint_page.title.text == preprint_title
-        assert (
-            preprint_page.status_explanation.text == 'This preprint has been withdrawn.'
-        )
+        # Add assert for "This preprint has been withdrawn" after [ENG-5092] is fixed.
+        assert preprint_page.withdraw_reason.present()
 
     def test_decline_withdrawal_request_post_moderated_preprint(
         self, session, driver, log_in_if_not_already
@@ -1089,8 +1080,6 @@ class TestPreprintSearch:
 
 @markers.smoke_test
 @markers.core_functionality
-@pytest.mark.skip
-# skip until we have reliable data test locators [ENG-5046]
 class TestPreprintMetrics:
     @pytest.fixture(scope='session')
     def latest_preprint_node(self):
@@ -1107,12 +1096,16 @@ class TestPreprintMetrics:
         preprint_page = PreprintDetailPage(driver, guid=latest_preprint_node)
         preprint_page.goto()
         assert PreprintDetailPage(driver, verify=True)
-        match = re.search(
-            r'Views: (\d+) \| Downloads:', preprint_page.views_downloads_counts.text
+
+        # Preprint page shows a string on the front end and api returns a non-string value from the db
+        assert preprint_page.views_count.text == str(api_views_count)
+        # Wait for most of the page to finish loading before reloading page
+        WebDriverWait(driver, 10).until(
+            EC.visibility_of(preprint_page.default_citation)
         )
-        assert match is not None
-        page_views_count = int(match.group(1))
-        assert api_views_count == page_views_count
+        # "response 404 (backend NotFound), service rules for the path non-existent"
+        # error message shows when the preprint fails to load
+        assert not preprint_page.response_404
         # Don't reload the page in Production since we don't want to artificially
         # inflate the metrics
         if not settings.PRODUCTION:
@@ -1122,7 +1115,7 @@ class TestPreprintMetrics:
             # The initial load of the page above adds 1 to the views count, and the
             # following reload adds a 2nd view to the count.  But the update to the
             # database can take a couple of seconds, so immediately accessing the api
-            # to get the count below may not show the 2nd view.  Hence we are just
+            # to get the count below may not show the 2nd view. Hence, we are just
             # checking that the views count did increase but not by how much.
             # Unfortunately this means that we are not checking for any issues like
             # double-counting.
@@ -1145,10 +1138,7 @@ class TestPreprintMetrics:
         preprint_page = PreprintDetailPage(driver, guid=latest_preprint_node)
         preprint_page.goto()
         assert PreprintDetailPage(driver, verify=True)
-        page_downloads_count = int(
-            preprint_page.views_downloads_counts.text.split('Downloads:')[1]
-        )
-        assert api_downloads_count == page_downloads_count
+        assert str(api_downloads_count) == preprint_page.downloads_count.text
         # Don't download the Preprint in Production since we don't want to artificially
         # inflate the metrics
         if not settings.PRODUCTION:
