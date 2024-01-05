@@ -236,12 +236,18 @@ def verify_log_entry(session, driver, node_id, action, **kwargs):
     # Verify project title is in the log entry
     assert project_title in log_item_1_text
     assert log_params['params_node']['title'] == project_title
+
+    import logging
+
+    logger = logging.getLogger(__name__)
     # Verify current date is also in the log entry
     now = datetime.now()
     utc_now = datetime.utcnow()
 
     # The front end uses whatever time zone your web browser is synced to
     date_today = now.strftime('%Y-%m-%d')
+    logger.error('Date today: {}'.format(date_today))
+    logger.error('Log Item Text1: {}'.format(log_item_1_text))
     assert date_today in log_item_1_text
 
     # The API logs time in UTC
