@@ -409,7 +409,6 @@ def connect_provider_root_to_node(
             'id': provider,
             'attributes': {
                 'external_account_id': external_account_id,
-                'enabled': True,
             },
         },
     }
