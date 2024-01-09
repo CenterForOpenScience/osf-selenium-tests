@@ -2,8 +2,8 @@ name: Weekly Regression Tests
 
 on:
   schedule:
-    # 4am UTC = 12am EDT (Saturday)
-    - cron: '0 4 * * 6'
+    # 5am UTC = 12am EST (Saturday)
+    - cron: '0 5 * * 6'
 
   # Allows you to run this workflow manually from the Actions tab and change the
   # testing environment, OSF service, and browser.

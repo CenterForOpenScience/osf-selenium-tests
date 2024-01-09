@@ -2,8 +2,8 @@ name: Nightly Core Functionality Tests
 
 on:
   schedule:
-    # 4am UTC = 12am EDT (Sunday thru Friday)
-    - cron: '0 4 * * 0-5'
+    # 5am UTC = 12am EST (Sunday thru Friday)
+    - cron: '0 5 * * 0-5'
 
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
