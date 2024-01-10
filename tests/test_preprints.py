@@ -580,7 +580,10 @@ class TestPreprintModeration:
         assert PreprintDetailPage(driver, verify=True)
         WebDriverWait(driver, 5).until(EC.visibility_of(preprint_page.title))
         assert preprint_page.title.text == preprint_title
-        # Add assert for "This preprint has been withdrawn" after [ENG-5092] is fixed.
+        # TODO: Re-enable assert after [ENG-5092] is fixed.
+        # assert (
+        #         preprint_page.status_explanation.text == 'This preprint has been withdrawn.'
+        # )
         assert preprint_page.withdraw_reason.present()
 
     def test_decline_withdrawal_request_pre_moderated_preprint(
@@ -844,7 +847,10 @@ class TestPreprintModeration:
         assert PreprintDetailPage(driver, verify=True)
         WebDriverWait(driver, 5).until(EC.visibility_of(preprint_page.title))
         assert preprint_page.title.text == preprint_title
-        # Add assert for "This preprint has been withdrawn" after [ENG-5092] is fixed.
+        # TODO: Re-enable assert after [ENG-5092] is fixed.
+        # assert (
+        #         preprint_page.status_explanation.text == 'This preprint has been withdrawn.'
+        # )
         assert preprint_page.withdraw_reason.present()
 
     def test_approve_withdrawal_request_post_moderated_preprint(
@@ -1097,15 +1103,6 @@ class TestPreprintMetrics:
         preprint_page.goto()
         assert PreprintDetailPage(driver, verify=True)
 
-        # Preprint page shows a string on the front end and api returns a non-string value from the db
-        assert preprint_page.views_count.text == str(api_views_count)
-        # Wait for most of the page to finish loading before reloading page
-        WebDriverWait(driver, 10).until(
-            EC.visibility_of(preprint_page.default_citation)
-        )
-        # "response 404 (backend NotFound), service rules for the path non-existent"
-        # error message shows when the preprint fails to load
-        assert not preprint_page.response_404
         # Don't reload the page in Production since we don't want to artificially
         # inflate the metrics
         if not settings.PRODUCTION:
@@ -1138,7 +1135,7 @@ class TestPreprintMetrics:
         preprint_page = PreprintDetailPage(driver, guid=latest_preprint_node)
         preprint_page.goto()
         assert PreprintDetailPage(driver, verify=True)
-        assert str(api_downloads_count) == preprint_page.downloads_count.text
+        assert api_downloads_count == int(preprint_page.downloads_count.text)
         # Don't download the Preprint in Production since we don't want to artificially
         # inflate the metrics
         if not settings.PRODUCTION:

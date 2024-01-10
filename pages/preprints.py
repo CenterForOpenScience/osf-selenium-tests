@@ -270,7 +270,6 @@ class PreprintDetailPage(GuidBasePage, BasePreprintPage):
         settings.LONG_TIMEOUT,
     )
 
-    # This locator needs a data-test-selector from software devs
     title = Locator(
         By.CSS_SELECTOR, 'h1[data-test-preprint-title]', settings.LONG_TIMEOUT
     )
@@ -280,7 +279,6 @@ class PreprintDetailPage(GuidBasePage, BasePreprintPage):
     download_button = Locator(By.CSS_SELECTOR, '[data-test-download-button]')
     edit_preprint_button = Locator(By.CSS_SELECTOR, 'div[class="edit-preprint-button"]')
     default_citation = Locator(By.CSS_SELECTOR, '[data-test-default-citation="apa"]')
-    response_404 = Locator(By.CSS_SELECTOR, 'pre[style]')
 
     # Locators for the reviews app preprint detail page
     status = Locator(By.CSS_SELECTOR, 'span._status-badge_7ivjq4')
