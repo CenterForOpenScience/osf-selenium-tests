@@ -413,7 +413,7 @@ class ReviewsWithdrawalsPage(BaseReviewsPage):
             url = row.find_element_by_css_selector('a').get_attribute('href')
             node_id = url.split(provider_id + '/', 1)[1]
             if node_id == preprint_id:
-                row.click()
+                row.find_element_by_css_selector('div[title]').click()
                 break
 
 
