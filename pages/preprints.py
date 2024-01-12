@@ -266,14 +266,24 @@ class PreprintDetailPage(GuidBasePage, BasePreprintPage):
     url_base = urljoin(settings.OSF_HOME, '{guid}')
     identity = Locator(
         By.CSS_SELECTOR,
-        '[data-analytics-scope="preprints detail page"]',
+        '[data-test-preprint-header]',
         settings.LONG_TIMEOUT,
     )
 
-    # This locator needs a data-test-selector from software devs
-    title = Locator(By.CSS_SELECTOR, 'h1', settings.LONG_TIMEOUT)
+    title = Locator(
+        By.CSS_SELECTOR, 'h1[data-test-preprint-title]', settings.LONG_TIMEOUT
+    )
+    view_page = Locator(By.ID, 'view-page')
+    views_count = Locator(By.CSS_SELECTOR, '[data-test-view-count]')
+    downloads_count = Locator(By.CSS_SELECTOR, '[data-test-download-count]')
+    download_button = Locator(By.CSS_SELECTOR, '[data-test-download-button]')
+    edit_preprint_button = Locator(By.CSS_SELECTOR, 'div[class="edit-preprint-button"]')
+    default_citation = Locator(By.CSS_SELECTOR, '[data-test-default-citation="apa"]')
+
+    # Locators for the reviews app preprint detail page
     status = Locator(By.CSS_SELECTOR, 'span._status-badge_7ivjq4')
     status_explanation = Locator(By.CSS_SELECTOR, 'div.status-explanation')
+    withdraw_reason = Locator(By.CSS_SELECTOR, '[data-test-withdrawal-justification]')
     make_decision_button = Locator(
         By.CSS_SELECTOR, 'button.btn.dropdown-toggle.btn-success'
     )
@@ -282,19 +292,11 @@ class PreprintDetailPage(GuidBasePage, BasePreprintPage):
     withdraw_radio_button = Locator(By.CSS_SELECTOR, 'input[value="withdrawn"]')
     reason_textarea = Locator(By.CSS_SELECTOR, 'textarea.form-control.ember-text-area')
     submit_decision_button = Locator(By.ID, 'submit-btn')
-    view_page = Locator(By.ID, 'view-page')
-    views_downloads_counts = Locator(
-        By.CSS_SELECTOR, 'div.share-row.p-sm.osf-box-lt.clearfix > div'
-    )
-    download_button = Locator(
-        By.CSS_SELECTOR, 'div.share-row.p-sm.osf-box-lt.clearfix > a'
-    )
-    edit_preprint_button = Locator(By.CSS_SELECTOR, 'div[class="edit-preprint-button"]')
 
     # Group Locators
     subjects = GroupLocator(
         By.CSS_SELECTOR,
-        '#view-page > div.container > div > div.col-md-5 > div:nth-child(6) > span',
+        '[class="subject-preview"]',
     )
     tags = GroupLocator(By.CSS_SELECTOR, 'div.tag-section.p-t-xs > span')
 
@@ -411,7 +413,7 @@ class ReviewsWithdrawalsPage(BaseReviewsPage):
             url = row.find_element_by_css_selector('a').get_attribute('href')
             node_id = url.split(provider_id + '/', 1)[1]
             if node_id == preprint_id:
-                row.click()
+                row.find_element_by_css_selector('div[title]').click()
                 break
 
 
