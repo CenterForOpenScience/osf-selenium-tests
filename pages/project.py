@@ -246,8 +246,8 @@ def verify_log_entry(session, driver, node_id, action, **kwargs):
 
     # The front end uses whatever time zone your web browser is synced to
     date_today = now.strftime('%Y-%m-%d')
-    logger.error('Date today: {}'.format(date_today))
-    logger.error('Log Item Text1: {}'.format(log_item_1_text))
+    logger.error('Python now.strftime: {}'.format(now))
+    logger.error('Log widget item text1: {}'.format(log_item_1_text))
     assert date_today in log_item_1_text
 
     # The API logs time in UTC
