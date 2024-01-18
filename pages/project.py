@@ -252,6 +252,8 @@ def verify_log_entry(session, driver, node_id, action, **kwargs):
 
     # The API logs time in UTC
     utc_date_today = utc_now.strftime('%Y-%m-%d')
+    logger.error('Current UTC Time: {}'.format(utc_now))
+    logger.error('Database Log: {}'.format(log_data['attributes']['date']))
     assert utc_date_today in log_data['attributes']['date']
 
 
