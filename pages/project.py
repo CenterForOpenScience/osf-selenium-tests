@@ -1,4 +1,9 @@
-from datetime import datetime
+import logging
+from datetime import (
+    datetime,
+    timedelta,
+    timezone,
+)
 
 from selenium.webdriver.common.by import By
 
@@ -237,23 +242,36 @@ def verify_log_entry(session, driver, node_id, action, **kwargs):
     assert project_title in log_item_1_text
     assert log_params['params_node']['title'] == project_title
 
-    import logging
-
     logger = logging.getLogger(__name__)
-    # Verify current date is also in the log entry
-    now = datetime.now()
+
+    # Find how many minutes the current timezone is offset from UTC,
+    # then use that timezone to verify time stamps in the UI's log widget.
+    offset_minutes = driver.execute_script('return new Date().getTimezoneOffset()')
+    matching_timezone = timezone(timedelta(minutes=-1 * offset_minutes))
+    logger.error('# of minutes offset from UTC: {}'.format(offset_minutes))
+    logger.error('Matching timezone: {}'.format(matching_timezone))
+
+    now = datetime.now(matching_timezone)
+    date_today = now.strftime('%Y-%m-%d')
+
+    # If an error occurs with the data assertions, print all relevant information
+    logger.error('Python now.strftime: {}'.format(now))
+    logger.error('Date today in current timezone: {}'.format(date_today))
+    logger.error('Log widget item text1: {}'.format(log_item_1_text))
+
     utc_now = datetime.utcnow()
+    utc_date_today = utc_now.strftime('%Y-%m-%d')
+
+    # If an error occurs with the data assertions, print all relevant information
+    # in UTC
+    logger.error('Current UTC Time: {}'.format(utc_now))
+    logger.error('Date today in UTC: {}'.format(utc_date_today))
+    logger.error('Database Log: {}'.format(log_data['attributes']['date']))
 
     # The front end uses whatever time zone your web browser is synced to
-    date_today = now.strftime('%Y-%m-%d')
-    logger.error('Python now.strftime: {}'.format(now))
-    logger.error('Log widget item text1: {}'.format(log_item_1_text))
     assert date_today in log_item_1_text
 
     # The API logs time in UTC
-    utc_date_today = utc_now.strftime('%Y-%m-%d')
-    logger.error('Current UTC Time: {}'.format(utc_now))
-    logger.error('Database Log: {}'.format(log_data['attributes']['date']))
     assert utc_date_today in log_data['attributes']['date']
 
 

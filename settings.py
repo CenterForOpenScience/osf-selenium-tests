@@ -95,18 +95,21 @@ caps = {
         'os': 'Windows',
         'os_version': '10',
         'resolution': '2048x1536',
+        'timezone': 'UTC',
     },
     'edge': {
         'browser': 'Edge',
         'os': 'Windows',
         'os_version': '10',
         'resolution': '2048x1536',
+        'timezone': 'UTC',
     },
     'firefox': {
         'browser': 'Firefox',
         'os': 'Windows',
         'os_version': '10',
         'resolution': '2048x1536',
+        'timezone': 'UTC',
     },
 }
 
