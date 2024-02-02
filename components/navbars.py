@@ -29,6 +29,7 @@ class HomeNavbar(BaseElement):
     sign_up_button = Locator(By.CSS_SELECTOR, 'a.btn-success:nth-child(1)')
     sign_in_button = Locator(By.CSS_SELECTOR, '.btn-top-login')
     current_service = Locator(By.CSS_SELECTOR, '#navbarScope .current-service > strong')
+    projectdetails_my_project_link = Locator(By.XPATH, '//a[text()="My Projects"]')
 
     def verify(self):
         return len(self.driver.find_elements(By.ID, 'navbarScope')) == 1
