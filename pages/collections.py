@@ -46,10 +46,11 @@ class CollectionDiscoverPage(BaseCollectionPage):
 
     identity = Locator(By.CSS_SELECTOR, 'div[data-test-provider-branding]')
     loading_indicator = Locator(By.CSS_SELECTOR, '.ball-scale')
-    search_link =Locator(By.XPATH, '//span[text()="Search"]')
+    search_link = Locator(By.XPATH, '//span[text()="Search"]')
     donate_link = Locator(By.XPATH, '//a[text()="Donate"]')
     collections_my_projects_link = Locator(By.XPATH, '//a[text()="My OSF Projects"]')
-    add_to_collections_link=Locator(By.XPATH, '//span[text()="Add to Collection"]')
+    add_to_collections_link = Locator(By.XPATH, '//span[text()="Add to Collection"]')
+
 
 class CollectionSubmitPage(BaseCollectionPage):
     url_addition = 'submit'
@@ -117,9 +118,9 @@ class CollectionEditPage(BaseCollectionPage):
     @property
     def url(self):
         return (
-            urljoin(self.base_url, self.provider_id)
-            + '/'
-            + self.url_addition.format(guid=self.guid)
+                urljoin(self.base_url, self.provider_id)
+                + '/'
+                + self.url_addition.format(guid=self.guid)
         )
 
 

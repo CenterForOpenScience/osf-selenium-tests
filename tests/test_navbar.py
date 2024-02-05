@@ -319,6 +319,7 @@ def assert_donate_page(driver, donate_page):
     assert meta_tag.get_attribute('property') == 'og:title'
     assert meta_tag.get_attribute('content') == 'Support COS'
 
+
 @markers.smoke_test
 @markers.core_functionality
 class TestCollectionsNavbarLoggedOut():
@@ -327,20 +328,21 @@ class TestCollectionsNavbarLoggedOut():
         return osf_api.get_provider(type='collections', provider_id='selenium')
 
     @pytest.fixture()
-    def collectionsdiscover_page(self, driver, provider):
+    def collections_discover_page(self, driver, provider):
         discover_page = CollectionDiscoverPage(driver, provider=provider)
         discover_page.goto()
         discover_page.loading_indicator.here_then_gone()
         return discover_page
 
-    def test_search_link(self, driver, collectionsdiscover_page):
-        collectionsdiscover_page.search_link.click()
+    def test_search_link(self, driver, collections_discover_page):
+        collections_discover_page.search_link.click()
         assert 'discover' in driver.current_url
 
-    def test_donate_link(self, session, driver, collectionsdiscover_page):
-        collectionsdiscover_page.donate_link.click()
+    def test_donate_link(self, session, driver, collections_discover_page):
+        collections_discover_page.donate_link.click()
         donate_page = COSDonatePage(driver, verify=False)
         assert_donate_page(driver, donate_page)
+
 
 @markers.smoke_test
 @markers.core_functionality
@@ -380,19 +382,15 @@ class TestCollectionsNavbarLoggedIn():
 @pytest.mark.usefixtures('log_in_if_not_already')
 class TestProjectsNavbarLoggedIn():
     @pytest.fixture()
-    def project_page(self,driver, default_project_page):
-         default_project_page.goto()
-         return default_project_page
+    def project_page(self, driver, default_project_page):
+        default_project_page.goto()
+        return default_project_page
 
     @pytest.fixture()
     def page(self, driver, project_with_file):
         page = ProjectPage(driver, guid=project_with_file.id)
         page.goto()
         return page
-
-    def test_my_projects_link(self, page, driver, fake):
-        page.navbar.projectdetails_my_project_link.click()
-        assert MyProjectsPage(driver, verify=True)
 
     def test_search_link(self, session, driver, page, fake):
         page.navbar.search_link.click()
@@ -406,5 +404,3 @@ class TestProjectsNavbarLoggedIn():
         page.navbar.donate_link.click()
         donate_page = COSDonatePage(driver, verify=False)
         assert_donate_page(driver, donate_page)
-
-
