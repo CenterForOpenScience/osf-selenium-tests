@@ -43,6 +43,7 @@ cover/
 .konchrc
 *.pyc
 *.log
+.python-version
 
 # Private Info
 variables.py

@@ -398,15 +398,15 @@ class TestProjectsNavbarLoggedIn:
         page.goto()
         return page
 
-    def test_search_link(self, session, driver, page, fake):
+    def test_search_link(self, session, driver, page):
         page.navbar.search_link.click()
         SearchPage(driver, verify=True)
 
-    def test_support_link(self, session, driver, page, fake):
+    def test_support_link(self, session, driver, page):
         page.navbar.support_link.click()
         SupportPage(driver, verify=True)
 
-    def test_donate_link(self, session, driver, page, fake):
+    def test_donate_link(self, session, driver, page):
         page.navbar.donate_link.click()
         donate_page = COSDonatePage(driver, verify=False)
         assert_donate_page(driver, donate_page)
