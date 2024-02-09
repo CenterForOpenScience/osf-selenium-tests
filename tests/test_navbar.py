@@ -2,6 +2,10 @@ import pytest
 
 import markers
 from api import osf_api
+from pages.collections import (
+    CollectionDiscoverPage,
+    CollectionSubmitPage,
+)
 from pages.cos import COSDonatePage
 from pages.dashboard import DashboardPage
 from pages.institutions import InstitutionsLandingPage
@@ -14,14 +18,16 @@ from pages.preprints import (
     PreprintSubmitPage,
     ReviewsDashboardPage,
 )
-from pages.project import MyProjectsPage, ProjectPage
+from pages.project import (
+    MyProjectsPage,
+    ProjectPage,
+)
 from pages.register import RegisterPage
 from pages.registrations import MyRegistrationsPage
 from pages.registries import (
     RegistrationAddNewPage,
     RegistriesLandingPage,
 )
-from pages.collections import CollectionDiscoverPage, CollectionSubmitPage
 from pages.search import SearchPage
 from pages.support import SupportPage
 from pages.user import (
@@ -322,7 +328,7 @@ def assert_donate_page(driver, donate_page):
 
 @markers.smoke_test
 @markers.core_functionality
-class TestCollectionsNavbarLoggedOut():
+class TestCollectionsNavbarLoggedOut:
     @pytest.fixture
     def provider(self, driver):
         return osf_api.get_provider(type='collections', provider_id='selenium')
@@ -347,7 +353,7 @@ class TestCollectionsNavbarLoggedOut():
 @markers.smoke_test
 @markers.core_functionality
 @pytest.mark.usefixtures('log_in_if_not_already')
-class TestCollectionsNavbarLoggedIn():
+class TestCollectionsNavbarLoggedIn:
     @pytest.fixture
     def provider(self, driver):
         return osf_api.get_provider(type='collections', provider_id='selenium')
@@ -380,7 +386,7 @@ class TestCollectionsNavbarLoggedIn():
 @markers.smoke_test
 @markers.core_functionality
 @pytest.mark.usefixtures('log_in_if_not_already')
-class TestProjectsNavbarLoggedIn():
+class TestProjectsNavbarLoggedIn:
     @pytest.fixture()
     def project_page(self, driver, default_project_page):
         default_project_page.goto()

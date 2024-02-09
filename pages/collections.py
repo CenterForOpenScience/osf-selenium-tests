@@ -118,9 +118,9 @@ class CollectionEditPage(BaseCollectionPage):
     @property
     def url(self):
         return (
-                urljoin(self.base_url, self.provider_id)
-                + '/'
-                + self.url_addition.format(guid=self.guid)
+            urljoin(self.base_url, self.provider_id)
+            + '/'
+            + self.url_addition.format(guid=self.guid)
         )
 
 
