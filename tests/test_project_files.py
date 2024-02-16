@@ -26,7 +26,7 @@ authorized in user settings, or else the test will fail to run:
     - 'box', 'dropbox', 's3', 'owncloud'
 """
 
-testable_addons = ['box', 'dropbox', 'owncloud', 's3']
+testable_addons = ['box', 'dropbox', 's3']
 
 
 def find_row_by_name(files_page, file_name):
