@@ -1,6 +1,7 @@
 import pytest
 
 import markers
+import settings
 from api import osf_api
 from pages.collections import (
     CollectionDiscoverPage,
@@ -331,7 +332,10 @@ def assert_donate_page(driver, donate_page):
 class TestCollectionsNavbarLoggedOut:
     @pytest.fixture
     def provider(self, driver):
-        return osf_api.get_provider(type='collections', provider_id='selenium')
+        if settings.DOMAIN == 'prod':
+            return osf_api.get_provider(type='collections', provider_id='metascience')
+        else:
+            return osf_api.get_provider(type='collections', provider_id='selenium')
 
     @pytest.fixture()
     def collections_discover_page(self, driver, provider):
@@ -356,7 +360,10 @@ class TestCollectionsNavbarLoggedOut:
 class TestCollectionsNavbarLoggedIn:
     @pytest.fixture
     def provider(self, driver):
-        return osf_api.get_provider(type='collections', provider_id='selenium')
+        if settings.DOMAIN == 'prod':
+            return osf_api.get_provider(type='collections', provider_id='metascience')
+        else:
+            return osf_api.get_provider(type='collections', provider_id='selenium')
 
     @pytest.fixture()
     def page(self, driver, provider):
