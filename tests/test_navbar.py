@@ -1,6 +1,14 @@
 import pytest
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
 
 import markers
+import settings
+from api import osf_api
+from pages.collections import (
+    CollectionDiscoverPage,
+    CollectionSubmitPage,
+)
 from pages.cos import COSDonatePage
 from pages.dashboard import DashboardPage
 from pages.institutions import InstitutionsLandingPage
@@ -13,7 +21,10 @@ from pages.preprints import (
     PreprintSubmitPage,
     ReviewsDashboardPage,
 )
-from pages.project import MyProjectsPage
+from pages.project import (
+    MyProjectsPage,
+    ProjectPage,
+)
 from pages.register import RegisterPage
 from pages.registrations import MyRegistrationsPage
 from pages.registries import (
@@ -316,3 +327,95 @@ def assert_donate_page(driver, donate_page):
     assert 'support-cos' in driver.current_url
     assert meta_tag.get_attribute('property') == 'og:title'
     assert meta_tag.get_attribute('content') == 'Support COS'
+
+
+@markers.smoke_test
+@markers.core_functionality
+class TestCollectionsNavbarLoggedOut:
+    @pytest.fixture
+    def provider(self, driver):
+        if settings.DOMAIN == 'prod':
+            return osf_api.get_provider(type='collections', provider_id='metascience')
+        else:
+            return osf_api.get_provider(type='collections', provider_id='selenium')
+
+    @pytest.fixture()
+    def collections_discover_page(self, driver, provider):
+        discover_page = CollectionDiscoverPage(driver, provider=provider)
+        discover_page.goto()
+        WebDriverWait(driver, 5).until(EC.visibility_of(discover_page.identity))
+        return discover_page
+
+    def test_search_link(self, driver, collections_discover_page):
+        collections_discover_page.search_link.click()
+        assert 'discover' in driver.current_url
+
+    def test_donate_link(self, session, driver, collections_discover_page):
+        collections_discover_page.donate_link.click()
+        donate_page = COSDonatePage(driver, verify=False)
+        assert_donate_page(driver, donate_page)
+
+
+@markers.smoke_test
+@markers.core_functionality
+@pytest.mark.usefixtures('log_in_if_not_already')
+class TestCollectionsNavbarLoggedIn:
+    @pytest.fixture
+    def provider(self, driver):
+        if settings.DOMAIN == 'prod':
+            return osf_api.get_provider(type='collections', provider_id='metascience')
+        else:
+            return osf_api.get_provider(type='collections', provider_id='selenium')
+
+    @pytest.fixture()
+    def page(self, driver, provider):
+        discover_page = CollectionDiscoverPage(driver, provider=provider)
+        discover_page.goto()
+        WebDriverWait(driver, 5).until(EC.visibility_of(discover_page.identity))
+        return discover_page
+
+    def test_my_projects_link(self, page, driver):
+        page.collections_my_projects_link.click()
+        assert MyProjectsPage(driver, verify=True)
+
+    def test_add_to_collections_link(self, page, driver):
+        page.add_to_collections_link.click()
+        assert CollectionSubmitPage(driver, verify=True)
+
+    def test_search_link(self, driver, page):
+        page.search_link.click()
+        assert 'discover' in driver.current_url
+
+    def test_donate_link(self, session, driver, page):
+        page.donate_link.click()
+        donate_page = COSDonatePage(driver, verify=False)
+        assert_donate_page(driver, donate_page)
+
+
+@markers.smoke_test
+@markers.core_functionality
+@pytest.mark.usefixtures('log_in_if_not_already')
+class TestProjectsNavbarLoggedIn:
+    @pytest.fixture()
+    def project_page(self, driver, default_project_page):
+        default_project_page.goto()
+        return default_project_page
+
+    @pytest.fixture()
+    def page(self, driver, project_with_file):
+        page = ProjectPage(driver, guid=project_with_file.id)
+        page.goto()
+        return page
+
+    def test_search_link(self, session, driver, page):
+        page.navbar.search_link.click()
+        SearchPage(driver, verify=True)
+
+    def test_support_link(self, session, driver, page):
+        page.navbar.support_link.click()
+        SupportPage(driver, verify=True)
+
+    def test_donate_link(self, session, driver, page):
+        page.navbar.donate_link.click()
+        donate_page = COSDonatePage(driver, verify=False)
+        assert_donate_page(driver, donate_page)
