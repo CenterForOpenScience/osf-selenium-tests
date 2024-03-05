@@ -1,4 +1,6 @@
 import pytest
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
 
 import markers
 import settings
@@ -341,7 +343,7 @@ class TestCollectionsNavbarLoggedOut:
     def collections_discover_page(self, driver, provider):
         discover_page = CollectionDiscoverPage(driver, provider=provider)
         discover_page.goto()
-        discover_page.loading_indicator.here_then_gone()
+        WebDriverWait(driver, 5).until(EC.visibility_of(discover_page.identity))
         return discover_page
 
     def test_search_link(self, driver, collections_discover_page):
@@ -369,7 +371,7 @@ class TestCollectionsNavbarLoggedIn:
     def page(self, driver, provider):
         discover_page = CollectionDiscoverPage(driver, provider=provider)
         discover_page.goto()
-        discover_page.loading_indicator.here_then_gone()
+        WebDriverWait(driver, 5).until(EC.visibility_of(discover_page.identity))
         return discover_page
 
     def test_my_projects_link(self, page, driver):
