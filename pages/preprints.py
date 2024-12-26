@@ -1,3 +1,4 @@
+import time
 from urllib.parse import urljoin
 
 import pytest
@@ -113,14 +114,12 @@ class PreprintSubmitPage(BasePreprintPage):
     )
 
     def select_top_level_subject(self, selection):
-        for subject in self.top_level_subjects:
-            if subject.text == selection:
-                # Find the checkbox element and click it to select the subject
-                checkbox = subject.find_element_by_css_selector(
-                    'input.ember-checkbox.ember-view'
-                )
-                checkbox.click()
-                break
+        subject = None
+        while subject is None:
+            time.sleep(1)
+            subject = next((subject for subject in self.top_level_subjects if subject.text == selection), None)
+        checkbox = subject.find_element(By.CSS_SELECTOR, 'input.ember-checkbox.ember-view')
+        checkbox.click()
 
     first_selected_subject = Locator(By.CSS_SELECTOR, 'li[data-test-selected-subject]')
     basics_tags_section = Locator(By.CSS_SELECTOR, '[data-test-no-tags]')
