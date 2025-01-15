@@ -1,3 +1,5 @@
+from selenium.common.exceptions import StaleElementReferenceException
+from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.support import expected_conditions as EC
 
 
@@ -25,3 +27,20 @@ class window_at_index(object):
 
     def __call__(self, driver):
         return len(driver.window_handles) > self.page_index
+
+
+class text_to_be_present_in_elements(object):
+    """ An expectation for checking if the given text is present in the
+    specified element.
+    locator, text
+    """
+    def __init__(self, locator, text_):
+        self.locator = locator
+        self.text = text_
+
+    def __call__(self, driver: WebDriver):
+        try:
+            element_texts = [element.text for element in driver.find_elements(*self.locator)]
+            return any([self.text in element_text for element_text in element_texts])
+        except StaleElementReferenceException:
+            return False

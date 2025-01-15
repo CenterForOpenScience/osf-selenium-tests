@@ -1,10 +1,13 @@
 import time
 from urllib.parse import urljoin
 
+import ipdb
 import pytest
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.wait import WebDriverWait
 
 import settings
+from base.expected_conditions import text_to_be_present_in_elements
 from base.locators import (
     ComponentLocator,
     GroupLocator,
@@ -114,12 +117,13 @@ class PreprintSubmitPage(BasePreprintPage):
     )
 
     def select_top_level_subject(self, selection):
-        subject = None
-        while subject is None:
-            time.sleep(1)
-            subject = next((subject for subject in self.top_level_subjects if subject.text == selection), None)
-        checkbox = subject.find_element(By.CSS_SELECTOR, 'input.ember-checkbox.ember-view')
-        checkbox.click()
+        subject_selector = 'div[data-analytics-scope="Browse"] > ul > li'
+        wait = WebDriverWait(self.driver, 20)
+        wait.until(text_to_be_present_in_elements((By.CSS_SELECTOR, subject_selector), selection))
+        for subject in self.top_level_subjects:
+            if subject.text == selection:
+                subject.click()
+                break
 
     first_selected_subject = Locator(By.CSS_SELECTOR, 'li[data-test-selected-subject]')
     basics_tags_section = Locator(By.CSS_SELECTOR, '[data-test-no-tags]')
