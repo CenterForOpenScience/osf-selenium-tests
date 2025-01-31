@@ -6,6 +6,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 import markers
 import settings
+import utils
 from api import osf_api
 from pages.collections import (
     CollectionDiscoverPage,
@@ -326,9 +327,11 @@ class TestCollectionModeration:
             # first).
             rejected_card = rejected_page.get_submission_card(collection_project.id)
             assert (
-                rejected_card.find_element_by_css_selector(
-                    '[data-test-review-action-comment]'
-                ).text
+                utils.clean_text(
+                    rejected_card.find_element_by_css_selector(
+                        '[data-test-review-action-comment]'
+                    ).text
+                )
                 == '— Rejecting collection submission via selenium automated test.'
             )
             rejected_card.find_element_by_css_selector(
@@ -354,12 +357,12 @@ class TestCollectionModeration:
             assert project_page.collections_container.present()
             project_page.collections_container.click()
             assert (
-                project_page.first_collection_label.text
+                utils.clean_text(project_page.first_collection_label.text)
                 == "Rejected from Selenium Testing Collection's Collection"
             )
             project_page.collection_justification_link.click()
             assert (
-                project_page.collection_justification_reason.text
+                utils.clean_text(project_page.collection_justification_reason.text)
                 == 'Rejecting collection submission via selenium automated test.'
             )
         finally:
@@ -436,9 +439,11 @@ class TestCollectionModeration:
             # first).
             removed_card = removed_page.get_submission_card(collection_project.id)
             assert (
-                removed_card.find_element_by_css_selector(
-                    '[data-test-review-action-comment]'
-                ).text
+                utils.clean_text(
+                    removed_card.find_element_by_css_selector(
+                        '[data-test-review-action-comment]'
+                    ).text
+                )
                 == '— Removing collection submission via selenium automated test.'
             )
             removed_card.find_element_by_css_selector(
@@ -567,9 +572,11 @@ class TestCollectionModeration:
             # in the table since the default sort order is by Date (newest first).
             removed_card = removed_page.get_submission_card(collection_project.id)
             assert (
-                removed_card.find_element_by_css_selector(
-                    '[data-test-review-action-comment]'
-                ).text
+                utils.clean_text(
+                    removed_card.find_element_by_css_selector(
+                        '[data-test-review-action-comment]'
+                    ).text
+                )
                 == '— Project admin removing project from collection via selenium automated test.'
             )
             removed_card.find_element_by_css_selector(

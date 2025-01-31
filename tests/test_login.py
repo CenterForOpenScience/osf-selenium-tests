@@ -8,6 +8,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 
 import markers
 import settings
+import utils
 from base.exceptions import PageException
 from pages.landing import LandingPage
 from pages.login import (
@@ -58,6 +59,9 @@ class TestLoginPage:
         assert 'error' not in driver.current_url
 
     def test_osf_home_link(self, driver, login_page):
+        WebDriverWait(driver, 5).until(
+            EC.element_to_be_clickable(login_page.osf_home_link)
+        )
         login_page.osf_home_link.click()
         assert LandingPage(driver, verify=True)
 
@@ -75,10 +79,18 @@ class TestLoginPage:
 
     def test_cos_footer_link(self, driver, login_page):
         login_page.cos_footer_link.click()
+        WebDriverWait(driver, 5).until(EC.url_matches(('https://www.cos.io/')))
         assert driver.current_url == 'https://www.cos.io/'
 
     def test_terms_of_use_footer_link(self, driver, login_page):
         login_page.terms_of_use_footer_link.click()
+        WebDriverWait(driver, 5).until(
+            EC.url_matches(
+                (
+                    'https://github.com/CenterForOpenScience/cos.io/blob/master/TERMS_OF_USE.md'
+                )
+            )
+        )
         assert (
             driver.current_url
             == 'https://github.com/CenterForOpenScience/cos.io/blob/master/TERMS_OF_USE.md'
@@ -86,6 +98,13 @@ class TestLoginPage:
 
     def test_privacy_policy_footer_link(self, driver, login_page):
         login_page.privacy_policy_footer_link.click()
+        WebDriverWait(driver, 5).until(
+            EC.url_matches(
+                (
+                    'https://github.com/CenterForOpenScience/cos.io/blob/master/PRIVACY_POLICY.md'
+                )
+            )
+        )
         assert (
             driver.current_url
             == 'https://github.com/CenterForOpenScience/cos.io/blob/master/PRIVACY_POLICY.md'
@@ -116,7 +135,8 @@ class Test2FAPage:
         # click the Verify button and verify that you receive an error message that a one-time password is required
         two_factor_page.verify_button.click()
         assert (
-            two_factor_page.login_error_message.text == 'One-time password is required.'
+            utils.clean_text(two_factor_page.login_error_message.text)
+            == 'One-time password is required.'
         )
 
     def test_invalid_one_time_password(self, driver):
@@ -128,7 +148,7 @@ class Test2FAPage:
         two_factor_page.oneTimePassword_input.send_keys_deliberately('999999')
         two_factor_page.verify_button.click()
         assert (
-            two_factor_page.login_error_message.text
+            utils.clean_text(two_factor_page.login_error_message.text)
             == 'The one-time password you entered is incorrect.'
         )
 
@@ -180,6 +200,13 @@ class TestToSPage:
         )
         tos_page = LoginToSPage(driver, verify=True)
         tos_page.terms_of_use_link.click()
+        WebDriverWait(driver, 5).until(
+            EC.url_matches(
+                (
+                    'https://github.com/CenterForOpenScience/cos.io/blob/master/TERMS_OF_USE.md'
+                )
+            )
+        )
         assert (
             driver.current_url
             == 'https://github.com/CenterForOpenScience/cos.io/blob/master/TERMS_OF_USE.md'
@@ -191,6 +218,13 @@ class TestToSPage:
         )
         tos_page = LoginToSPage(driver, verify=True)
         tos_page.privacy_policy_link.click()
+        WebDriverWait(driver, 5).until(
+            EC.url_matches(
+                (
+                    'https://github.com/CenterForOpenScience/cos.io/blob/master/PRIVACY_POLICY.md'
+                )
+            )
+        )
         assert (
             driver.current_url
             == 'https://github.com/CenterForOpenScience/cos.io/blob/master/PRIVACY_POLICY.md'
@@ -219,7 +253,7 @@ class TestGenericPages:
         driver.get(settings.CAS_DOMAIN + '/login')
         logged_in_page = GenericCASPage(driver, verify=True)
         assert (
-            logged_in_page.auto_redirect_message.text
+            utils.clean_text(logged_in_page.auto_redirect_message.text)
             == "Auto-redirection didn't happen ..."
         )
         assert logged_in_page.status_message.text == 'Login successful'
@@ -229,7 +263,7 @@ class TestGenericPages:
         driver.get(settings.CAS_DOMAIN + '/logout')
         logged_out_page = GenericCASPage(driver, verify=True)
         assert (
-            logged_out_page.auto_redirect_message.text
+            utils.clean_text(logged_out_page.auto_redirect_message.text)
             == "Auto-redirection didn't happen ..."
         )
         assert logged_out_page.status_message.text == 'Logout successful'
@@ -241,19 +275,25 @@ class TestLoginErrors:
 
     def test_missing_email(self, driver, login_page):
         login_page.submit_button.click()
-        assert login_page.login_error_message.text == 'Email is required.'
+        assert (
+            utils.clean_text(login_page.login_error_message.text)
+            == 'Email is required.'
+        )
 
     def test_missing_password(self, driver, login_page):
         login_page.username_input.send_keys_deliberately('foo')
         login_page.submit_button.click()
-        assert login_page.login_error_message.text == 'Password is required.'
+        assert (
+            utils.clean_text(login_page.login_error_message.text)
+            == 'Password is required.'
+        )
 
     def test_invalid_email_and_password(self, driver, login_page):
         login_page.username_input.send_keys_deliberately('foo')
         login_page.password_input.send_keys_deliberately('foo')
         login_page.submit_button.click()
         assert (
-            login_page.login_error_message.text
+            utils.clean_text(login_page.login_error_message.text)
             == 'The email or password you entered is incorrect.'
         )
 
@@ -262,7 +302,7 @@ class TestLoginErrors:
         login_page.password_input.send_keys_deliberately('foo')
         login_page.submit_button.click()
         assert (
-            login_page.login_error_message.text
+            utils.clean_text(login_page.login_error_message.text)
             == 'The email or password you entered is incorrect.'
         )
 
@@ -277,8 +317,11 @@ class TestCustomExceptionPages:
         """Test the Service not authorized exception page by having an invalid service in the url"""
         driver.get(settings.CAS_DOMAIN + '/login?service=https://noservice.osf.io/')
         exception_page = GenericCASPage(driver, verify=True)
-        assert exception_page.navbar_brand.text == 'OSF HOME'
-        assert exception_page.status_message.text == 'Service not authorized'
+        assert utils.clean_text(exception_page.navbar_brand.text) == 'OSF HOME'
+        assert (
+            utils.clean_text(exception_page.status_message.text)
+            == 'Service not authorized'
+        )
 
     def test_verification_key_login_failed_page(self, driver):
         """Test the Verification key login failed exception page by having an invalid verification_key parameter
@@ -295,8 +338,11 @@ class TestCustomExceptionPages:
             + '&verification_key=foo'
         )
         exception_page = GenericCASPage(driver, verify=True)
-        assert exception_page.navbar_brand.text == 'OSF HOME'
-        assert exception_page.status_message.text == 'Verification key login failed'
+        assert utils.clean_text(exception_page.navbar_brand.text) == 'OSF HOME'
+        assert (
+            utils.clean_text(exception_page.status_message.text)
+            == 'Verification key login failed'
+        )
 
     def test_flow_less_page_not_found_page(self, driver):
         """Test the Page Not Found exception page by having an invalid path in the url. CAS only supports 3 valid paths:
@@ -305,8 +351,8 @@ class TestCustomExceptionPages:
         driver.get(settings.CAS_DOMAIN + '/nopath')
         exception_page = GenericCASPage(driver, verify=True)
         # Since this exception page is flow-less (a.k.a. OSF unaware) the navbar will display OSF CAS instead of OSF HOME
-        assert exception_page.navbar_brand.text == 'OSF CAS'
-        assert exception_page.status_message.text == 'Page Not Found'
+        assert utils.clean_text(exception_page.navbar_brand.text) == 'OSF CAS'
+        assert utils.clean_text(exception_page.status_message.text) == 'Page Not Found'
 
     @markers.dont_run_on_prod
     def test_account_not_confirmed_page(self, driver):
@@ -316,8 +362,11 @@ class TestCustomExceptionPages:
             password=settings.UNCONFIRMED_USER_PASSWORD,
         )
         exception_page = GenericCASPage(driver, verify=True)
-        assert exception_page.navbar_brand.text == 'OSF HOME'
-        assert exception_page.status_message.text == 'Account not confirmed'
+        assert utils.clean_text(exception_page.navbar_brand.text) == 'OSF HOME'
+        assert (
+            utils.clean_text(exception_page.status_message.text)
+            == 'Account not confirmed'
+        )
 
     @markers.dont_run_on_prod
     def test_account_disabled_page(self, driver):
@@ -327,8 +376,10 @@ class TestCustomExceptionPages:
             password=settings.DEACTIVATED_USER_PASSWORD,
         )
         exception_page = GenericCASPage(driver, verify=True)
-        assert exception_page.navbar_brand.text == 'OSF HOME'
-        assert exception_page.status_message.text == 'Account disabled'
+        assert utils.clean_text(exception_page.navbar_brand.text) == 'OSF HOME'
+        assert (
+            utils.clean_text(exception_page.status_message.text) == 'Account disabled'
+        )
 
 
 def try_login_page(driver, page_class):
@@ -383,10 +434,18 @@ class TestInstitutionLoginPage:
 
     def test_cos_footer_link(self, driver, institution_login_page):
         institution_login_page.cos_footer_link.click()
+        WebDriverWait(driver, 5).until(EC.url_matches(('https://www.cos.io/')))
         assert driver.current_url == 'https://www.cos.io/'
 
     def test_terms_of_use_footer_link(self, driver, institution_login_page):
         institution_login_page.terms_of_use_footer_link.click()
+        WebDriverWait(driver, 5).until(
+            EC.url_matches(
+                (
+                    'https://github.com/CenterForOpenScience/cos.io/blob/master/TERMS_OF_USE.md'
+                )
+            )
+        )
         assert (
             driver.current_url
             == 'https://github.com/CenterForOpenScience/cos.io/blob/master/TERMS_OF_USE.md'
@@ -394,6 +453,13 @@ class TestInstitutionLoginPage:
 
     def test_privacy_policy_footer_link(self, driver, institution_login_page):
         institution_login_page.privacy_policy_footer_link.click()
+        WebDriverWait(driver, 5).until(
+            EC.url_matches(
+                (
+                    'https://github.com/CenterForOpenScience/cos.io/blob/master/PRIVACY_POLICY.md'
+                )
+            )
+        )
         assert (
             driver.current_url
             == 'https://github.com/CenterForOpenScience/cos.io/blob/master/PRIVACY_POLICY.md'
@@ -496,8 +562,11 @@ class TestOauthAPI:
         # navigate to the authorization url in the browser
         driver.get(authorization_url)
         authorization_page = CASAuthorizationPage(driver, verify=True)
-        assert authorization_page.navbar_brand.text == 'OSF HOME'
-        assert authorization_page.status_message.text == 'Approve or deny authorization'
+        assert utils.clean_text(authorization_page.navbar_brand.text) == 'OSF HOME'
+        assert (
+            utils.clean_text(authorization_page.status_message.text)
+            == 'Approve or deny authorization'
+        )
         # click allow button to redirect to callback url with authorization code
         authorization_page.allow_button.click()
         callback_url = driver.current_url
@@ -558,8 +627,11 @@ class TestOauthAPI:
         # navigate to the authorization url in the browser
         driver.get(authorization_url)
         authorization_page = CASAuthorizationPage(driver, verify=True)
-        assert authorization_page.navbar_brand.text == 'OSF HOME'
-        assert authorization_page.status_message.text == 'Approve or deny authorization'
+        assert utils.clean_text(authorization_page.navbar_brand.text) == 'OSF HOME'
+        assert (
+            utils.clean_text(authorization_page.status_message.text)
+            == 'Approve or deny authorization'
+        )
         # click allow button to redirect to callback url with authorization code
         authorization_page.allow_button.click()
         callback_url = driver.current_url
@@ -650,7 +722,7 @@ class TestOauthAPI:
         # navigate to the authorization url in the browser
         driver.get(authorization_url)
         authorization_page = CASAuthorizationPage(driver, verify=True)
-        assert authorization_page.navbar_brand.text == 'OSF HOME'
+        assert utils.clean_text(authorization_page.navbar_brand.text) == 'OSF HOME'
         assert authorization_page.status_message.text == 'Approve or deny authorization'
         # click allow button to redirect to callback url with authorization code
         authorization_page.allow_button.click()
@@ -711,8 +783,11 @@ class TestOauthAPI:
         # navigate to the authorization url in the browser
         driver.get(authorization_url)
         authorization_page = CASAuthorizationPage(driver, verify=True)
-        assert authorization_page.navbar_brand.text == 'OSF HOME'
-        assert authorization_page.status_message.text == 'Approve or deny authorization'
+        assert utils.clean_text(authorization_page.navbar_brand.text) == 'OSF HOME'
+        assert (
+            utils.clean_text(authorization_page.status_message.text)
+            == 'Approve or deny authorization'
+        )
         # click deny button to redirect to callback url with access denied error message
         authorization_page.deny_button.click()
         callback_url = driver.current_url
@@ -738,9 +813,15 @@ class TestOauthAPI:
         driver.get(authorization_url)
         # verify exception page
         exception_page = GenericCASPage(driver, verify=True)
-        assert exception_page.navbar_brand.text == 'OSF HOME'
-        assert exception_page.status_message.text == 'Authorization failed'
-        assert exception_page.error_detail.text == 'missing_request_param: client_id'
+        assert utils.clean_text(exception_page.navbar_brand.text) == 'OSF HOME'
+        assert (
+            utils.clean_text(exception_page.status_message.text)
+            == 'Authorization failed'
+        )
+        assert (
+            utils.clean_text(exception_page.error_detail.text)
+            == 'missing_request_param: client_id'
+        )
 
     def test_authorization_failed_invalid_redirect_uri(self, driver, must_be_logged_in):
         client_id = settings.DEVAPP_CLIENT_ID
@@ -760,10 +841,13 @@ class TestOauthAPI:
         driver.get(authorization_url)
         # verify exception page
         exception_page = GenericCASPage(driver, verify=True)
-        assert exception_page.navbar_brand.text == 'OSF HOME'
-        assert exception_page.status_message.text == 'Authorization failed'
+        assert utils.clean_text(exception_page.navbar_brand.text) == 'OSF HOME'
         assert (
-            exception_page.error_detail.text
+            utils.clean_text(exception_page.status_message.text)
+            == 'Authorization failed'
+        )
+        assert (
+            utils.clean_text(exception_page.error_detail.text)
             == 'invalid_redirect_url: https://www.gogle.com/'
         )
 
@@ -785,6 +869,12 @@ class TestOauthAPI:
         driver.get(authorization_url)
         # verify exception page
         exception_page = GenericCASPage(driver, verify=True)
-        assert exception_page.navbar_brand.text == 'OSF HOME'
-        assert exception_page.status_message.text == 'Authorization failed'
-        assert exception_page.error_detail.text == 'invalid_scope: everything'
+        assert utils.clean_text(exception_page.navbar_brand.text) == 'OSF HOME'
+        assert (
+            utils.clean_text(exception_page.status_message.text)
+            == 'Authorization failed'
+        )
+        assert (
+            utils.clean_text(exception_page.error_detail.text)
+            == 'invalid_scope: everything'
+        )

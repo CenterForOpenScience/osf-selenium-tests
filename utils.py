@@ -203,3 +203,10 @@ def read_data_from_table(driver, table_path, check_match, item_match=None):
                     return i, datalist
 
     return rlen, datalist
+
+
+def clean_text(stringvalue):
+    clean_text = stringvalue.strip()
+    clean_text = clean_text.replace('\n', ' ')
+    clean_text = ' '.join(clean_text.split())
+    return clean_text
