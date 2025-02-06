@@ -40,7 +40,6 @@ class text_to_be_present_in_elements(object):
 
     def __call__(self, driver: WebDriver):
         try:
-            element_texts = [element.text for element in driver.find_elements(*self.locator)]
-            return any([self.text in element_text for element_text in element_texts])
+            return any(self.text in element.text for element in driver.find_elements(*self.locator))
         except StaleElementReferenceException:
             return False
