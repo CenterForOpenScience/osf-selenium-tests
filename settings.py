@@ -113,9 +113,9 @@ caps = {
     },
     'safari': {
         'browser': 'Safari',
-        'browser_version': '14',
+        'browser_version': '18',
         'os': 'OS X',
-        'os_version': 'Big Sur',
+        'os_version': 'Sequoia',
         'timezone': 'UTC',
         'networkLogs': 'true',
         'enablePopups': 'false',

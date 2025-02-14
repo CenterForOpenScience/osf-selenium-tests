@@ -103,10 +103,6 @@ class NavbarTestLoggedInMixin:
         page.navbar.user_dropdown_profile.click()
         assert UserProfilePage(driver, verify=True)
 
-    # @pytest.mark.skipif(
-    #     settings.env('TEST_BUILD') == 'safari' and settings.DRIVER == 'Remote',
-    #     reason='Test fails on safari browser due to some oauth setting on the browser',
-    # )
     def test_user_profile_menu_support_link(self, driver, page):
         page.navbar.user_dropdown.click()
         page.navbar.user_dropdown_support.click()
@@ -145,10 +141,6 @@ class TestOSFHomeNavbarLoggedOut(NavbarTestLoggedOutMixin):
         page.navbar.search_link.click()
         assert SearchPage(driver, verify=True)
 
-    @pytest.mark.skipif(
-        settings.env('TEST_BUILD') == 'safari' and settings.DRIVER == 'Remote',
-        reason='Test fails on safari browser due to some oauth setting on the browser',
-    )
     def test_support_link(self, page, driver):
         page.navbar.support_link.click()
         assert SupportPage(driver, verify=True)
@@ -181,10 +173,6 @@ class TestPreprintsNavbarLoggedOut(NavbarTestLoggedOutMixin):
         page.navbar.search_link.click()
         PreprintDiscoverPage(driver, verify=True)
 
-    @pytest.mark.skipif(
-        settings.env('TEST_BUILD') == 'safari' and settings.DRIVER == 'Remote',
-        reason='Test fails on safari browser due to some oauth setting on the browser',
-    )
     def test_support_link(self, page, driver):
         page.navbar.support_link.click()
         assert SupportPage(driver, verify=True)
@@ -279,10 +267,6 @@ class TestMeetingsNavbarLoggedOut(NavbarTestLoggedOutMixin):
         page.navbar.search_link.click()
         SearchPage(driver, verify=True)
 
-    @pytest.mark.skipif(
-        settings.env('TEST_BUILD') == 'safari' and settings.DRIVER == 'Remote',
-        reason='Test fails on safari browser due to some oauth setting on the browser',
-    )
     def test_support_link(self, page, driver):
         page.navbar.support_link.click()
         assert SupportPage(driver, verify=True)
@@ -316,10 +300,6 @@ class TestInstitutionsNavbarLoggedOut(NavbarTestLoggedOutMixin):
         page.navbar.search_link.click()
         SearchPage(driver, verify=True)
 
-    @pytest.mark.skipif(
-        settings.env('TEST_BUILD') == 'safari' and settings.DRIVER == 'Remote',
-        reason='Test fails on safari browser due to some oauth setting on the browser',
-    )
     def test_support_link(self, page, driver):
         page.navbar.support_link.click()
         SupportPage(driver, verify=True)
@@ -434,10 +414,6 @@ class TestProjectsNavbarLoggedIn:
         page.navbar.search_link.click()
         SearchPage(driver, verify=True)
 
-    @pytest.mark.skipif(
-        settings.env('TEST_BUILD') == 'safari' and settings.DRIVER == 'Remote',
-        reason='Test fails on safari browser due to some oauth setting on the browser',
-    )
     def test_support_link(self, session, driver, page):
         page.navbar.support_link.click()
         SupportPage(driver, verify=True)
