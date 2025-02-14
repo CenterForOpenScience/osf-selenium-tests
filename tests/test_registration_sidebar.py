@@ -4,6 +4,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 import markers
+import utils
 from api import osf_api
 from pages.registries import (
     RegistrationAnalyticsPage,
@@ -141,10 +142,10 @@ class TestRegistrationOutputs:
         )
         # Verify and delete the resource if already exists
         resource_id = osf_api.get_registration_resource_id(
-            registration_id=registration_guid
+            registration_id=registration_guid, resource_type=resource_type
         )
         if resource_id is not None:
-            osf_api.delete_registration_resource(registration_guid)
+            osf_api.delete_registration_resource(registration_guid, resource_type)
             registration_details_page.reload()
             WebDriverWait(driver, 10).until(
                 EC.invisibility_of_element_located(
@@ -161,7 +162,7 @@ class TestRegistrationOutputs:
             )
         )
         assert data_resource is not None
-        osf_api.delete_registration_resource(registration_guid)
+        osf_api.delete_registration_resource(registration_guid, resource_type)
 
     @pytest.mark.parametrize('resource_type', resource_types)
     def test_edit_resource(
@@ -184,10 +185,12 @@ class TestRegistrationOutputs:
         )
         registration_details_page_with_resource.save_button.click()
         assert (
-            registration_details_page_with_resource.resource_card_description.text
+            utils.clean_text(
+                registration_details_page_with_resource.resource_card_description.text
+            )
             == resource_description
         )
-        osf_api.delete_registration_resource(registration_guid)
+        osf_api.delete_registration_resource(registration_guid, resource_type)
 
     @pytest.mark.parametrize('resource_type', resource_types)
     def test_delete_resource(
@@ -201,7 +204,6 @@ class TestRegistrationOutputs:
         """This test verifies delete functionality of data output resource for a registration"""
 
         registration_details_page_with_resource.open_practice_resource_data.click()
-
         registration_details_page_with_resource.resource_type_delete_button.click()
         registration_details_page_with_resource.resource_type_delete_confirm.click()
 
@@ -213,6 +215,6 @@ class TestRegistrationOutputs:
         )
 
         assert (
-            registration_details_page_with_resource.resource_list.text
+            utils.clean_text(registration_details_page_with_resource.resource_list.text)
             == 'This registration has no resources.'
         )

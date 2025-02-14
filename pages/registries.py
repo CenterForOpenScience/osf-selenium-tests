@@ -3,6 +3,7 @@ from urllib.parse import urljoin
 from selenium.webdriver.common.by import By
 
 import settings
+import utils
 from base.locators import (
     ComponentLocator,
     GroupLocator,
@@ -114,7 +115,7 @@ class RegistrationDetailPage(BaseSubmittedRegistrationPage):
 
     def select_from_dropdown_listbox(self, selection):
         for option in self.dropdown_options:
-            if option.text == selection:
+            if utils.clean_text(option.text) == selection:
                 option.click()
                 break
 
@@ -179,7 +180,7 @@ class RegistrationMetadataPage(BaseSubmittedRegistrationPage):
 
     def select_from_dropdown_listbox(self, selection):
         for option in self.dropdown_options:
-            if option.text == selection:
+            if utils.clean_text(option.text) == selection:
                 option.click()
                 break
 

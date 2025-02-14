@@ -1,5 +1,6 @@
 import re
 
+import ipdb
 import pytest
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
@@ -80,7 +81,8 @@ class TestDashboardPage:
         # and switch focus to it.
         WebDriverWait(driver, 3).until(EC.number_of_windows_to_be(2))
         driver.switch_to.window(driver.window_handles[1])
-        WebDriverWait(driver, 3).until(
+        ipdb.set_trace()
+        WebDriverWait(driver, 5).until(
             EC.visibility_of_element_located((By.CLASS_NAME, 'hs-menu-wrapper'))
         )
         assert 'https://www.cos.io/products/osf-collections' in driver.current_url

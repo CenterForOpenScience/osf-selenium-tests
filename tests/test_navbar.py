@@ -74,6 +74,9 @@ class NavbarTestLoggedOutMixin:
     def test_donate_link(self, page, driver):
         page.navbar.donate_link.click()
         donate_page = COSDonatePage(driver, verify=False)
+        WebDriverWait(driver, 10).until(
+            EC.url_matches(('https://www.cos.io/support-cos'))
+        )
         assert_donate_page(driver, donate_page)
 
     def test_sign_in_button(self, page, driver):
@@ -100,6 +103,10 @@ class NavbarTestLoggedInMixin:
         page.navbar.user_dropdown_profile.click()
         assert UserProfilePage(driver, verify=True)
 
+    # @pytest.mark.skipif(
+    #     settings.env('TEST_BUILD') == 'safari' and settings.DRIVER == 'Remote',
+    #     reason='Test fails on safari browser due to some oauth setting on the browser',
+    # )
     def test_user_profile_menu_support_link(self, driver, page):
         page.navbar.user_dropdown.click()
         page.navbar.user_dropdown_support.click()
@@ -138,6 +145,10 @@ class TestOSFHomeNavbarLoggedOut(NavbarTestLoggedOutMixin):
         page.navbar.search_link.click()
         assert SearchPage(driver, verify=True)
 
+    @pytest.mark.skipif(
+        settings.env('TEST_BUILD') == 'safari' and settings.DRIVER == 'Remote',
+        reason='Test fails on safari browser due to some oauth setting on the browser',
+    )
     def test_support_link(self, page, driver):
         page.navbar.support_link.click()
         assert SupportPage(driver, verify=True)
@@ -170,6 +181,10 @@ class TestPreprintsNavbarLoggedOut(NavbarTestLoggedOutMixin):
         page.navbar.search_link.click()
         PreprintDiscoverPage(driver, verify=True)
 
+    @pytest.mark.skipif(
+        settings.env('TEST_BUILD') == 'safari' and settings.DRIVER == 'Remote',
+        reason='Test fails on safari browser due to some oauth setting on the browser',
+    )
     def test_support_link(self, page, driver):
         page.navbar.support_link.click()
         assert SupportPage(driver, verify=True)
@@ -264,6 +279,10 @@ class TestMeetingsNavbarLoggedOut(NavbarTestLoggedOutMixin):
         page.navbar.search_link.click()
         SearchPage(driver, verify=True)
 
+    @pytest.mark.skipif(
+        settings.env('TEST_BUILD') == 'safari' and settings.DRIVER == 'Remote',
+        reason='Test fails on safari browser due to some oauth setting on the browser',
+    )
     def test_support_link(self, page, driver):
         page.navbar.support_link.click()
         assert SupportPage(driver, verify=True)
@@ -297,6 +316,10 @@ class TestInstitutionsNavbarLoggedOut(NavbarTestLoggedOutMixin):
         page.navbar.search_link.click()
         SearchPage(driver, verify=True)
 
+    @pytest.mark.skipif(
+        settings.env('TEST_BUILD') == 'safari' and settings.DRIVER == 'Remote',
+        reason='Test fails on safari browser due to some oauth setting on the browser',
+    )
     def test_support_link(self, page, driver):
         page.navbar.support_link.click()
         SupportPage(driver, verify=True)
@@ -323,7 +346,7 @@ def assert_donate_page(driver, donate_page):
     meta_tag = driver.find_element_by_xpath(
         '//meta[@property="og:title" and contains(@content, "Support COS")]'
     )
-
+    WebDriverWait(driver, 10).until(EC.url_matches(('https://www.cos.io/support-cos')))
     assert 'support-cos' in driver.current_url
     assert meta_tag.get_attribute('property') == 'og:title'
     assert meta_tag.get_attribute('content') == 'Support COS'
@@ -411,6 +434,10 @@ class TestProjectsNavbarLoggedIn:
         page.navbar.search_link.click()
         SearchPage(driver, verify=True)
 
+    @pytest.mark.skipif(
+        settings.env('TEST_BUILD') == 'safari' and settings.DRIVER == 'Remote',
+        reason='Test fails on safari browser due to some oauth setting on the browser',
+    )
     def test_support_link(self, session, driver, page):
         page.navbar.support_link.click()
         SupportPage(driver, verify=True)

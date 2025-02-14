@@ -1197,14 +1197,14 @@ def update_file_metadata(session, file_guid):
     )
 
 
-def get_registration_resource_id(registration_id):
+def get_registration_resource_id(registration_id, resource_type):
     """This function returns the most recent resource id
     added to the given registration"""
     session = client.Session(
         api_base_url=settings.API_DOMAIN,
         auth=(settings.REGISTRATIONS_USER, settings.REGISTRATIONS_USER_PASSWORD),
     )
-
+    resource = resource_type.replace(' ', '_').lower()
     url = '/v2/registrations/{}/resources/'.format(registration_id)
     data = session.get(url)['data']
     if data:
@@ -1212,19 +1212,24 @@ def get_registration_resource_id(registration_id):
             date_created = data[i]['attributes']['date_created']
             now = datetime.now()
             current_date = now.strftime('%Y-%m-%d')
-            if current_date in date_created:
+            if (
+                current_date in date_created
+                and data[i]['attributes']['resource_type'] == resource
+            ):
                 return data[i]['id']
                 break
     return None
 
 
-def delete_registration_resource(registration_id):
+def delete_registration_resource(registration_id, resource_type):
     """This function deletes the resource added to the given registration"""
     session = client.Session(
         api_base_url=settings.API_DOMAIN,
         auth=(settings.REGISTRATIONS_USER, settings.REGISTRATIONS_USER_PASSWORD),
     )
-    registration_resource_id = get_registration_resource_id(registration_id)
+    registration_resource_id = get_registration_resource_id(
+        registration_id, resource_type
+    )
     url = '/v2/resources/{}'.format(registration_resource_id)
 
     session.delete(url, item_type='resources')
@@ -1238,9 +1243,9 @@ def create_registration_resource(registration_guid, resource_type):
         api_base_url=settings.API_DOMAIN,
         auth=(settings.REGISTRATIONS_USER, settings.REGISTRATIONS_USER_PASSWORD),
     )
-    resource_id = get_registration_resource_id(registration_guid)
+    resource_id = get_registration_resource_id(registration_guid, resource_type)
     if resource_id is not None:
-        delete_registration_resource(registration_guid)
+        delete_registration_resource(registration_guid, resource_type)
 
     url = '/v2/resources/'
     raw_payload = {

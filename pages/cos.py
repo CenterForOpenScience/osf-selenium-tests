@@ -8,4 +8,4 @@ from pages.base import BasePage
 class COSDonatePage(BasePage):
     url = 'https://www.cos.io/support-cos'
 
-    identity = Locator(By.ID, 'Yourdonationtitle', settings.LONG_TIMEOUT)
+    identity = Locator(By.CSS_SELECTOR, 'h2#Yourdonationtitle', settings.LONG_TIMEOUT)
