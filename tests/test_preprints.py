@@ -275,7 +275,7 @@ class TestPreprintWorkflow:
         edit_page.abstract_input.send_keys('Testing Selenium Abstract edit')
         edit_page.next_button.click()
         WebDriverWait(driver, 5).until(
-            EC.visibility_of_element_located((By.CSS_SELECTOR, 'h3._title_egkww5[data-test-title]'))
+            EC.visibility_of_element_located((By.CSS_SELECTOR, '[data-test-title]'))
         )
         edit_page.select_top_level_subject('Business')
         # Add another Tag and click the Save and continue button
@@ -287,7 +287,7 @@ class TestPreprintWorkflow:
         body.send_keys(Keys.HOME)
         # Next add another subject in the Discipline section
         WebDriverWait(driver, 5).until(
-            EC.visibility_of_element_located((By.CSS_SELECTOR, 'h3._title_egkww5'))
+            EC.visibility_of_element_located((By.CSS_SELECTOR, '[data-test-next-button]'))
         )
         edit_page.next_button.click()
         WebDriverWait(driver, 5).until(
@@ -299,7 +299,7 @@ class TestPreprintWorkflow:
         )
         edit_page.next_button.click()
         WebDriverWait(driver, 5).until(
-            EC.element_to_be_clickable((By.CSS_SELECTOR, 'h3._title_ebg6eq'))
+            EC.element_to_be_clickable((By.CSS_SELECTOR, '[data-test-submit-button]'))
         )
         edit_page.submit_preprint_button.click()
         detail_page = PreprintDetailPage(driver, verify=True)
