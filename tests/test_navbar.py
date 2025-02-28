@@ -1,3 +1,5 @@
+import time
+
 import pytest
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
@@ -356,6 +358,7 @@ class TestCollectionsNavbarLoggedOut:
     def test_donate_link(self, session, driver, collections_discover_page):
         collections_discover_page.donate_link.click()
         donate_page = COSDonatePage(driver, verify=False)
+        time.sleep(3)
         assert_donate_page(driver, donate_page)
 
 
