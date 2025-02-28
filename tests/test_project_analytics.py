@@ -71,7 +71,7 @@ def parse_node_analytics_data(raw_data, request, **kwargs):
             return page_count
         elif page == 'osf':
             for page_data in popular_pages:
-                if page_data['title'] == "OSF":
+                if page_data['title'] == 'OSF':
                     page_count += page_data['count']
             return page_count
         elif page == 'files':
