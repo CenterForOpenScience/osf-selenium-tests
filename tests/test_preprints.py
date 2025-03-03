@@ -3,11 +3,12 @@ import os
 import re
 from datetime import datetime
 
+import ipdb
 import pytest
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support import expected_conditions as EC, wait
 from selenium.webdriver.support.ui import WebDriverWait
 
 import markers
@@ -285,7 +286,9 @@ class TestPreprintWorkflow:
 
         body = driver.find_element(By.TAG_NAME, "body")
         body.send_keys(Keys.HOME)
-        # Next add another subject in the Discipline section
+        WebDriverWait(driver, 5).until(
+            EC.invisibility_of_element_located((By.CLASS_NAME, "toast-success"))
+        )
         WebDriverWait(driver, 5).until(
             EC.visibility_of_element_located((By.CSS_SELECTOR, '[data-test-next-button]'))
         )
