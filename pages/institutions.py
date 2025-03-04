@@ -1,4 +1,5 @@
 from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
 
 import settings
 from base.locators import (
@@ -58,19 +59,17 @@ class InstitutionAdminDashboardPage(BaseInstitutionPage):
 
     url_addition = '/dashboard'
 
-    identity = Locator(By.CSS_SELECTOR, 'div[data-analytics-scope="Dashboard"]')
-    loading_indicator = Locator(By.CSS_SELECTOR, '.ball-scale', settings.LONG_TIMEOUT)
-    departments_listbox_trigger = Locator(
-        By.CSS_SELECTOR,
-        'div.ember-basic-dropdown-trigger.ember-power-select-trigger._select_tdvp4z',
+    identity = Locator(By.CSS_SELECTOR, 'img[alt="Center For Open Science [Test]"]')
+    loading_indicator = Locator(
+        By.CSS_SELECTOR, '.ball-scale', settings.LONG_TIMEOUT
     )
-    total_user_count = Locator(
+    title_containers = GroupLocator(
         By.CSS_SELECTOR,
-        'div.ember-view._panel_1dj7yu._sso-users-connected_1w5vdt > div > div._panel-body_1lht4i > div > h3',
+        '._title-container_1d9vmx',
     )
-    total_project_count = Locator(
+    kpi_container = GroupLocator(
         By.CSS_SELECTOR,
-        'div.ember-view._panel_1dj7yu._projects_1w5vdt > div > div._panel-body_1lht4i > div > div > h3',
+        '._kpi-container_1ge2xx',
     )
     public_project_count = Locator(
         By.CSS_SELECTOR, 'div._projects-count_1ky9tx > span:nth-child(1) > strong'
@@ -78,17 +77,35 @@ class InstitutionAdminDashboardPage(BaseInstitutionPage):
     private_project_count = Locator(
         By.CSS_SELECTOR, 'div._projects-count_1ky9tx > span:nth-child(2) > strong'
     )
-
     department_options = GroupLocator(
-        By.CSS_SELECTOR, 'ul.ember-power-select-options > li.ember-power-select-option'
+        By.CSS_SELECTOR, 'ul._data-list_1d9vmx > li._data-container_1d9vmx'
     )
     user_table_rows = GroupLocator(
         By.CSS_SELECTOR,
         'div._table-wrapper_1w5vdt > div > div.ember-view > div > div > table > tbody > tr',
     )
+    def get_expanded_total_by_expanded_name(self, department):
+        for element in  self.department_options:
+            name_elem = element.find_element(By.CSS_SELECTOR, "[data-test-expanded-name]")
+            if name_elem.text.strip() ==  department:
+                total_elem = element.find_element(By.CSS_SELECTOR, "[data-test-expanded-total]")
+                return int(total_elem.text.strip())
 
-    def select_department_from_listbox(self, department):
-        for option in self.department_options:
-            if option.text == department:
-                option.click()
-                break
+    def get_kpi_data_by_kpi_title(self, target_title):
+        for container in self.kpi_container:
+            title_element = container.find_element(By.CSS_SELECTOR, "[data-test-kpi-title]")
+            if title_element.text.strip() == target_title:
+                value_element = container.find_element(By.CSS_SELECTOR, "[data-test-kpi-data]")
+                return value_element.text.strip()
+
+    def click_on_listbox_trigger(self, section_title):
+        for section in self.title_containers:
+            title_element = section.find_element(By.CSS_SELECTOR, "[data-test-chart-title]")
+            if title_element.text.strip() == section_title:
+                button = section.find_element(By.CSS_SELECTOR, "[data-test-expand-additional-data]")
+                icon = section.find_element(By.CSS_SELECTOR, "[data-test-toggle-icon]")
+                button.click()
+                WebDriverWait(self.driver, 10).until(
+                    lambda d: icon.get_attribute("data-icon") == "caret-up"
+                )
+
