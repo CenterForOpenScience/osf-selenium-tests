@@ -145,7 +145,7 @@ class TestRegistrationOutputs:
             registration_id=registration_guid, resource_type=resource_type
         )
         if resource_id is not None:
-            osf_api.delete_registration_resource(registration_guid, resource_type)
+            osf_api.delete_registration_resources(registration_guid)
             registration_details_page.reload()
             WebDriverWait(driver, 10).until(
                 EC.invisibility_of_element_located(
@@ -162,7 +162,7 @@ class TestRegistrationOutputs:
             )
         )
         assert data_resource is not None
-        osf_api.delete_registration_resource(registration_guid, resource_type)
+        osf_api.delete_registration_resources(registration_guid)
 
     @pytest.mark.parametrize('resource_type', resource_types)
     def test_edit_resource(
