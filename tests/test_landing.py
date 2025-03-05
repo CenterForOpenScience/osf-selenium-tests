@@ -1,5 +1,7 @@
 import pytest
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.wait import WebDriverWait
 
 import markers
 import settings
@@ -34,6 +36,9 @@ class TestHomeLandingPage:
     @markers.core_functionality
     def test_learn_more(self, driver, landing_page):
         landing_page.learn_more_button.click()
+        WebDriverWait(driver, 5).until(
+            EC.url_matches(('https://www.cos.io/products/osf'))
+        )
         assert 'https://www.cos.io/products/osf' in driver.current_url
 
     def test_testimonials_by_buttons(self, driver, landing_page):

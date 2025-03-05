@@ -8,6 +8,7 @@ from datetime import (
 from selenium.webdriver.common.by import By
 
 import settings
+import utils
 from api import osf_api
 from base.locators import (
     ComponentLocator,
@@ -535,7 +536,7 @@ class FilesMetadataPage(GuidBasePage):
 
     def select_from_dropdown_listbox(self, selection):
         for option in self.dropdown_options:
-            if option.text == selection:
+            if utils.clean_text(option.text) == selection:
                 option.click()
                 break
 
@@ -588,7 +589,7 @@ class ProjectMetadataPage(GuidBasePage):
 
     def select_from_dropdown_listbox(self, selection):
         for option in self.dropdown_options:
-            if option.text == selection:
+            if utils.clean_text(option.text) == selection:
                 option.click()
                 break
 

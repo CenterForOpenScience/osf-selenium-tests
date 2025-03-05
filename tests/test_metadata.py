@@ -140,7 +140,9 @@ class TestFilesMetadata:
         title_input.clear()
         title_input.send_keys(new_title)
         file_metadata_page.save_metadata_button.click()
-        assert new_title == file_metadata_page.files_metadata_title.text
+        assert new_title == utils.clean_text(
+            file_metadata_page.files_metadata_title.text
+        )
         file_metadata_tab = utils.switch_to_new_tab(driver)
         utils.close_current_tab(driver, file_metadata_tab)
 
@@ -164,7 +166,9 @@ class TestFilesMetadata:
         description_input.clear()
         description_input.send_keys(new_description)
         file_metadata_page.save_metadata_button.click()
-        assert new_description == file_metadata_page.files_metadata_description.text
+        assert new_description == utils.clean_text(
+            file_metadata_page.files_metadata_description.text
+        )
         file_metadata_tab = utils.switch_to_new_tab(driver)
         utils.close_current_tab(driver, file_metadata_tab)
 
@@ -322,7 +326,9 @@ class TestProjectMetadata:
         description_input.clear()
         description_input.send_keys(new_description)
         project_metadata_page.save_description_button.click()
-        assert new_description == project_metadata_page.description.text
+        assert new_description == utils.clean_text(
+            project_metadata_page.description.text
+        )
 
     def test_edit_contributors(
         self, session, driver, project_metadata_page, default_project_with_metadata
@@ -540,7 +546,9 @@ class TestRegistrationMetadata:
         description_input.clear()
         description_input.send_keys(new_description)
         registration_metadata_page.save_metadata_description_button.click()
-        assert new_description == registration_metadata_page.metadata_description.text
+        assert new_description == utils.clean_text(
+            registration_metadata_page.metadata_description.text
+        )
 
     def test_edit_resource_information(self, driver, registration_metadata_page):
         """This test verifies that user can add/remove
@@ -579,9 +587,11 @@ class TestRegistrationMetadata:
         registration_metadata_page.select_from_dropdown_listbox('Bengali')
 
         registration_metadata_page.resource_information_save_button.click()
-        assert orig_resource_type != registration_metadata_page.resource_type.text
-        assert (
-            orig_resource_language != registration_metadata_page.resource_language.text
+        assert orig_resource_type != utils.clean_text(
+            registration_metadata_page.resource_type.text
+        )
+        assert orig_resource_language != utils.clean_text(
+            registration_metadata_page.resource_language.text
         )
 
     def test_edit_support_funding_information(

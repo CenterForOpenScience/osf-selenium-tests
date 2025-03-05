@@ -133,7 +133,10 @@ class TestPreprintWorkflow:
             WebDriverWait(driver, 5).until(
                 EC.visibility_of(submit_page.first_selected_subject)
             )
-            assert submit_page.first_selected_subject.text == 'Engineering'
+            assert (
+                utils.clean_text(submit_page.first_selected_subject.text)
+                == 'Engineering'
+            )
 
             # Need to scroll down since the Keyword/tags section is obscured by the Dev
             # mode warning in the test environments
@@ -199,7 +202,9 @@ class TestPreprintWorkflow:
             submit_page.create_preprint_button.click()
             preprint_detail = PreprintDetailPage(driver, verify=True)
             WebDriverWait(driver, 10).until(EC.visibility_of(preprint_detail.title))
-            assert preprint_detail.title.text == 'Selenium Test Preprint'
+            assert (
+                utils.clean_text(preprint_detail.title.text) == 'Selenium Test Preprint'
+            )
             # Capture guid of supplemental materials project created during workflow
             supplemental_url = preprint_detail.view_page.get_attribute('href')
             supplemental_guid = utils.get_guid_from_url(supplemental_url, 3)
@@ -309,6 +314,7 @@ class TestPreprintWorkflow:
         WebDriverWait(driver, 5).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, '[data-test-submit-button]'))
         )
+
         edit_page.submit_preprint_button.click()
         detail_page = PreprintDetailPage(driver, verify=True)
         # Verify Title and Abstract

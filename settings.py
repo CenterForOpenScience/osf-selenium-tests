@@ -111,6 +111,15 @@ caps = {
         'resolution': '2048x1536',
         'timezone': 'UTC',
     },
+    'safari': {
+        'browser': 'Safari',
+        'browser_version': '17',
+        'os': 'OS X',
+        'os_version': 'Sonoma',
+        'timezone': 'UTC',
+        'networkLogs': 'true',
+        'enablePopups': 'false',
+    },
 }
 
 BUILD = DRIVER

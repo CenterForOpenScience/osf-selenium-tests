@@ -4,6 +4,7 @@ import pytest
 from selenium.webdriver.common.by import By
 
 import settings
+import utils
 from base.locators import (
     ComponentLocator,
     GroupLocator,
@@ -101,7 +102,7 @@ class PreprintSubmitPage(BasePreprintPage):
 
     def select_from_dropdown_listbox(self, selection):
         for option in self.dropdown_options:
-            if option.text == selection:
+            if utils.clean_text(option.text) == selection:
                 option.click()
                 break
 
@@ -114,7 +115,7 @@ class PreprintSubmitPage(BasePreprintPage):
 
     def select_top_level_subject(self, selection):
         for subject in self.top_level_subjects:
-            if subject.text == selection:
+            if utils.clean_text(subject.text) == selection:
                 # Find the checkbox element and click it to select the subject
                 checkbox = subject.find_element_by_css_selector(
                     'input.ember-checkbox.ember-view'
@@ -325,7 +326,7 @@ class ReviewsDashboardPage(OSFBasePage):
             group_name = provider_group.find_element_by_css_selector(
                 'span._provider-name_gp8jcl'
             )
-            if provider_name == group_name.text:
+            if provider_name == utils.clean_text(group_name.text):
                 links = provider_group.find_elements_by_css_selector(
                     'ul._provider-links_gp8jcl > li > a'
                 )

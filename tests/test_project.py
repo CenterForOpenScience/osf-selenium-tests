@@ -8,6 +8,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 import markers
 import settings
+import utils
 from api import osf_api
 from pages.login import (
     LoginPage,
@@ -249,7 +250,7 @@ class TestProjectComponents:
             component_page = ProjectPage(driver, verify=True)
             assert component_page.title.text == 'Selenium Component'
             assert (
-                component_page.description.text
+                utils.clean_text(component_page.description.text)
                 == 'This component was added by an automated selenium test.'
             )
 
@@ -376,7 +377,7 @@ class TestProjectComponents:
                 EC.visibility_of(project_page.alert_message.element)
             )
             assert (
-                project_page.alert_message.text
+                utils.clean_text(project_page.alert_message.text)
                 == 'Component has been successfully deleted.'
             )
             assert len(project_page.components) == 0
@@ -482,13 +483,13 @@ class TestProjectVOLs:
 
         # Verify VOL message at the top of the page
         assert (
-            project_page.alert_info_message.text
+            utils.clean_text(project_page.alert_info_message.text)
             == 'This project is being viewed through a private, view-only link. Anyone with the link can view this project. Keep the link safe.'
         )
 
         # Verify Contributor is visible
         user = osf_api.current_user()
-        assert project_page.contributors_list.text == user.full_name
+        assert utils.clean_text(project_page.contributors_list.text) == user.full_name
 
         # Verify File Widget loads
         assert project_page.file_widget.first_file
@@ -526,7 +527,7 @@ class TestProjectVOLs:
 
         # Verify VOL message at the top of the page
         assert (
-            project_page.alert_info_message.text
+            utils.clean_text(project_page.alert_info_message.text)
             == 'This project is being viewed through a private, view-only link. Anyone with the link can view this project. Keep the link safe.'
         )
 
