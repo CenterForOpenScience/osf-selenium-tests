@@ -1284,3 +1284,22 @@ def create_registration_resource(registration_guid, resource_type):
         item_id=resource_id,
         item_type='resources',
     )['data']
+
+
+def delete_registration_resources(registration_id):
+    """This function deletes all the resources added to the given registration"""
+    session = client.Session(
+        api_base_url=settings.API_DOMAIN,
+        auth=(settings.REGISTRATIONS_USER, settings.REGISTRATIONS_USER_PASSWORD),
+    )
+    url = '/v2/registrations/{}/resources/'.format(registration_id)
+    data = session.get(url)['data']
+    if data:
+        for i in range(0, len(data)):
+            date_created = data[i]['attributes']['date_created']
+            now = datetime.now()
+            current_date = now.strftime('%Y-%m-%d')
+            if current_date in date_created:
+                registration_resource_id = data[i]['id']
+                delete_url = '/v2/resources/{}'.format(registration_resource_id)
+                session.delete(delete_url, item_type='resources')

@@ -190,7 +190,7 @@ class TestRegistrationOutputs:
             )
             == resource_description
         )
-        osf_api.delete_registration_resource(registration_guid, resource_type)
+        osf_api.delete_registration_resources(registration_guid)
 
     @pytest.mark.parametrize('resource_type', resource_types)
     def test_delete_resource(
@@ -202,7 +202,6 @@ class TestRegistrationOutputs:
         fake,
     ):
         """This test verifies delete functionality of data output resource for a registration"""
-
         registration_details_page_with_resource.open_practice_resource_data.click()
         registration_details_page_with_resource.resource_type_delete_button.click()
         registration_details_page_with_resource.resource_type_delete_confirm.click()
