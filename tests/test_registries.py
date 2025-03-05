@@ -1,6 +1,7 @@
 import datetime
 import os
 import re
+import time
 import tkinter
 
 import pytest
@@ -587,7 +588,7 @@ class TestRegistrationSubmission:
         metadata_page.description_textarea.send_keys_deliberately(
             'This is a test registration created using Selenium.'
         )
-
+        time.sleep(2)
         metadata_page.scroll_into_view(metadata_page.category_listbox_trigger.element)
         metadata_page.category_listbox_trigger.click()
         WebDriverWait(driver, 5).until(
