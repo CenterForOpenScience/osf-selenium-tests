@@ -277,34 +277,30 @@ class TestPreprintWorkflow:
         WebDriverWait(driver, 5).until(
             EC.visibility_of_element_located((By.CSS_SELECTOR, '[data-test-title]'))
         )
-        edit_page.next_button.click()
-
-        # Next add another subject in the Discipline section
-        WebDriverWait(driver, 5).until(
-            EC.visibility_of_element_located(
-                (
-                    By.CSS_SELECTOR,
-                    'div.ember-tabs__tab-panel.ember-tabs__tab-panel--selected > div >ul >li>label > input',
-                )
-            )
-        )
-        edit_page.scroll_into_view(edit_page.basics_tags_input.element)
         edit_page.select_top_level_subject('Business')
-
         # Add another Tag and click the Save and continue button
         edit_page.basics_tags_input.send_keys(os.environ['PYTEST_CURRENT_TEST'])
         edit_page.basics_tags_input.send_keys(Keys.RETURN)
         # Click Return to preprint button to go back to Preprint Detail page
+
+        body = driver.find_element(By.TAG_NAME, 'body')
+        body.send_keys(Keys.HOME)
+        WebDriverWait(driver, 5).until(
+            EC.invisibility_of_element_located((By.CLASS_NAME, 'toast-success'))
+        )
+        WebDriverWait(driver, 5).until(
+            EC.visibility_of_element_located(
+                (By.CSS_SELECTOR, '[data-test-next-button]')
+            )
+        )
         edit_page.next_button.click()
         WebDriverWait(driver, 5).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, '[data-test-next-button]'))
         )
-
         edit_page.next_button.click()
         WebDriverWait(driver, 5).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, '[data-test-next-button]'))
         )
-
         edit_page.next_button.click()
         WebDriverWait(driver, 5).until(
             EC.element_to_be_clickable((By.CSS_SELECTOR, '[data-test-submit-button]'))
