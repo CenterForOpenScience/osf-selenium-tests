@@ -283,13 +283,15 @@ class TestPreprintWorkflow:
         edit_page.basics_tags_input.send_keys(Keys.RETURN)
         # Click Return to preprint button to go back to Preprint Detail page
 
-        body = driver.find_element(By.TAG_NAME, "body")
+        body = driver.find_element(By.TAG_NAME, 'body')
         body.send_keys(Keys.HOME)
         WebDriverWait(driver, 5).until(
-            EC.invisibility_of_element_located((By.CLASS_NAME, "toast-success"))
+            EC.invisibility_of_element_located((By.CLASS_NAME, 'toast-success'))
         )
         WebDriverWait(driver, 5).until(
-            EC.visibility_of_element_located((By.CSS_SELECTOR, '[data-test-next-button]'))
+            EC.visibility_of_element_located(
+                (By.CSS_SELECTOR, '[data-test-next-button]')
+            )
         )
         edit_page.next_button.click()
         WebDriverWait(driver, 5).until(

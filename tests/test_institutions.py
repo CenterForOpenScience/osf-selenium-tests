@@ -1,4 +1,5 @@
 import pytest
+
 import markers
 from api import osf_api
 from pages.institutions import (
@@ -58,7 +59,9 @@ class TestInstitutionAdminDashboardPage:
         api_public_project_count = metrics_data['attributes']['public_project_count']
         api_private_project_count = metrics_data['attributes']['private_project_count']
 
-        total_project_count = dashboard_page.get_kpi_data_by_kpi_title('OSF Public and Private Projects')
+        total_project_count = dashboard_page.get_kpi_data_by_kpi_title(
+            'OSF Public and Private Projects'
+        )
 
         # Verify Total User Count
         displayed_user_count = dashboard_page.get_kpi_data_by_kpi_title('Total Users')
@@ -67,14 +70,19 @@ class TestInstitutionAdminDashboardPage:
         dashboard_page.click_on_listbox_trigger('Public vs Private Projects')
 
         # Verify Public Project Count
-        displayed_public_project_count = dashboard_page.get_expanded_total_by_expanded_name('Public Projects')
+        displayed_public_project_count = (
+            dashboard_page.get_expanded_total_by_expanded_name('Public Projects')
+        )
         assert int(displayed_public_project_count) == api_public_project_count
 
         # Verify Private Project Count
-        displayed_private_project_count = dashboard_page.get_expanded_total_by_expanded_name('Private Projects')
+        displayed_private_project_count = (
+            dashboard_page.get_expanded_total_by_expanded_name('Private Projects')
+        )
         assert int(displayed_private_project_count) == api_private_project_count
 
         # Verify Total Project Count
         assert (
-            int(total_project_count) == api_public_project_count + api_private_project_count
+            int(total_project_count)
+            == api_public_project_count + api_private_project_count
         )
