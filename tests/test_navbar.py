@@ -395,6 +395,7 @@ class TestCollectionsNavbarLoggedIn:
     def test_donate_link(self, session, driver, page):
         page.donate_link.click()
         donate_page = COSDonatePage(driver, verify=False)
+        time.sleep(1)
         assert_donate_page(driver, donate_page)
 
 
@@ -424,4 +425,5 @@ class TestProjectsNavbarLoggedIn:
     def test_donate_link(self, session, driver, page):
         page.navbar.donate_link.click()
         donate_page = COSDonatePage(driver, verify=False)
+        time.sleep(1)
         assert_donate_page(driver, donate_page)
