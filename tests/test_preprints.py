@@ -282,7 +282,6 @@ class TestPreprintWorkflow:
         WebDriverWait(driver, 5).until(
             EC.visibility_of_element_located((By.CSS_SELECTOR, '[data-test-title]'))
         )
-        edit_page.next_button.click()
 
         # Next add another subject in the Discipline section
         WebDriverWait(driver, 5).until(
@@ -319,7 +318,10 @@ class TestPreprintWorkflow:
         detail_page = PreprintDetailPage(driver, verify=True)
         # Verify Title and Abstract
         assert detail_page.title.text == 'Selenium Preprint Edit'
-        assert detail_page.abstract.text == 'Testing Selenium Abstract edit'
+        assert (
+            utils.clean_text(detail_page.abstract.text)
+            == 'Testing Selenium Abstract edit'
+        )
         # Verify new Subject appears on the page
         subjects = detail_page.subjects
         subject_found = False
