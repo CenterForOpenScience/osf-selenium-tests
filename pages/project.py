@@ -44,7 +44,7 @@ from pages.base import (
 
 class ProjectPage(GuidBasePage):
 
-    identity = Locator(By.ID, 'projectScope')
+    identity = Locator(By.ID, 'projectScope', settings.LONG_TIMEOUT)
     title = Locator(By.ID, 'nodeTitleEditable', settings.LONG_TIMEOUT)
     title_input = Locator(By.CSS_SELECTOR, '.form-inline input')
     title_edit_submit_button = Locator(By.CSS_SELECTOR, '.editable-submit')

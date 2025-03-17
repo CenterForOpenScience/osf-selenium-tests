@@ -1,4 +1,5 @@
 import re
+import time
 from urllib.parse import urljoin
 
 import pytest
@@ -248,6 +249,7 @@ class TestProjectComponents:
             # the Overview page of a new node
             project_page.component_created_modal.go_to_new_component_link.click()
             component_page = ProjectPage(driver, verify=True)
+            time.sleep(1)
             assert component_page.title.text == 'Selenium Component'
             assert (
                 utils.clean_text(component_page.description.text)
@@ -278,6 +280,7 @@ class TestProjectComponents:
             # back to the original parent Project Overview page.
             component_page.scroll_into_view(component_page.parent_project_link.element)
             component_page.parent_project_link.click()
+            time.sleep(2)
             assert project_page
 
             # Verify that the Components section of the parent Project now lists the

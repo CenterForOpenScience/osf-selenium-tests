@@ -351,7 +351,7 @@ class TestProjectMetadata:
 
         WebDriverWait(driver, 5).until(
             EC.element_to_be_clickable(
-                (By.CSS_SELECTOR, '[data-test-edit-contributors]')
+                (By.CSS_SELECTOR, '[data-test-contributors-link]')
             )
         ).click()
 
@@ -367,6 +367,7 @@ class TestProjectMetadata:
         project_metadata_page.search_input.click()
         project_metadata_page.search_input.send_keys(new_user)
         project_metadata_page.contributor_search_button.click()
+        # project_metadata_page.contributor_search_button.click()
 
         # Get the row number for the user from the search table
         WebDriverWait(driver, 5).until(
@@ -408,7 +409,7 @@ class TestProjectMetadata:
         user = driver.find_element_by_xpath(
             contributor_table_path + '/tbody/tr[' + str(rowno) + ']/td[2]'
         )
-        assert new_user in user.text
+        assert new_user in utils.clean_text(user.text)
 
     def test_edit_resource_information(self, driver, project_metadata_page):
         """This test verifies that user can add/remove

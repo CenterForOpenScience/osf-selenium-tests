@@ -212,8 +212,8 @@ class TestRegistrationOutputs:
                 (By.CSS_SELECTOR, '[data-test-add-resource-section]')
             )
         )
-
-        assert (
-            utils.clean_text(registration_details_page_with_resource.resource_list.text)
-            == 'This registration has no resources.'
+        resource_id = osf_api.get_registration_resource_id(
+            registration_id=registration_guid, resource_type=resource_type
         )
+        assert resource_id is None
+        osf_api.delete_registration_resources(registration_guid)
