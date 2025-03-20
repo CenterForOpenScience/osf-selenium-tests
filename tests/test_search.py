@@ -5,6 +5,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
 
 import markers
+import utils
 from pages.search import SearchPage
 
 
@@ -43,7 +44,11 @@ class TestSearchPage:
         )
         assert len(search_page.search_results) > 0
         # Verify that first search result is of Project type
-        assert search_page.first_card_object_type_label.text[:7] == 'PROJECT'
+        # assert search_page.first_card_object_type_label.text[:7] == 'PROJECT'
+        assert (
+            'PROJECT'
+            in utils.clean_text(search_page.first_card_object_type_label.text).upper()
+        )
 
     def test_search_results_exist_registrations_tab(self, driver, search_page):
         search_page.search_input.send_keys('test')
@@ -59,7 +64,10 @@ class TestSearchPage:
         )
         assert len(search_page.search_results) > 0
         # Verify that first search result is of Registration type
-        assert search_page.first_card_object_type_label.text[:12] == 'REGISTRATION'
+        assert (
+            utils.clean_text(search_page.first_card_object_type_label.text.upper())
+            == 'REGISTRATION'
+        )
 
     def test_search_results_exist_preprints_tab(self, driver, search_page):
         search_page.search_input.send_keys('test')
@@ -75,7 +83,10 @@ class TestSearchPage:
         )
         assert len(search_page.search_results) > 0
         # Verify that first search result is of Preprint type
-        assert search_page.first_card_object_type_label.text == 'PREPRINT'
+        assert (
+            utils.clean_text(search_page.first_card_object_type_label.text.upper())
+            == 'PREPRINT'
+        )
 
     def test_search_results_exist_files_tab(self, driver, search_page):
         search_page.search_input.send_keys('test')
@@ -91,7 +102,10 @@ class TestSearchPage:
         )
         assert len(search_page.search_results) > 0
         # Verify that first search result is of File type
-        assert search_page.first_card_object_type_label.text == 'FILE'
+        assert (
+            utils.clean_text(search_page.first_card_object_type_label.text.upper())
+            == 'FILE'
+        )
 
     def test_search_results_exist_users_tab(self, driver, search_page):
         search_page.loading_indicator.here_then_gone()
@@ -105,4 +119,7 @@ class TestSearchPage:
         )
         assert len(search_page.search_results) > 0
         # Verify that first search result is of User type
-        assert search_page.first_card_object_type_label.text == 'USER'
+        assert (
+            utils.clean_text(search_page.first_card_object_type_label.text.upper())
+            == 'USER'
+        )

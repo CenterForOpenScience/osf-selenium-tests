@@ -83,9 +83,13 @@ class AccountSettingsPage(BaseUserSettingsPage):
     storage_location_listbox = Locator(
         By.CSS_SELECTOR, 'div[data-test-region-selector] > div'
     )
+    affiliation_help_text = Locator(
+        By.CSS_SELECTOR, '[data-test-affiliated-institutions-help-text]'
+    )
     first_affiliated_institution = Locator(
         By.CSS_SELECTOR, 'span[data-test-affiliated-institutions-item]'
     )
+
     first_aff_inst_delete_button = Locator(
         By.CSS_SELECTOR, 'span[data-test-affiliated-institutions-delete] > button'
     )
@@ -110,6 +114,7 @@ class AccountSettingsPage(BaseUserSettingsPage):
     configure_2fa_button = Locator(
         By.CSS_SELECTOR, 'button[data-test-two-factor-enable-button]'
     )
+    two_factor_help = Locator(By.CSS_SELECTOR, '[data-test-why-two-factor]')
     two_factor_qr_code_img = Locator(By.CSS_SELECTOR, 'div[data-test-2f-qr-code] > img')
     cancel_2fa_button = Locator(
         By.CSS_SELECTOR, 'button[data-test-two-factor-verify-cancel-button]'
@@ -127,7 +132,6 @@ class AccountSettingsPage(BaseUserSettingsPage):
     unconfirmed_emails = GroupLocator(
         By.CSS_SELECTOR, 'div[data-test-unconfirmed-email-item]'
     )
-
     configure_2fa_modal = ComponentLocator(Configure2FAModal)
     confirm_deactivation_modal = ComponentLocator(ConfirmDeactivationRequestModal)
     undo_deactivation_modal = ComponentLocator(UndoDeactivationRequestModal)
@@ -147,7 +151,7 @@ class AccountSettingsPage(BaseUserSettingsPage):
 class ConfigureAddonsPage(BaseUserSettingsPage):
     url = settings.OSF_HOME + '/settings/addons/'
 
-    identity = Locator(By.CSS_SELECTOR, '#configureAddons')
+    identity = Locator(By.CSS_SELECTOR, 'div._profile-container_1pqro5')
 
 
 class NotificationsPage(BaseUserSettingsPage):

@@ -162,7 +162,7 @@ class TestRegistrationOutputs:
             )
         )
         assert data_resource is not None
-        osf_api.delete_registration_resources(registration_guid)
+        osf_api.delete_registration_resource(registration_guid, resource_type)
 
     @pytest.mark.parametrize('resource_type', resource_types)
     def test_edit_resource(

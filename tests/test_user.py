@@ -11,6 +11,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 import components.email_access as EmailAccess
 import markers
 import settings
+import utils
 from api import osf_api
 from pages import user
 
@@ -210,7 +211,9 @@ class TestUserAccountSettings:
         # matches the storage location region that is displayed as selected in the
         # listbox
         user_region = osf_api.get_user_region_name(session)
-        assert settings_page.storage_location_listbox.text == user_region
+        assert (
+            utils.clean_text(settings_page.storage_location_listbox.text) == user_region
+        )
 
         # Click the listbox to display all of the storage locations and get a list
         # of the displayed regions
@@ -219,7 +222,9 @@ class TestUserAccountSettings:
             By.CSS_SELECTOR,
             'div.ember-basic-dropdown-content-wormhole-origin > div > ul > li',
         )
-        listbox_regions = sorted([region.text for region in listbox_items])
+        listbox_regions = sorted(
+            [utils.clean_text(region.text) for region in listbox_items]
+        )
 
         # Get available regions using the api and verify that the lists match
         regions_data = osf_api.get_regions_data(session)
@@ -236,9 +241,7 @@ class TestUserAccountSettings:
         settings_page = user.AccountSettingsPage(driver)
         settings_page.goto()
         assert user.AccountSettingsPage(driver, verify=True)
-        settings_page.scroll_into_view(
-            settings_page.first_affiliated_institution.element
-        )
+        settings_page.scroll_into_view(settings_page.affiliation_help_text.element)
 
         # Click the Delete button to the far right of the first affiliated institution.
         # On the Delete modal, first click the Cancel button and verify that the
@@ -254,7 +257,10 @@ class TestUserAccountSettings:
         settings_page.delete_aff_inst_modal.delete_button.click()
         settings_page.loading_indicator.here_then_gone()
         settings_page.first_affiliated_institution.absent()
-        assert settings_page.no_affiliations_message.text == 'You have no affiliations.'
+        assert (
+            utils.clean_text(settings_page.no_affiliations_message.text)
+            == 'You have no affiliations.'
+        )
 
     def test_user_account_settings_update_password(self, driver, session):
         """Test the Change password section on the User Account Settings page in OSF.
@@ -271,17 +277,17 @@ class TestUserAccountSettings:
 
         assert settings_page.old_password_error_message.present()
         assert (
-            settings_page.old_password_error_message.text
+            utils.clean_text(settings_page.old_password_error_message.text)
             == "This field can't be blank."
         )
         assert settings_page.new_password_error_message.present()
         assert (
-            settings_page.new_password_error_message.text
+            utils.clean_text(settings_page.new_password_error_message.text)
             == "This field can't be blank."
         )
         assert settings_page.confirm_password_error_message.present()
         assert (
-            settings_page.confirm_password_error_message.text
+            utils.clean_text(settings_page.confirm_password_error_message.text)
             == "This field can't be blank."
         )
 
@@ -297,7 +303,7 @@ class TestUserAccountSettings:
 
         # Scroll down to the Security settings section near the bottom of the page and
         # click the Configure button
-        settings_page.scroll_into_view(settings_page.configure_2fa_button.element)
+        settings_page.scroll_into_view(settings_page.two_factor_help.element)
         settings_page.configure_2fa_button.click()
 
         # On the Configure 2FA Modal, first click the Cancel button and verify that the
@@ -343,7 +349,7 @@ class TestUserAccountSettings:
         # Verify that the account pending deactivation message is now displayed
         assert settings_page.pending_deactivation_message.present()
         assert (
-            settings_page.pending_deactivation_message.text
+            utils.clean_text(settings_page.pending_deactivation_message.text)
             == 'Your account is currently pending deactivation.'
         )
 
@@ -354,7 +360,7 @@ class TestUserAccountSettings:
         settings_page.undo_deactivation_modal.cancel_button.click()
         assert settings_page.pending_deactivation_message.present()
         assert (
-            settings_page.pending_deactivation_message.text
+            utils.clean_text(settings_page.pending_deactivation_message.text)
             == 'Your account is currently pending deactivation.'
         )
 
@@ -452,7 +458,10 @@ class TestUserDeveloperApps:
             # Click the Show client secret button to unveil the client secret and verify
             # the text on the button has changed to 'Hide client secret'
             edit_page.show_client_secret_button.click()
-            assert edit_page.show_client_secret_button.text == 'Hide client secret'
+            assert (
+                utils.clean_text(edit_page.show_client_secret_button.text)
+                == 'Hide client secret'
+            )
             assert edit_page.client_secret_input.get_attribute('value') == client_secret
             edit_page.scroll_into_view(edit_page.app_name_input.element)
             assert edit_page.app_name_input.get_attribute('value') == app_name
@@ -689,7 +698,10 @@ class TestUserDeveloperApps:
             # Click the Show client secret button to unveil the client secret and verify
             # the text on the button has changed to 'Hide client secret'
             edit_page.show_client_secret_button.click()
-            assert edit_page.show_client_secret_button.text == 'Hide client secret'
+            assert (
+                utils.clean_text(edit_page.show_client_secret_button.text)
+                == 'Hide client secret'
+            )
             assert edit_page.client_secret_input.get_attribute('value') == client_secret
             edit_page.scroll_into_view(edit_page.app_name_input.element)
             assert edit_page.app_name_input.get_attribute('value') == new_app_name
