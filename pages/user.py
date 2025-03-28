@@ -151,7 +151,7 @@ class AccountSettingsPage(BaseUserSettingsPage):
 class ConfigureAddonsPage(BaseUserSettingsPage):
     url = settings.OSF_HOME + '/settings/addons/'
 
-    identity = Locator(By.CSS_SELECTOR, 'div._profile-container_1pqro5')
+    identity = Locator(By.CSS_SELECTOR, 'div[data-analytics-scope="User addons"]')
 
 
 class NotificationsPage(BaseUserSettingsPage):

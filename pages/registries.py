@@ -367,7 +367,7 @@ class RegistrationAddNewPage(BaseRegistriesPage):
 
     def select_from_dropdown_listbox(self, selection):
         for option in self.dropdown_options:
-            if option.text == selection:
+            if utils.clean_text(option.text) == selection:
                 option.click()
                 break
 
@@ -439,13 +439,13 @@ class DraftRegistrationMetadataPage(BaseRegistrationDraftPage):
 
     def select_from_dropdown_listbox(self, selection):
         for option in self.dropdown_options:
-            if option.text == selection:
+            if utils.clean_text(option.text) == selection:
                 option.click()
                 break
 
     def select_top_level_subject(self, selection):
         for subject in self.top_level_subjects:
-            if subject.text == selection:
+            if utils.clean_text(subject.text) == selection:
                 # Find the checkbox element and click it to select the subject
                 checkbox = subject.find_element_by_css_selector(
                     'input.ember-checkbox.ember-view'
@@ -475,10 +475,8 @@ class DraftRegistrationDesignPlanPage(BaseRegistrationDraftPage):
     """Draft Design Plan Page for an OSF Preregistration Template"""
 
     url_addition = '2-design-plan'
-    identity = Locator(
-        By.CSS_SELECTOR, 'input[id^="radio-Experiment"]', settings.LONG_TIMEOUT
-    )
-    other_radio_button = Locator(By.CSS_SELECTOR, 'input[id^="radio-Other"]')
+    identity = Locator(By.CSS_SELECTOR, '[data-test-page-heading]')
+    other_radio_button = Locator(By.XPATH, '//div/input[@value="Other"]')
     no_blinding_checkbox = Locator(
         By.CSS_SELECTOR, 'div._Checkboxes_qxt8ij > div:nth-child(1) > input'
     )
@@ -493,12 +491,12 @@ class DraftRegistrationSamplingPlanPage(BaseRegistrationDraftPage):
 
     url_addition = '3-sampling-plan'
     identity = Locator(
-        By.CSS_SELECTOR,
-        'input[id^="radio-Registration prior to creation"]',
+        By.XPATH,
+        '//input[@value="Registration following analysis of the data"]',
         settings.LONG_TIMEOUT,
     )
     reg_following_radio_button = Locator(
-        By.CSS_SELECTOR, 'input[id^="radio-Registration following"]'
+        By.XPATH, '//input[@value="Registration following analysis of the data"]'
     )
     data_procedures_textbox = Locator(By.NAME, '__responseKey_q10|question')
     sample_size_textbox = Locator(By.NAME, '__responseKey_q11')

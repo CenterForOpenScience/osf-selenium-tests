@@ -95,7 +95,6 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
         driver = driver_cls(options=ffo)
     elif driver_name == 'Edge' and not settings.HEADLESS:
         driver = webdriver.Edge()
-
     else:
         driver = driver_cls()
 

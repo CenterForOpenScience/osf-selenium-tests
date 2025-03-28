@@ -1,6 +1,7 @@
 import pytest
 
 import markers
+import utils
 from api import osf_api
 from pages.project import RegistrationsPage
 from pages.registries import (
@@ -65,15 +66,15 @@ class TestProjectRegistrationsPage:
         )
         assert registrations_page.registration_card.absent()
         assert (
-            registrations_page.no_registrations_message_1.text
+            utils.clean_text(registrations_page.no_registrations_message_1.text)
             == 'There have been no completed registrations of this project.'
         )
         assert (
-            registrations_page.no_registrations_message_2.text
+            utils.clean_text(registrations_page.no_registrations_message_2.text)
             == 'Start a new registration by clicking the “New registration” button. Once created, registrations cannot be edited or deleted.'
         )
         assert (
-            registrations_page.no_registrations_message_3.text
+            utils.clean_text(registrations_page.no_registrations_message_3.text)
             == 'Learn more about registrations here.'
         )
         # Click 'here' link and verify redirection to support page
@@ -96,15 +97,15 @@ class TestProjectRegistrationsPage:
         )
         assert registrations_page.draft_registration_card.absent()
         assert (
-            registrations_page.no_draft_registrations_message_1.text
+            utils.clean_text(registrations_page.no_draft_registrations_message_1.text)
             == 'There are no draft registrations of this project.'
         )
         assert (
-            registrations_page.no_draft_registrations_message_2.text
+            utils.clean_text(registrations_page.no_draft_registrations_message_2.text)
             == 'Start a new registration by clicking the “New registration” button. Once created, registrations cannot be edited or deleted.'
         )
         assert (
-            registrations_page.no_draft_registrations_message_3.text
+            utils.clean_text(registrations_page.no_draft_registrations_message_3.text)
             == 'Learn more about registrations here.'
         )
         # Click 'here' link and verify redirection to support page
@@ -124,7 +125,7 @@ class TestProjectRegistrationsPage:
         # Get list of allowed schema names for OSF Registries from the api and verify
         # the list on the modal matches the api list
         api_schemas = osf_api.get_registration_schemas_for_provider(provider_id='osf')
-        api_schema_list = [schema[0] for schema in api_schemas]
+        api_schema_list = [utils.clean_text(schema[0]) for schema in api_schemas]
         api_schema_list.sort()
         modal_schema_list = create_registration_modal.get_schema_names_list()
         modal_schema_list.sort()
@@ -161,15 +162,21 @@ class TestProjectRegistrationsPage:
         """
         assert registrations_page_with_draft.draft_registration_card.present()
         assert (
-            registrations_page_with_draft.draft_registration_title.text
+            utils.clean_text(
+                registrations_page_with_draft.draft_registration_title.text
+            )
             == 'OSF Test Project'
         )
         assert (
-            registrations_page_with_draft.draft_registration_schema_name.text
+            utils.clean_text(
+                registrations_page_with_draft.draft_registration_schema_name.text
+            )
             == 'Open-Ended Registration'
         )
         assert (
-            registrations_page_with_draft.draft_registration_provider.text
+            utils.clean_text(
+                registrations_page_with_draft.draft_registration_provider.text
+            )
             == 'OSF Registries'
         )
         registrations_page_with_draft.review_draft_button.click()
@@ -186,7 +193,9 @@ class TestProjectRegistrationsPage:
         """
         assert registrations_page_with_draft.draft_registration_card.present()
         assert (
-            registrations_page_with_draft.draft_registration_title.text
+            utils.clean_text(
+                registrations_page_with_draft.draft_registration_title.text
+            )
             == 'OSF Test Project'
         )
         registrations_page_with_draft.edit_draft_button.click()
@@ -203,7 +212,9 @@ class TestProjectRegistrationsPage:
         """
         assert registrations_page_with_draft.draft_registration_card.present()
         assert (
-            registrations_page_with_draft.draft_registration_title.text
+            utils.clean_text(
+                registrations_page_with_draft.draft_registration_title.text
+            )
             == 'OSF Test Project'
         )
         # Click the Delete button for the Draft Registration card and then click the
@@ -220,6 +231,8 @@ class TestProjectRegistrationsPage:
         registrations_page_with_draft.delete_draft_registration_modal.delete_button.click()
         assert registrations_page_with_draft.draft_registration_card.absent()
         assert (
-            registrations_page_with_draft.no_draft_registrations_message_1.text
+            utils.clean_text(
+                registrations_page_with_draft.no_draft_registrations_message_1.text
+            )
             == 'There are no draft registrations of this project.'
         )

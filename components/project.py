@@ -1,6 +1,7 @@
 from selenium.webdriver.common.by import By
 
 import settings
+import utils
 from base.locators import (
     BaseElement,
     GroupLocator,
@@ -96,7 +97,7 @@ class CreateRegistrationModal(BaseElement):
 
     def get_schema_names_list(self):
         """Returns the schema names from the schema list"""
-        return [schema.text for schema in self.schema_list]
+        return [utils.clean_text(schema.text) for schema in self.schema_list]
 
     def select_schema_radio_button(self, schema_name='Open-Ended Registration'):
         """Selects the radio button corresponding to the given schema name"""
