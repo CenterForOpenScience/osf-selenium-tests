@@ -123,6 +123,8 @@ class TestRegistriesSearch:
             # Wait for the new tab to open - window count should then = 2
             WebDriverWait(driver, 5).until(EC.number_of_windows_to_be(2))
             # Switch focus to the new tab
+            if settings.env('TEST_BUILD') == 'safari':
+                driver.switch_to.window(driver.window_handles[-1])
             driver.switch_to.window(driver.window_handles[1])
             detail_page = RegistrationDetailPage(driver, verify=True)
             assert detail_page.title.text in target_registration_title

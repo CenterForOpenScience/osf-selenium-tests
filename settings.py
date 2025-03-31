@@ -117,8 +117,9 @@ caps = {
         'os': 'OS X',
         'os_version': 'Sonoma',
         'timezone': 'UTC',
-        'networkLogs': 'true',
-        'enablePopups': 'false',
+        'networkLogs': True,
+        'enablePopups': False,
+        'acceptInsecureCerts': True,
     },
 }
 

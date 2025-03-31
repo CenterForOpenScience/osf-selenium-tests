@@ -135,6 +135,10 @@ def public_project_node(session, driver):
 
 @markers.smoke_test
 @pytest.mark.usefixtures('hide_footer_slide_in')
+@pytest.mark.skipif(
+    settings.env('TEST_BUILD') == 'safari',
+    reason='Test fails on safari browser due to some oauth setting on the browser',
+)
 class TestNodeAnalytics:
     def test_unique_visits_graph(self, session, driver, public_project_node):
         """Test the Unique Visits Graph on the Project Analytics page. First retrieve
