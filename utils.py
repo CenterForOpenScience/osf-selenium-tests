@@ -13,15 +13,6 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
         desired_capabilities : Desired browser specs
     """
 
-    # Create a temporary Firefox WebDriver to fetch the current user agent
-    temp_options = webdriver.FirefoxOptions()
-    temp_driver = webdriver.Firefox(options=temp_options)
-    default_user_agent = temp_driver.execute_script('return navigator.userAgent;')
-    temp_driver.quit()  # Close the temporary browser instance
-
-    # Append "Selenium Bot" to the existing user agent
-    custom_user_agent = f'{default_user_agent} Selenium Bot'
-
     try:
         driver_cls = getattr(webdriver, driver_name)
     except AttributeError:
@@ -33,6 +24,15 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
         command_executor = 'http://{}:{}@hub.browserstack.com:80/wd/hub'.format(
             settings.BSTACK_USER, settings.BSTACK_KEY
         )
+
+        # Create a temporary Firefox WebDriver to fetch the current user agent
+        temp_options = webdriver.FirefoxOptions()
+        temp_driver = webdriver.Firefox(options=temp_options)
+        default_user_agent = temp_driver.execute_script('return navigator.userAgent;')
+        temp_driver.quit()
+
+        # Append "Selenium Bot" to the existing user agent
+        custom_user_agent = f'{default_user_agent} Selenium Bot'
 
         # NOTE: BrowserStack does support the use of Chrome Options, but we are not
         # currently using any of them. Below are several steps to setup preferences
@@ -71,15 +71,6 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
             options=ffo,
         )
 
-        # get current user agent
-        # default_user_agent = driver.execute_script("return navigator.userAgent;")
-
-        # Append "OSF-Selenium" to the existing user agent
-        # custom_user_agent = f"{default_user_agent} (OSF-Selenium)"
-        # ffo.set_preference("general.useragent.override", custom_user_agent)
-        # driver.execute_script(f"Object.defineProperty(navigator, 'userAgent', {{get: () => '{custom_user_agent}'}});")
-        # print(driver.execute_script("\nreturn navigator.userAgent;"))
-
     elif driver_name == 'Chrome' and settings.HEADLESS:
         from selenium.webdriver.chrome.options import Options
 
@@ -103,7 +94,6 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
         ffo = Options()
         # Set the default download location [0=Desktop, 1=Downloads, 2=Specified location]
         ffo.set_preference('browser.download.folderList', 1)
-        ffo.binary_location = r'C:\Program Files\Mozilla Firefox\firefox.exe'
         ffo.set_preference('browser.download.manager.showWhenStarting', False)
         ffo.set_preference('browser.helperApps.alwaysAsk.force', False)
         ffo.set_preference(
