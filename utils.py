@@ -4,6 +4,7 @@ import os
 from selenium import webdriver
 
 import settings
+from settings import DESIRED_CAP
 
 
 def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
@@ -19,57 +20,99 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
         driver_cls = getattr(webdriver, settings.DRIVER)
 
     if driver_name == 'Remote':
+
         if desired_capabilities is None:
             desired_capabilities = settings.DESIRED_CAP
         command_executor = 'http://{}:{}@hub.browserstack.com:80/wd/hub'.format(
             settings.BSTACK_USER, settings.BSTACK_KEY
         )
 
-        # Create a temporary Firefox WebDriver to fetch the current user agent
-        temp_options = webdriver.FirefoxOptions()
-        temp_driver = webdriver.Firefox(options=temp_options)
-        default_user_agent = temp_driver.execute_script('return navigator.userAgent;')
-        temp_driver.quit()
+        if settings.BUILD == 'firefox':
+            # Create a temporary Firefox WebDriver to fetch the current user agent
+            temp_options = webdriver.FirefoxOptions()
+            temp_driver = webdriver.Firefox(options=temp_options)
+            default_user_agent = temp_driver.execute_script(
+                'return navigator.userAgent;'
+            )
+            temp_driver.quit()
 
-        # Append "Selenium Bot" to the existing user agent
-        custom_user_agent = f'{default_user_agent} Selenium Bot'
+            # Append "Selenium Bot" to the existing user agent
+            custom_user_agent = f'{default_user_agent} OSF Selenium Bot'
 
-        # NOTE: BrowserStack does support the use of Chrome Options, but we are not
-        # currently using any of them. Below are several steps to setup preferences
-        # that are specific to Firefox. Currently when running Chrome or Edge in
-        # BrowserStack we are running with the default base install options.
+            # NOTE: BrowserStack does support the use of Chrome Options, but we are not
+            # currently using any of them. Below are several steps to setup preferences
+            # that are specific to Firefox. Currently when running Chrome or Edge in
+            # BrowserStack we are running with the default base install options.
 
-        from selenium.webdriver.firefox.options import Options
+            from selenium.webdriver.firefox.options import Options
 
-        ffo = Options()
+            ffo = Options()
 
-        # Set custom user agent
-        ffo.set_preference('general.useragent.override', custom_user_agent)
+            # Set custom user agent
+            ffo.set_preference('general.useragent.override', custom_user_agent)
 
-        # Set the default download location [0=Desktop, 1=Downloads, 2=Specified location]
-        ffo.set_preference('browser.download.folderList', 1)
+            # Set the default download location [0=Desktop, 1=Downloads, 2=Specified location]
+            ffo.set_preference('browser.download.folderList', 1)
 
-        # Disable the OS-level pop-up modal
-        ffo.set_preference('browser.download.manager.showWhenStarting', False)
-        ffo.set_preference('browser.helperApps.alwaysAsk.force', False)
-        ffo.set_preference('browser.download.manager.alertOnEXEOpen', False)
-        ffo.set_preference('browser.download.manager.closeWhenDone', True)
-        ffo.set_preference('browser.download.manager.showAlertOnComplete', False)
-        ffo.set_preference('browser.download.manager.useWindow', False)
-        # Specify the file types supported by the download
-        ffo.set_preference(
-            'browser.helperApps.neverAsk.saveToDisk',
-            'text/plain, application/octet-stream, application/binary, text/csv, application/csv, '
-            'application/excel, text/comma-separated-values, text/xml, application/xml, binary/octet-stream',
-        )
-        # Block Third Party Tracking Cookies (Default in Firefox is now 5 which blocks
-        # all Cross-site cookies)
-        ffo.set_preference('network.cookie.cookieBehavior', 4)
-        driver = driver_cls(
-            command_executor=command_executor,
-            desired_capabilities=desired_capabilities,
-            options=ffo,
-        )
+            # Disable the OS-level pop-up modal
+            ffo.set_preference('browser.download.manager.showWhenStarting', False)
+            ffo.set_preference('browser.helperApps.alwaysAsk.force', False)
+            ffo.set_preference('browser.download.manager.alertOnEXEOpen', False)
+            ffo.set_preference('browser.download.manager.closeWhenDone', True)
+            ffo.set_preference('browser.download.manager.showAlertOnComplete', False)
+            ffo.set_preference('browser.download.manager.useWindow', False)
+            # Specify the file types supported by the download
+            ffo.set_preference(
+                'browser.helperApps.neverAsk.saveToDisk',
+                'text/plain, application/octet-stream, application/binary, text/csv, application/csv, '
+                'application/excel, text/comma-separated-values, text/xml, application/xml, binary/octet-stream',
+            )
+            # Block Third Party Tracking Cookies (Default in Firefox is now 5 which blocks
+            # all Cross-site cookies)
+            ffo.set_preference('network.cookie.cookieBehavior', 4)
+            driver = driver_cls(
+                command_executor=command_executor,
+                desired_capabilities=desired_capabilities,
+                options=ffo,
+            )
+        elif settings.BUILD == 'chrome':
+            from selenium.webdriver.chrome.options import Options
+
+            chrome_options: Options = Options()
+            chrome_options.add_argument('--disable-gpu')
+            chrome_options.add_argument('window-size=1200x600')
+
+            # Fetch default user agent
+            temp_driver = driver_cls(
+                command_executor=command_executor,
+                desired_capabilities=desired_capabilities,
+                options=chrome_options,
+            )
+            default_user_agent = temp_driver.execute_script(
+                'return navigator.userAgent;'
+            )
+            temp_driver.quit()
+
+            # Append "OSF Selenium Bot" to the existing user agent
+            custom_user_agent = f'{default_user_agent} OSF Selenium Bot'
+            chrome_options.add_argument(f'user-agent={custom_user_agent}')
+
+            # Make a copy of desired capabilities for Chrome
+            desired_capabilities = DESIRED_CAP.copy()
+
+            # Attach Chrome options
+            desired_capabilities['goog:chromeOptions'] = {
+                'args': chrome_options.arguments
+            }
+
+            driver = driver_cls(
+                command_executor=command_executor,
+                desired_capabilities=desired_capabilities,
+                options=chrome_options,
+            )
+
+            print(driver.execute_script(DESIRED_CAP))
+            print(driver.execute_script('return navigator.userAgent;'))
 
     elif driver_name == 'Chrome' and settings.HEADLESS:
         from selenium.webdriver.chrome.options import Options
