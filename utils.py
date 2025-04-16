@@ -13,6 +13,7 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
         driver_name : Name of WebDriver to use
         desired_capabilities : Desired browser specs
     """
+    driver = None
 
     try:
         driver_cls = getattr(webdriver, driver_name)
@@ -38,11 +39,6 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
 
             # Append "Selenium Bot" to the existing user agent
             custom_user_agent = f'{default_user_agent} OSF Selenium Bot'
-
-            # NOTE: BrowserStack does support the use of Chrome Options, but we are not
-            # currently using any of them. Below are several steps to setup preferences
-            # that are specific to Firefox. Currently when running Chrome or Edge in
-            # BrowserStack we are running with the default base install options.
 
             from selenium.webdriver.firefox.options import Options
 
@@ -110,9 +106,10 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
                 desired_capabilities=desired_capabilities,
                 options=chrome_options,
             )
-
-            print(driver.execute_script(DESIRED_CAP))
-            print(driver.execute_script('return navigator.userAgent;'))
+        elif settings.BUILD == 'edge':
+            # Use default settings for edge driver
+            # We can update this once we upgrade to selenium v4
+            driver = webdriver.Edge()
 
     elif driver_name == 'Chrome' and settings.HEADLESS:
         from selenium.webdriver.chrome.options import Options
@@ -155,6 +152,11 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
 
     else:
         driver = driver_cls()
+
+    if driver is None:
+        raise RuntimeError(
+            'WebDriver could not be instantiated based on provided configuration.'
+        )
 
     driver.maximize_window()
     return driver
