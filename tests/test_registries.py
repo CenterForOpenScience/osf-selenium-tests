@@ -323,17 +323,6 @@ class TestRegistrationSubmission:
             'This is a test registration created from a project using Selenium.'
         )
 
-        # metadata_page.scroll_into_view(metadata_page.category_listbox_trigger.element)
-        # metadata_page.category_listbox_trigger.click()
-        # WebDriverWait(driver, 5).until(
-        #     EC.visibility_of_element_located(
-        #         (
-        #             By.CSS_SELECTOR,
-        #             '#ember-basic-dropdown-wormhole > div > ul >li.ember-power-select-option',
-        #         )
-        #     )
-        # )
-        # metadata_page.select_from_dropdown_listbox('Software')
         metadata_page.scroll_into_view(metadata_page.license_listbox_trigger.element)
         metadata_page.license_listbox_trigger.click()
         WebDriverWait(driver, 5).until(
@@ -600,18 +589,6 @@ class TestRegistrationSubmission:
             'This is a test registration created using Selenium.'
         )
 
-        # metadata_page.scroll_into_view(metadata_page.category_listbox_trigger.element)
-        # metadata_page.category_listbox_trigger.click()
-        # WebDriverWait(driver, 5).until(
-        #     EC.visibility_of_element_located(
-        #         (
-        #             By.CSS_SELECTOR,
-        #             '#ember-basic-dropdown-wormhole > div > ul >li.ember-power-select-option',
-        #         )
-        #     )
-        # )
-        # metadata_page.select_from_dropdown_listbox('Software')
-
         metadata_page.scroll_into_view(metadata_page.license_listbox_trigger.element)
         metadata_page.license_listbox_trigger.click()
         WebDriverWait(driver, 5).until(
@@ -791,6 +768,7 @@ class TestRegistrationFilesPages:
                 'browserstack_executor: {"action": "fileExists", "arguments": {"fileName": "%s"}}'
                 % (file_name)
             )
+
             # Next get the file properties and then verify that the file creation date
             # is today
             file_props = driver.execute_script(

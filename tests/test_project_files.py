@@ -10,6 +10,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 
 import markers
 import settings
+import utils
 from api import osf_api
 from pages.landing import LandingPage
 from pages.project import (
@@ -659,7 +660,7 @@ class TestProjectVOLs:
 
         # Verify VOL message at the top of the page
         assert (
-            files_page.alert_info_message.text
+            utils.clean_text(files_page.alert_info_message.text)
             == 'You are viewing OSF through a view-only link, which may limit the data you have permission to see.'
         )
 
@@ -670,11 +671,16 @@ class TestProjectVOLs:
         row = find_row_by_name(files_page, file_name)
 
         # Get initial Download Count for the file (should be 0)
-        initial_download_count = int(
-            row.find_element_by_css_selector(
-                '[data-test-file-list-download-count]'
-            ).text[:2]
+        # initial_download_count = int(
+        #     row.find_element_by_css_selector(
+        #         '[data-test-file-list-download-count]'
+        #     ).text[:2]
+        # )
+        element = row.find_element_by_css_selector(
+            '[data-test-file-list-download-count]'
         )
+        download_count_text = element.get_attribute('textContent').strip()[:2]
+        initial_download_count = int(download_count_text)
         assert initial_download_count == 0
 
         # Verify File Download Functionality
@@ -682,11 +688,16 @@ class TestProjectVOLs:
 
         # Verify Download Count has incremented by 1
         row = find_row_by_name(files_page, file_name)
-        new_download_count = int(
-            row.find_element_by_css_selector(
-                '[data-test-file-list-download-count]'
-            ).text[:2]
+        # new_download_count = int(
+        #     row.find_element_by_css_selector(
+        #         '[data-test-file-list-download-count]'
+        #     ).text[:2]
+        # )
+        element = row.find_element_by_css_selector(
+            '[data-test-file-list-download-count]'
         )
+        download_count_text = element.get_attribute('textContent').strip()[:2]
+        new_download_count = int(download_count_text)
         assert new_download_count == initial_download_count + 1
 
         # Click the Leave this View button and verify we are navigated to OSF Home page
