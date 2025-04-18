@@ -352,7 +352,7 @@ class TestProjectMetadata:
         project_metadata_page.search_input.send_keys(new_user)
         project_metadata_page.contributor_search_button.click()
 
-        # Get the row number for the user from the search table
+        # Select the new_user from the search results and add the user to the project
         WebDriverWait(driver, 5).until(
             EC.visibility_of_element_located(
                 (
@@ -371,6 +371,7 @@ class TestProjectMetadata:
                 (By.CSS_SELECTOR, '[data-test-contributors-list]')
             )
         )
+        # Retrieve the new_user from contributors list
         user = project_metadata_page.select_from_list(new_user)
         assert new_user in user.text.strip()
 

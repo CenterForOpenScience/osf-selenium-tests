@@ -597,9 +597,10 @@ class ProjectMetadataPage(GuidBasePage):
     resource_information_save_button = Locator(
         By.CSS_SELECTOR, '[data-test-save-resource-metadata-button]'
     )
-
+    # Get the rows of search results matching the locator
     rows = GroupLocator(By.CSS_SELECTOR, '[data-test-user-card-main]')
 
+    # Select the correct user from the table of search results
     def select_from_table_of_rows(self, selection):
         for row in self.rows:
             cell = row.find_element(
@@ -615,11 +616,11 @@ class ProjectMetadataPage(GuidBasePage):
         By.CSS_SELECTOR, '[data-analytics-name="Contributor name"]'
     )
 
+    # Select new_user from contributors list on metadata page
     def select_from_list(self, selection):
         for contributor in self.contributors_list:
             if selection in contributor.text.strip():
                 return contributor
-                break
 
     search_cancel_button = Locator(
         By.CSS_SELECTOR, '[data-test-user-search-cancel-button]'
