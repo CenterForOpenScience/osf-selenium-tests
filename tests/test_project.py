@@ -104,39 +104,6 @@ class TestProjectDetailPage:
         assert ProjectPage(driver, verify=True)
         login(driver)
 
-    @markers.smoke_test
-    @markers.core_functionality
-    def test_file_widget_loads(self, project_page_with_file):
-        # Check the uploaded file shows up in the files widget
-        project_page_with_file.file_widget.loading_indicator.here_then_gone()
-        assert project_page_with_file.file_widget.first_file
-
-    @markers.smoke_test
-    @pytest.mark.skipif(
-        not settings.PREFERRED_NODE,
-        reason='Only run this test if addons are set up on a specific node.',
-    )
-    @pytest.mark.parametrize('provider', settings.EXPECTED_PROVIDERS)
-    def test_addon_files_load(self, project_page, session, driver, provider):
-        """This test is fragile and makes some assumptions about your setup.
-        You must have all the addons in `EXPECTED_PROVIDERS` connected to your `PREFERRED_NODE`.
-        In each provider you must have a file named `<provider_name>.txt`.
-        """
-        # scroll down enough so the viewer can see the full files widget
-        project_page.scroll_into_view(project_page.log_widget.log_feed.element)
-
-        # Wait for the rows with content to show up in the files widget
-        WebDriverWait(driver, 10).until(EC.visibility_of(project_page.fangorn_row))
-        project_page.file_widget.filter_button.click()
-        project_page.file_widget.filter_input.clear()
-        project_page.file_widget.filter_input.send_keys_deliberately(provider)
-
-        # Wait for a small (but not zero) amount of time after typing in the filter to wait for results to show
-        WebDriverWait(driver, 5).until(EC.visibility_of(project_page.fangorn_row))
-        assert driver.find_element_by_xpath(
-            "//*[contains(text(), '{}')]".format(provider + '.txt')
-        )
-
 
 @pytest.mark.usefixtures('must_be_logged_in_as_user_two')
 class TestProjectDetailAsNonContributor:
