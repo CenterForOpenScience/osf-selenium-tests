@@ -84,9 +84,9 @@ env:
 jobs:
 
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     env:
-      GHA_DISTRO: ubuntu-20.04
+      GHA_DISTRO: ubuntu-latest
     if: "!contains(github.event.head_commit.message, 'skip ci')"
     strategy:
       matrix:
@@ -116,7 +116,7 @@ jobs:
   # will be used since the scheduler does not have inputs.
   set_variables:
     name: Set the Domain, Service, and Browser for Regression Tests
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     outputs:
       domain: ${{ github.event.inputs.domain || env.DEFAULT_DOMAIN }}
       service: ${{ github.event.inputs.service || env.DEFAULT_SERVICE }}
@@ -130,7 +130,7 @@ jobs:
   set_matrix:
     name: Set Matrix of Browser Values
     needs: [set_variables]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.set_browser_2.outputs.matrix }}
     steps:
@@ -147,9 +147,9 @@ jobs:
   regression_test:
     name: Regression tests (${{ matrix.browser }})
     needs: [build, set_variables, set_matrix]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     env:
-      GHA_DISTRO: ubuntu-20.04
+      GHA_DISTRO: ubuntu-latest
     strategy:
       fail-fast: false
       max-parallel: 1  # run in series
