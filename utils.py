@@ -4,7 +4,6 @@ import os
 from selenium import webdriver
 
 import settings
-from settings import DESIRED_CAP
 
 
 def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
@@ -94,7 +93,7 @@ def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
             chrome_options.add_argument(f'user-agent={custom_user_agent}')
 
             # Make a copy of desired capabilities for Chrome
-            desired_capabilities = DESIRED_CAP.copy()
+            desired_capabilities = settings.DESIRED_CAP.copy()
 
             # Attach Chrome options
             desired_capabilities['goog:chromeOptions'] = {

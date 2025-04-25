@@ -52,9 +52,9 @@ env:
 jobs:
 
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     env:
-      GHA_DISTRO: ubuntu-20.04
+      GHA_DISTRO: ubuntu-latest
     if: "!contains(github.event.head_commit.message, 'skip ci')"
     strategy:
       matrix:
@@ -82,9 +82,9 @@ jobs:
   two_minute_drill_tests:
     name: Two Minute Drill Tests (${{ github.event.inputs.browser }})
     needs: [build]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     env:
-      GHA_DISTRO: ubuntu-20.04
+      GHA_DISTRO: ubuntu-latest
     strategy:
       fail-fast: false
       max-parallel: 1  # run in series
