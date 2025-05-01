@@ -328,7 +328,7 @@ class TestPreprintWorkflow:
         assert tag_found
 
     @markers.dont_run_on_prod
-    @pytest.mark.xfail(reason='https://openscience.atlassian.net/browse/ENG-6065')
+    # @pytest.mark.xfail(reason='https://openscience.atlassian.net/browse/ENG-6065')
     def test_withdraw_preprint(self, session, driver, preprint_detail_page):
         """Test the Withdraw Preprint functionality. Using the preprint_detail_page
         fixture we start on the Preprint Detail page for an api created preprint. Then
@@ -341,7 +341,6 @@ class TestPreprintWorkflow:
         that the withdrawal request record is created.
         """
         assert PreprintDetailPage(driver, verify=True)
-        preprint_detail_page.edit_preprint_button.click()
         edit_page = PreprintEditPage(driver)
         WebDriverWait(driver, 5).until(
             EC.element_to_be_clickable(
@@ -363,8 +362,13 @@ class TestPreprintWorkflow:
         )
         assert withdraw_page.request_withdrawal_button.is_enabled()
         withdraw_page.request_withdrawal_button.click()
+        WebDriverWait(driver, 5).until(EC.visibility_of(withdraw_page.withdrawn_banner))
         # Should be redirected back to Preprint Detail page
         assert PendingPreprintDetailPage(driver, verify=True)
+        # Verify that "This preprint has been withdrawn." banner is displayed on Preprint Detail page.
+        assert (
+            withdraw_page.withdrawn_banner.text == 'This preprint has been withdrawn.'
+        )
         # Verify via the api that the Withdrawal Request record was created
         requests = osf_api.get_preprint_requests_records(
             node_id=preprint_detail_page.guid
@@ -374,7 +378,7 @@ class TestPreprintWorkflow:
             record_found = False
             for request in requests:
                 if request['attributes']['request_type'] == 'withdrawal':
-                    assert request['attributes']['machine_state'] == 'pending'
+                    assert request['attributes']['machine_state'] == 'accepted'
                     record_found = True
                     break
             if not record_found:
