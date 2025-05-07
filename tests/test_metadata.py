@@ -482,10 +482,13 @@ class TestProjectMetadata:
 @markers.core_functionality
 class TestRegistrationMetadata:
     @pytest.fixture()
-    def registration_metadata_page(self, driver):
-        registration_guid = osf_api.get_registration_by_title(
-            'Selenium Registration for Metadata tests'
-        )
+    def title(self):
+        TITLE = 'Selenium Registration for Metadata tests'
+        return TITLE
+
+    @pytest.fixture()
+    def registration_metadata_page(self, driver, title):
+        registration_guid = osf_api.get_registration_by_title(title)
         osf_api.update_registration_metadata_with_custom_data(registration_guid)
         registration_metadata_page = RegistrationMetadataPage(
             driver, guid=registration_guid
@@ -494,21 +497,19 @@ class TestRegistrationMetadata:
         return registration_metadata_page
 
     @pytest.fixture()
-    def registration_guid(self):
-        registration_guid = osf_api.get_registration_by_title(
-            'Selenium Registration for Metadata tests'
-        )
+    def registration_guid(self, title):
+        registration_guid = osf_api.get_registration_by_title(title)
         return registration_guid
 
     def test_edit_metadata_title_and_description(
-        self, driver, registration_metadata_page, fake, registration_guid
+        self, driver, registration_metadata_page, fake, registration_guid, title
     ):
         """This test verifies that the registration metadata title
         and description fields are editable and changes are saved."""
 
         new_title = fake.sentence(nb_words=2)
         new_description = fake.sentence(nb_words=4)
-        original_title = 'Selenium Registration for Metadata tests'
+        # original_title = 'Selenium Registration for Metadata tests'
 
         WebDriverWait(driver, 5).until(
             EC.element_to_be_clickable(
@@ -540,8 +541,11 @@ class TestRegistrationMetadata:
         assert new_description == utils.clean_text(
             registration_metadata_page.metadata_description.text
         )
+        assert new_title == utils.clean_text(
+            registration_metadata_page.metadata_title.text
+        )
         osf_api.update_registration_title(
-            registration_guid=registration_guid, title=original_title
+            registration_guid=registration_guid, title=title
         )
 
     def test_edit_contributors(
