@@ -1279,3 +1279,45 @@ def create_registration_resource(registration_guid, resource_type):
         item_id=resource_id,
         item_type='resources',
     )['data']
+
+
+def update_registration_title(registration_guid, title):
+    """This method updates the title of the given
+    registration."""
+    session = client.Session(
+        api_base_url=settings.API_DOMAIN,
+        auth=(settings.REGISTRATIONS_USER, settings.REGISTRATIONS_USER_PASSWORD),
+    )
+    url = '/v2/registrations/{}/'.format(registration_guid)
+    payload = {
+        'data': {
+            'id': registration_guid,
+            'type': 'registrations',
+            'attributes': {'title': title},
+        }
+    }
+    session.patch(
+        url=url,
+        raw_body=json.dumps(payload),
+        item_id=registration_guid,
+        item_type='registrations',
+    )['data']
+
+
+def delete_registration_contributor(registration_guid, user_name):
+    """This method deletes the given user from the given registration"""
+    session = client.Session(
+        api_base_url=settings.API_DOMAIN,
+        auth=(settings.REGISTRATIONS_USER, settings.REGISTRATIONS_USER_PASSWORD),
+    )
+    url = '/v2/registrations/{}/contributors/'.format(registration_guid)
+    data = session.get(url)['data']
+
+    for i in range(0, len(data)):
+        if user_name in data[i]['embeds']['users']['data']['attributes']['full_name']:
+            user_id = data[i]['embeds']['users']['data']['id']
+            delete_url = '/v2/registrations/{}/contributors/{}/'.format(
+                registration_guid, user_id
+            )
+            session.delete(delete_url, item_type='users')
+            break

@@ -143,22 +143,27 @@ class RegistrationDetailPage(BaseSubmittedRegistrationPage):
 class RegistrationMetadataPage(BaseSubmittedRegistrationPage):
     url_addition = 'metadata'
     identity = Locator(By.CSS_SELECTOR, '[data-test-display-resource-type-general]')
-
+    metadata_title = Locator(By.CSS_SELECTOR, '[data-test-display-node-title]')
     metadata_description = Locator(
         By.CSS_SELECTOR, '[data-test-display-node-description]'
     )
     edit_metadata_description_button = Locator(
         By.CSS_SELECTOR, '[data-test-edit-node-description-button]'
     )
+    save_metadata_title_button = Locator(
+        By.CSS_SELECTOR, '[data-test-save-node-title-button]'
+    )
     save_metadata_description_button = Locator(
         By.CSS_SELECTOR, '[data-test-save-node-description-button]'
     )
     contributors_list = Locator(By.CSS_SELECTOR, '[data-test-contributors-list]')
-    contributor_search_button = Locator(By.XPATH, '//input[@class="btn btn-default"]')
+    contributor_search_button = Locator(
+        By.CSS_SELECTOR, '[data-test-user-search-button]'
+    )
     add_displayed_contributor_button = Locator(
         By.CSS_SELECTOR, '[a.btn.btn-success.contrib-button.btn-mini]'
     )
-    search_input = Locator(By.XPATH, '//input[@class="form-control"]')
+    search_input = Locator(By.CSS_SELECTOR, '[data-test-user-search-input]')
     resource_type = Locator(
         By.CSS_SELECTOR, '[data-test-display-resource-type-general]'
     )
@@ -182,6 +187,35 @@ class RegistrationMetadataPage(BaseSubmittedRegistrationPage):
             if option.text == selection:
                 option.click()
                 break
+
+    rows = GroupLocator(By.CSS_SELECTOR, '[data-test-user-card-main]')
+
+    def select_from_table_of_rows(self, selection):
+        for row in self.rows:
+            cell = row.find_element(
+                By.CSS_SELECTOR, '[data-analytics-name="View user"]'
+            )
+            if selection in cell.text.strip():
+                row.find_element(
+                    By.CSS_SELECTOR, '[data-test-add-contributor-button]'
+                ).click()
+                break
+
+    contributors_list = GroupLocator(
+        By.CSS_SELECTOR, '[data-analytics-name="Contributor name"]'
+    )
+
+    def select_from_list(self, selection):
+        for contributor in self.contributors_list:
+            if selection in contributor.text.strip():
+                return contributor
+
+    search_cancel_button = Locator(
+        By.CSS_SELECTOR, '[data-test-user-search-cancel-button]'
+    )
+    add_contributor_finish_button = Locator(
+        By.CSS_SELECTOR, '[data-test-finish-node-contributor-editing-button]'
+    )
 
     resource_information_save_button = Locator(
         By.CSS_SELECTOR, '[data-test-save-resource-metadata-button]'
