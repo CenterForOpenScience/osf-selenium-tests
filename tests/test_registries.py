@@ -807,10 +807,6 @@ class TestRegistrationFilesPages:
             driver, files_list_page, file_name, '[data-test-file-list-item]'
         )
 
-    # @pytest.mark.skipif(
-    #     settings.env('TEST_BUILD') == 'safari',
-    #     reason='Test fails on safari browser due to some oauth setting on the browser',
-    # )
     def test_file_detail_page(self, driver, files_list_page):
         """Test the functionality available on the Registration File Detail page"""
 
