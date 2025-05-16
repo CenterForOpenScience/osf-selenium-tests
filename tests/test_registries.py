@@ -1,6 +1,7 @@
 import datetime
 import os
 import re
+import time
 import tkinter
 
 import pytest
@@ -787,10 +788,6 @@ class TestRegistrationFilesPages:
             file_mod_date = datetime.datetime.fromtimestamp(file_mtime)
             assert file_mod_date.date() == current_date.date()
 
-    @pytest.mark.skipif(
-        settings.env('TEST_BUILD') == 'safari',
-        reason='Test fails on safari browser due to some oauth setting on the browser',
-    )
     def test_files_list_page(self, driver, files_list_page):
         """Test the functionality available on the Files List page of a registration
         with a file.
@@ -803,17 +800,17 @@ class TestRegistrationFilesPages:
             self.verify_embed_links(files_list_page)
 
         # Get file name of first file listed
-        file_name = files_list_page.first_file_name.text
+        file_name = utils.clean_text(files_list_page.first_file_name.text)
 
         # Verify file download
         self.verify_download_link(
             driver, files_list_page, file_name, '[data-test-file-list-item]'
         )
 
-    @pytest.mark.skipif(
-        settings.env('TEST_BUILD') == 'safari',
-        reason='Test fails on safari browser due to some oauth setting on the browser',
-    )
+    # @pytest.mark.skipif(
+    #     settings.env('TEST_BUILD') == 'safari',
+    #     reason='Test fails on safari browser due to some oauth setting on the browser',
+    # )
     def test_file_detail_page(self, driver, files_list_page):
         """Test the functionality available on the Registration File Detail page"""
 
@@ -825,7 +822,12 @@ class TestRegistrationFilesPages:
             WebDriverWait(driver, 5).until(EC.number_of_windows_to_be(2))
 
             # Switch focus to the new tab
-            driver.switch_to.window(driver.window_handles[1])
+            if settings.env('TEST_BUILD') == 'safari':
+                driver.switch_to.window(driver.window_handles[0])
+                driver.execute_script('window.focus();')
+                time.sleep(5)
+            else:
+                driver.switch_to.window(driver.window_handles[1])
             file_detail_page = RegistrationFileDetailPage(driver, verify=True)
 
             # Wait for File Renderer to load
@@ -839,7 +841,7 @@ class TestRegistrationFilesPages:
             if settings.DRIVER != 'Remote':  # Can't access clipboard on remote machine
                 self.verify_embed_links(file_detail_page)
 
-            file_name = file_detail_page.file_name.text
+            file_name = utils.clean_text(file_detail_page.file_name.text)
 
             # Verify file download
             self.verify_download_link(driver, file_detail_page, file_name, 'iframe')

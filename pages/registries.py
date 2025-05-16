@@ -255,7 +255,7 @@ class RegistrationFileDetailPage(GuidBasePage):
 
     def get_tag(self, tag_value):
         for tag in self.tags:
-            if tag.text == tag_value:
+            if utils.clean_text(tag.text) == tag_value:
                 return tag
         return None
 
