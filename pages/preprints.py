@@ -100,6 +100,10 @@ class PreprintSubmitPage(BasePreprintPage):
         By.CSS_SELECTOR,
         '#ember-basic-dropdown-wormhole > div > ul >li.ember-power-select-option',
     )
+    affiliated_institutions = GroupLocator(By.CSS_SELECTOR, '[data-test-institution]')
+
+    def get_affiliated_institutions(self) -> list:
+        return [el.text for el in self.affiliated_institutions]
 
     def select_from_dropdown_listbox(self, selection):
         for option in self.dropdown_options:
@@ -180,12 +184,27 @@ class PreprintSubmitPage(BasePreprintPage):
         By.CSS_SELECTOR, '[data-test-create-project-submit]'
     )
 
+    # Review Page
+    preprint_institution_list_review = GroupLocator(
+        By.CSS_SELECTOR, 'img[data-test-preprint-institution-list]'
+    )
     create_preprint_button = Locator(By.CSS_SELECTOR, '[data-test-submit-button]')
     modal_create_preprint_button = Locator(
         By.CSS_SELECTOR,
         '.modal-footer button.btn-success:nth-child(2)',
         settings.LONG_TIMEOUT,
     )
+
+    def get_preprint_institution_list_review(self) -> list:
+        return [el.get_attribute('alt') for el in self.preprint_institution_list_review]
+
+    # Preprint Detail Page
+    preprint_institution_list_detail = GroupLocator(
+        By.CSS_SELECTOR, 'img[data-test-preprint-institution-list]'
+    )
+
+    def get_preprint_institution_list_detail(self) -> list:
+        return [el.get_attribute('alt') for el in self.preprint_institution_list_detail]
 
 
 class PreprintEditPage(PreprintSubmitPage):

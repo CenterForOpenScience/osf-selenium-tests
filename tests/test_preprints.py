@@ -100,6 +100,14 @@ class TestPreprintWorkflow:
 
             # Metadata page
             WebDriverWait(driver, 5).until(
+                EC.visibility_of_element_located(
+                    (By.CSS_SELECTOR, '[data-test-institution]')
+                )
+            )
+            affiliated_institutions_names_metadata_page = (
+                submit_page.get_affiliated_institutions()
+            )
+            WebDriverWait(driver, 5).until(
                 EC.element_to_be_clickable(
                     (By.CSS_SELECTOR, '[data-test-power-select-dropdown]')
                 )
@@ -195,11 +203,38 @@ class TestPreprintWorkflow:
             submit_page.supplemental_project_create_button.click()
             submit_page.info_toast.here_then_gone()
             submit_page.next_button.click()
+            WebDriverWait(driver, 5).until(
+                EC.visibility_of_element_located(
+                    (By.CSS_SELECTOR, 'img[data-test-preprint-institution-list]')
+                )
+            )
+            affiliated_institutions_names_review_page = (
+                submit_page.get_preprint_institution_list_review()
+            )
+            assert (
+                affiliated_institutions_names_metadata_page
+                == affiliated_institutions_names_review_page
+            ), (
+                f'Affiliated institutions on the Review Page do not match expected values.\n'
+                f'Expected: {affiliated_institutions_names_metadata_page }\n'
+                f'Actual: {affiliated_institutions_names_review_page}'
+            )
             submit_page.info_toast.here_then_gone()
             submit_page.create_preprint_button.click()
             preprint_detail = PreprintDetailPage(driver, verify=True)
             WebDriverWait(driver, 10).until(EC.visibility_of(preprint_detail.title))
             assert preprint_detail.title.text == 'Selenium Test Preprint'
+            affiliated_institutions_names_detail_page = (
+                submit_page.get_preprint_institution_list_detail()
+            )
+            assert (
+                affiliated_institutions_names_metadata_page
+                == affiliated_institutions_names_detail_page
+            ), (
+                f'Affiliated institutions on the Preprint Detail Page do not match expected values.\n'
+                f'Expected: {affiliated_institutions_names_metadata_page }\n'
+                f'Actual: {affiliated_institutions_names_detail_page}'
+            )
             # Capture guid of supplemental materials project created during workflow
             supplemental_url = preprint_detail.view_page.get_attribute('href')
             supplemental_guid = utils.get_guid_from_url(supplemental_url, 3)
