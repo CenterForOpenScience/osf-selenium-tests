@@ -1,7 +1,6 @@
 import datetime
 import os
 import re
-import time
 import tkinter
 
 import pytest
@@ -821,7 +820,11 @@ class TestRegistrationFilesPages:
             if settings.env('TEST_BUILD') == 'safari':
                 driver.switch_to.window(driver.window_handles[0])
                 driver.execute_script('window.focus();')
-                time.sleep(5)
+                WebDriverWait(driver, 10).until(
+                    EC.visibility_of_element_located(
+                        (By.CSS_SELECTOR, '[data-test-file-renderer]')
+                    )
+                )
             else:
                 driver.switch_to.window(driver.window_handles[1])
             file_detail_page = RegistrationFileDetailPage(driver, verify=True)
