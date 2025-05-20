@@ -312,6 +312,9 @@ class TestPreprintWorkflow:
         WebDriverWait(driver, 5).until(
             EC.visibility_of_element_located((By.CSS_SELECTOR, '[data-test-title]'))
         )
+        affiliated_institutions_names_metadata_page = (
+            edit_page.get_affiliated_institutions()
+        )
         edit_page.select_top_level_subject('Business')
         # Add another Tag and click the Save and continue button
         edit_page.basics_tags_input.send_keys(os.environ['PYTEST_CURRENT_TEST'])
@@ -345,6 +348,17 @@ class TestPreprintWorkflow:
         # Verify Title and Abstract
         assert detail_page.title.text == 'Selenium Preprint Edit'
         assert detail_page.abstract.text == 'Testing Selenium Abstract edit'
+        affiliated_institutions_names_detail_page = (
+            edit_page.get_preprint_institution_list_detail()
+        )
+        assert (
+            affiliated_institutions_names_metadata_page
+            == affiliated_institutions_names_detail_page
+        ), (
+            f'Affiliated institutions on the Preprint Detail Page do not match expected values.\n'
+            f'Expected: {affiliated_institutions_names_metadata_page}\n'
+            f'Actual: {affiliated_institutions_names_detail_page}'
+        )
         # Verify new Subject appears on the page
         subjects = detail_page.subjects
         subject_found = False
