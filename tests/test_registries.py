@@ -817,16 +817,7 @@ class TestRegistrationFilesPages:
             WebDriverWait(driver, 5).until(EC.number_of_windows_to_be(2))
 
             # Switch focus to the new tab
-            if settings.env('TEST_BUILD') == 'safari':
-                driver.switch_to.window(driver.window_handles[0])
-                driver.execute_script('window.focus();')
-                WebDriverWait(driver, 10).until(
-                    EC.visibility_of_element_located(
-                        (By.CSS_SELECTOR, '[data-test-file-renderer]')
-                    )
-                )
-            else:
-                driver.switch_to.window(driver.window_handles[1])
+            utils.switch_to_new_tab(driver)
             file_detail_page = RegistrationFileDetailPage(driver, verify=True)
 
             # Wait for File Renderer to load
