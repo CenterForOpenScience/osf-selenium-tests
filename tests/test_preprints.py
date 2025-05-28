@@ -312,6 +312,7 @@ class TestPreprintWorkflow:
         WebDriverWait(driver, 5).until(
             EC.visibility_of_element_located((By.CSS_SELECTOR, '[data-test-title]'))
         )
+        edit_page.select_all_affiliated_institutions()
         affiliated_institutions_names_metadata_page = (
             edit_page.get_affiliated_institutions()
         )

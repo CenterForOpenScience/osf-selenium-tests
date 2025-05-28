@@ -1,6 +1,7 @@
 from urllib.parse import urljoin
 
 import pytest
+import selenium.webdriver.support.expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 
@@ -101,9 +102,22 @@ class PreprintSubmitPage(BasePreprintPage):
         '#ember-basic-dropdown-wormhole > div > ul >li.ember-power-select-option',
     )
     affiliated_institutions = GroupLocator(By.CSS_SELECTOR, '[data-test-institution]')
+    affiliated_institutions_input_lst = GroupLocator(
+        By.CSS_SELECTOR, '[data-test-institution-input]'
+    )
 
     def get_affiliated_institutions(self) -> list:
         return [el.text for el in self.affiliated_institutions]
+
+    def select_all_affiliated_institutions(self):
+        wait = WebDriverWait(self.driver, 5)
+        wait.until(
+            EC.element_to_be_clickable(
+                (By.CSS_SELECTOR, '[data-test-institution-input]')
+            )
+        )
+        for subject in self.affiliated_institutions_input_lst:
+            subject.click()
 
     def select_from_dropdown_listbox(self, selection):
         for option in self.dropdown_options:
