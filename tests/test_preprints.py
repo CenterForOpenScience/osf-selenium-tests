@@ -328,7 +328,6 @@ class TestPreprintWorkflow:
         assert tag_found
 
     @markers.dont_run_on_prod
-    # @pytest.mark.xfail(reason='https://openscience.atlassian.net/browse/ENG-6065')
     def test_withdraw_preprint(self, session, driver, preprint_detail_page):
         """Test the Withdraw Preprint functionality. Using the preprint_detail_page
         fixture we start on the Preprint Detail page for an api created preprint. Then
@@ -340,8 +339,11 @@ class TestPreprintWorkflow:
         user in the OSF admin app. The best we can do here is to verify through the api
         that the withdrawal request record is created.
         """
-        assert PreprintDetailPage(driver, verify=True)
         edit_page = PreprintEditPage(driver)
+        assert PreprintDetailPage(driver, verify=True)
+        preprint_node = preprint_detail_page.url[len(settings.OSF_HOME) + 1 :]
+        osf_api.accept_moderated_preprint(session=None, preprint_node=preprint_node)
+        preprint_detail_page.goto()
         WebDriverWait(driver, 5).until(
             EC.element_to_be_clickable(
                 (By.CSS_SELECTOR, '[data-test-withdrawal-button]')
@@ -362,6 +364,9 @@ class TestPreprintWorkflow:
         )
         assert withdraw_page.request_withdrawal_button.is_enabled()
         withdraw_page.request_withdrawal_button.click()
+        preprint_id = osf_api.get_preprint_id(session=None, preprint_node=preprint_node)
+        osf_api.accept_withdraw_preprint(session=None, preprint_id=preprint_id)
+        preprint_detail_page.goto()
         WebDriverWait(driver, 5).until(EC.visibility_of(withdraw_page.withdrawn_banner))
         # Should be redirected back to Preprint Detail page
         assert PendingPreprintDetailPage(driver, verify=True)
