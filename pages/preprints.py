@@ -307,8 +307,8 @@ class PreprintDetailPage(GuidBasePage, BasePreprintPage):
 class PendingPreprintDetailPage(PreprintDetailPage):
     # This class is for preprints that are pending moderation
     identity = Locator(
-        By.CSS_SELECTOR,
-        '[data-test-preprint-title]',
+        By.ID,
+        'preprintTitle',
         settings.LONG_TIMEOUT,
     )
     # This locator needs a data-test-selector from software devs

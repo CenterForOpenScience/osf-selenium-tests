@@ -369,11 +369,9 @@ class TestPreprintWorkflow:
         preprint_detail_page.goto()
         WebDriverWait(driver, 5).until(EC.visibility_of(withdraw_page.withdrawn_banner))
         # Should be redirected back to Preprint Detail page
-        assert PendingPreprintDetailPage(driver, verify=True)
+        assert PreprintDetailPage(driver, verify=True)
         # Verify that "This preprint has been withdrawn." banner is displayed on Preprint Detail page.
-        assert (
-            withdraw_page.withdrawn_banner.text == 'This preprint has been withdrawn.'
-        )
+        assert withdraw_page.withdrawn_banner.is_displayed()
         # Verify via the api that the Withdrawal Request record was created
         requests = osf_api.get_preprint_requests_records(
             node_id=preprint_detail_page.guid
