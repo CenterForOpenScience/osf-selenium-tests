@@ -328,7 +328,6 @@ class TestPreprintWorkflow:
         assert tag_found
 
     @markers.dont_run_on_prod
-    @pytest.mark.xfail(reason='https://openscience.atlassian.net/browse/ENG-6065')
     def test_withdraw_preprint(self, session, driver, preprint_detail_page):
         """Test the Withdraw Preprint functionality. Using the preprint_detail_page
         fixture we start on the Preprint Detail page for an api created preprint. Then
@@ -340,9 +339,11 @@ class TestPreprintWorkflow:
         user in the OSF admin app. The best we can do here is to verify through the api
         that the withdrawal request record is created.
         """
-        assert PreprintDetailPage(driver, verify=True)
-        preprint_detail_page.edit_preprint_button.click()
         edit_page = PreprintEditPage(driver)
+        assert PreprintDetailPage(driver, verify=True)
+        preprint_node = preprint_detail_page.url[len(settings.OSF_HOME) + 1 :]
+        osf_api.accept_moderated_preprint(session=None, preprint_node=preprint_node)
+        preprint_detail_page.goto()
         WebDriverWait(driver, 5).until(
             EC.element_to_be_clickable(
                 (By.CSS_SELECTOR, '[data-test-withdrawal-button]')
@@ -363,8 +364,14 @@ class TestPreprintWorkflow:
         )
         assert withdraw_page.request_withdrawal_button.is_enabled()
         withdraw_page.request_withdrawal_button.click()
+        preprint_id = osf_api.get_preprint_id(session=None, preprint_node=preprint_node)
+        osf_api.accept_withdraw_preprint(session=None, preprint_id=preprint_id)
+        preprint_detail_page.goto()
+        WebDriverWait(driver, 5).until(EC.visibility_of(withdraw_page.withdrawn_banner))
         # Should be redirected back to Preprint Detail page
-        assert PendingPreprintDetailPage(driver, verify=True)
+        assert PreprintDetailPage(driver, verify=True)
+        # Verify that "This preprint has been withdrawn." banner is displayed on Preprint Detail page.
+        assert withdraw_page.withdrawn_banner.is_displayed()
         # Verify via the api that the Withdrawal Request record was created
         requests = osf_api.get_preprint_requests_records(
             node_id=preprint_detail_page.guid
@@ -374,7 +381,7 @@ class TestPreprintWorkflow:
             record_found = False
             for request in requests:
                 if request['attributes']['request_type'] == 'withdrawal':
-                    assert request['attributes']['machine_state'] == 'pending'
+                    assert request['attributes']['machine_state'] == 'accepted'
                     record_found = True
                     break
             if not record_found:

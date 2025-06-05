@@ -46,7 +46,7 @@ def create_child_node(
     node_id=None,
     title='osf selenium child node',
     tags=None,
-    **kwargs
+    **kwargs,
 ):
     """Create a child node (a.k.a. component) of a given project node."""
     if tags is None:
@@ -853,6 +853,43 @@ def accept_moderated_preprint(session=None, preprint_node=None):
             },
             'relationships': {
                 'target': {'data': {'id': preprint_node, 'type': 'preprints'}}
+            },
+        }
+    }
+    session.post(
+        url=review_url,
+        item_type='review-actions',
+        raw_body=json.dumps(review_payload),
+    )
+
+
+def get_preprint_id(session=None, preprint_node=None):
+    """Get priprint's id"""
+    if not session:
+        session = get_default_session()
+    request_url = f'/v2/preprints/{preprint_node}/requests/'
+
+    response = session.get(url=request_url)
+    preprint_id = ''
+    for item in response.get('data', []):
+        preprint_id = item.get('id')
+    return preprint_id
+
+
+def accept_withdraw_preprint(session=None, preprint_id=None):
+    """Accept a withdrawal request for a given preprint request ID."""
+    if not session:
+        session = get_default_session()
+    review_url = '/v2/actions/requests/preprints/'
+    review_payload = {
+        'data': {
+            'type': 'preprint-request-actions',
+            'attributes': {
+                'trigger': 'accept',
+                'comment': 'Preprint Withdraw Approval via OSF api',
+            },
+            'relationships': {
+                'target': {'data': {'id': preprint_id, 'type': 'preprint-requests'}}
             },
         }
     }
