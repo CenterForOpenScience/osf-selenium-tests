@@ -211,13 +211,10 @@ class TestPreprintWorkflow:
             affiliated_institutions_names_review_page = (
                 submit_page.get_preprint_institution_list_review()
             )
-            assert (
-                affiliated_institutions_names_metadata_page
-                == affiliated_institutions_names_review_page
-            ), (
-                f'Affiliated institutions on the Review Page do not match expected values.\n'
-                f'Expected: {affiliated_institutions_names_metadata_page }\n'
-                f'Actual: {affiliated_institutions_names_review_page}'
+            submit_page.assert_affiliated_institutions_equal(
+                affiliated_institutions_names_metadata_page,
+                affiliated_institutions_names_review_page,
+                'Preprint Review Page',
             )
             submit_page.info_toast.here_then_gone()
             submit_page.create_preprint_button.click()
@@ -227,13 +224,10 @@ class TestPreprintWorkflow:
             affiliated_institutions_names_detail_page = (
                 submit_page.get_preprint_institution_list_detail()
             )
-            assert (
-                affiliated_institutions_names_metadata_page
-                == affiliated_institutions_names_detail_page
-            ), (
-                f'Affiliated institutions on the Preprint Detail Page do not match expected values.\n'
-                f'Expected: {affiliated_institutions_names_metadata_page }\n'
-                f'Actual: {affiliated_institutions_names_detail_page}'
+            submit_page.assert_affiliated_institutions_equal(
+                affiliated_institutions_names_metadata_page,
+                affiliated_institutions_names_detail_page,
+                'Preprint Detail Page',
             )
             # Capture guid of supplemental materials project created during workflow
             supplemental_url = preprint_detail.view_page.get_attribute('href')
