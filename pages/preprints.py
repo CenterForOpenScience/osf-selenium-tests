@@ -212,6 +212,13 @@ class PreprintSubmitPage(BasePreprintPage):
     def get_preprint_institution_list_review(self) -> list:
         return [el.get_attribute('alt') for el in self.preprint_institution_list_review]
 
+    def assert_affiliated_institutions_equal(self, expected, actual, page_name):
+        assert expected == actual, (
+            f'Affiliated institutions on the {page_name} do not match expected values.\n'
+            f'Expected: {expected}\n'
+            f'Actual: {actual}'
+        )
+
     # Preprint Detail Page
     preprint_institution_list_detail = GroupLocator(
         By.CSS_SELECTOR, 'img[data-test-preprint-institution-list]'
