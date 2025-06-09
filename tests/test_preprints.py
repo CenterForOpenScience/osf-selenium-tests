@@ -346,13 +346,10 @@ class TestPreprintWorkflow:
         affiliated_institutions_names_detail_page = (
             edit_page.get_preprint_institution_list_detail()
         )
-        assert (
-            affiliated_institutions_names_metadata_page
-            == affiliated_institutions_names_detail_page
-        ), (
-            f'Affiliated institutions on the Preprint Detail Page do not match expected values.\n'
-            f'Expected: {affiliated_institutions_names_metadata_page}\n'
-            f'Actual: {affiliated_institutions_names_detail_page}'
+        edit_page.assert_affiliated_institutions_equal(
+            affiliated_institutions_names_metadata_page,
+            affiliated_institutions_names_detail_page,
+            'Preprint Detail Page',
         )
         # Verify new Subject appears on the page
         subjects = detail_page.subjects
