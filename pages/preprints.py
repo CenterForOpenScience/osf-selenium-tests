@@ -258,7 +258,10 @@ class PreprintWithdrawPage(GuidBasePage, BasePreprintPage):
         By.CSS_SELECTOR, '[data-test-comment-input] textarea'
     )
     request_withdrawal_button = Locator(
-        By.XPATH, '//div[@class="_Footer_gyio2l"]/button[text()="Withdraw"]'
+        By.CSS_SELECTOR, '[data-test-confirm-withdraw-button]'
+    )
+    withdrawn_banner = Locator(
+        By.XPATH, "//span[normalize-space(text())='This preprint has been withdrawn.']"
     )
 
 
@@ -313,6 +316,7 @@ class PreprintDetailPage(GuidBasePage, BasePreprintPage):
     downloads_count = Locator(By.CSS_SELECTOR, '[data-test-download-count]')
     download_button = Locator(By.CSS_SELECTOR, '[data-test-download-button]')
     edit_preprint_button = Locator(By.CSS_SELECTOR, '[data-test-edit-preprint-button]')
+    withdraw_preprint_button = Locator(By.CSS_SELECTOR, '[data-test-withdrawal-button]')
     default_citation = Locator(By.CSS_SELECTOR, '[data-test-default-citation="apa"]')
 
     # Locators for the reviews app preprint detail page
@@ -341,8 +345,10 @@ class PendingPreprintDetailPage(PreprintDetailPage):
         settings.LONG_TIMEOUT,
     )
     # This locator needs a data-test-selector from software devs
-    # title = Locator(By.CSS_SELECTOR, '[data-test-preprint-title]', settings.LONG_TIMEOUT)
-    title = Locator(By.ID, 'preprintTitle', settings.LONG_TIMEOUT)
+    title = Locator(
+        By.CSS_SELECTOR, '[data-test-preprint-title]', settings.LONG_TIMEOUT
+    )
+    # title = Locator(By.ID, 'preprintTitle', settings.LONG_TIMEOUT)
 
 
 class ReviewsDashboardPage(OSFBasePage):

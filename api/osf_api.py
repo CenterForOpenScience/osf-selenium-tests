@@ -46,7 +46,7 @@ def create_child_node(
     node_id=None,
     title='osf selenium child node',
     tags=None,
-    **kwargs
+    **kwargs,
 ):
     """Create a child node (a.k.a. component) of a given project node."""
     if tags is None:
@@ -863,6 +863,43 @@ def accept_moderated_preprint(session=None, preprint_node=None):
     )
 
 
+def get_preprint_id(session=None, preprint_node=None):
+    """Get priprint's id"""
+    if not session:
+        session = get_default_session()
+    request_url = f'/v2/preprints/{preprint_node}/requests/'
+
+    response = session.get(url=request_url)
+    preprint_id = ''
+    for item in response.get('data', []):
+        preprint_id = item.get('id')
+    return preprint_id
+
+
+def accept_withdraw_preprint(session=None, preprint_id=None):
+    """Accept a withdrawal request for a given preprint request ID."""
+    if not session:
+        session = get_default_session()
+    review_url = '/v2/actions/requests/preprints/'
+    review_payload = {
+        'data': {
+            'type': 'preprint-request-actions',
+            'attributes': {
+                'trigger': 'accept',
+                'comment': 'Preprint Withdraw Approval via OSF api',
+            },
+            'relationships': {
+                'target': {'data': {'id': preprint_id, 'type': 'preprint-requests'}}
+            },
+        }
+    }
+    session.post(
+        url=review_url,
+        item_type='review-actions',
+        raw_body=json.dumps(review_payload),
+    )
+
+
 def create_preprint_withdrawal_request(session=None, preprint_node=None):
     """Create a withdrawal request for a given preprint node id."""
     if not session:
@@ -1279,3 +1316,45 @@ def create_registration_resource(registration_guid, resource_type):
         item_id=resource_id,
         item_type='resources',
     )['data']
+
+
+def update_registration_title(registration_guid, title):
+    """This method updates the title of the given
+    registration."""
+    session = client.Session(
+        api_base_url=settings.API_DOMAIN,
+        auth=(settings.REGISTRATIONS_USER, settings.REGISTRATIONS_USER_PASSWORD),
+    )
+    url = '/v2/registrations/{}/'.format(registration_guid)
+    payload = {
+        'data': {
+            'id': registration_guid,
+            'type': 'registrations',
+            'attributes': {'title': title},
+        }
+    }
+    session.patch(
+        url=url,
+        raw_body=json.dumps(payload),
+        item_id=registration_guid,
+        item_type='registrations',
+    )['data']
+
+
+def delete_registration_contributor(registration_guid, user_name):
+    """This method deletes the given user from the given registration"""
+    session = client.Session(
+        api_base_url=settings.API_DOMAIN,
+        auth=(settings.REGISTRATIONS_USER, settings.REGISTRATIONS_USER_PASSWORD),
+    )
+    url = '/v2/registrations/{}/contributors/'.format(registration_guid)
+    data = session.get(url)['data']
+
+    for i in range(0, len(data)):
+        if user_name in data[i]['embeds']['users']['data']['attributes']['full_name']:
+            user_id = data[i]['embeds']['users']['data']['id']
+            delete_url = '/v2/registrations/{}/contributors/{}/'.format(
+                registration_guid, user_id
+            )
+            session.delete(delete_url, item_type='users')
+            break

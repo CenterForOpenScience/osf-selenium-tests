@@ -345,64 +345,35 @@ class TestProjectMetadata:
 
         WebDriverWait(driver, 5).until(
             EC.element_to_be_clickable(
-                (By.CSS_SELECTOR, '[data-test-edit-contributors]')
+                (By.CSS_SELECTOR, '[data-test-edit-node-contributors-button]')
             )
         ).click()
-
-        WebDriverWait(driver, 5).until(
-            EC.element_to_be_clickable(
-                (
-                    By.CSS_SELECTOR,
-                    'a.btn.btn-success.btn-sm.m-l-md[href="#addContributors"]',
-                )
-            )
-        ).click()
-
         project_metadata_page.search_input.click()
         project_metadata_page.search_input.send_keys(new_user)
         project_metadata_page.contributor_search_button.click()
 
-        # Get the row number for the user from the search table
+        # Select the new_user from the search results and add the user to the project
         WebDriverWait(driver, 5).until(
             EC.visibility_of_element_located(
                 (
-                    By.XPATH,
-                    '//div[@class="row"]/div[@class="col-md-4"]/table[@class="table-condensed table-hover"]',
+                    By.CSS_SELECTOR,
+                    '[data-test-user-card]',
                 )
             )
         )
-        search_table_path = '//table[@class="table-condensed table-hover"]'
-        rno, search_table_data = utils.read_data_from_table(
-            driver, search_table_path, check_match=True, item_match=new_user
-        )
-        # Click on the Add button of the row number for the user from the search table to add the new contributor user
-        WebDriverWait(driver, 5).until(
-            EC.element_to_be_clickable(
-                (By.XPATH, search_table_path + '/tbody/tr[' + str(rno) + ']/td[1]')
-            )
-        ).click()
 
-        WebDriverWait(driver, 5).until(
-            EC.element_to_be_clickable((By.XPATH, '//a[@class="btn btn-success"]'))
-        ).click()
+        project_metadata_page.select_from_table_of_rows(new_user)
+        project_metadata_page.search_cancel_button.click()
+        project_metadata_page.add_contributor_finish_button.click()
 
-        project_metadata_page.reload()
         WebDriverWait(driver, 5).until(
             EC.visibility_of_element_located(
-                (By.XPATH, '//table[@id="manageContributorsTable"]')
+                (By.CSS_SELECTOR, '[data-test-contributors-list]')
             )
         )
-        contributor_table_path = '//table[@id="manageContributorsTable"]'
-        # Get the total number of rows in contributors table
-        rowno, contributor_table_data = utils.read_data_from_table(
-            driver, contributor_table_path, check_match=False
-        )
-
-        # Get the user name from the last row which is added recently
-        user = driver.find_element_by_xpath(
-            contributor_table_path + '/tbody/tr[' + str(rowno) + ']/td[2]'
-        )
-        assert new_user in user.text
+        # Retrieve the new_user from contributors list
+        user = project_metadata_page.select_from_list(new_user)
+        assert new_user in user.text.strip()
 
     def test_edit_resource_information(self, driver, project_metadata_page):
         """This test verifies that user can add/remove
@@ -511,10 +482,13 @@ class TestProjectMetadata:
 @markers.core_functionality
 class TestRegistrationMetadata:
     @pytest.fixture()
-    def registration_metadata_page(self, driver):
-        registration_guid = osf_api.get_registration_by_title(
-            'Selenium Registration for Metadata tests'
-        )
+    def title(self):
+        TITLE = 'Selenium Registration for Metadata tests'
+        return TITLE
+
+    @pytest.fixture()
+    def registration_metadata_page(self, driver, title):
+        registration_guid = osf_api.get_registration_by_title(title)
         osf_api.update_registration_metadata_with_custom_data(registration_guid)
         registration_metadata_page = RegistrationMetadataPage(
             driver, guid=registration_guid
@@ -522,11 +496,35 @@ class TestRegistrationMetadata:
         registration_metadata_page.goto()
         return registration_metadata_page
 
-    def test_edit_metadata_description(self, driver, registration_metadata_page, fake):
-        """This test verifies that the registration metadata field
-        description is editable and changes are saved."""
+    @pytest.fixture()
+    def registration_guid(self, title):
+        registration_guid = osf_api.get_registration_by_title(title)
+        return registration_guid
 
+    def test_edit_metadata_title_and_description(
+        self, driver, registration_metadata_page, fake, registration_guid, title
+    ):
+        """This test verifies that the registration metadata title
+        and description fields are editable and changes are saved."""
+
+        new_title = fake.sentence(nb_words=2)
         new_description = fake.sentence(nb_words=4)
+        # original_title = 'Selenium Registration for Metadata tests'
+
+        WebDriverWait(driver, 5).until(
+            EC.element_to_be_clickable(
+                (By.CSS_SELECTOR, '[data-test-edit-node-title-button]')
+            )
+        ).click()
+        title_input = driver.find_element_by_css_selector(
+            '[data-test-title-field] textarea'
+        )
+        title_input.clear()
+        title_input.send_keys(new_title)
+        registration_metadata_page.save_metadata_title_button.click()
+        assert new_title == utils.clean_text(
+            registration_metadata_page.metadata_title.text
+        )
 
         WebDriverWait(driver, 5).until(
             EC.element_to_be_clickable(
@@ -540,7 +538,67 @@ class TestRegistrationMetadata:
         description_input.clear()
         description_input.send_keys(new_description)
         registration_metadata_page.save_metadata_description_button.click()
-        assert new_description == registration_metadata_page.metadata_description.text
+        assert new_description == utils.clean_text(
+            registration_metadata_page.metadata_description.text
+        )
+        assert new_title == utils.clean_text(
+            registration_metadata_page.metadata_title.text
+        )
+        osf_api.update_registration_title(
+            registration_guid=registration_guid, title=title
+        )
+
+    def test_edit_contributors(
+        self, session, driver, registration_metadata_page, registration_guid
+    ):
+        """This test verifies that user can add/remove
+        contributors to registration metadata."""
+
+        if settings.DOMAIN == 'test':
+            new_user = 'Selenium Test User (Do Not Use)'
+        elif settings.DOMAIN == 'prod':
+            new_user = 'OSF Tester1'
+        else:
+            new_user = 'Selenium Staging'
+
+        # Delete the user if its already exists
+        osf_api.delete_registration_contributor(
+            registration_guid=registration_guid, user_name=new_user
+        )
+        registration_metadata_page.goto_with_reload()
+
+        WebDriverWait(driver, 5).until(
+            EC.element_to_be_clickable(
+                (By.CSS_SELECTOR, '[data-test-edit-node-contributors-button]')
+            )
+        ).click()
+
+        registration_metadata_page.search_input.click()
+        registration_metadata_page.search_input.send_keys(new_user)
+        registration_metadata_page.contributor_search_button.click()
+
+        # Get the row number for the user from the search table
+        WebDriverWait(driver, 5).until(
+            EC.visibility_of_element_located(
+                (
+                    By.CSS_SELECTOR,
+                    '[data-test-user-card]',
+                )
+            )
+        )
+
+        registration_metadata_page.select_from_table_of_rows(new_user)
+        registration_metadata_page.search_cancel_button.click()
+        registration_metadata_page.add_contributor_finish_button.click()
+
+        WebDriverWait(driver, 5).until(
+            EC.visibility_of_element_located(
+                (By.CSS_SELECTOR, '[data-test-contributors-list]')
+            )
+        )
+
+        user = registration_metadata_page.select_from_list(new_user)
+        assert new_user in user.text.strip()
 
     def test_edit_resource_information(self, driver, registration_metadata_page):
         """This test verifies that user can add/remove

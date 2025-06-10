@@ -39,9 +39,9 @@ env:
 jobs:
 
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     env:
-      GHA_DISTRO: ubuntu-20.04
+      GHA_DISTRO: ubuntu-latest
     if: "!contains(github.event.head_commit.message, 'skip ci')"
     strategy:
       matrix:
@@ -69,9 +69,9 @@ jobs:
   smoke_test:
     name: Prod smoke tests (${{ matrix.browser }})
     needs: build
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     env:
-      GHA_DISTRO: ubuntu-20.04
+      GHA_DISTRO: ubuntu-latest
     strategy:
       fail-fast: false
       max-parallel: 1  # run in series
