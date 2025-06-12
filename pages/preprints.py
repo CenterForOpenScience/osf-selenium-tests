@@ -1,6 +1,7 @@
 from urllib.parse import urljoin
 
 import pytest
+import selenium.webdriver.support.expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.wait import WebDriverWait
 
@@ -100,6 +101,23 @@ class PreprintSubmitPage(BasePreprintPage):
         By.CSS_SELECTOR,
         '#ember-basic-dropdown-wormhole > div > ul >li.ember-power-select-option',
     )
+    affiliated_institutions = GroupLocator(By.CSS_SELECTOR, '[data-test-institution]')
+    affiliated_institutions_input_lst = GroupLocator(
+        By.CSS_SELECTOR, '[data-test-institution-input]'
+    )
+
+    def get_affiliated_institutions(self) -> list:
+        return [el.text for el in self.affiliated_institutions]
+
+    def select_all_affiliated_institutions(self):
+        wait = WebDriverWait(self.driver, 5)
+        wait.until(
+            EC.element_to_be_clickable(
+                (By.CSS_SELECTOR, '[data-test-institution-input]')
+            )
+        )
+        for subject in self.affiliated_institutions_input_lst:
+            subject.click()
 
     def select_from_dropdown_listbox(self, selection):
         for option in self.dropdown_options:
@@ -180,12 +198,34 @@ class PreprintSubmitPage(BasePreprintPage):
         By.CSS_SELECTOR, '[data-test-create-project-submit]'
     )
 
+    # Review Page
+    preprint_institution_list_review = GroupLocator(
+        By.CSS_SELECTOR, 'img[data-test-preprint-institution-list]'
+    )
     create_preprint_button = Locator(By.CSS_SELECTOR, '[data-test-submit-button]')
     modal_create_preprint_button = Locator(
         By.CSS_SELECTOR,
         '.modal-footer button.btn-success:nth-child(2)',
         settings.LONG_TIMEOUT,
     )
+
+    def get_preprint_institution_list_review(self) -> list:
+        return [el.get_attribute('alt') for el in self.preprint_institution_list_review]
+
+    def assert_affiliated_institutions_equal(self, expected, actual, page_name):
+        assert expected == actual, (
+            f'Affiliated institutions on the {page_name} do not match expected values.\n'
+            f'Expected: {expected}\n'
+            f'Actual: {actual}'
+        )
+
+    # Preprint Detail Page
+    preprint_institution_list_detail = GroupLocator(
+        By.CSS_SELECTOR, 'img[data-test-preprint-institution-list]'
+    )
+
+    def get_preprint_institution_list_detail(self) -> list:
+        return [el.get_attribute('alt') for el in self.preprint_institution_list_detail]
 
 
 class PreprintEditPage(PreprintSubmitPage):

@@ -100,6 +100,14 @@ class TestPreprintWorkflow:
 
             # Metadata page
             WebDriverWait(driver, 5).until(
+                EC.visibility_of_element_located(
+                    (By.CSS_SELECTOR, '[data-test-institution]')
+                )
+            )
+            affiliated_institutions_names_metadata_page = (
+                submit_page.get_affiliated_institutions()
+            )
+            WebDriverWait(driver, 5).until(
                 EC.element_to_be_clickable(
                     (By.CSS_SELECTOR, '[data-test-power-select-dropdown]')
                 )
@@ -195,11 +203,32 @@ class TestPreprintWorkflow:
             submit_page.supplemental_project_create_button.click()
             submit_page.info_toast.here_then_gone()
             submit_page.next_button.click()
+            WebDriverWait(driver, 5).until(
+                EC.visibility_of_element_located(
+                    (By.CSS_SELECTOR, 'img[data-test-preprint-institution-list]')
+                )
+            )
+            affiliated_institutions_names_review_page = (
+                submit_page.get_preprint_institution_list_review()
+            )
+            submit_page.assert_affiliated_institutions_equal(
+                affiliated_institutions_names_metadata_page,
+                affiliated_institutions_names_review_page,
+                'Preprint Review Page',
+            )
             submit_page.info_toast.here_then_gone()
             submit_page.create_preprint_button.click()
             preprint_detail = PreprintDetailPage(driver, verify=True)
             WebDriverWait(driver, 10).until(EC.visibility_of(preprint_detail.title))
             assert preprint_detail.title.text == 'Selenium Test Preprint'
+            affiliated_institutions_names_detail_page = (
+                submit_page.get_preprint_institution_list_detail()
+            )
+            submit_page.assert_affiliated_institutions_equal(
+                affiliated_institutions_names_metadata_page,
+                affiliated_institutions_names_detail_page,
+                'Preprint Detail Page',
+            )
             # Capture guid of supplemental materials project created during workflow
             supplemental_url = preprint_detail.view_page.get_attribute('href')
             supplemental_guid = utils.get_guid_from_url(supplemental_url, 3)
@@ -277,6 +306,10 @@ class TestPreprintWorkflow:
         WebDriverWait(driver, 5).until(
             EC.visibility_of_element_located((By.CSS_SELECTOR, '[data-test-title]'))
         )
+        edit_page.select_all_affiliated_institutions()
+        affiliated_institutions_names_metadata_page = (
+            edit_page.get_affiliated_institutions()
+        )
         edit_page.select_top_level_subject('Business')
         # Add another Tag and click the Save and continue button
         edit_page.basics_tags_input.send_keys(os.environ['PYTEST_CURRENT_TEST'])
@@ -310,6 +343,14 @@ class TestPreprintWorkflow:
         # Verify Title and Abstract
         assert detail_page.title.text == 'Selenium Preprint Edit'
         assert detail_page.abstract.text == 'Testing Selenium Abstract edit'
+        affiliated_institutions_names_detail_page = (
+            edit_page.get_preprint_institution_list_detail()
+        )
+        edit_page.assert_affiliated_institutions_equal(
+            affiliated_institutions_names_metadata_page,
+            affiliated_institutions_names_detail_page,
+            'Preprint Detail Page',
+        )
         # Verify new Subject appears on the page
         subjects = detail_page.subjects
         subject_found = False
