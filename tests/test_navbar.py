@@ -124,6 +124,7 @@ class NavbarTestLoggedInMixin:
 
 @markers.smoke_test
 @markers.core_functionality
+@pytest.mark.usefixtures('throttle_on_prod')
 class TestOSFHomeNavbarLoggedOut(NavbarTestLoggedOutMixin):
     @pytest.fixture()
     def page(self, driver):
@@ -145,6 +146,7 @@ class TestOSFHomeNavbarLoggedOut(NavbarTestLoggedOutMixin):
 
 @markers.smoke_test
 @markers.core_functionality
+@pytest.mark.usefixtures('throttle_on_prod')
 class TestOSFHomeNavbarLoggedIn(NavbarTestLoggedInMixin):
     @pytest.fixture()
     def page(self, driver, log_in_if_not_already):
@@ -159,6 +161,7 @@ class TestOSFHomeNavbarLoggedIn(NavbarTestLoggedInMixin):
 
 @markers.smoke_test
 @markers.core_functionality
+@pytest.mark.usefixtures('throttle_on_prod')
 class TestPreprintsNavbarLoggedOut(NavbarTestLoggedOutMixin):
     @pytest.fixture()
     def page(self, driver):
@@ -183,6 +186,7 @@ class TestPreprintsNavbarLoggedOut(NavbarTestLoggedOutMixin):
 @markers.smoke_test
 @markers.core_functionality
 @pytest.mark.usefixtures('log_in_if_not_already')
+@pytest.mark.usefixtures('throttle_on_prod')
 class TestPreprintsNavbarLoggedIn(NavbarTestLoggedInMixin):
     @pytest.fixture()
     def page(self, driver):
@@ -209,6 +213,7 @@ class TestPreprintsNavbarLoggedIn(NavbarTestLoggedInMixin):
 
 @markers.smoke_test
 @markers.core_functionality
+@pytest.mark.usefixtures('throttle_on_prod')
 class TestRegistriesNavbarLoggedOut(NavbarTestLoggedOutMixin):
     @pytest.fixture()
     def page(self, driver):
@@ -235,6 +240,7 @@ class TestRegistriesNavbarLoggedOut(NavbarTestLoggedOutMixin):
 @markers.smoke_test
 @markers.core_functionality
 @pytest.mark.usefixtures('log_in_if_not_already')
+@pytest.mark.usefixtures('throttle_on_prod')
 class TestRegistriesNavbarLoggedIn(NavbarTestLoggedInMixin):
     @pytest.fixture()
     def page(self, driver):
@@ -253,6 +259,7 @@ class TestRegistriesNavbarLoggedIn(NavbarTestLoggedInMixin):
 
 @markers.smoke_test
 @markers.core_functionality
+@pytest.mark.usefixtures('throttle_on_prod')
 class TestMeetingsNavbarLoggedOut(NavbarTestLoggedOutMixin):
     @pytest.fixture()
     def page(self, driver):
@@ -272,6 +279,7 @@ class TestMeetingsNavbarLoggedOut(NavbarTestLoggedOutMixin):
 @markers.smoke_test
 @markers.core_functionality
 @pytest.mark.usefixtures('log_in_if_not_already')
+@pytest.mark.usefixtures('throttle_on_prod')
 class TestMeetingsNavbarLoggedIn(NavbarTestLoggedInMixin):
     @pytest.fixture()
     def page(self, driver):
@@ -286,6 +294,7 @@ class TestMeetingsNavbarLoggedIn(NavbarTestLoggedInMixin):
 
 @markers.smoke_test
 @markers.core_functionality
+@pytest.mark.usefixtures('throttle_on_prod')
 class TestInstitutionsNavbarLoggedOut(NavbarTestLoggedOutMixin):
     @pytest.fixture()
     def page(self, driver):
@@ -305,6 +314,7 @@ class TestInstitutionsNavbarLoggedOut(NavbarTestLoggedOutMixin):
 @markers.smoke_test
 @markers.core_functionality
 @pytest.mark.usefixtures('log_in_if_not_already')
+@pytest.mark.usefixtures('throttle_on_prod')
 class TestInstitutionsNavbarLoggedIn(NavbarTestLoggedInMixin):
     @pytest.fixture()
     def page(self, driver):
@@ -331,6 +341,7 @@ def assert_donate_page(driver, donate_page):
 
 @markers.smoke_test
 @markers.core_functionality
+@pytest.mark.usefixtures('throttle_on_prod')
 class TestCollectionsNavbarLoggedOut:
     @pytest.fixture
     def provider(self, driver):
@@ -359,6 +370,7 @@ class TestCollectionsNavbarLoggedOut:
 @markers.smoke_test
 @markers.core_functionality
 @pytest.mark.usefixtures('log_in_if_not_already')
+@pytest.mark.usefixtures('throttle_on_prod')
 class TestCollectionsNavbarLoggedIn:
     @pytest.fixture
     def provider(self, driver):
@@ -395,6 +407,7 @@ class TestCollectionsNavbarLoggedIn:
 @markers.smoke_test
 @markers.core_functionality
 @pytest.mark.usefixtures('log_in_if_not_already')
+@pytest.mark.usefixtures('throttle_on_prod')
 class TestProjectsNavbarLoggedIn:
     @pytest.fixture()
     def project_page(self, driver, default_project_page):
