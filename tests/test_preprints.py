@@ -1313,6 +1313,7 @@ class TestProvidersWithCustomDomains:
 
 
 @markers.smoke_test
+@pytest.mark.usefixtures('throttle_on_prod')
 @pytest.mark.skipif(
     not settings.PRODUCTION,
     reason='Most of the Branded Preprint Provider pages in test environments have no preprints',
