@@ -37,6 +37,7 @@ def login_page(driver):
 
 @markers.smoke_test
 @markers.core_functionality
+@pytest.mark.usefixtures('throttle_on_prod')
 class TestLoginPage:
     def test_institutional_login(self, driver, login_page):
         """Check that you arrive on the institutional login page and the institution dropdown is populated.
@@ -207,6 +208,7 @@ class TestToSPage:
 
 
 @markers.core_functionality
+@pytest.mark.usefixtures('throttle_on_prod')
 class TestGenericPages:
     """Generic pages have no service in the login/logout url. Typically users should not be able to access
     these pages through the standard authentication workflow. The tests in this class manually manipulate the
@@ -236,6 +238,7 @@ class TestGenericPages:
 
 
 @markers.core_functionality
+@pytest.mark.usefixtures('throttle_on_prod')
 class TestLoginErrors:
     """Test the inline error messages on the CAS login page when user enters invalid login data"""
 
@@ -268,6 +271,7 @@ class TestLoginErrors:
 
 
 @markers.core_functionality
+@pytest.mark.usefixtures('throttle_on_prod')
 class TestCustomExceptionPages:
     """CAS has several customized exception pages which share the same style and appearance as the CAS login pages.
     Not all of them can be easily tested. Those that can will require the manipulation of urls to reach the pages.
@@ -344,6 +348,7 @@ def try_login_page(driver, page_class):
 
 @markers.smoke_test
 @markers.core_functionality
+@pytest.mark.usefixtures('throttle_on_prod')
 class TestInstitutionLoginPage:
     @pytest.fixture
     def institution_login_page(self, driver):
