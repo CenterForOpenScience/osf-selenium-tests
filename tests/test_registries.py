@@ -131,6 +131,7 @@ class TestRegistriesSearch:
 
 
 @markers.smoke_test
+@pytest.mark.usefixtures('throttle_on_prod')
 @markers.core_functionality
 class TestBrandedRegistriesPages:
     def providers():
