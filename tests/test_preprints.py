@@ -1219,9 +1219,12 @@ class TestPreprintMetrics:
         count value displayed on the page. Also verifying that the views count will
         be incremented if the page is reloaded (only in testing environments).
         """
-        api_views_count = osf_api.get_preprint_views_count(node_id=latest_preprint_node)
+        api_views_count_before = osf_api.get_preprint_views_count(
+            node_id=latest_preprint_node
+        )
         preprint_page = PreprintDetailPage(driver, guid=latest_preprint_node)
         preprint_page.goto()
+        ui_view_count_before = int(preprint_page.views_count.text)
         assert PreprintDetailPage(driver, verify=True)
 
         # Don't reload the page in Production since we don't want to artificially
@@ -1237,11 +1240,16 @@ class TestPreprintMetrics:
             # checking that the views count did increase but not by how much.
             # Unfortunately this means that we are not checking for any issues like
             # double-counting.
-            preprint_page.reload()
-            assert (
-                osf_api.get_preprint_views_count(node_id=latest_preprint_node)
-                > api_views_count
+            preprint_page.goto()
+            WebDriverWait(driver, settings.TIMEOUT).until(
+                EC.visibility_of(preprint_page.views_count)
             )
+            api_views_count_after = osf_api.get_preprint_views_count(
+                node_id=latest_preprint_node
+            )
+            ui_view_count_after = int(preprint_page.views_count.text)
+            assert ui_view_count_after == ui_view_count_before + 1
+            assert api_views_count_after > api_views_count_before
 
     def test_preprint_downloads_count(self, driver, latest_preprint_node):
         """Test the Downloads Count functionality on the Preprint Detail page by
@@ -1250,23 +1258,30 @@ class TestPreprintMetrics:
         downloads count will be incremented when the downloads button on the page is
         clicked (only in testing environments).
         """
-        api_downloads_count = osf_api.get_preprint_downloads_count(
-            node_id=latest_preprint_node
-        )
         preprint_page = PreprintDetailPage(driver, guid=latest_preprint_node)
         preprint_page.goto()
         assert PreprintDetailPage(driver, verify=True)
-        assert api_downloads_count == int(preprint_page.downloads_count.text)
+        ui_download_count_before = int(preprint_page.downloads_count.text)
+        api_downloads_count_before = osf_api.get_preprint_downloads_count(
+            node_id=latest_preprint_node
+        )
+        assert api_downloads_count_before == ui_download_count_before
         # Don't download the Preprint in Production since we don't want to artificially
         # inflate the metrics
         if not settings.PRODUCTION:
             # Verify that the downloads count from the api increases by 1 after we
             # download the document.
             preprint_page.download_button.click()
-            assert (
-                osf_api.get_preprint_downloads_count(node_id=latest_preprint_node)
-                == api_downloads_count + 1
+            preprint_page.goto()
+            WebDriverWait(driver, settings.TIMEOUT).until(
+                EC.visibility_of(preprint_page.downloads_count)
             )
+            api_downloads_count_after = osf_api.get_preprint_downloads_count(
+                node_id=latest_preprint_node
+            )
+            ui_download_count_after = int(preprint_page.downloads_count.text)
+            assert api_downloads_count_after == api_downloads_count_before + 1
+            assert ui_download_count_after == ui_download_count_before + 1
 
 
 @pytest.fixture(scope='session')
