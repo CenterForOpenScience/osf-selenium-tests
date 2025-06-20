@@ -15,9 +15,10 @@ def search_page(driver):
     return search_page
 
 
+@markers.smoke_test
+@markers.core_functionality
+@pytest.mark.usefixtures('throttle_on_prod')
 class TestSearchPage:
-    @markers.smoke_test
-    @markers.core_functionality
     def test_search_results_exist_all_tab(self, driver, search_page):
         search_page.search_input.send_keys('test')
         search_page.search_input.send_keys(Keys.ENTER)

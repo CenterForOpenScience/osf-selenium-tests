@@ -1,4 +1,5 @@
 import re
+import time
 
 import pytest
 from faker import Faker
@@ -194,3 +195,9 @@ def must_be_logged_in_as_registration_user(driver):
         user=settings.REGISTRATIONS_USER,
         password=settings.REGISTRATIONS_USER_PASSWORD,
     )
+
+
+@pytest.fixture(scope='function')
+def throttle_on_prod(driver):
+    if settings.PRODUCTION:
+        time.sleep(settings.PROD_THROTTLE)

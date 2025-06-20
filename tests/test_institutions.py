@@ -11,6 +11,7 @@ from pages.institutions import (
 
 @markers.smoke_test
 @markers.core_functionality
+@pytest.mark.usefixtures('throttle_on_prod')
 class TestInstitutionsPage:
     @pytest.fixture()
     def landing_page(self, driver):
