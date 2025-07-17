@@ -11,6 +11,8 @@ domains = {
         'files': 'https://files.us.staging.osf.io',
         'cas': 'https://accounts.staging.osf.io',
         'custom_institution_domains': ['https://staging-osf-nd.cos.io'],
+        'addons': 'https://addons.staging.osf.io',
+        'addons_token': 'LOXf120ZT1TOgRC4jLPVTCZk4xkoIL9E4nL6eY4ZxOYWMRhfnyrUJGLrdp89QgCsAYPOAC',
     },
     'stage2': {
         'home': 'https://staging2.osf.io',
@@ -18,6 +20,8 @@ domains = {
         'files': 'https://files.us.staging2.osf.io',
         'cas': 'https://accounts.staging2.osf.io',
         'custom_institution_domains': [],
+        'addons': 'https://addons.staging2.osf.io',
+        'addons_token': 'sSLrWlF5Q6p6p01pxuCRTwADlGDpcQ3GDZY6INdfAMudj4K9CYiHW5jA5zQSAhSKkxeIbo',
     },
     'stage3': {
         'home': 'https://staging3.osf.io',
@@ -25,6 +29,8 @@ domains = {
         'files': 'https://files.us.staging3.osf.io',
         'cas': 'https://accounts.staging3.osf.io',
         'custom_institution_domains': [],
+        'addons': 'https://addons.staging3.osf.io',
+        'addons_token': 'ReH2448CJIKmPqsO3FA9GmB70Rq76r8c3YWiptIBQL7YiA82MMtyRka9fpScEjDFj86B03',
     },
     'test': {
         'home': 'https://test.osf.io',
@@ -32,6 +38,8 @@ domains = {
         'files': 'https://files.us.test.osf.io',
         'cas': 'https://accounts.test.osf.io',
         'custom_institution_domains': [],
+        'addons': 'https://addons.test.osf.io',
+        'addons_token': 'N1l1KlsZS0DAi906WKQSqrrVKO1EzW2KpYZbekYbQERXk2P1nRUwLk4Yzb2rxfG0M7iUjx',
     },
     'prod': {
         'home': 'https://osf.io',
@@ -88,6 +96,8 @@ API_DOMAIN = domains[DOMAIN]['api']
 FILE_DOMAIN = domains[DOMAIN]['files']
 CAS_DOMAIN = domains[DOMAIN]['cas']
 CUSTOM_INSTITUTION_DOMAINS = domains[DOMAIN]['custom_institution_domains']
+ADDON_DOMAIN = domains[DOMAIN]['addons']
+ADDON_API_TOKEN = domains[DOMAIN]['addons_token']
 
 # Browser capabilities for browserstack testing
 caps = {
@@ -161,6 +171,7 @@ CAS_TOS_USER = env('CAS_TOS_USER')
 CAS_TOS_USER_PASSWORD = env('CAS_TOS_USER_PASSWORD')
 DEVAPP_CLIENT_ID = env('DEVAPP_CLIENT_ID')
 DEVAPP_CLIENT_SECRET = env('DEVAPP_CLIENT_SECRET')
+
 
 # User with IMAP enabled email
 IMAP_EMAIL = env('IMAP_EMAIL')
