@@ -1,5 +1,6 @@
 import datetime
 import os
+import time
 from urllib.parse import (
     urljoin,
     urlparse,
@@ -29,12 +30,30 @@ authorized in user settings, or else the test will fail to run:
 testable_addons = ['box', 'dropbox', 's3']
 
 
-def find_row_by_name(files_page, file_name):
-    all_files = files_page.file_rows
-    for file_row in all_files:
-        if file_name in file_row.text:
+def find_row_by_name(driver, files_page, target_file_name):
+    driver.execute_script('window.scrollBy(0, window.innerHeight);')
+    loaded_files = set()
+    max_tries = 5
+    found = False
+    for _ in range(max_tries):
+        all_files = files_page.file_rows
+        for file_row in all_files:
+            file_name = file_row.text
+            if file_name not in loaded_files:
+                loaded_files.add(file_name)
+                if target_file_name in file_name:
+                    found = True
+                    break
+        if found:
             return file_row
-    return
+
+        prev_height = driver.execute_script('return document.body.scrollHeight')
+        driver.execute_script('window.scrollBy(0, window.innerHeight);')
+        time.sleep(2)
+        new_height = driver.execute_script('return document.body.scrollHeight')
+
+        if new_height == prev_height:
+            break
 
 
 def connect_addon_to_node(driver, session, provider, node_id):
@@ -61,7 +80,7 @@ def verify_file_download(driver, files_page, file_name):
         if os.path.exists(file_path):
             os.remove(file_path)
 
-    row = find_row_by_name(files_page, file_name)
+    row = find_row_by_name(driver, files_page, file_name)
 
     # Click the File Action menu button at the far right side of the row to show the
     # menu options. Then click the Download option from this menu.
@@ -142,8 +161,9 @@ class TestFilesPage:
                     (By.CSS_SELECTOR, '[data-test-file-list-item]')
                 )
             )
-            row = find_row_by_name(files_page, new_file)
-            files_page.scroll_into_view(row)
+
+            row = find_row_by_name(driver, files_page, new_file)
+
             # Once we have found the right row we need to click the File Action menu
             # button at the far right side of the row to show the menu options. Then we
             # can click the Rename option from this menu.
@@ -176,10 +196,10 @@ class TestFilesPage:
                 )
             )
             # Test old file name does not exist
-            old_file = find_row_by_name(files_page, new_file)
+            old_file = find_row_by_name(driver, files_page, new_file)
             assert old_file is None
             # Test that new file name is present and visible
-            renamed_file = find_row_by_name(files_page, new_name)
+            renamed_file = find_row_by_name(driver, files_page, new_name)
             assert new_name in renamed_file.text
             # Verify Project Log Entry
             # verify_log_entry(
@@ -225,7 +245,8 @@ class TestFilesPage:
                     (By.CSS_SELECTOR, '[data-test-file-list-item]')
                 )
             )
-            row = find_row_by_name(files_page, new_file)
+            row = find_row_by_name(driver, files_page, new_file)
+
             # Once we have found the right row we need to click the File Action menu
             # button at the far right side of the row to show the menu options. Then we
             # can click the Delete option from this menu.
@@ -241,7 +262,7 @@ class TestFilesPage:
             files_page.delete_modal.delete_button[0].click()
             files_page.loading_indicator.here_then_gone()
             # Verify file has been deleted from the files list
-            deleted_row = find_row_by_name(files_page, new_file)
+            deleted_row = find_row_by_name(driver, files_page, new_file)
             assert deleted_row is None
             # Verify Project Log Entry
             # verify_log_entry(
@@ -290,10 +311,10 @@ class TestFilesPage:
                 )
             )
             # Find the row for the 1st file to be deleted and click to select it
-            row_1 = find_row_by_name(files_page, new_file_1)
+            row_1 = find_row_by_name(driver, files_page, new_file_1)
             row_1.click()
             # Next find the 2nd file row and click it as well.
-            row_2 = find_row_by_name(files_page, new_file_2)
+            row_2 = find_row_by_name(driver, files_page, new_file_2)
             row_2.click()
             # Verify that 2 files have been selected
             assert files_page.file_selected_text.text == '2 item(s) selected'
@@ -317,9 +338,9 @@ class TestFilesPage:
             files_page.delete_modal.done_button.click()
             files_page.loading_indicator.here_then_gone()
             # Verify both files have been deleted from the files list
-            deleted_row_1 = find_row_by_name(files_page, new_file_1)
+            deleted_row_1 = find_row_by_name(driver, files_page, new_file_1)
             assert deleted_row_1 is None
-            deleted_row_2 = find_row_by_name(files_page, new_file_2)
+            deleted_row_2 = find_row_by_name(driver, files_page, new_file_2)
             assert deleted_row_2 is None
         finally:
             osf_api.delete_addon_files(session, provider, current_browser, guid=node_id)
@@ -354,7 +375,7 @@ class TestFilesPage:
                     (By.CSS_SELECTOR, '[data-test-file-list-item]')
                 )
             )
-            row = find_row_by_name(files_page, new_file)
+            row = find_row_by_name(driver, files_page, new_file)
             # Once we have found the right row we need to click the File Action menu
             # button at the far right side of the row to show the menu options. Then we
             # can click the Move option from this menu.
@@ -382,13 +403,13 @@ class TestFilesPage:
             files_page.loading_indicator.here_then_gone()
             # We should still be on the page for the provider, so check that the file
             # is no longer listed here.
-            moved_row = find_row_by_name(files_page, new_file)
+            moved_row = find_row_by_name(driver, files_page, new_file)
             assert moved_row is None
             # Click the link in the left navbar to switch to OSF Storage and verify the
             # file has been moved there.
             files_page.leftnav_osfstorage_link.click()
             files_page.loading_indicator.here_then_gone()
-            moved_row = find_row_by_name(files_page, new_file)
+            moved_row = find_row_by_name(driver, files_page, new_file)
             assert new_file in moved_row.text
             # Verify Project Log Entry
             # verify_log_entry(
@@ -438,10 +459,10 @@ class TestFilesPage:
                 )
             )
             # Find the row for the 1st file to be moved and click to select it
-            row_1 = find_row_by_name(files_page, new_file_1)
+            row_1 = find_row_by_name(driver, files_page, new_file_1)
             row_1.click()
             # Next find the 2nd file row and click it as well.
-            row_2 = find_row_by_name(files_page, new_file_2)
+            row_2 = find_row_by_name(driver, files_page, new_file_2)
             row_2.click()
             # Verify that 2 files have been selected
             assert files_page.file_selected_text.text == '2 item(s) selected'
@@ -465,17 +486,17 @@ class TestFilesPage:
             files_page.loading_indicator.here_then_gone()
             # We should still be on the page for the provider, so check that the files
             # are no longer listed here.
-            moved_row_1 = find_row_by_name(files_page, new_file_1)
+            moved_row_1 = find_row_by_name(driver, files_page, new_file_1)
             assert moved_row_1 is None
-            moved_row_2 = find_row_by_name(files_page, new_file_2)
+            moved_row_2 = find_row_by_name(driver, files_page, new_file_2)
             assert moved_row_2 is None
             # Click the link in the left navbar to switch to OSF Storage and verify the
             # files have been moved there.
             files_page.leftnav_osfstorage_link.click()
             files_page.loading_indicator.here_then_gone()
-            moved_row_1 = find_row_by_name(files_page, new_file_1)
+            moved_row_1 = find_row_by_name(driver, files_page, new_file_1)
             assert new_file_1 in moved_row_1.text
-            moved_row_2 = find_row_by_name(files_page, new_file_2)
+            moved_row_2 = find_row_by_name(driver, files_page, new_file_2)
             assert new_file_2 in moved_row_2.text
         finally:
             osf_api.delete_addon_files(session, provider, current_browser, guid=node_id)
@@ -537,13 +558,13 @@ class TestFilesPage:
             files_page.loading_indicator.here_then_gone()
             # We should still be on the page for the provider, so check that the file
             # is still listed here.
-            source_row = find_row_by_name(files_page, new_file)
+            source_row = find_row_by_name(driver, files_page, new_file)
             assert new_file in source_row.text
             # Click the link in the left navbar to switch to OSF Storage and verify the
             # file has been copied there.
             files_page.leftnav_osfstorage_link.click()
             files_page.loading_indicator.here_then_gone()
-            destination_row = find_row_by_name(files_page, new_file)
+            destination_row = find_row_by_name(driver, files_page, new_file)
             assert new_file in destination_row.text
             # Verify Project Log Entry
             # verify_log_entry(
@@ -593,10 +614,10 @@ class TestFilesPage:
                 )
             )
             # Find the row for the 1st file to be copied and click to select it
-            row_1 = find_row_by_name(files_page, new_file_1)
+            row_1 = find_row_by_name(driver, files_page, new_file_1)
             row_1.click()
             # Next find the 2nd file row and click it as well.
-            row_2 = find_row_by_name(files_page, new_file_2)
+            row_2 = find_row_by_name(driver, files_page, new_file_2)
             row_2.click()
             # Verify that 2 files have been selected
             assert files_page.file_selected_text.text == '2 item(s) selected'
@@ -620,17 +641,17 @@ class TestFilesPage:
             files_page.loading_indicator.here_then_gone()
             # We should still be on the page for the provider, so check that the files
             # are still listed here.
-            source_row_1 = find_row_by_name(files_page, new_file_1)
+            source_row_1 = find_row_by_name(driver, files_page, new_file_1)
             assert new_file_1 in source_row_1.text
-            source_row_2 = find_row_by_name(files_page, new_file_2)
+            source_row_2 = find_row_by_name(driver, files_page, new_file_2)
             assert new_file_2 in source_row_2.text
             # Click the link in the left navbar to switch to OSF Storage and verify the
             # files have been copied there.
             files_page.leftnav_osfstorage_link.click()
             files_page.loading_indicator.here_then_gone()
-            destination_row_1 = find_row_by_name(files_page, new_file_1)
+            destination_row_1 = find_row_by_name(driver, files_page, new_file_1)
             assert new_file_1 in destination_row_1.text
-            destination_row_2 = find_row_by_name(files_page, new_file_2)
+            destination_row_2 = find_row_by_name(driver, files_page, new_file_2)
             assert new_file_2 in destination_row_2.text
         finally:
             osf_api.delete_addon_files(session, provider, current_browser, guid=node_id)
