@@ -12,7 +12,7 @@ domains = {
         'cas': 'https://accounts.staging.osf.io',
         'custom_institution_domains': ['https://staging-osf-nd.cos.io'],
         'addons': 'https://addons.staging.osf.io',
-        'addons_token': 'LOXf120ZT1TOgRC4jLPVTCZk4xkoIL9E4nL6eY4ZxOYWMRhfnyrUJGLrdp89QgCsAYPOAC',
+        'addons_token': env('USER_ONE_STAGE1_PAT'),
     },
     'stage2': {
         'home': 'https://staging2.osf.io',
@@ -21,7 +21,7 @@ domains = {
         'cas': 'https://accounts.staging2.osf.io',
         'custom_institution_domains': [],
         'addons': 'https://addons.staging2.osf.io',
-        'addons_token': 'sSLrWlF5Q6p6p01pxuCRTwADlGDpcQ3GDZY6INdfAMudj4K9CYiHW5jA5zQSAhSKkxeIbo',
+        'addons_token': env('USER_ONE_STAGE2_PAT'),
     },
     'stage3': {
         'home': 'https://staging3.osf.io',
@@ -30,7 +30,7 @@ domains = {
         'cas': 'https://accounts.staging3.osf.io',
         'custom_institution_domains': [],
         'addons': 'https://addons.staging3.osf.io',
-        'addons_token': 'ReH2448CJIKmPqsO3FA9GmB70Rq76r8c3YWiptIBQL7YiA82MMtyRka9fpScEjDFj86B03',
+        'addons_token': env('USER_ONE_STAGE3_PAT'),
     },
     'test': {
         'home': 'https://test.osf.io',
@@ -39,7 +39,7 @@ domains = {
         'cas': 'https://accounts.test.osf.io',
         'custom_institution_domains': [],
         'addons': 'https://addons.test.osf.io',
-        'addons_token': 'N1l1KlsZS0DAi906WKQSqrrVKO1EzW2KpYZbekYbQERXk2P1nRUwLk4Yzb2rxfG0M7iUjx',
+        'addons_token': env('USER_ONE_TEST_PAT'),
     },
     'prod': {
         'home': 'https://osf.io',
