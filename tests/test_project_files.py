@@ -49,7 +49,7 @@ def find_row_by_name(driver, files_page, target_file_name):
 
         prev_height = driver.execute_script('return document.body.scrollHeight')
         driver.execute_script('window.scrollBy(0, window.innerHeight);')
-        time.sleep(2)
+        time.sleep(5)
         new_height = driver.execute_script('return document.body.scrollHeight')
 
         if new_height == prev_height:
@@ -319,6 +319,7 @@ class TestFilesPage:
             # Verify that 2 files have been selected
             assert files_page.file_selected_text.text == '2 item(s) selected'
             # Click the Delete button above the file list
+            driver.execute_script('window.scrollTo(0, document.body.scrollTop);')
             files_page.file_list_delete_button.click()
             # Click the Delete button on the modal
             files_page.delete_modal.delete_button[1].click()
@@ -467,6 +468,7 @@ class TestFilesPage:
             # Verify that 2 files have been selected
             assert files_page.file_selected_text.text == '2 item(s) selected'
             # Click the Move button above the file list
+            driver.execute_script('window.scrollTo(0, document.body.scrollTop);')
             files_page.file_list_move_button.click()
             # Click the Project link on the Move modal to go up a level and then click
             # the OSF Storage link. Then click the Move button on the modal to move
@@ -531,7 +533,7 @@ class TestFilesPage:
                     (By.CSS_SELECTOR, '[data-test-file-list-item]')
                 )
             )
-            row = find_row_by_name(files_page, new_file)
+            row = find_row_by_name(driver, files_page, new_file)
             # Once we have found the right row we need to click the File Action menu
             # button at the far right side of the row to show the menu options. Then we
             # can click the Copy option from this menu.
@@ -622,6 +624,7 @@ class TestFilesPage:
             # Verify that 2 files have been selected
             assert files_page.file_selected_text.text == '2 item(s) selected'
             # Click the Copy button above the file list
+            driver.execute_script('window.scrollTo(0, document.body.scrollTop);')
             files_page.file_list_copy_button.click()
             # Click the Project link on the Copy modal to go up a level and then click
             # the OSF Storage link. Then click the Copy button on the modal to copy
