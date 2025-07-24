@@ -27,14 +27,11 @@ authorized in user settings, or else the test will fail to run:
     - 'box', 'dropbox', 's3', 'owncloud'
 """
 
-# testable_addons = ['box', 'dropbox', 's3']
-testable_addons = ['box']
+testable_addons = ['box', 'dropbox', 's3']
 
 
 def find_row_by_name(driver, files_page, target_file_name):
     """Find the row which matches the given target_file_name and return the row"""
-    # Scroll through the page
-    driver.execute_script('window.scrollBy(0, 100);')
     # First set of files to compare
     loaded_files = set()
     # number of times to scroll down until user finds the target_file_name or reaches
@@ -56,6 +53,7 @@ def find_row_by_name(driver, files_page, target_file_name):
 
         prev_height = driver.execute_script('return document.body.scrollHeight')
         driver.execute_script('window.scrollBy(0, window.innerHeight);')
+
         # Wait for page to load items
         time.sleep(5)
         new_height = driver.execute_script('return document.body.scrollHeight')
