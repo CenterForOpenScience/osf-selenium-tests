@@ -27,7 +27,15 @@ authorized in user settings, or else the test will fail to run:
     - 'box', 'dropbox', 's3', 'owncloud'
 """
 
-testable_addons = ['box', 'dropbox', 's3']
+testable_addons = [
+    'box',
+    'dropbox',
+    's3',
+    'onedrive',
+    'github',
+    'owncloud',
+    'googledrive',
+]
 
 
 def find_row_by_name(driver, files_page, target_file_name):
@@ -391,7 +399,7 @@ class TestFilesPage:
             )
             menu_button.click()
             move_button = row.find_element_by_css_selector('[data-test-move-button]')
-            files_page.scroll_into_view(move_button)
+            driver.execute_script('window.scrollTo(0, document.body.scrollTop);')
             move_button.click()
             # Click the Project link on the Move modal to go up a level and then click
             # the OSF Storage link. Then click the Move button on the modal to move
@@ -414,6 +422,7 @@ class TestFilesPage:
             assert moved_row is None
             # Click the link in the left navbar to switch to OSF Storage and verify the
             # file has been moved there.
+            driver.execute_script('window.scrollTo(0, document.body.scrollTop);')
             files_page.leftnav_osfstorage_link.click()
             files_page.loading_indicator.here_then_gone()
             moved_row = find_row_by_name(driver, files_page, new_file)
@@ -500,6 +509,7 @@ class TestFilesPage:
             assert moved_row_2 is None
             # Click the link in the left navbar to switch to OSF Storage and verify the
             # files have been moved there.
+            driver.execute_script('window.scrollTo(0, document.body.scrollTop);')
             files_page.leftnav_osfstorage_link.click()
             files_page.loading_indicator.here_then_gone()
             moved_row_1 = find_row_by_name(driver, files_page, new_file_1)

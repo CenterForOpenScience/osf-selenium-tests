@@ -181,7 +181,7 @@ def get_user_addon(session, provider, current_url, user=None):
     data = addon_session.get(service_url)
     for service in data['data']:
         service_name = service['attributes']['display_name']
-        if service_name.lower() == provider:
+        if service_name.replace(' ', '').lower() == provider:
             account_id = service['id']
             return account_id
 
