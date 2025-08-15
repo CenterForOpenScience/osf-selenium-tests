@@ -47,6 +47,8 @@ domains = {
         'files': 'https://files.osf.io',
         'cas': 'https://accounts.osf.io',
         'custom_institution_domains': [],
+        'addons': 'https://addons.osf.io',
+        'addons_token': env('USER_ONE_PAT'),
     },
 }
 
