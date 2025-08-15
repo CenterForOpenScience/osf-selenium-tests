@@ -27,6 +27,13 @@ def get_user_two_session():
     )
 
 
+def get_addon_session():
+    api_token = settings.ADDON_API_TOKEN
+    session = client.Session(api_base_url=settings.ADDON_DOMAIN)
+    session.base_headers.update({'Authorization': f'Bearer {api_token}'})
+    return session
+
+
 def create_project(session, title='osf selenium test', tags=None, **kwargs):
     """Create a project for your current user through the OSF api.
 
@@ -151,12 +158,32 @@ def get_institution_users_per_department(
     return None
 
 
-def get_user_addon(session, provider, user=None):
+def get_user_reference_id(session, user_id=None, current_url=None):
+    """Return user reference id for the given user."""
+    user_uri = current_url + '/' + user_id
+    addon_url = '/v1/user-references?filter[user_uri]={}'.format(user_uri)
+    data = session.get(addon_url)
+    return data['data'][0]['id']
+
+
+def get_user_addon(session, provider, current_url, user=None):
     """Get list of accounts on the given provider that have already been connected by the user."""
     if not user:
         user = current_user(session)
-    addon_url = '/v2/users/{}/addons/{}/'.format(user.id, provider)
-    return session.get(addon_url)
+    addon_session = get_addon_session()
+    # Get user reference id for the given user
+    user_reference_id = get_user_reference_id(
+        addon_session, current_url=current_url, user_id=user.id
+    )
+    service_url = '/v1/user-references/{}/authorized_storage_accounts'.format(
+        user_reference_id
+    )
+    data = addon_session.get(service_url)
+    for service in data['data']:
+        service_name = service['attributes']['display_name']
+        if service_name.replace(' ', '').lower() == provider:
+            account_id = service['id']
+            return account_id
 
 
 def get_user_region_name(session, user=None):
@@ -317,7 +344,6 @@ def upload_fake_file(
         upload_url = '{}/v1/resources/{}/providers/{}/'.format(
             settings.FILE_DOMAIN, node.id, provider
         )
-
     metadata = session.put(
         url=upload_url, query_parameters={'kind': 'file', 'name': name}, raw_body={}
     )
@@ -381,63 +407,105 @@ def get_providers_total(provider_name, session):
     return session.get(provider_url)['links']['meta']['total']
 
 
+def get_root_folder(authorized_account_id):
+    """Return root folder for the given addon provider"""
+    addon_session = get_addon_session()
+    operation_url = '/v1/addon-operation-invocations'
+    raw_payload = {
+        'data': {
+            'type': 'addon-operation-invocations',
+            'attributes': {'operation_name': 'list_root_items', 'operation_kwargs': {}},
+            'relationships': {
+                'thru_account': {
+                    'data': {
+                        'type': 'authorized-storage-accounts',
+                        'id': authorized_account_id,
+                    }
+                },
+            },
+        }
+    }
+    data = addon_session.post(
+        url=operation_url,
+        raw_body=json.dumps(raw_payload),
+    )
+    return data['data']['attributes']['operation_result']['items'][0]['item_id']
+
+
+def get_resource_uri(session, node_id):
+    """Return the resource uri for the given node."""
+    url = '/v2/nodes/{}'.format(node_id)
+    data = session.get(url)
+    return data['data']['links']['iri']
+
+
 def connect_provider_root_to_node(
     session,
     provider,
-    external_account_id,
+    authorized_account_id,
     node_id=settings.PREFERRED_NODE,
 ):
     """Initialize the node<=>addon connection, add the given external_account_id, and configure it
     to connect to the root folder of the provider."""
-
-    if not session:
-        session = get_default_session()
-
-    url = '/v2/nodes/{}/addons/{}/'.format(node_id, provider)
-
-    # Empty POST request "turns it on" (h/t @brianjgeiger). Addon must be configured with a PATCH
-    # afterwards.
-    # TODO: if box is already connected, will return 400.  Handle that?
-    session.post(url=url, item_type='node_addons')
-
-    # This is a workaround for a bug in pythosf v0.0.9 that breaks patch requests.
-    # If raw_body is not passed, the session code tries to automatically build the body, which
-    # breaks on `item_id`.  If you build the body yourself and pass it in, this bypasses the
-    # bug.  When the fix is released, switch to the commented-out block below this.
+    url = '/v1/configured-storage-addons/'
+    resource_uri = get_resource_uri(session, node_id)
     raw_payload = {
         'data': {
-            'type': 'node_addons',
-            'id': provider,
+            'type': 'configured-storage-addons',
             'attributes': {
-                'external_account_id': external_account_id,
+                'display_name': provider,
                 'enabled': True,
+                'authorized_resource_uri': resource_uri,
+                'connected_capabilities': ['ACCESS', 'UPDATE'],
             },
-        },
+            'relationships': {
+                'base_account': {
+                    'data': {
+                        'type': 'authorized-storage-accounts',
+                        'id': authorized_account_id,
+                    }
+                }
+            },
+        }
     }
-    addon = session.patch(
-        url=url,
-        item_type='node_addons',
-        item_id=provider,
-        raw_body=json.dumps(raw_payload),
-    )
-    # payload = {
-    #     'external_account_id': external_account_id,
-    #     'enabled': True,
-    # }
-    # addon = session.patch(url=url, item_type='node_addons', item_id=provider,
-    #                      attributes=payload)
+    # get addon endpoint to connect addon to a node
+    if session:
+        addon_session = get_addon_session()
+    data = addon_session.post(url=url, raw_body=json.dumps(raw_payload))
+    configuration_id = data['data']['id']
 
     # Assume the root folder is the first (and only) folder returned.  Get its id and update
     # the addon config
-    root_folder = session.get(url + 'folders/')['data'][0]['attributes']['folder_id']
-    raw_payload['data']['attributes']['folder_id'] = root_folder
-    addon = session.patch(
-        url=url,
-        item_type='node_addons',
-        item_id=provider,
+    root_folder = get_root_folder(authorized_account_id)
+    raw_payload = {
+        'data': {
+            'type': 'configured-storage-addons',
+            'id': configuration_id,
+            'attributes': {
+                'root_folder': root_folder,
+                'authorized_resource_uri': resource_uri,
+                'external_service_name': provider,
+                'current_user_is_owner': True,
+            },
+        }
+    }
+    patch_url = '/v1/configured-storage-addons/{}'.format(configuration_id)
+    addon = addon_session.patch(
+        url=patch_url,
+        item_type='configured-storage-addons',
+        item_id=configuration_id,
         raw_body=json.dumps(raw_payload),
     )
     return addon
+
+
+def get_provider_filespage_id(session, node_id, provider):
+    """Return the files page id for the provider to open files page for that particular provider"""
+    url = '/v2/nodes/{}/files/'.format(node_id)
+    data = session.get(url)
+    for data in data['data']:
+        if data['attributes']['provider'] == provider:
+            return data['id']
 
 
 def get_preprints_list_for_user(session, user=None):
