@@ -51,7 +51,22 @@ class TestProjectDetailPage:
         # to provide a little extra time.  We can do this by waiting on the log widget to load.
         project_page.log_widget.loading_indicator.here_then_gone()
         project_page.title.click()
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located(
+                (By.CSS_SELECTOR, '.overflow.editable.editable-click')
+            )
+        )
+        # overflow editable editable-click
+        project_page.title_editable.click()
+        WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.CSS_SELECTOR, '.form-inline input'))
+        )
         project_page.title_input.clear()
+        WebDriverWait(driver, 10).until(
+            EC.text_to_be_present_in_element(
+                (By.CSS_SELECTOR, '.form-inline input'), ''
+            )
+        )
         project_page.title_input.send_keys(new_title)
         project_page.title_edit_submit_button.click()
         project_page.verify()  # Wait for the page to reload
