@@ -2,155 +2,98 @@ import datetime
 import os
 
 from selenium import webdriver
+from selenium.webdriver.chrome.options import Options as ChromeOptions
+from selenium.webdriver.edge.options import Options as EdgeOptions
+from selenium.webdriver.firefox.options import Options as FirefoxOptions
 
 import settings
 
 
 def launch_driver(driver_name=settings.DRIVER, desired_capabilities=None):
-    """Create and configure a WebDriver.
-    Args:
-        driver_name : Name of WebDriver to use
-        desired_capabilities : Desired browser specs
-    """
+    """Create and configure a WebDriver for local or remote (BrowserStack) runs."""
+
     driver = None
 
-    try:
-        driver_cls = getattr(webdriver, driver_name)
-    except AttributeError:
-        driver_cls = getattr(webdriver, settings.DRIVER)
-
     if driver_name == 'Remote':
-
+        # Set BrowserStack capabilities
         if desired_capabilities is None:
             desired_capabilities = settings.DESIRED_CAP
         command_executor = 'http://{}:{}@hub.browserstack.com:80/wd/hub'.format(
             settings.BSTACK_USER, settings.BSTACK_KEY
         )
 
-        if settings.BUILD == 'firefox':
-            # Create a temporary Firefox WebDriver to fetch the current user agent
-            temp_options = webdriver.FirefoxOptions()
-            temp_driver = webdriver.Firefox(options=temp_options)
-            default_user_agent = temp_driver.execute_script(
-                'return navigator.userAgent;'
-            )
-            temp_driver.quit()
+        browser = settings.BUILD.lower()
 
-            # Append "Selenium Bot" to the existing user agent
-            custom_user_agent = f'{default_user_agent} OSF Selenium Bot'
-
-            from selenium.webdriver.firefox.options import Options
-
-            ffo = Options()
-
-            # Set custom user agent
-            ffo.set_preference('general.useragent.override', custom_user_agent)
-
-            # Set the default download location [0=Desktop, 1=Downloads, 2=Specified location]
-            ffo.set_preference('browser.download.folderList', 1)
-
-            # Disable the OS-level pop-up modal
-            ffo.set_preference('browser.download.manager.showWhenStarting', False)
-            ffo.set_preference('browser.helperApps.alwaysAsk.force', False)
-            ffo.set_preference('browser.download.manager.alertOnEXEOpen', False)
-            ffo.set_preference('browser.download.manager.closeWhenDone', True)
-            ffo.set_preference('browser.download.manager.showAlertOnComplete', False)
-            ffo.set_preference('browser.download.manager.useWindow', False)
-            # Specify the file types supported by the download
-            ffo.set_preference(
-                'browser.helperApps.neverAsk.saveToDisk',
-                'text/plain, application/octet-stream, application/binary, text/csv, application/csv, '
-                'application/excel, text/comma-separated-values, text/xml, application/xml, binary/octet-stream',
-            )
-            # Block Third Party Tracking Cookies (Default in Firefox is now 5 which blocks
-            # all Cross-site cookies)
-            ffo.set_preference('network.cookie.cookieBehavior', 4)
-            driver = driver_cls(
+        if browser == 'firefox':
+            ffo = FirefoxOptions()
+            # Set custom user agent via capabilities (not by launching a local browser)
+            desired_capabilities['browserName'] = 'Firefox'
+            desired_capabilities['os'] = 'Windows'
+            desired_capabilities['osVersion'] = '11'
+            desired_capabilities['moz:firefoxOptions'] = {
+                'prefs': {'general.useragent.override': 'OSF Selenium Bot'}
+            }
+            driver = webdriver.Remote(
                 command_executor=command_executor,
                 desired_capabilities=desired_capabilities,
                 options=ffo,
             )
-        elif settings.BUILD == 'chrome':
-            from selenium.webdriver.chrome.options import Options
 
-            chrome_options: Options = Options()
+        elif browser == 'chrome':
+            chrome_options = ChromeOptions()
             chrome_options.add_argument('--disable-gpu')
             chrome_options.add_argument('window-size=1200x600')
-
-            # Fetch default user agent
-            temp_driver = driver_cls(
-                command_executor=command_executor,
-                desired_capabilities=desired_capabilities,
-                options=chrome_options,
-            )
-            default_user_agent = temp_driver.execute_script(
-                'return navigator.userAgent;'
-            )
-            temp_driver.quit()
-
-            # Append "OSF Selenium Bot" to the existing user agent
-            custom_user_agent = f'{default_user_agent} OSF Selenium Bot'
-            chrome_options.add_argument(f'user-agent={custom_user_agent}')
-
-            # Make a copy of desired capabilities for Chrome
-            desired_capabilities = settings.DESIRED_CAP.copy()
-
-            # Attach Chrome options
+            chrome_options.add_argument(f'user-agent={"OSF Selenium Bot"}')
+            desired_capabilities['browserName'] = 'Chrome'
+            desired_capabilities['os'] = 'Windows'
+            desired_capabilities['osVersion'] = '11'
             desired_capabilities['goog:chromeOptions'] = {
                 'args': chrome_options.arguments
             }
-
-            driver = driver_cls(
+            driver = webdriver.Remote(
                 command_executor=command_executor,
                 desired_capabilities=desired_capabilities,
                 options=chrome_options,
             )
-        elif settings.BUILD == 'edge':
-            # Use default settings for edge driver
-            # We can update this once we upgrade to selenium v4
-            driver = webdriver.Edge()
 
+        elif browser == 'edge':
+            edge_options = EdgeOptions()
+            desired_capabilities['browserName'] = 'Edge'
+            desired_capabilities['os'] = 'Windows'
+            desired_capabilities['osVersion'] = '11'
+            driver = webdriver.Remote(
+                command_executor=command_executor,
+                desired_capabilities=desired_capabilities,
+                options=edge_options,
+            )
+
+        else:
+            raise ValueError(f'Unsupported browser: {browser}')
+
+    # Local browser launches below (for local development)
     elif driver_name == 'Chrome' and settings.HEADLESS:
-        from selenium.webdriver.chrome.options import Options
-
-        chrome_options = Options()
+        chrome_options = ChromeOptions()
         chrome_options.add_argument('--headless')
         chrome_options.add_argument('--disable-gpu')
         chrome_options.add_argument('window-size=1200x600')
-        driver = driver_cls(options=chrome_options)
-    elif driver_name == 'Chrome' and not settings.HEADLESS:
-        from selenium.webdriver.chrome.options import Options
+        driver = webdriver.Chrome(options=chrome_options)
 
-        chrome_options = Options()
-        # disable w3c for local testing
-        chrome_options.add_experimental_option('w3c', False)
+    elif driver_name == 'Chrome' and not settings.HEADLESS:
+        chrome_options = ChromeOptions()
         preferences = {'download.default_directory': ''}
         chrome_options.add_experimental_option('prefs', preferences)
-        driver = driver_cls(options=chrome_options)
-    elif driver_name == 'Firefox' and not settings.HEADLESS:
-        from selenium.webdriver.firefox.options import Options
+        driver = webdriver.Chrome(options=chrome_options)
 
-        ffo = Options()
-        # Set the default download location [0=Desktop, 1=Downloads, 2=Specified location]
-        ffo.set_preference('browser.download.folderList', 1)
-        ffo.set_preference('browser.download.manager.showWhenStarting', False)
-        ffo.set_preference('browser.helperApps.alwaysAsk.force', False)
-        ffo.set_preference(
-            'browser.helperApps.neverAsk.saveToDisk',
-            'text/plain, application/octet-stream, application/binary, text/csv, application/csv, '
-            'application/excel, text/comma-separated-values, text/xml, application/xml, binary/octet-stream',
-        )
-        # Block Third Party Tracking Cookies (Default in Firefox is now 5 which blocks
-        # all Cross-site cookies)
-        ffo.set_preference('network.cookie.cookieBehavior', 4)
-        # Force Firefox to open links in new tab instead of new browser window.
-        ffo.set_preference('browser.link.open_newwindow', 3)
-        driver = driver_cls(options=ffo)
-    elif driver_name == 'Edge' and not settings.HEADLESS:
-        driver = webdriver.Edge()
+    elif driver_name == 'Firefox':
+        ffo = FirefoxOptions()
+        ffo.binary_location = r'C:\Program Files\Mozilla Firefox\firefox.exe'
+        driver = webdriver.Firefox(options=ffo)
 
+    elif driver_name == 'Edge':
+        edge_options = EdgeOptions()
+        driver = webdriver.Edge(options=edge_options)
     else:
-        driver = driver_cls()
+        driver = getattr(webdriver, driver_name)()
 
     if driver is None:
         raise RuntimeError(
